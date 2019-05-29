@@ -9,12 +9,12 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 public class BullsAndCowsGame {
     private final long chatId;
@@ -221,8 +221,12 @@ public class BullsAndCowsGame {
     private String getSpentTime() {
         var endTime = new Date().getTime();
         var timeSpent = endTime - startTime;
-        var format = new SimpleDateFormat("HH:mm:ss");
-        return format.format(timeSpent);
+
+        long hr = TimeUnit.MILLISECONDS.toHours(timeSpent);
+        long min = TimeUnit.MILLISECONDS.toMinutes(timeSpent - TimeUnit.HOURS.toMillis(hr));
+        long sec = TimeUnit.MILLISECONDS.toSeconds(timeSpent - TimeUnit.HOURS.toMillis(hr) - TimeUnit.MINUTES.toMillis(min));
+        return String.format("%02d:%02d:%02d", hr, min, sec);
+
     }
 
     private String generateRandom() {

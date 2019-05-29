@@ -162,6 +162,8 @@ public class AnitrackerBotHandler extends BotHandler {
     private AnimeDownloader getAnimeDownloader(String url) {
         if (url.startsWith("https://tr.anidub.com"))
             return AnimeDownloaders::getAnidubTorrent;
+        else if (url.startsWith("https://anistar.org/"))
+            return AnimeDownloaders::getAnistarTorrent;
         else
             return null;
     }

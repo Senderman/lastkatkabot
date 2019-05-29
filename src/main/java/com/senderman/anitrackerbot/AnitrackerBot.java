@@ -8,8 +8,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class AnitrackerBot implements BotModule {
 
-    public static final String torrentFile = "anime.torrent";
-
     @Override
     public @NotNull BotHandler botHandler(@NotNull Config config) {
         final var configLoader = new YamlConfigLoaderService<BotConfig>();
