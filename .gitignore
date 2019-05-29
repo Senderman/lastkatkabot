@@ -6,3 +6,4 @@ gen
 cert
 *.iml
 start-bot.sh
+src/main/java/com/senderman/anitrackerbot/ParserTester.java

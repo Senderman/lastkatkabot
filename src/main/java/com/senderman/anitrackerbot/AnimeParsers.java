@@ -55,4 +55,14 @@ public class AnimeParsers {
         var img = posterLink.selectFirst("img").attr("src");
         return new Anime(title, "Неизвестно", "https://smotretanime.ru" + img, url);
     }
+
+    public static Anime parseAnistar(String url) throws Exception {
+        var doc = Jsoup.parse(new URL(url), 10000);
+        var title = doc.selectFirst("div.title_left").selectFirst("h1").text();
+        var seriesUl = doc.selectFirst("ul.head");
+        var series = seriesUl.text().replaceAll(".*Серии: ", "");
+        var img = doc.selectFirst("img.main-img").attr("src");
+        img = "https://anistar.org" + img;
+        return new Anime(title, series, img, url);
+    }
 }

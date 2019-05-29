@@ -153,6 +153,8 @@ public class AnitrackerBotHandler extends BotHandler {
             return AnimeParsers::parseGidfilm;
         else if (url.startsWith("https://animerost.org/"))
             return AnimeParsers::parseAnimerost;
+        else if (url.startsWith("https://anistar.org/"))
+            return AnimeParsers::parseAnistar;
         else
             return null;
     }
@@ -184,7 +186,7 @@ public class AnitrackerBotHandler extends BotHandler {
 
     private String parseAnimeData(Anime anime, boolean addImg) {
         var text = "<b>Название:</b> " + anime.getTitle() + "\n" +
-                "<b>Серий готово:</b> " + anime.getSeries() + "\n";
+                "<b>Серии:</b> " + anime.getSeries() + "\n";
         if (addImg)
             text += "<a href=\"" + anime.getImg() + "\">\u200B</a>";
         return text;
