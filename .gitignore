@@ -1,0 +1,8 @@
+.idea
+.gradle
+build
+out
+gen
+cert
+*.iml
+start-bot.sh

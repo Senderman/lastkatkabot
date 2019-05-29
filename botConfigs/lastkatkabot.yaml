@@ -1,0 +1,23 @@
+position: 0
+token: env(token)
+username: env(username)
+
+mainAdmin: env(main_admin) # id of main admin
+
+lastvegan: -1001440160000
+tourgroup: -1001153873643
+
+tourgroupname: "@bigelmogame"
+tourchannel: '@bigelmocucumber'
+
+wwBots: # list of werewolf bot nicknames
+  - 'werewolfbot'
+  - 'werewolfbetabot'
+  - 'blackwerewolfbot'
+
+veganWarsCommands:
+  - '/game@veganwarsbot'
+  - '/customgame@veganwarsbot'
+
+bncphoto: env(bncphoto) # picture for /bnchelp
+leavesticker: env(leavesticker) # sticker that bot will send after someone leaves the chat
