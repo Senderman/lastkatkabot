@@ -20,8 +20,6 @@ public class AnitrackerBotHandler extends BotHandler {
         Services.setDataBase(new MongoDBService());
     }
 
-    // TODO remove debug
-
     @Override
     protected BotApiMethod onUpdate(@NotNull Update update) {
 

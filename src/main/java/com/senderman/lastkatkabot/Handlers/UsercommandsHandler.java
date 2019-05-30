@@ -9,6 +9,7 @@ import com.senderman.lastkatkabot.Services;
 import com.senderman.lastkatkabot.TempObjects.TgUser;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.ChatMember;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -289,7 +290,6 @@ public class UsercommandsHandler {
         var loveEntry = "l" + (1 + ThreadLocalRandom.current().nextInt(0, loveEntries));
         var loveStrings = loveI18n.getString(loveEntry, locale).split("\n");
 
-        // generate 2 different random numbers
         try {
             for (var i = 0; i < loveStrings.length - 1; i++) {
                 handler.sendMessage(chatId, loveStrings[i]);
@@ -298,22 +298,29 @@ public class UsercommandsHandler {
         } catch (InterruptedException e) {
             BotLogger.error("PAIR", "Ошибка таймера");
         }
-        var random1 = ThreadLocalRandom.current().nextInt(userIds.size());
-        int random2;
+
+        // generate 2 different random users
+        var user1 = getUserForPair(chatId, userIds);
+        TgUser user2;
         do {
-            random2 = ThreadLocalRandom.current().nextInt(userIds.size());
-        } while (random1 == random2);
+            user2 = getUserForPair(chatId, userIds);
+        } while (user2.getId() == user1.getId());
 
         // finally, set up pair
-        var userId1 = userIds.get(random1);
-        var userId2 = userIds.get(random2);
-        var userName1 = Methods.getChatMember(chatId, userId1).call(handler).getUser().getFirstName();
-        var userName2 = Methods.getChatMember(chatId, userId2).call(handler).getUser().getFirstName();
-        var user1 = new TgUser(userId1, userName1);
-        var user2 = new TgUser(userId2, userName2);
         var pair = user1.getName() + " ❤ " + user2.getName();
         Services.db().setPair(chatId, pair);
         handler.sendMessage(chatId, String.format(loveStrings[loveStrings.length - 1], user1.getLink(), user2.getLink()));
+    }
+
+    private TgUser getUserForPair(long chatId, List<Integer> userIds) {
+        int randomId;
+        ChatMember member;
+        do {
+            randomId = ThreadLocalRandom.current().nextInt(userIds.size());
+            member = Methods.getChatMember(chatId, randomId).call(handler);
+        } while (member == null);
+
+        return new TgUser(randomId, member.getUser().getFirstName());
     }
 
     public void lastpairs(Message message) {
@@ -326,9 +333,7 @@ public class UsercommandsHandler {
         if (history == null)
             handler.sendMessage(chatId, Services.i18n().getString("neverPaired", locale));
         else
-            handler.sendMessage(chatId, "<b>" + Services.i18n().getString("lastPairs", locale) + "</b>\n\n" +
-                    history.replace("<", "&lt;")
-                            .replace(">", "&gt;"));
+            handler.sendMessage(chatId, "<b>" + Services.i18n().getString("lastPairs", locale) + "</b>\n\n" + history);
     }
 
     private boolean isFromWwBot(Message message) {

@@ -391,6 +391,7 @@ public class LastkatkaBotHandler extends BotHandler {
         return sm
                 .disableWebPagePreview()
                 .enableHtml(true)
+                .setText(sm.getText().replace("<", "&lt;").replace(">", "&gt;"))
                 .call(this);
     }
 }
