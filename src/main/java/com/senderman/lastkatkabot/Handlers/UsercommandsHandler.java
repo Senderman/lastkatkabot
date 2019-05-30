@@ -313,14 +313,19 @@ public class UsercommandsHandler {
     }
 
     private TgUser getUserForPair(long chatId, List<Integer> userIds) {
-        int randomId;
+        int random;
         ChatMember member;
         do {
-            randomId = ThreadLocalRandom.current().nextInt(userIds.size());
-            member = Methods.getChatMember(chatId, randomId).call(handler);
+            random = ThreadLocalRandom.current().nextInt(userIds.size());
+            var userId = userIds.get(random);
+            member = Methods.getChatMember(chatId, userId).call(handler);
+            // delete not-found-user
+            if (member == null) {
+                Services.db().removeUserFromChatDB(userId, chatId);
+            }
         } while (member == null);
 
-        return new TgUser(randomId, member.getUser().getFirstName());
+        return new TgUser(member.getUser().getId(), member.getUser().getFirstName());
     }
 
     public void lastpairs(Message message) {

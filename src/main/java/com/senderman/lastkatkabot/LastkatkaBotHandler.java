@@ -389,9 +389,8 @@ public class LastkatkaBotHandler extends BotHandler {
 
     public Message sendMessage(SendMessageMethod sm) {
         return sm
-                .disableWebPagePreview()
                 .enableHtml(true)
-                .setText(sm.getText().replace("<", "&lt;").replace(">", "&gt;"))
+                .disableWebPagePreview()
                 .call(this);
     }
 }
