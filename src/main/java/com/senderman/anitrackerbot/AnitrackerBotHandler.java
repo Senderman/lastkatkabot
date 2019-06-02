@@ -61,6 +61,9 @@ public class AnitrackerBotHandler extends BotHandler {
                     } else {
                         Services.db().deleteAnime(id, userId);
                         sendMessage(chatId, "Аниме удалено из списка!");
+                        if (Services.db().totalAnimes(userId) == 0) {
+                            Services.db().dropUser(userId);
+                        }
                     }
                     return null;
                 } catch (Exception e) {
@@ -93,6 +96,9 @@ public class AnitrackerBotHandler extends BotHandler {
                 }
                 return null;
         }
+
+        if (!text.startsWith("http"))
+            return null;
 
         AnimeParser parser = getAnimeParser(text);
         if (parser == null)

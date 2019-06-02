@@ -10,6 +10,8 @@ public interface DBService {
 
     void deleteAnime(int id, int userId);
 
+    void dropUser(int userId);
+
     int totalAnimes(int userId);
 
     boolean idExists(int id, int userId);
