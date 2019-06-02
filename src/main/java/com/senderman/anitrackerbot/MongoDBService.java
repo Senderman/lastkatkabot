@@ -37,6 +37,11 @@ public class MongoDBService implements DBService {
     }
 
     @Override
+    public void dropUser(int userId) {
+        user(userId).drop();
+    }
+
+    @Override
     public int totalAnimes(int userId) {
         return (int) user(userId).countDocuments();
     }
