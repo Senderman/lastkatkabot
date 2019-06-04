@@ -118,46 +118,45 @@ public class LastkatkaBotHandler extends BotHandler {
 
         var newMembers = message.getNewChatMembers();
 
-        if (newMembers == null || newMembers.size() == 0) {
-            return null;
-        }
+        if (newMembers != null && newMembers.size() != 0) {
 
-        if (chatId == Services.botConfig().getTourgroup()) { // restrict any user who isn't in tournament
-            for (User user : newMembers) {
-                if (TournamentHandler.membersIds == null || !TournamentHandler.membersIds.contains(user.getId())) {
-                    Methods.Administration.restrictChatMember()
-                            .setChatId(Services.botConfig().getTourgroup())
-                            .setUserId(user.getId())
-                            .setCanSendMessages(false).call(this);
+            if (chatId == Services.botConfig().getTourgroup()) { // restrict any user who isn't in tournament
+                for (User user : newMembers) {
+                    if (TournamentHandler.membersIds == null || !TournamentHandler.membersIds.contains(user.getId())) {
+                        Methods.Administration.restrictChatMember()
+                                .setChatId(Services.botConfig().getTourgroup())
+                                .setUserId(user.getId())
+                                .setCanSendMessages(false).call(this);
+                    }
                 }
-            }
-            return null;
-        } else {
-            Methods.sendDocument(chatId)
-                    .setFile(Services.botConfig().getHigif())
-                    .setReplyToMessageId(message.getMessageId())
-                    .call(this); // say hi to new member
-        }
-
-        if (newMembers.get(0).getUserName().equalsIgnoreCase(getBotUsername())) {
-            var locale = Services.i18n().getLocale(message);
-            if (allowedChats.contains(chatId)) {// Say hello to new group if chat is allowed
-                sendMessage(chatId, Services.i18n().getString("chatAllowed", locale));
+                return null;
             } else {
-                sendMessage(chatId, Services.i18n().getString("chatNotAllowed", locale));
-                var mainAdminLocale = Services.db().getUserLocale(Services.botConfig().getMainAdmin());
-                var row1 = List.of(new InlineKeyboardButton()
-                        .setText(Services.i18n().getString("acceptChat", mainAdminLocale))
-                        .setCallbackData(LastkatkaBot.CALLBACK_ALLOW_CHAT + chatId + "title=" + message.getChat().getTitle()));
-                var row2 = List.of(new InlineKeyboardButton()
-                        .setText(Services.i18n().getString("denyChat", mainAdminLocale))
-                        .setCallbackData(LastkatkaBot.CALLBACK_DONT_ALLOW_CHAT + chatId));
-                var markup = new InlineKeyboardMarkup();
-                markup.setKeyboard(List.of(row1, row2));
-                sendMessage(Methods.sendMessage((long) Services.botConfig().getMainAdmin(),
-                        String.format(Services.i18n().getString("addChat", mainAdminLocale),
-                                message.getChat().getTitle(), chatId, message.getFrom().getFirstName()))
-                        .setReplyMarkup(markup));
+                Methods.sendDocument(chatId)
+                        .setFile(Services.botConfig().getHigif())
+                        .setReplyToMessageId(message.getMessageId())
+                        .call(this); // say hi to new member
+            }
+
+            if (newMembers.get(0).getUserName().equalsIgnoreCase(getBotUsername())) {
+                var locale = Services.i18n().getLocale(message);
+                if (allowedChats.contains(chatId)) {// Say hello to new group if chat is allowed
+                    sendMessage(chatId, Services.i18n().getString("chatAllowed", locale));
+                } else {
+                    sendMessage(chatId, Services.i18n().getString("chatNotAllowed", locale));
+                    var mainAdminLocale = Services.db().getUserLocale(Services.botConfig().getMainAdmin());
+                    var row1 = List.of(new InlineKeyboardButton()
+                            .setText(Services.i18n().getString("acceptChat", mainAdminLocale))
+                            .setCallbackData(LastkatkaBot.CALLBACK_ALLOW_CHAT + chatId + "title=" + message.getChat().getTitle()));
+                    var row2 = List.of(new InlineKeyboardButton()
+                            .setText(Services.i18n().getString("denyChat", mainAdminLocale))
+                            .setCallbackData(LastkatkaBot.CALLBACK_DONT_ALLOW_CHAT + chatId));
+                    var markup = new InlineKeyboardMarkup();
+                    markup.setKeyboard(List.of(row1, row2));
+                    sendMessage(Methods.sendMessage((long) Services.botConfig().getMainAdmin(),
+                            String.format(Services.i18n().getString("addChat", mainAdminLocale),
+                                    message.getChat().getTitle(), chatId, message.getFrom().getFirstName()))
+                            .setReplyMarkup(markup));
+                }
             }
             return null;
         }
