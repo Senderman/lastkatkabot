@@ -42,6 +42,9 @@ public class BotConfig {
     @JsonProperty
     private String leavesticker;
 
+    @JsonProperty
+    private String higif;
+
     public String getToken() {
         return token;
     }
@@ -138,4 +141,11 @@ public class BotConfig {
         this.leavesticker = leavesticker;
     }
 
+    public String getHigif() {
+        return higif;
+    }
+
+    public void setHigif(String higif) {
+        this.higif = higif;
+    }
 }

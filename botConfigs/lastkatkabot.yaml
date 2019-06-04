@@ -19,5 +19,6 @@ veganWarsCommands:
   - '/game@veganwarsbot'
   - '/customgame@veganwarsbot'
 
-bncphoto: env(bncphoto) # picture for /bnchelp
-leavesticker: env(leavesticker) # sticker that bot will send after someone leaves the chat
+bncphoto: "AgADAgAD2qkxG1TVaUjH0X-0YjLur08E9Q4ABAG8AAEj0FdnA6d7AgABAg" # picture for /bnchelp
+higif: "CgADAQADiwAD0r04RoeZTv5wklZNAg" # gif for new members
+leavesticker: "CAADAgADDAADea1UE9LCz-IGyKZhAg" # sticker that bot will send after someone leaves the chat
