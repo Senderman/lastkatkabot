@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.TempObjects;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.annimon.tgbotsmodule.api.methods.send.SendMessageMethod;
 import com.senderman.lastkatkabot.LastkatkaBot;
 import com.senderman.lastkatkabot.Services;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -52,11 +53,11 @@ public class BullsAndCowsGame {
         antiRuinSet = new HashSet<>();
         votedUsers = new HashSet<>();
         checkedNumbers = new HashSet<>();
-        messagesToDelete.add(Services.handler().sendMessage(chatId, Services.i18n().getString("generatingNumber", locale)).getMessageId());
+        gameMessage(chatId, Services.i18n().getString("generatingNumber", locale));
         answer = generateRandom();
         startTime = new Date().getTime();
         Services.db().saveBncGame(chatId, this);
-        messagesToDelete.add(Services.handler().sendMessage(chatId, Services.i18n().getString("bncStart", locale)).getMessageId());
+        gameMessage(chatId, Services.i18n().getString("bncStart", locale));
     }
 
     public void check(Message message) {
@@ -80,9 +81,7 @@ public class BullsAndCowsGame {
         }
 
         if (hasRepeatingDigits(number)) {
-            messagesToDelete.add(
-                    Services.handler().sendMessage(chatId, Services.i18n().getString("noRepeatingDigits", locale))
-                            .getMessageId());
+            gameMessage(chatId, Services.i18n().getString("noRepeatingDigits", locale));
             return;
         }
 
@@ -96,8 +95,7 @@ public class BullsAndCowsGame {
                 }
             }
             if (ruined) {
-                messagesToDelete.add(Services.handler().sendMessage(chatId,
-                        Services.i18n().getString("bncRuin", locale)).getMessageId());
+                gameMessage(chatId, Services.i18n().getString("bncRuin", locale));
                 if (antiRuinEnabled)
                     return;
             }
@@ -106,9 +104,8 @@ public class BullsAndCowsGame {
         var results = calculate(number);
 
         if (checkedNumbers.contains(number)) {
-            messagesToDelete.add(
-                    Services.handler().sendMessage(chatId, String.format(Services.i18n().getString("checkedAlready", locale),
-                            number, results[0], results[1])).getMessageId());
+            gameMessage(chatId, String.format(Services.i18n().getString("checkedAlready", locale),
+                    number, results[0], results[1]));
             return;
         }
 
@@ -122,10 +119,9 @@ public class BullsAndCowsGame {
                 message.getFrom().getFirstName(), number, results[0], results[1]));
 
         if (attempts > 0) {
-            messagesToDelete.add(Services.handler().sendMessage(chatId,
+            gameMessage(chatId,
                     String.format(Services.i18n().getString("bncCheck", locale) + "\n",
-                            number, results[0], results[1], attempts))
-                    .getMessageId());
+                            number, results[0], results[1], attempts));
             checkedNumbers.add(number);
             Services.db().saveBncGame(chatId, this);
         } else { // lose
@@ -136,14 +132,13 @@ public class BullsAndCowsGame {
     public void sendGameInfo(Message message) {
         messagesToDelete.add(message.getMessageId());
         var info = String.format(Services.i18n().getString("bncInfo", locale), length, attempts, history.toString());
-        messagesToDelete.add(Services.handler().sendMessage(chatId, info).getMessageId());
+        gameMessage(chatId, info);
     }
 
     public void changeAntiRuin() {
         antiRuinEnabled = !antiRuinEnabled;
         String key = antiRuinEnabled ? "bncRuinOn" : "bncRuinOff";
-        messagesToDelete.add(
-                Services.handler().sendMessage(chatId, Services.i18n().getString(key, locale)).getMessageId());
+        gameMessage(chatId, Services.i18n().getString(key, locale));
     }
 
     public void createPoll(Message message) {
@@ -153,12 +148,11 @@ public class BullsAndCowsGame {
             return;
         }
 
-        messagesToDelete.add(Methods.sendMessage()
+        gameMessage(Methods.sendMessage()
                 .setChatId(chatId)
                 .setText(String.format(Services.i18n().getString("bncVote", locale), 5 - voted))
                 .setReplyMarkup(getEndgameMarkup())
-                .setParseMode(ParseMode.HTML)
-                .call(Services.handler()).getMessageId());
+                .setParseMode(ParseMode.HTML));
     }
 
     public void addVote(CallbackQuery query) {
@@ -189,6 +183,14 @@ public class BullsAndCowsGame {
                 .setReplyMarkup(getEndgameMarkup())
                 .setParseMode(ParseMode.HTML)
                 .call(Services.handler());
+    }
+
+    private void gameMessage(long chatId, String text) {
+        gameMessage(Methods.sendMessage(chatId, text));
+    }
+
+    private void gameMessage(SendMessageMethod sm) {
+        messagesToDelete.add(Services.handler().sendMessage(sm).getMessageId());
     }
 
     private InlineKeyboardMarkup getEndgameMarkup() {
