@@ -297,10 +297,12 @@ public class LastkatkaBotHandler extends BotHandler {
                     usercommandsHandler.bnchelp(message);
                     return null;
                 case "/relay":
-                    if (!message.isUserMessage() && (!relayGames.containsKey(chatId) || !relayGames.get(chatId).isGoing))
-                        relayGames.put(chatId, new RelayGame(message));
-                    else
+                    if (message.isUserMessage())
+                        return null;
+                    if (relayGames.containsKey(chatId))
                         sendMessage(chatId, "В этом чате игра уже идет!");
+                    else
+                        relayGames.put(chatId, new RelayGame(message));
                     return null;
                 case "/joinrelay":
                     if (relayGames.containsKey(chatId) && !relayGames.get(chatId).isGoing) {
@@ -319,7 +321,7 @@ public class LastkatkaBotHandler extends BotHandler {
                     return null;
                 case "/startrelay":
                     if (relayGames.containsKey(chatId) && !relayGames.get(chatId).isGoing)
-                        relayGames.get(chatId).askLeader();
+                        relayGames.get(chatId).startGame();
                     return null;
                 case "/relayhelp":
                     sendMessage(chatId, RelayGame.relayHelp());

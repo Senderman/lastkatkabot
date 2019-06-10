@@ -18,6 +18,7 @@ public class RelayGame {
     public boolean needToAskLeader;
     public int leaderId;
     private int length;
+    private String leaderWord;
 
     public RelayGame(Message message) {
         chatId = message.getChatId();
@@ -46,7 +47,7 @@ public class RelayGame {
                 "Побеждает тот, кто придумает больше всего слов";
     }
 
-    public void askLeader() {
+    public void startGame() {
         if (players.size() < 2) {
             Services.handler().sendMessage(chatId, "Недостаточно игроков!");
             return;
@@ -58,17 +59,6 @@ public class RelayGame {
         var leader = new TgUser(leaderId, leaderName);
         Services.handler().sendMessage(chatId, leader.getLink() + ", пожалуйста, " +
                 "напишите мне в лс любое слово, без повторяющихся букв, длина слова - " + length);
-    }
-
-    private void startGame() {
-        new Thread(() -> {
-            try {
-                runTimer();
-            } catch (InterruptedException e) {
-                Services.handler().sendMessage(chatId, "Игра отменена из-за ошибки таймера :(");
-                Services.handler().relayGames.remove(chatId);
-            }
-        }).start();
     }
 
     public void checkLeaderWord(Message message) {
@@ -86,12 +76,18 @@ public class RelayGame {
             }
         }
         Services.handler().sendMessage(leaderId, "Слово принято!");
-        for (var w : playerWords.values()) {
-            w.add(word);
-        }
+        leaderWord = word;
+        playerWords.get(leaderId).add(word);
         needToAskLeader = false;
         Services.handler().sendMessage(chatId, "Ведущий назвал слово - <b>" + word + "</b>!");
-        startGame();
+        new Thread(() -> {
+            try {
+                runTimer();
+            } catch (InterruptedException e) {
+                Services.handler().sendMessage(chatId, "Игра отменена из-за ошибки таймера :(");
+                Services.handler().relayGames.remove(chatId);
+            }
+        }).start();
     }
 
     private void endGame() {
@@ -104,9 +100,7 @@ public class RelayGame {
             var playerName = Methods.getChatMember(chatId, playerId).call(Services.handler()).getUser().getFirstName();
             var player = new TgUser(playerId, playerName);
             history.append(player.getLink()).append(":\n");
-            for (var word : playerWords.get(playerId)) {
-                history.append(word).append("\n");
-            }
+            history.append(String.join(", ", playerWords.get(playerId))).append("\n");
             history.append("Всего слов: ").append(playerWords.get(playerId).size()).append("\n\n");
         }
         Services.handler().sendMessage(chatId, history.toString());
@@ -121,7 +115,11 @@ public class RelayGame {
         Services.handler().sendMessage(chatId, "1..");
         Thread.sleep(1000);
         Services.handler().sendMessage(chatId, "Вперед! Пишите мне в лс ваши слова! У вас есть 5 минут");
-        Thread.sleep(300000);
+        Thread.sleep(1000);
+        for (int i = 4; i > 0; i--) {
+            Services.handler().sendMessage(chatId, "Осталось " + i + " минут!");
+            Thread.sleep(1000);
+        }
         endGame();
     }
 
@@ -155,7 +153,7 @@ public class RelayGame {
     public void checkWord(Message message) {
         var userId = message.getFrom().getId();
         var word = message.getText().toLowerCase();
-        if (playerWords.get(userId).contains(word)) {
+        if (playerWords.get(userId).contains(word) || word.equals(leaderWord)) {
             Services.handler().sendMessage(userId, "Слова повторять нельзя!");
             return;
         }
