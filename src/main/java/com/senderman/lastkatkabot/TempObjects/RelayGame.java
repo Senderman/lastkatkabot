@@ -60,7 +60,7 @@ public class RelayGame {
         var leader = new TgUser(leaderId, leaderName);
         Services.handler().sendMessage(chatId, leader.getLink() + ", пожалуйста, " +
                 "напишите мне в лс любое слово, без повторяющихся букв, длина слова - " + length +
-                "если за три минуты не успеете - будет выбран новый ведущий, а вы - исключены из игры");
+                ". Если за три минуты не успеете - будет выбран новый ведущий, а вы - исключены из игры");
         new Thread(() -> {
             try {
                 runLeaderTimer();
