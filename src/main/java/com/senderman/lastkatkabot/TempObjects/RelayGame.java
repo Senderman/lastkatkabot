@@ -108,7 +108,7 @@ public class RelayGame {
     }
 
     private void runTimer() throws InterruptedException {
-        Services.handler().sendMessage(chatId, "Набор игроков закончен! Старт через 3...");
+        Services.handler().sendMessage(chatId, "Старт через 3...");
         Thread.sleep(1000);
         Services.handler().sendMessage(chatId, "2..");
         Thread.sleep(1000);
@@ -118,7 +118,7 @@ public class RelayGame {
         Thread.sleep(1000);
         for (int i = 4; i > 0; i--) {
             Services.handler().sendMessage(chatId, "Осталось " + i + " минут!");
-            Thread.sleep(1000);
+            Thread.sleep(60000);
         }
         endGame();
     }
