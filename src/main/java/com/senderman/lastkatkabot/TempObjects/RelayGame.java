@@ -77,7 +77,7 @@ public class RelayGame {
     }
 
     private void runLeaderTimer() throws InterruptedException {
-        for (int i = 180; i > 0 && leaderWord == null; i++) {
+        for (int i = 180; i > 0 && leaderWord == null; i--) {
             Thread.sleep(1000);
         }
         if (leaderWord == null) {
