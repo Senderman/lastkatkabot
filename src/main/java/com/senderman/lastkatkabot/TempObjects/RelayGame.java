@@ -59,7 +59,28 @@ public class RelayGame {
         var leaderName = Methods.getChatMember(chatId, leaderId).call(Services.handler()).getUser().getFirstName();
         var leader = new TgUser(leaderId, leaderName);
         Services.handler().sendMessage(chatId, leader.getLink() + ", пожалуйста, " +
-                "напишите мне в лс любое слово, без повторяющихся букв, длина слова - " + length);
+                "напишите мне в лс любое слово, без повторяющихся букв, длина слова - " + length +
+                "если за три минуты не успеете - будет выбран новый ведущий, а вы - исключены из игры");
+        new Thread(() -> {
+            try {
+                runLeaderTimer();
+            } catch (InterruptedException e) {
+                Services.handler().sendMessage(chatId, "Игра отменена из-за ошибки таймера :(");
+                Services.handler().relayGames.remove(chatId);
+            }
+        }).start();
+    }
+
+    private void runLeaderTimer() throws InterruptedException {
+        for (int i = 180; i > 0 && leaderWord == null; i++) {
+            Thread.sleep(1000);
+        }
+        if (leaderWord == null) {
+            Services.handler().sendMessage(chatId, "Ведущий проспал, выкидываю его...");
+            players.remove(leaderId);
+            playerWords.remove(leaderId);
+            startGame();
+        }
     }
 
     public void checkLeaderWord(Message message) {
@@ -131,14 +152,14 @@ public class RelayGame {
             return;
         }
         if (isGoing) {
-            Services.handler().sendMessage(chatId, "Нельзя джойнться в идущую игру!");
+            Services.handler().sendMessage(chatId, "Нельзя джойнуться в идущую игру!");
             return;
         }
         try {
-            Services.handler().execute(new SendMessage(Long.valueOf(userId), "Вы успешно присоеднились!"));
+            Services.handler().execute(new SendMessage(Long.valueOf(userId), "Вы успешно джойнулись!"));
             players.add(userId);
             playerWords.put(userId, new ArrayList<>());
-            Services.handler().sendMessage(chatId, message.getFrom().getFirstName() + " присоденился!");
+            Services.handler().sendMessage(chatId, message.getFrom().getFirstName() + " джойнулся!");
         } catch (Exception e) {
             Services.handler().sendMessage(chatId, "Сначала напишите мне в лс!");
         }
