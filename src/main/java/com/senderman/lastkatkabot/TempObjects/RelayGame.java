@@ -39,13 +39,6 @@ public class RelayGame {
                 "Используйте команды /joinrelay, /leaverelay и /startrelay!");
     }
 
-    public static String relayHelp() {
-        return "Эта игра была изобретена весной 1999 года в школе N 590 Санкт-Петербурга\n" +
-                "Выбранный ботом участник пишет в чат слово. Остальные за 5 минут должны последовательно отправлять боту" +
-                "слова заданной длины, причем каждое новое слово должно содержать ровно одну букву из предыдущего." +
-                "Побеждает тот, кто придумает больше всего слов";
-    }
-
     public void askLeader() {
         if (players.size() < 2) {
             Services.handler().sendMessage(chatId, "Недостаточно игроков!");
@@ -60,27 +53,11 @@ public class RelayGame {
                 "напишите мне в лс любое слово, без повторяющихся букв, длина слова - " + length);
     }
 
-    public void checkLeaderWord(Message message) {
-        var word = message.getText().toLowerCase();
-        if (word.length() != length) {
-            Services.handler().sendMessage(leaderId, "Неверная длина слова!");
-            return;
-        }
-        for (int i = 0; i < length; i++) {
-            for (int j = i + 1; j < length; i++) {
-                if (word.charAt(i) == word.charAt(j)) {
-                    Services.handler().sendMessage(leaderId, "Слово не должно содержать повторяющихся букв!");
-                    return;
-                }
-            }
-        }
-        Services.handler().sendMessage(leaderId, "Слово принято!");
-        for (var w : playerWords.values()) {
-            w.add(word);
-        }
-        needToAskLeader = false;
-        Services.handler().sendMessage(chatId, "Ведущий назвал слово - <b>" + word + "</b>!");
-        startGame();
+    public static String relayHelp() {
+        return "Эта игра была изобретена весной 1999 года в школе N 590 Санкт-Петербурга\n" +
+                "Выбранный ботом участник пишет в чат слово. Остальные за 5 минут должны последовательно отправлять боту " +
+                "слова заданной длины, причем каждое новое слово должно содержать ровно одну букву из предыдущего." +
+                "Побеждает тот, кто придумает больше всего слов";
     }
 
     private void startGame() {
@@ -94,37 +71,27 @@ public class RelayGame {
         }).start();
     }
 
-    public void checkWord(Message message) {
-        var userId = message.getFrom().getId();
+    public void checkLeaderWord(Message message) {
         var word = message.getText().toLowerCase();
-        if (playerWords.get(userId).contains(word)) {
-            Services.handler().sendMessage(userId, "Слова повторять нельзя!");
-            return;
-        }
         if (word.length() != length) {
-            Services.handler().sendMessage(userId, "Неверная длина слова!");
+            Services.handler().sendMessage(leaderId, "Неверная длина слова!");
             return;
         }
         for (int i = 0; i < length; i++) {
-            for (int j = i + 1; j < length; i++) {
+            for (int j = i + 1; j < length; j++) {
                 if (word.charAt(i) == word.charAt(j)) {
-                    Services.handler().sendMessage(userId, "Слово не должно содержать повторяющихся букв!");
+                    Services.handler().sendMessage(leaderId, "Слово не должно содержать повторяющихся букв!");
                     return;
                 }
             }
         }
-        // check that word contains only one letter from previous word
-        var words = playerWords.get(userId);
-        if (words.size() == 0)
-            return;
-        var lastWord = words.get(words.size() - 1);
-        lastWord = lastWord.replaceAll("[" + word + "]+", "");
-        if (lastWord.length() != length - 1) {
-            Services.handler().sendMessage(userId, "Слово не принято!");
-        } else {
-            Services.handler().sendMessage(userId, "Слово принято!");
-            words.add(word);
+        Services.handler().sendMessage(leaderId, "Слово принято!");
+        for (var w : playerWords.values()) {
+            w.add(word);
         }
+        needToAskLeader = false;
+        Services.handler().sendMessage(chatId, "Ведущий назвал слово - <b>" + word + "</b>!");
+        startGame();
     }
 
     private void endGame() {
@@ -183,5 +150,38 @@ public class RelayGame {
         players.remove(userId);
         playerWords.remove(userId);
         Services.handler().sendMessage(chatId, message.getFrom().getFirstName() + "покинул игру!");
+    }
+
+    public void checkWord(Message message) {
+        var userId = message.getFrom().getId();
+        var word = message.getText().toLowerCase();
+        if (playerWords.get(userId).contains(word)) {
+            Services.handler().sendMessage(userId, "Слова повторять нельзя!");
+            return;
+        }
+        if (word.length() != length) {
+            Services.handler().sendMessage(userId, "Неверная длина слова!");
+            return;
+        }
+        for (int i = 0; i < length; i++) {
+            for (int j = i + 1; j < length; j++) {
+                if (word.charAt(i) == word.charAt(j)) {
+                    Services.handler().sendMessage(userId, "Слово не должно содержать повторяющихся букв!");
+                    return;
+                }
+            }
+        }
+        // check that word contains only one letter from previous word
+        var words = playerWords.get(userId);
+        if (words.size() == 0)
+            return;
+        var lastWord = words.get(words.size() - 1);
+        lastWord = lastWord.replaceAll("[" + word + "]+", "");
+        if (lastWord.length() != length - 1) {
+            Services.handler().sendMessage(userId, "Слово не принято!");
+        } else {
+            Services.handler().sendMessage(userId, "Слово принято!");
+            words.add(word);
+        }
     }
 }
