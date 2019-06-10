@@ -21,19 +21,18 @@ public class VeganTimer {
     }
 
     private void startVeganTimer() {
-        for (int i = 299; i > 0 && runTimer; i--) {
-
-            if (i % 60 == 0) {
+        try {
+            Thread.sleep(60000);
+            for (int i = 4; i > 0 && runTimer; i--) {
                 Services.handler().sendMessage(chatId,
-                        String.format(Services.i18n().getString("joinTime", locale), i / 60));
+                        String.format(Services.i18n().getString("joinTime", locale), i));
+                Thread.sleep(60000);
+
             }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                stop();
-                BotLogger.error("THREAD SLEEP", e.toString());
-                Services.handler().sendMessage(chatId, "Ошибка, таймер остановлен");
-            }
+        } catch (InterruptedException e) {
+            stop();
+            BotLogger.error("THREAD SLEEP", e.toString());
+            Services.handler().sendMessage(chatId, "Ошибка, таймер остановлен");
         }
         stop();
     }

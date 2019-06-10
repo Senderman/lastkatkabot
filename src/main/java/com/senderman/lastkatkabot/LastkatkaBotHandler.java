@@ -5,6 +5,7 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.api.methods.send.SendMessageMethod;
 import com.senderman.lastkatkabot.Handlers.*;
 import com.senderman.lastkatkabot.TempObjects.BullsAndCowsGame;
+import com.senderman.lastkatkabot.TempObjects.RelayGame;
 import com.senderman.lastkatkabot.TempObjects.VeganTimer;
 import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -25,6 +26,7 @@ public class LastkatkaBotHandler extends BotHandler {
     public final Set<Long> allowedChats;
     public final Map<Long, VeganTimer> veganTimers;
     public final Map<Long, BullsAndCowsGame> bullsAndCowsGames;
+    public final Map<Long, RelayGame> relayGames;
     private final AdminHandler adminHandler;
     private final UsercommandsHandler usercommandsHandler;
     private final CallbackHandler callbackHandler;
@@ -54,6 +56,7 @@ public class LastkatkaBotHandler extends BotHandler {
         duelController = new DuelController(this);
         veganTimers = new HashMap<>();
         bullsAndCowsGames = Services.db().getBnCGames();
+        relayGames = new HashMap<>();
 
         sendMessage(mainAdmin,
                 Services.i18n().getString("botIsReady", Services.db().getUserLocale(mainAdmin)));
@@ -187,6 +190,26 @@ public class LastkatkaBotHandler extends BotHandler {
             return null;
         }
 
+        // for relay
+        if (message.isUserMessage() && text.matches("\\p{L}{4,10}")) {
+            RelayGame game = null;
+            for (var gameChatId : relayGames.keySet()) {
+                if (relayGames.get(gameChatId).players.contains(message.getFrom().getId())) {
+                    game = relayGames.get(gameChatId);
+                }
+            }
+            if (game != null) {
+                if (game.needToAskLeader && message.getFrom().getId() == game.leaderId) {
+                    game.checkLeaderWord(message);
+                    return null;
+                }
+                if (game.isGoing && !game.needToAskLeader) {
+                    game.checkWord(message);
+                    return null;
+                }
+            }
+        }
+
         if (!message.isCommand())
             return null;
 
@@ -273,6 +296,33 @@ public class LastkatkaBotHandler extends BotHandler {
                 case "/bnchelp":
                     usercommandsHandler.bnchelp(message);
                     return null;
+                case "/relay":
+                    if (!message.isUserMessage() && (!relayGames.containsKey(chatId) || !relayGames.get(chatId).isGoing))
+                        relayGames.put(chatId, new RelayGame(message));
+                    else
+                        sendMessage(chatId, "В этом чате игра уже идет!");
+                    return null;
+                case "/joinrelay":
+                    if (relayGames.containsKey(chatId) && !relayGames.get(chatId).isGoing) {
+                        for (var game : relayGames.values()) {
+                            if (game.players.contains(message.getFrom().getId())) {
+                                sendMessage(chatId, "Вы уже в игре в одном из чатов!");
+                                return null;
+                            }
+                        }
+                    }
+                    relayGames.get(chatId).addPlayer(message);
+                    return null;
+                case "/leaverelay":
+                    if (relayGames.containsKey(chatId) && !relayGames.get(chatId).isGoing)
+                        relayGames.get(chatId).kickPlayer(message);
+                    return null;
+                case "/startrelay":
+                    if (relayGames.containsKey(chatId) && !relayGames.get(chatId).isGoing)
+                        relayGames.get(chatId).askLeader();
+                    return null;
+                case "/relayhelp":
+                    sendMessage(chatId, RelayGame.relayHelp());
                 case "/feedback":
                     usercommandsHandler.feedback(message);
                     return null;
