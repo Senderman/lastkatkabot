@@ -39,6 +39,13 @@ public class RelayGame {
                 "Используйте команды /joinrelay, /leaverelay и /startrelay!");
     }
 
+    public static String relayHelp() {
+        return "Эта игра была изобретена весной 1999 года в школе N 590 Санкт-Петербурга\n" +
+                "Выбранный ботом участник пишет в чат слово. Остальные за 5 минут должны последовательно отправлять боту " +
+                "слова заданной длины, причем каждое новое слово должно содержать ровно одну букву из предыдущего. " +
+                "Побеждает тот, кто придумает больше всего слов";
+    }
+
     public void askLeader() {
         if (players.size() < 2) {
             Services.handler().sendMessage(chatId, "Недостаточно игроков!");
@@ -49,15 +56,8 @@ public class RelayGame {
         leaderId = players.get(ThreadLocalRandom.current().nextInt(players.size()));
         var leaderName = Methods.getChatMember(chatId, leaderId).call(Services.handler()).getUser().getFirstName();
         var leader = new TgUser(leaderId, leaderName);
-        Services.handler().sendMessage(chatId, leader.getLink() + ", пожалуйста," +
+        Services.handler().sendMessage(chatId, leader.getLink() + ", пожалуйста, " +
                 "напишите мне в лс любое слово, без повторяющихся букв, длина слова - " + length);
-    }
-
-    public static String relayHelp() {
-        return "Эта игра была изобретена весной 1999 года в школе N 590 Санкт-Петербурга\n" +
-                "Выбранный ботом участник пишет в чат слово. Остальные за 5 минут должны последовательно отправлять боту " +
-                "слова заданной длины, причем каждое новое слово должно содержать ровно одну букву из предыдущего." +
-                "Побеждает тот, кто придумает больше всего слов";
     }
 
     private void startGame() {
@@ -107,7 +107,7 @@ public class RelayGame {
             for (var word : playerWords.get(playerId)) {
                 history.append(word).append("\n");
             }
-            history.append("Всего слов: ").append(playerWords.get(playerId).size()).append("\n");
+            history.append("Всего слов: ").append(playerWords.get(playerId).size()).append("\n\n");
         }
         Services.handler().sendMessage(chatId, history.toString());
         Services.handler().relayGames.remove(chatId);
