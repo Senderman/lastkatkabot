@@ -82,7 +82,7 @@ public class RelayGame {
         }
         if (leaderWord == null) {
             Services.handler().sendMessage(chatId, "Ведущий проспал, выкидываю его...");
-            players.remove(leaderId);
+            players.remove((Integer) leaderId);
             playerWords.remove(leaderId);
             startGame();
         }
