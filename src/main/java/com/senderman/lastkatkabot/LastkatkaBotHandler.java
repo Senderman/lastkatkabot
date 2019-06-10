@@ -202,8 +202,7 @@ public class LastkatkaBotHandler extends BotHandler {
                 if (game.needToAskLeader && message.getFrom().getId() == game.leaderId) {
                     game.checkLeaderWord(message);
                     return null;
-                }
-                if (game.isGoing && !game.needToAskLeader) {
+                } else if (game.isGoing && !game.needToAskLeader) {
                     game.checkWord(message);
                     return null;
                 }
