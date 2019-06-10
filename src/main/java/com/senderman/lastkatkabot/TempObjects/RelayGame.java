@@ -37,6 +37,7 @@ public class RelayGame {
         needToAskLeader = false;
         players = new ArrayList<>();
         playerWords = new HashMap<>();
+        leaderWord = null;
         Services.handler().sendMessage(chatId, "Начат набор в игру \"Эстафета\"!\n" +
                 "Используйте команды /joinrelay, /leaverelay и /startrelay!");
     }
@@ -51,6 +52,10 @@ public class RelayGame {
     public void startGame() {
         if (players.size() < 2) {
             Services.handler().sendMessage(chatId, "Недостаточно игроков!");
+            if (isGoing) { // all leaders are AFK
+                Services.handler().relayGames.remove(chatId);
+                Services.handler().sendMessage(chatId, "Игра отменена!");
+            }
             return;
         }
         isGoing = true;
