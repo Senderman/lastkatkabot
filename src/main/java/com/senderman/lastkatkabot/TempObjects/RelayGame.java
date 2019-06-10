@@ -2,6 +2,7 @@ package com.senderman.lastkatkabot.TempObjects;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.Services;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.ArrayList;
@@ -108,12 +109,12 @@ public class RelayGame {
     }
 
     private void runTimer() throws InterruptedException {
-        Services.handler().sendMessage(chatId, "Старт через 3...");
+        Services.handler().sendMessage(chatId, "Старт через 5...");
         Thread.sleep(1000);
-        Services.handler().sendMessage(chatId, "2..");
-        Thread.sleep(1000);
-        Services.handler().sendMessage(chatId, "1..");
-        Thread.sleep(1000);
+        for (int i = 4; i > 0; i--) {
+            Services.handler().sendMessage(chatId, i + "...");
+            Thread.sleep(1000);
+        }
         Services.handler().sendMessage(chatId, "Вперед! Пишите мне в лс ваши слова! У вас есть 5 минут");
         Thread.sleep(60000);
         for (int i = 4; i > 0; i--) {
@@ -129,8 +130,12 @@ public class RelayGame {
             Services.handler().sendMessage(chatId, "Вы уже джойнулись!");
             return;
         }
+        if (isGoing) {
+            Services.handler().sendMessage(chatId, "Нельзя джойнться в идущую игру!");
+            return;
+        }
         try {
-            Methods.sendMessage(userId, "Вы успешно присоеднились!").call(Services.handler());
+            Services.handler().execute(new SendMessage(Long.valueOf(userId), "Вы успешно присоеднились!"));
             players.add(userId);
             playerWords.put(userId, new ArrayList<>());
             Services.handler().sendMessage(chatId, message.getFrom().getFirstName() + " присоденился!");
@@ -145,9 +150,13 @@ public class RelayGame {
             Services.handler().sendMessage(chatId, "Вы не в игре!");
             return;
         }
+        if (isGoing) {
+            Services.handler().sendMessage(chatId, "Нельзя уйти из идущей игры!");
+            return;
+        }
         players.remove(userId);
         playerWords.remove(userId);
-        Services.handler().sendMessage(chatId, message.getFrom().getFirstName() + "покинул игру!");
+        Services.handler().sendMessage(chatId, message.getFrom().getFirstName() + " покинул игру!");
     }
 
     public void checkWord(Message message) {

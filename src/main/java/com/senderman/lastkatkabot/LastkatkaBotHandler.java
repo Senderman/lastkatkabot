@@ -304,18 +304,18 @@ public class LastkatkaBotHandler extends BotHandler {
                         relayGames.put(chatId, new RelayGame(message));
                     return null;
                 case "/joinrelay":
-                    if (relayGames.containsKey(chatId) && !relayGames.get(chatId).isGoing) {
+                    if (relayGames.containsKey(chatId)) {
                         for (var game : relayGames.values()) {
                             if (game.players.contains(message.getFrom().getId())) {
                                 sendMessage(chatId, "Вы уже в игре в одном из чатов!");
                                 return null;
                             }
                         }
+                        relayGames.get(chatId).addPlayer(message);
                     }
-                    relayGames.get(chatId).addPlayer(message);
                     return null;
                 case "/leaverelay":
-                    if (relayGames.containsKey(chatId) && !relayGames.get(chatId).isGoing)
+                    if (relayGames.containsKey(chatId))
                         relayGames.get(chatId).kickPlayer(message);
                     return null;
                 case "/startrelay":
