@@ -133,7 +133,7 @@ public class LastkatkaBotHandler extends BotHandler {
                     }
                 }
                 return null;
-            } else {
+            } else if (!newMembers.get(0).getUserName().equalsIgnoreCase(getBotUsername())) {
                 Methods.sendDocument(chatId)
                         .setFile(Services.botConfig().getHigif())
                         .setReplyToMessageId(message.getMessageId())

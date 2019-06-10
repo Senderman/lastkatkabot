@@ -61,8 +61,7 @@ public class RelayGame {
         isGoing = true;
         needToAskLeader = true;
         leaderId = players.get(ThreadLocalRandom.current().nextInt(players.size()));
-        var leaderName = Methods.getChatMember(chatId, leaderId).call(Services.handler()).getUser().getFirstName();
-        var leader = new TgUser(leaderId, leaderName);
+        var leader = getPlayer(leaderId);
         Services.handler().sendMessage(chatId, leader.getLink() + ", пожалуйста, " +
                 "напишите мне в лс любое слово, без повторяющихся букв, длина слова - " + length +
                 ". Если за три минуты не успеете - будет выбран новый ведущий, а вы - исключены из игры");
@@ -124,8 +123,7 @@ public class RelayGame {
         }
         var history = new StringBuilder("<b>Результаты игры:</b>\n\n");
         for (var playerId : players) {
-            var playerName = Methods.getChatMember(chatId, playerId).call(Services.handler()).getUser().getFirstName();
-            var player = new TgUser(playerId, playerName);
+            var player = getPlayer(playerId);
             history.append(player.getLink()).append(":\n");
             history.append(String.join(", ", playerWords.get(playerId))).append("\n");
             history.append("Всего слов: ").append(playerWords.get(playerId).size()).append("\n\n");
@@ -143,11 +141,26 @@ public class RelayGame {
         }
         Services.handler().sendMessage(chatId, "Вперед! Пишите мне в лс ваши слова! У вас есть 5 минут");
         Thread.sleep(60000);
+
         for (int i = 4; i > 0; i--) {
-            Services.handler().sendMessage(chatId, "Осталось " + i + " минут!");
+            var sb = new StringBuilder();
+            sb.append("Осталось ").append(i).append(" минут!\n\n");
+
+            for (var playerId : players) {
+                sb.append(getPlayer(playerId).getName()).append(": ").append(playerWords.get(playerId).size()).append(" слов\n");
+            }
+
+            Services.handler().sendMessage(chatId, sb.toString());
+            for (var playerId : players)
+                Services.handler().sendMessage(playerId, sb.toString());
             Thread.sleep(60000);
         }
         endGame();
+    }
+
+    private TgUser getPlayer(int playerId) {
+        var playerName = Methods.getChatMember(chatId, playerId).call(Services.handler()).getUser().getFirstName();
+        return new TgUser(playerId, playerName);
     }
 
     public void addPlayer(Message message) {
