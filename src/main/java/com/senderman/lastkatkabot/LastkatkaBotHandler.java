@@ -323,6 +323,7 @@ public class LastkatkaBotHandler extends BotHandler {
                     return null;
                 case "/relayhelp":
                     sendMessage(chatId, RelayGame.relayHelp());
+                    return null;
                 case "/feedback":
                     usercommandsHandler.feedback(message);
                     return null;
