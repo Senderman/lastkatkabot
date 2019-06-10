@@ -171,8 +171,11 @@ public class RelayGame {
         }
         // check that word contains only one letter from previous word
         var words = playerWords.get(userId);
-        if (words.size() == 0)
+        if (words.size() == 0) {
+            words.add(word);
+            Services.handler().sendMessage(userId, "Слово принято!");
             return;
+        }
         var lastWord = words.get(words.size() - 1);
         lastWord = lastWord.replaceAll("[" + word + "]+", "");
         if (lastWord.length() != length - 1) {

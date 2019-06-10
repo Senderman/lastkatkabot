@@ -192,7 +192,6 @@ public class LastkatkaBotHandler extends BotHandler {
 
         // for relay
         if (message.isUserMessage() && text.matches("\\p{L}{4,10}")) {
-            sendMessage(chatId, "Слово увидено");
             RelayGame game = null;
             for (var gameChatId : relayGames.keySet()) {
                 if (relayGames.get(gameChatId).players.contains(message.getFrom().getId())) {
@@ -200,13 +199,10 @@ public class LastkatkaBotHandler extends BotHandler {
                 }
             }
             if (game != null) {
-                sendMessage(chatId, "вы в игре");
                 if (game.needToAskLeader && message.getFrom().getId() == game.leaderId) {
-                    sendMessage(chatId, "Вы  - ведущий");
                     game.checkLeaderWord(message);
                     return null;
                 } else if (game.isGoing && !game.needToAskLeader) {
-                    sendMessage(chatId, "вы - просто игрок");
                     game.checkWord(message);
                     return null;
                 }
