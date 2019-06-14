@@ -360,6 +360,9 @@ public class LastkatkaBotHandler extends BotHandler {
                 case "/chats":
                     adminHandler.chats(message);
                     return null;
+                case "/cc":
+                    adminHandler.cleanChats(message);
+                    return null;
             }
         }
 

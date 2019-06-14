@@ -156,6 +156,23 @@ public class AdminHandler {
                 .setReplyMarkup(markup));
     }
 
+    public void cleanChats(Message message) {
+        var chats = Services.db().getAllowedChats();
+        for (long chatId : chats.keySet()) {
+            try {
+                var chatMsg = handler.execute(new SendMessage(chatId, "Сервисное сообщение, оно будет удалено через пару секунд"));
+                var title = chatMsg.getChat().getTitle();
+                Methods.deleteMessage(chatId, chatMsg.getMessageId()).call(handler);
+                Services.db().updateTitle(chatId, title);
+            } catch (TelegramApiException e) {
+                Services.db().removeAllowedChat(chatId);
+                handler.sendMessage(message.getFrom().getId(), "Чат \"" + chats.get(chatId) + "\" удален из списка!");
+                handler.allowedChats.remove(chatId);
+            }
+        }
+        handler.sendMessage(message.getFrom().getId(), "Чаты обновлены!");
+    }
+
     public void announce(Message message) {
         var locale = Services.i18n().getLocale(message);
         handler.sendMessage(message.getChatId(), Services.i18n().getString("broadcastStarted", locale));

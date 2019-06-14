@@ -192,7 +192,9 @@ public class CallbackHandler {
     public void setLocale(CallbackQuery query) {
         var chatId = query.getMessage().getChatId();
         var locale = query.getData().split(" ")[1];
-        if (!query.getMessage().isUserMessage()) {
+        if (query.getMessage().isUserMessage()) {
+            Services.db().setUserLocale(query.getFrom().getId(), locale);
+        } else {
             var admins = Methods.getChatAdministrators(chatId).call(handler);
             var adminsIds = new ArrayList<Integer>();
             for (var member : admins) {
@@ -208,10 +210,7 @@ public class CallbackHandler {
             }
             Services.db().setChatLocale(chatId, locale);
             Methods.deleteMessage(chatId, query.getMessage().getMessageId()).call(handler);
-        } else {
-            Services.db().setUserLocale(query.getFrom().getId(), locale);
         }
-        Services.db().setChatLocale(chatId, locale);
         Methods.answerCallbackQuery()
                 .setText(Services.i18n().getString("langSet", locale))
                 .setCallbackQueryId(query.getId())
