@@ -26,8 +26,7 @@ public class MongoDBService implements DBService {
     private final MongoCollection<Document> userstats = lastkatkaDB.getCollection("userstats");
     private final MongoCollection<Document> settings = lastkatkaDB.getCollection("settings");
     private final MongoCollection<Document> bncgames = lastkatkaDB.getCollection("bncgames");
-    private final MongoCollection<Document> chatsettings = lastkatkaDB.getCollection("chatsettings");
-    private final MongoCollection<Document> allowedChatsCollection = lastkatkaDB.getCollection("allowedchats");
+    private final MongoCollection<Document> allowedchats = lastkatkaDB.getCollection("allowedchats");
 
     private MongoCollection<Document> getChatMembersCollection(long chatId) {
         return chatMembersDB.getCollection(String.valueOf(chatId));
@@ -207,19 +206,19 @@ public class MongoDBService implements DBService {
 
     @Override
     public void setChatLocale(long chatId, String locale) {
-        var doc = chatsettings.find(Filters.eq("chatId", chatId)).first();
+        var doc = allowedchats.find(Filters.eq("chatId", chatId)).first();
         if (doc == null) {
-            chatsettings.insertOne(new Document("chatId", chatId)
+            allowedchats.insertOne(new Document("chatId", chatId)
                     .append("locale", locale));
         } else {
-            chatsettings.updateOne(Filters.eq("chatId", chatId),
+            allowedchats.updateOne(Filters.eq("chatId", chatId),
                     new Document("$set", new Document("locale", locale)));
         }
     }
 
     @Override
     public String getChatLocale(long chatId) {
-        var doc = chatsettings.find(Filters.eq("chatId", chatId)).first();
+        var doc = allowedchats.find(Filters.eq("chatId", chatId)).first();
         if (doc == null)
             return "en";
         var locale = doc.getString("locale");
@@ -279,7 +278,7 @@ public class MongoDBService implements DBService {
     @Override
     public Set<Long> getAllowedChatsSet() {
         Set<Long> allowedChats = new HashSet<>();
-        for (var doc : allowedChatsCollection.find()) {
+        for (var doc : allowedchats.find()) {
             allowedChats.add(doc.getLong("chatId"));
         }
         return allowedChats;
@@ -287,21 +286,26 @@ public class MongoDBService implements DBService {
 
     @Override
     public void addAllowedChat(long chatId, String title) {
-        allowedChatsCollection.insertOne(new Document("chatId", chatId)
+        allowedchats.insertOne(new Document("chatId", chatId)
                 .append("title", title));
     }
 
     @Override
+    public void updateTitle(long chatId, String title) {
+        var commit = new Document("title", title);
+        allowedchats.updateOne(Filters.eq("chatId", chatId), new Document("$set", commit));
+    }
+
+    @Override
     public void removeAllowedChat(long chatId) {
-        allowedChatsCollection.deleteOne(Filters.eq("chatId", chatId));
-        chatsettings.deleteOne(Filters.eq("chatId", chatId));
+        allowedchats.deleteOne(Filters.eq("chatId", chatId));
         getChatMembersCollection(chatId).drop();
     }
 
     @Override
     public Map<Long, String> getAllowedChats() {
         Map<Long, String> chats = new HashMap<>();
-        for (var doc : allowedChatsCollection.find()) {
+        for (var doc : allowedchats.find()) {
             chats.put(doc.getLong("chatId"), doc.getString("title"));
         }
         return chats;
@@ -309,7 +313,7 @@ public class MongoDBService implements DBService {
 
     @Override
     public boolean pairExistsToday(long chatId) {
-        var doc = chatsettings.find(Filters.eq("chatId", chatId)).first();
+        var doc = allowedchats.find(Filters.eq("chatId", chatId)).first();
         if (doc == null)
             return false;
 
@@ -344,22 +348,22 @@ public class MongoDBService implements DBService {
         commit.append("date", Long.parseLong(dateFormat.format(date)))
                 .append("hours", hours);
 
-        if (chatsettings.find(Filters.eq("chatId", chatId)).first() == null) {
+        if (allowedchats.find(Filters.eq("chatId", chatId)).first() == null) {
             commit.append("chatId", chatId);
-            chatsettings.insertOne(commit);
+            allowedchats.insertOne(commit);
         } else
-            chatsettings.updateOne(Filters.eq("chatId", chatId), new Document("$set", commit));
+            allowedchats.updateOne(Filters.eq("chatId", chatId), new Document("$set", commit));
     }
 
     @Override
     public String getPairOfTheDay(long chatId) {
-        var doc = chatsettings.find(Filters.eq("chatId", chatId)).first();
+        var doc = allowedchats.find(Filters.eq("chatId", chatId)).first();
         return (doc != null) ? doc.getString("pair") : null;
     }
 
     @Override
     public String getPairsHistory(long chatId) {
-        var doc = chatsettings.find(Filters.eq("chatId", chatId)).first();
+        var doc = allowedchats.find(Filters.eq("chatId", chatId)).first();
         return (doc != null) ? doc.getString("history") : null;
     }
 }

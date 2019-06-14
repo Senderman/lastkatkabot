@@ -64,6 +64,8 @@ public interface DBService {
 
     void addAllowedChat(long chatId, String title);
 
+    void updateTitle(long chatId, String title);
+
     void removeAllowedChat(long chatId);
 
     void setPair(long chatId, String pair);
