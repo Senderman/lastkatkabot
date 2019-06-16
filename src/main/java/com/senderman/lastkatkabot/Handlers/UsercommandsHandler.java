@@ -144,8 +144,8 @@ public class UsercommandsHandler {
             return;
         handler.sendMessage(message.getChatId(), message.getReplyToMessage().toString()
                 .replaceAll("[ ,]*\\w+='?null'?", "")
-                .replaceAll("([\\{,])", "$1\n")
-                .replaceAll("(\\})", "$1\n"));
+                .replaceAll("([{,])", "$1\n")
+                .replaceAll("(})", "\n$1"));
     }
 
     public void testRegex(Message message) {
