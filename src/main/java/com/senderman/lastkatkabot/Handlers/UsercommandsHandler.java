@@ -144,6 +144,7 @@ public class UsercommandsHandler {
             return;
         handler.sendMessage(message.getChatId(), message.getReplyToMessage().toString()
                 .replaceAll("[ ,]*\\w+='?null'?", "")
+                .replaceAll("(\\w*id=)(-?\\d+)", "$1<code>$2</code>")
                 .replaceAll("([{,])", "$1\n")
                 .replaceAll("(})", "\n$1"));
     }
