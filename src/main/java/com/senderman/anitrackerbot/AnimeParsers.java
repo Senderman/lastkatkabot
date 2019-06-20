@@ -11,7 +11,7 @@ public class AnimeParsers {
         var title = doc.selectFirst("title").text();
         var titleOfAnime = title.replaceAll(" \\[.*", "");
 
-        var series = title.substring(title.indexOf("[") + 1, title.indexOf("]"));
+        var series = title.substring(title.lastIndexOf("[") + 1, title.lastIndexOf("]"));
         int sDone = Integer.parseInt(series.replaceAll("^(\\d+).*", "$1"));
         int sTotal = Integer.parseInt(series.replaceAll(".* (\\d+).*$", "$1"));
         int percentage = 100 * sDone / sTotal;
