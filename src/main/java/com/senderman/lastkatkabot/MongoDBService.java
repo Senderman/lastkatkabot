@@ -199,7 +199,7 @@ public class MongoDBService implements DBService {
     }
 
     @Override
-    public void removeOldUsers(long chatId, long date) {
+    public void removeOldUsers(long chatId, int date) {
         var chat = getChatMembersCollection(chatId);
         chat.deleteMany(Filters.lt("lastMessageDate", date));
     }

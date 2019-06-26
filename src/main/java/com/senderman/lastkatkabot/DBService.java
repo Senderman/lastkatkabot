@@ -43,7 +43,7 @@ public interface DBService {
 
     List<Integer> getChatMemebersIds(long chatId);
 
-    void removeOldUsers(long chatId, long date);
+    void removeOldUsers(long chatId, int date);
 
     void setChatLocale(long chatId, String locale);
 
