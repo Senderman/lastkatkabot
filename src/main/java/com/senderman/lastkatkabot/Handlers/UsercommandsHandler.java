@@ -283,9 +283,8 @@ public class UsercommandsHandler {
         TgUser user1, user2;
         try {
             user1 = getUserForPair(chatId, userIds);
-            do {
-                user2 = getUserForPair(chatId, userIds);
-            } while (user2.getId() == user1.getId());
+            userIds.remove((Integer) user1.getId());
+            user2 = getUserForPair(chatId, userIds);
         } catch (Exception e) {
             handler.sendMessage(chatId, Services.i18n().getString("noUsers", locale));
             return;

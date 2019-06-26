@@ -7,7 +7,7 @@ public class TgUser {
 
     public TgUser(int id, String name) {
         this.id = id;
-        this.name = name;
+        this.name = name.replace("<", "&lt;").replace(">", "&gt;");
     }
 
     public int getId() {
@@ -19,7 +19,6 @@ public class TgUser {
     }
 
     public String getLink() {
-        name = name.replace("<", "&lt;").replace(">", "&gt;");
         return String.format("<a href=\"tg://user?id=%1$d\">%2$s</a>", id, name);
     }
 }
