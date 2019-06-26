@@ -16,7 +16,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.logging.BotLogger;
 
-import javax.management.timer.Timer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -271,23 +270,28 @@ public class UsercommandsHandler {
         // check for existing pair
         if (Services.db().pairExistsToday(chatId)) {
             var pair = Services.db().getPairOfTheDay(chatId);
-            pair = (pair != null) ?
-                    Services.i18n().getString("pairOfDay", locale) + " " + pair :
-                    Services.i18n().getString("todayError", locale);
+            pair = Services.i18n().getString("pairOfDay", locale) + " " + pair;
             handler.sendMessage(chatId, pair);
             return;
         }
 
-        // remove users without activity for 2 weeks
-        Services.db().removeOldUsers(chatId, message.getDate() - Timer.ONE_WEEK);
-
+        // remove users without activity for 2 weeks and get list of actual users
+        Services.db().removeOldUsers(chatId, message.getDate() - 1209600);
         var userIds = Services.db().getChatMemebersIds(chatId);
-        if (userIds.size() < 3) {
+
+        // generate 2 different random users
+        TgUser user1, user2;
+        try {
+            user1 = getUserForPair(chatId, userIds);
+            do {
+                user2 = getUserForPair(chatId, userIds);
+            } while (user2.getId() == user1.getId());
+        } catch (Exception e) {
             handler.sendMessage(chatId, Services.i18n().getString("noUsers", locale));
             return;
         }
 
-        // get a phrase by locale
+        // get a phrase by locale and set up pair
         var loveI18n = new LastResourceBundleLocalizationService("Love", Services.db());
         var loveEntries = Integer.parseInt(loveI18n.getString("love", locale));
         var loveEntry = "l" + (1 + ThreadLocalRandom.current().nextInt(0, loveEntries));
@@ -301,30 +305,27 @@ public class UsercommandsHandler {
         } catch (InterruptedException e) {
             BotLogger.error("PAIR", "Ошибка таймера");
         }
-
-        // generate 2 different random users
-        var user1 = getUserForPair(chatId, userIds);
-        TgUser user2;
-        do {
-            user2 = getUserForPair(chatId, userIds);
-        } while (user2.getId() == user1.getId());
-
-        // finally, set up pair
         var pair = user1.getName() + " ❤ " + user2.getName();
         Services.db().setPair(chatId, pair);
         handler.sendMessage(chatId, String.format(loveStrings[loveStrings.length - 1], user1.getLink(), user2.getLink()));
     }
 
-    private TgUser getUserForPair(long chatId, List<Integer> userIds) {
-        int random;
+    private TgUser getUserForPair(long chatId, List<Integer> userIds) throws Exception {
+        if (userIds.size() < 3)
+            throw new Exception("Not enough users");
+
         ChatMember member;
         do {
-            random = ThreadLocalRandom.current().nextInt(userIds.size());
+            var random = ThreadLocalRandom.current().nextInt(userIds.size());
             var userId = userIds.get(random);
             member = Methods.getChatMember(chatId, userId).call(handler);
             // delete not-found-user
             if (member == null) {
                 Services.db().removeUserFromChatDB(userId, chatId);
+                userIds.remove(userId);
+                if (userIds.size() < 3) {
+                    throw new Exception("Not enough users");
+                }
             }
         } while (member == null);
 
@@ -346,6 +347,6 @@ public class UsercommandsHandler {
 
     private boolean isFromWwBot(Message message) {
         return Services.botConfig().getWwBots().contains(message.getReplyToMessage().getFrom().getUserName()) &&
-                message.getReplyToMessage().getText().contains("#players");
+                message.getReplyToMessage().getText().startsWith("#players");
     }
 }
