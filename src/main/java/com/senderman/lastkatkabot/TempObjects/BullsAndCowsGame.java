@@ -165,13 +165,9 @@ public class BullsAndCowsGame {
             return;
         }
 
-        var admins = Methods.getChatAdministrators(chatId).call(Services.handler());
-        var adminsIds = new HashSet<Integer>();
-        for (var admin : admins) {
-            adminsIds.add(admin.getUser().getId());
-        }
         voted++;
-        if (voted == 5 || adminsIds.contains(query.getFrom().getId())) {
+        var user = Methods.getChatMember(chatId, query.getFrom().getId()).call(Services.handler());
+        if (voted == 5 || (!user.getStatus().equals("creator") && !user.getStatus().equals("administrator"))) {
             gameOver();
         }
 

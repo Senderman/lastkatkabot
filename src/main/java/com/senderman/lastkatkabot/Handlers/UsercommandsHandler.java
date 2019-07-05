@@ -18,7 +18,6 @@ import org.telegram.telegrambots.meta.logging.BotLogger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
@@ -226,12 +225,8 @@ public class UsercommandsHandler {
     public void setLocale(Message message) {
         var chatId = message.getChatId();
         if (!message.isUserMessage()) {
-            var admins = Methods.getChatAdministrators(chatId).call(handler);
-            var adminsIds = new HashSet<Integer>();
-            for (var member : admins) {
-                adminsIds.add(member.getUser().getId());
-            }
-            if (!adminsIds.contains(message.getFrom().getId())) {
+            var user = Methods.getChatMember(chatId, message.getFrom().getId()).call(handler);
+            if (!user.getStatus().equals("creator") && !user.getStatus().equals("administrator")) {
                 Methods.deleteMessage(chatId, message.getFrom().getId());
                 return;
             }
