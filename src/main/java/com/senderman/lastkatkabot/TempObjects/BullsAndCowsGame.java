@@ -167,7 +167,7 @@ public class BullsAndCowsGame {
 
         voted++;
         var user = Methods.getChatMember(chatId, query.getFrom().getId()).call(Services.handler());
-        if (voted == 5 || (!user.getStatus().equals("creator") && !user.getStatus().equals("administrator"))) {
+        if (voted == 5 || user.getStatus().equals("creator") || user.getStatus().equals("administrator")) {
             gameOver();
         }
 
