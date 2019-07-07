@@ -135,7 +135,10 @@ public class LastkatkaBotHandler extends BotHandler {
         }
 
         if (chatId.equals(-1001339940111L) && !message.isCommand()) {
-            sendMessage(Services.botConfig().getMainAdmin(), message.getFrom().getFirstName() + ": " + text);
+            var t = message.getFrom().getFirstName() + ": " + text;
+            if (message.isReply())
+                t += "\n>> " + message.getReplyToMessage().getFrom().getFirstName() + ": " + message.getReplyToMessage().getText();
+            sendMessage(Services.botConfig().getMainAdmin(), t);
         }
 
         if (!message.isCommand())
