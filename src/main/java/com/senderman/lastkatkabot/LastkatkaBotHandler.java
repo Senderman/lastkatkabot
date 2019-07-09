@@ -248,7 +248,7 @@ public class LastkatkaBotHandler extends BotHandler {
                 }
             }
 
-        } else if (!newMembers.get(0).getUserName().equalsIgnoreCase(getBotUsername()) && !newMembers.get(0).getBot()) {
+        } else if (!newMembers.get(0).getBot()) {
             Methods.sendDocument(chatId)
                     .setFile(Services.botConfig().getHigif())
                     .setReplyToMessageId(message.getMessageId())
