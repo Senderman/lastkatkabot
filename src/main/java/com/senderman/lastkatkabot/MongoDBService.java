@@ -48,7 +48,7 @@ public class MongoDBService implements DBService {
         var doc = new Document("id", id)
                 .append("total", 0)
                 .append("wins", 0)
-                .append("bncwins", 0);
+                .append("bnc", 0);
         userstats.insertOne(doc);
     }
 
