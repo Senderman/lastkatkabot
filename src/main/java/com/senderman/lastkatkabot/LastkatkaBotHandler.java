@@ -254,7 +254,7 @@ public class LastkatkaBotHandler extends BotHandler {
                     .setReplyToMessageId(message.getMessageId())
                     .call(this); // say hi to new member
 
-        } else {
+        } else if (newMembers.get(0).getUserName().equals(getBotUsername())) {
             var locale = Services.i18n().getLocale(message);
             if (allowedChats.contains(chatId)) {// Say hello to new group if chat is allowed
                 sendMessage(chatId, Services.i18n().getString("chatAllowed", locale));
