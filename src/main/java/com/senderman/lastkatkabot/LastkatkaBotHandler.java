@@ -89,8 +89,16 @@ public class LastkatkaBotHandler extends BotHandler {
 
         final var chatId = message.getChatId();
 
-        if (!allowedChats.contains(chatId) && !message.isUserMessage()) // do not respond in not allowed chats
-            return null;
+        //if (!allowedChats.contains(chatId) && !message.isUserMessage()) // do not respond in not allowed chats
+        //  return null;
+
+        if (message.getMigrateToChatId() != null) {
+            sendMessage(chatId, "Migrate to chatId: " + message.getMigrateToChatId());
+        }
+
+        if (message.getMigrateFromChatId() != null) {
+            sendMessage(chatId, "Migrate to chatId: " + message.getMigrateFromChatId());
+        }
 
         if (message.getLeftChatMember() != null) {
             Methods.sendDocument()
