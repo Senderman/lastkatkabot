@@ -285,6 +285,12 @@ public class MongoDBService implements DBService {
     }
 
     @Override
+    public void updateChatId(long oldChatId, long newChatId) {
+        allowedchats.updateOne(Filters.eq("chatId", oldChatId),
+                new Document("$set", new Document("chatId", newChatId)));
+    }
+
+    @Override
     public void addAllowedChat(long chatId, String title) {
         allowedchats.insertOne(new Document("chatId", chatId)
                 .append("title", title));

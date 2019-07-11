@@ -165,8 +165,12 @@ public class AdminHandler {
                 Methods.deleteMessage(chatId, chatMsg.getMessageId()).call(handler);
                 Services.db().updateTitle(chatId, title);
             } catch (TelegramApiException e) {
+                if (handler.isAbleToMigrateChat(chatId, e)) {
+                    handler.sendMessage(message.getChatId(), "Id чата \"" + chats.get(chatId) + "\" обновлено!");
+                    return;
+                }
                 Services.db().removeAllowedChat(chatId);
-                handler.sendMessage(message.getFrom().getId(), "Чат \"" + chats.get(chatId) + "\" удален из списка!");
+                handler.sendMessage(message.getChatId(), "Чат \"" + chats.get(chatId) + "\" удален из списка!");
                 handler.allowedChats.remove(chatId);
             }
         }
