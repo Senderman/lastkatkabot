@@ -104,7 +104,7 @@ public class LastkatkaBotHandler extends BotHandler {
 
         if (message.getText().equals("run-test")) {
             try {
-                execute(new SendMessage(-323746987L, "test"))
+                execute(new SendMessage(-323746987L, "test"));
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
