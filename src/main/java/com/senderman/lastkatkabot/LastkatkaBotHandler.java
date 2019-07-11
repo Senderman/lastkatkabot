@@ -9,12 +9,14 @@ import com.senderman.lastkatkabot.TempObjects.RelayGame;
 import com.senderman.lastkatkabot.TempObjects.VeganTimer;
 import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.*;
 
@@ -97,7 +99,15 @@ public class LastkatkaBotHandler extends BotHandler {
         }
 
         if (message.getMigrateFromChatId() != null) {
-            sendMessage(chatId, "Migrate to chatId: " + message.getMigrateFromChatId());
+            sendMessage(chatId, "Migrate from chatId: " + message.getMigrateFromChatId());
+        }
+
+        if (message.getText().equals("run-test")) {
+            try {
+                execute(new SendMessage(-323746987L, "test"))
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
         }
 
         if (message.getLeftChatMember() != null) {
