@@ -39,8 +39,6 @@ public interface DBService {
 
     void removeUserFromChatDB(int userId, long chatId);
 
-    Set<Long> getAllowedChatsSet();
-
     List<Integer> getChatMemebersIds(long chatId);
 
     void removeOldUsers(long chatId, int date);
@@ -63,6 +61,10 @@ public interface DBService {
 
 
     void addAllowedChat(long chatId, String title);
+
+    Set<Long> getAllowedChatsSet();
+
+    void updateChatId(long oldChatId, long newChatId);
 
     void updateTitle(long chatId, String title);
 

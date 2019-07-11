@@ -17,6 +17,7 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
 import java.util.*;
 
@@ -91,23 +92,16 @@ public class LastkatkaBotHandler extends BotHandler {
 
         final var chatId = message.getChatId();
 
-        //if (!allowedChats.contains(chatId) && !message.isUserMessage()) // do not respond in not allowed chats
-        //  return null;
-
-        if (message.getMigrateToChatId() != null) {
-            sendMessage(chatId, "Migrate to chatId: " + message.getMigrateToChatId());
+        if (message.getMigrateFromChatId() != null) {
+            migrateChat(message.getMigrateFromChatId(), chatId);
+            sendMessage(message.getMigrateFromChatId(), "Id чата обновлен!");
         }
+
+        if (!allowedChats.contains(chatId) && !message.isUserMessage()) // do not respond in not allowed chats
+            return null;
 
         if (message.getMigrateFromChatId() != null) {
-            sendMessage(chatId, "Migrate from chatId: " + message.getMigrateFromChatId());
-        }
-
-        if (message.getText().equals("run-test")) {
-            try {
-                execute(new SendMessage(-323746987L, "test"));
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
+            migrateChat(message.getMigrateFromChatId(), chatId);
         }
 
         if (message.getLeftChatMember() != null) {
@@ -151,13 +145,6 @@ public class LastkatkaBotHandler extends BotHandler {
                 }
             }
         }
-
-        /*if (chatId.equals(-1001339940111L) && !message.isCommand()) {
-            var t = message.getFrom().getFirstName() + ": " + text;
-            if (message.isReply())
-                t += "\n>> " + message.getReplyToMessage().getFrom().getFirstName() + ": " + message.getReplyToMessage().getText();
-            sendMessage(Services.botConfig().getMainAdmin(), t);
-        }*/
 
         if (!message.isCommand())
             return null;
@@ -504,14 +491,38 @@ public class LastkatkaBotHandler extends BotHandler {
         return !result;
     }
 
+    private void migrateChat(long oldChatId, long newChatId) {
+        allowedChats.remove(oldChatId);
+        allowedChats.add(newChatId);
+        Services.db().updateChatId(oldChatId, newChatId);
+    }
+
+    public boolean isAbleToMigrateChat(long oldChatId, TelegramApiException e) {
+        if (!(e instanceof TelegramApiRequestException))
+            return false;
+
+        var ex = (TelegramApiRequestException) e;
+        if (ex.getParameters().getMigrateToChatId() == null)
+            return false;
+        migrateChat(oldChatId, ex.getParameters().getMigrateToChatId());
+        return true;
+    }
+
     public Message sendMessage(long chatId, String text) {
         return sendMessage(Methods.sendMessage(chatId, text));
     }
 
     public Message sendMessage(SendMessageMethod sm) {
-        return sm
-                .enableHtml(true)
-                .disableWebPagePreview()
-                .call(this);
+        var sendMessage = new SendMessage(sm.getChatId(), sm.getText());
+        sendMessage.enableHtml(true)
+                .disableWebPagePreview();
+        try {
+            return execute(sendMessage);
+        } catch (TelegramApiException e) {
+            if (!isAbleToMigrateChat(Long.parseLong(sm.getChatId()), e))
+                return null;
+            sm.setChatId(((TelegramApiRequestException) e).getParameters().getMigrateToChatId());
+            return sm.call(this);
+        }
     }
 }
