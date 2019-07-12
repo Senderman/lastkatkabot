@@ -497,7 +497,7 @@ public class LastkatkaBotHandler extends BotHandler {
         Services.db().updateChatId(oldChatId, newChatId);
     }
 
-    public boolean isAbleToMigrateChat(long oldChatId, TelegramApiException e) {
+    private boolean isAbleToMigrateChat(long oldChatId, TelegramApiException e) {
         if (!(e instanceof TelegramApiRequestException))
             return false;
 
