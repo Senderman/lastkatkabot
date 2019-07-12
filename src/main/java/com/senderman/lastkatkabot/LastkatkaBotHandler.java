@@ -18,7 +18,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
-import org.telegram.telegrambots.meta.logging.BotLogger;
 
 import java.util.*;
 
@@ -105,7 +104,7 @@ public class LastkatkaBotHandler extends BotHandler {
             migrateChat(message.getMigrateFromChatId(), chatId);
         }
 
-        if (message.getLeftChatMember() != null) {
+        if (message.getLeftChatMember() != null && !message.getLeftChatMember().getUserName().equals(getBotUsername())) {
             Methods.sendDocument()
                     .setChatId(chatId)
                     .setFile(Services.botConfig().getLeavesticker())
@@ -502,13 +501,12 @@ public class LastkatkaBotHandler extends BotHandler {
         if (!(e instanceof TelegramApiRequestException))
             return false;
 
-        BotLogger.error("1", "kek");
         var ex = (TelegramApiRequestException) e;
         if (ex.getParameters() == null)
             return false;
         if (ex.getParameters().getMigrateToChatId() == null)
             return false;
-        BotLogger.error("2", "kek");
+
         migrateChat(oldChatId, ex.getParameters().getMigrateToChatId());
         return true;
     }
