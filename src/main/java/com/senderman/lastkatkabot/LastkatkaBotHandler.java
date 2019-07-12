@@ -523,6 +523,7 @@ public class LastkatkaBotHandler extends BotHandler {
         try {
             return execute(sendMessage);
         } catch (TelegramApiException e) {
+            e.printStackTrace();
             if (!isAbleToMigrateChat(Long.parseLong(sm.getChatId()), e))
                 return null;
             sm.setChatId(((TelegramApiRequestException) e).getParameters().getMigrateToChatId());
