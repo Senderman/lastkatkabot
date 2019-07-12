@@ -513,9 +513,11 @@ public class LastkatkaBotHandler extends BotHandler {
     }
 
     public Message sendMessage(SendMessageMethod sm) {
-        var sendMessage = new SendMessage(sm.getChatId(), sm.getText());
-        sendMessage.enableHtml(true)
-                .disableWebPagePreview();
+        var sendMessage = new SendMessage(sm.getChatId(), sm.getText())
+                .enableHtml(true)
+                .disableWebPagePreview()
+                .setReplyMarkup(sm.getReplyMarkup())
+                .setReplyToMessageId(sm.getReplyToMessageId());
         try {
             return execute(sendMessage);
         } catch (TelegramApiException e) {
