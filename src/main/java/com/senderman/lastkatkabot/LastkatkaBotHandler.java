@@ -502,6 +502,8 @@ public class LastkatkaBotHandler extends BotHandler {
             return false;
 
         var ex = (TelegramApiRequestException) e;
+        if (ex.getParameters() == null)
+            return false;
         if (ex.getParameters().getMigrateToChatId() == null)
             return false;
         migrateChat(oldChatId, ex.getParameters().getMigrateToChatId());
