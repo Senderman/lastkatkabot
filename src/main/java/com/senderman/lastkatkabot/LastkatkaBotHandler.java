@@ -92,7 +92,7 @@ public class LastkatkaBotHandler extends BotHandler {
 
         final var chatId = message.getChatId();
 
-        if (message.getMigrateFromChatId() != null) {
+        if (message.getMigrateFromChatId() != null && allowedChats.contains(message.getMigrateFromChatId())) {
             migrateChat(message.getMigrateFromChatId(), chatId);
             sendMessage(message.getMigrateFromChatId(), "Id чата обновлен!");
         }
