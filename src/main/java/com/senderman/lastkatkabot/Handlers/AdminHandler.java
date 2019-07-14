@@ -53,11 +53,10 @@ public class AdminHandler {
             ArrayList<List<InlineKeyboardButton>> rows = new ArrayList<>();
             List<InlineKeyboardButton> row = new ArrayList<>();
             for (TgUser owner : ownersSet) {
-                if (row.size() < 2) {
-                    row.add(new InlineKeyboardButton()
-                            .setText(owner.getName())
-                            .setCallbackData(LastkatkaBot.CALLBACK_DELETE_ADMIN + " " + owner.getId()));
-                } else {
+                row.add(new InlineKeyboardButton()
+                        .setText(owner.getName())
+                        .setCallbackData(LastkatkaBot.CALLBACK_DELETE_ADMIN + " " + owner.getId()));
+                if (row.size() == 2) {
                     rows.add(row);
                     row = new ArrayList<>();
                 }
@@ -153,11 +152,10 @@ public class AdminHandler {
         var chats = Services.db().getAllowedChats();
         List<InlineKeyboardButton> row = new ArrayList<>();
         for (long chatId : chats.keySet()) {
-            if (row.size() < 2) {
-                row.add(new InlineKeyboardButton()
-                        .setText(chats.get(chatId))
-                        .setCallbackData(LastkatkaBot.CALLBACK_DELETE_CHAT + " " + chatId));
-            } else {
+            row.add(new InlineKeyboardButton()
+                    .setText(chats.get(chatId))
+                    .setCallbackData(LastkatkaBot.CALLBACK_DELETE_CHAT + " " + chatId));
+            if (row.size() == 2) {
                 rows.add(row);
                 row = new ArrayList<>();
             }
