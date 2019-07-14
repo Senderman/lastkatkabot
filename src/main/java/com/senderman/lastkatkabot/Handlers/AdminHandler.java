@@ -62,6 +62,9 @@ public class AdminHandler {
                     row = new ArrayList<>();
                 }
             }
+            if (row.size() == 1) {
+                rows.add(row);
+            }
             rows.add(List.of(new InlineKeyboardButton()
                     .setText(Services.i18n().getString("closeMenu", locale))
                     .setCallbackData(LastkatkaBot.CALLBACK_CLOSE_MENU)));
@@ -158,6 +161,9 @@ public class AdminHandler {
                 rows.add(row);
                 row = new ArrayList<>();
             }
+        }
+        if (row.size() == 1) {
+            rows.add(row);
         }
         rows.add(List.of(new InlineKeyboardButton()
                 .setText(Services.i18n().getString("closeMenu", locale))
