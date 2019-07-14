@@ -134,11 +134,7 @@ public class CallbackHandler {
     }
 
     public void addChat(CallbackQuery query) {
-        var chatId = Long.parseLong(query.getData()
-                .replace(LastkatkaBot.CALLBACK_ALLOW_CHAT, "")
-                .replaceAll("title=.*$", ""));
-        var title = query.getData().replaceAll("^.*?title=", "");
-        Services.db().addAllowedChat(chatId, title);
+        var chatId = Long.parseLong(query.getData().replace(LastkatkaBot.CALLBACK_ALLOW_CHAT, ""));
         handler.allowedChats.add(chatId);
         Methods.editMessageText()
                 .setChatId(query.getMessage().getChatId())
@@ -146,7 +142,8 @@ public class CallbackHandler {
                 .setMessageId(query.getMessage().getMessageId())
                 .setReplyMarkup(null)
                 .call(handler);
-        handler.sendMessage(chatId, Services.i18n().getString("helloMessage", Services.db().getChatLocale(chatId)));
+        var message = handler.sendMessage(chatId, Services.i18n().getString("helloMessage", Services.db().getChatLocale(chatId)));
+        Services.db().addAllowedChat(chatId, message.getChat().getTitle());
     }
 
     public void denyChat(CallbackQuery query) {

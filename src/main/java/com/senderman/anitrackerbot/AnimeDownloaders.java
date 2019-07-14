@@ -21,20 +21,19 @@ public class AnimeDownloaders {
         if (anidubCookies != null) {
             conn.cookies(anidubCookies);
         } else {
-            var username = System.getenv("aniuser");
-            var password = System.getenv("anipass");
+            var username = System.getenv("anidata".split(":")[0]);
+            var password = System.getenv("anidata".split(":")[1]);
             conn.data("login_name", username, "login_password", password, "login", "submit");
         }
         var resp = conn.execute();
         if (anidubCookies == null)
             anidubCookies = resp.cookies();
 
+        // download torrent after logging in
         var page = resp.parse();
         var torrentDiv = Jsoup.parse(page.toString()).selectFirst("div.torrent_H");
         var torrentLink = torrentDiv.selectFirst("a").attr("href");
         torrentLink = "https://tr.anidub.com" + torrentLink;
-
-        // download torrent after logging in
         var torrent = Jsoup.connect(torrentLink)
                 .method(Connection.Method.GET)
                 .cookies(anidubCookies)

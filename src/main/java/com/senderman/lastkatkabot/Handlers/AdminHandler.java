@@ -51,10 +51,16 @@ public class AdminHandler {
         } else {
             var markup = new InlineKeyboardMarkup();
             ArrayList<List<InlineKeyboardButton>> rows = new ArrayList<>();
+            List<InlineKeyboardButton> row = new ArrayList<>();
             for (TgUser owner : ownersSet) {
-                rows.add(List.of(new InlineKeyboardButton()
-                        .setText(owner.getName())
-                        .setCallbackData(LastkatkaBot.CALLBACK_DELETE_ADMIN + " " + owner.getId())));
+                if (row.size() < 2) {
+                    row.add(new InlineKeyboardButton()
+                            .setText(owner.getName())
+                            .setCallbackData(LastkatkaBot.CALLBACK_DELETE_ADMIN + " " + owner.getId()));
+                } else {
+                    rows.add(row);
+                    row = new ArrayList<>();
+                }
             }
             rows.add(List.of(new InlineKeyboardButton()
                     .setText(Services.i18n().getString("closeMenu", locale))
@@ -72,11 +78,11 @@ public class AdminHandler {
         if (handler.blacklist.contains(message.getReplyToMessage().getFrom().getId()))
             return;
 
-        Services.db().addTgUser(message.getReplyToMessage().getFrom().getId(),
-                message.getReplyToMessage().getFrom().getFirstName(), DBService.COLLECTION_TYPE.BLACKLIST);
-        handler.blacklist.add(message.getReplyToMessage().getFrom().getId());
+        var neko = new TgUser(message.getReplyToMessage().getFrom().getId(), message.getReplyToMessage().getFrom().getFirstName());
+        Services.db().addTgUser(neko.getId(), neko.getName(), DBService.COLLECTION_TYPE.BLACKLIST);
+        handler.blacklist.add(neko.getId());
         handler.sendMessage(message.getChatId(),
-                String.format(Services.i18n().getString("badneko", message), message.getReplyToMessage().getFrom().getUserName()));
+                String.format(Services.i18n().getString("badneko", message), neko.getLink()));
 
     }
 
@@ -86,11 +92,11 @@ public class AdminHandler {
         if (handler.premiumUsers.contains(message.getReplyToMessage().getFrom().getId()))
             return;
 
-        Services.db().addTgUser(message.getReplyToMessage().getFrom().getId(),
-                message.getReplyToMessage().getFrom().getFirstName(), DBService.COLLECTION_TYPE.PREMIUM);
+        var prem = new TgUser(message.getReplyToMessage().getFrom().getId(), message.getReplyToMessage().getFrom().getFirstName());
+        Services.db().addTgUser(prem.getId(), prem.getName(), DBService.COLLECTION_TYPE.PREMIUM);
         handler.premiumUsers.add(message.getReplyToMessage().getFrom().getId());
         handler.sendMessage(message.getChatId(),
-                String.format(Services.i18n().getString("addPremium", message), message.getReplyToMessage().getFrom().getUserName()));
+                String.format(Services.i18n().getString("addPremium", message), prem.getLink()));
     }
 
     /* TODO public void listPremiums(Message message) {
@@ -142,10 +148,16 @@ public class AdminHandler {
         var markup = new InlineKeyboardMarkup();
         ArrayList<List<InlineKeyboardButton>> rows = new ArrayList<>();
         var chats = Services.db().getAllowedChats();
+        List<InlineKeyboardButton> row = new ArrayList<>();
         for (long chatId : chats.keySet()) {
-            rows.add(List.of(new InlineKeyboardButton()
-                    .setText(chats.get(chatId))
-                    .setCallbackData(LastkatkaBot.CALLBACK_DELETE_CHAT + " " + chatId)));
+            if (row.size() < 2) {
+                row.add(new InlineKeyboardButton()
+                        .setText(chats.get(chatId))
+                        .setCallbackData(LastkatkaBot.CALLBACK_DELETE_CHAT + " " + chatId));
+            } else {
+                rows.add(row);
+                row = new ArrayList<>();
+            }
         }
         rows.add(List.of(new InlineKeyboardButton()
                 .setText(Services.i18n().getString("closeMenu", locale))

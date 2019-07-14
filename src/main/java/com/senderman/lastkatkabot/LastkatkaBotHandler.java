@@ -270,7 +270,7 @@ public class LastkatkaBotHandler extends BotHandler {
             var mainAdminLocale = Services.db().getUserLocale(Services.botConfig().getMainAdmin());
             var row1 = List.of(new InlineKeyboardButton()
                     .setText(Services.i18n().getString("acceptChat", mainAdminLocale))
-                    .setCallbackData(LastkatkaBot.CALLBACK_ALLOW_CHAT + chatId + "title=" + message.getChat().getTitle()));
+                    .setCallbackData(LastkatkaBot.CALLBACK_ALLOW_CHAT + chatId));
             var row2 = List.of(new InlineKeyboardButton()
                     .setText(Services.i18n().getString("denyChat", mainAdminLocale))
                     .setCallbackData(LastkatkaBot.CALLBACK_DONT_ALLOW_CHAT + chatId));
