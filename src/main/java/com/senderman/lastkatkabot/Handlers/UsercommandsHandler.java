@@ -20,7 +20,6 @@ import org.telegram.telegrambots.meta.logging.BotLogger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.NavigableMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -191,23 +190,19 @@ public class UsercommandsHandler {
         }
 
         handler.sendMessage(chatId, "Сортируем список, находим имена...");
-        NavigableMap<Integer, Integer> top = Services.db().getTop();
+        List<BnCPlayer> top = Services.db().getTop();
         var text = new StringBuilder("<b>Топ-10 задротов в bnc:</b>\n\n");
         int counter = 1;
-        for (var id : top.keySet()) {
-            BnCPlayer player;
-            String name;
+        for (var player : top) {
             try {
-                var userChatId = Services.db().findChatWithUser(id);
-                var member = Methods.getChatMember(userChatId, id).call(handler);
+                var userChatId = Services.db().findChatWithUser(player.getId());
+                var member = Methods.getChatMember(userChatId, player.getId()).call(handler);
                 if (member == null)
                     throw new Exception("Unable to find name");
-                name = member.getUser().getFirstName();
+                player.setName(member.getUser().getFirstName());
 
-            } catch (Exception e) {
-                name = "Без имени";
+            } catch (Exception ignored) {
             }
-            player = new BnCPlayer(id, name, top.get(id));
             text.append(counter).append(": ")
                     .append(player.getLink())
                     .append(" (").append(player.getScore()).append(")\n");

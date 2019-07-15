@@ -3,7 +3,7 @@ package com.senderman.lastkatkabot.TempObjects;
 public class TgUser {
 
     private int id;
-    private String name;
+    protected String name;
 
     public TgUser(int id, String name) {
         this.id = id;

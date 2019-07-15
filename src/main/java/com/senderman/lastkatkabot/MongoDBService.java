@@ -6,6 +6,7 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.senderman.lastkatkabot.TempObjects.BnCPlayer;
 import com.senderman.lastkatkabot.TempObjects.BullsAndCowsGame;
 import com.senderman.lastkatkabot.TempObjects.TgUser;
 import org.bson.Document;
@@ -102,8 +103,9 @@ public class MongoDBService implements DBService {
     }
 
     @Override
-    public NavigableMap<Integer, Integer> getTop() {
-        NavigableMap<Integer, Integer> topIds = new TreeMap<>();
+    public List<BnCPlayer> getTop() {
+        List<BnCPlayer> top = new ArrayList<>();
+        List<Integer> topIds = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             int score = 0;
             int id = 0;
@@ -113,16 +115,17 @@ public class MongoDBService implements DBService {
                 if (doc.getInteger("bnc") == null)
                     continue;
                 int tempScore = doc.getInteger("bnc");
-                if (tempScore > score && !topIds.containsKey(doc.getInteger("id"))) {
+                if (tempScore > score && !topIds.contains(doc.getInteger("id"))) {
                     score = tempScore;
                     id = doc.getInteger("id");
                 }
             }
             if (id != 0) {
-                topIds.put(id, score);
+                top.add(new BnCPlayer(id, "Без имени", score));
+                topIds.add(id);
             }
         }
-        return topIds;
+        return top;
     }
 
     @Override

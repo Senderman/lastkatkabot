@@ -1,12 +1,12 @@
 package com.senderman.lastkatkabot;
 
+import com.senderman.lastkatkabot.TempObjects.BnCPlayer;
 import com.senderman.lastkatkabot.TempObjects.BullsAndCowsGame;
 import com.senderman.lastkatkabot.TempObjects.TgUser;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.List;
 import java.util.Map;
-import java.util.NavigableMap;
 import java.util.Set;
 
 public interface DBService {
@@ -21,7 +21,7 @@ public interface DBService {
 
     Map<String, Integer> getStats(int id);
 
-    NavigableMap<Integer, Integer> getTop(); // return map of <id, score> sorted by descending order
+    List<BnCPlayer> getTop(); // return map of <id, score> sorted by descending order
 
     Long findChatWithUser(int id) throws Exception;
 
