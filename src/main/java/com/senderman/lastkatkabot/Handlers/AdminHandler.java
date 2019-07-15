@@ -183,6 +183,7 @@ public class AdminHandler {
                 Services.db().updateTitle(chatId, title);
             } catch (TelegramApiException e) {
                 Services.db().removeAllowedChat(chatId);
+                Services.db().cleanup();
                 handler.sendMessage(message.getFrom().getId(), "Чат \"" + chats.get(chatId) + "\" удален из списка!");
                 handler.allowedChats.remove(chatId);
             }

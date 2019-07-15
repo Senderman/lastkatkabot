@@ -43,6 +43,7 @@ public class LastkatkaBotHandler extends BotHandler {
         // settings
         Services.setHandler(this);
         Services.setDBService(new MongoDBService());
+        Services.db().cleanup();
         Services.setLocalization(new LastResourceBundleLocalizationService("Language", Services.db()));
 
         admins = Services.db().getTgUsersIds(DBService.COLLECTION_TYPE.ADMINS);

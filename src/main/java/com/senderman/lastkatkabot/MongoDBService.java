@@ -357,6 +357,14 @@ public class MongoDBService implements DBService {
     }
 
     @Override
+    public void cleanup() {
+        for (var chat : chatMembersDB.listCollectionNames()) {
+            if (allowedchats.find(Filters.eq("chatId", Long.parseLong(chat))).first() == null)
+                getChatMembersCollection(Long.parseLong(chat)).drop();
+        }
+    }
+
+    @Override
     public boolean pairExistsToday(long chatId) {
         var doc = allowedchats.find(Filters.eq("chatId", chatId)).first();
         if (doc == null)
