@@ -197,8 +197,8 @@ public class UsercommandsHandler {
             try {
                 var userChatId = Services.db().findChatWithUser(player.getId());
                 var member = Methods.getChatMember(userChatId, player.getId()).call(handler);
-                if (member == null)
-                    throw new Exception("Unable to find name");
+                if (member.getUser().getUserName().equals("aNNiMON "))
+                    handler.sendMessage(chatId, "annimon in chat " + userChatId);
                 player.setName(member.getUser().getFirstName());
 
             } catch (Exception ignored) {
