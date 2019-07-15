@@ -42,7 +42,7 @@ public class AdminHandler {
         var ownersSet = Services.db().getTgUsers(DBService.COLLECTION_TYPE.ADMINS);
         var messageToSend = Methods.sendMessage().setChatId(message.getChatId());
 
-        if (!message.getFrom().getId().equals(Services.botConfig().getMainAdmin()) || !message.isUserMessage()) {
+        if (!message.getFrom().getId().equals(Services.botConfig().getMainAdmin()) || (!message.isUserMessage() && !message.getFrom().getUserName().equals(handler.getBotUsername()))) {
             var adminList = new StringBuilder(Services.i18n().getString("adminList", locale) + "\n");
             for (TgUser owner : ownersSet) {
                 adminList.append(owner.getLink()).append("\n");
@@ -110,10 +110,11 @@ public class AdminHandler {
     public void goodneko(Message message) {
         if (!message.isReply())
             return;
-        Services.db().removeTGUser(message.getReplyToMessage().getFrom().getId(), DBService.COLLECTION_TYPE.BLACKLIST);
+        var neko = new TgUser(message.getReplyToMessage().getFrom().getId(), message.getReplyToMessage().getFrom().getFirstName());
+        Services.db().removeTGUser(neko.getId(), DBService.COLLECTION_TYPE.BLACKLIST);
         handler.blacklist.remove(message.getReplyToMessage().getFrom().getId());
         handler.sendMessage(message.getChatId(),
-                String.format(Services.i18n().getString("goodneko", message), message.getReplyToMessage().getFrom().getUserName()));
+                String.format(Services.i18n().getString("goodneko", message), neko.getLink()));
     }
 
     public void nekos(Message message) {
