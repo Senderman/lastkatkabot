@@ -42,7 +42,7 @@ public class AdminHandler {
         var ownersSet = Services.db().getTgUsers(DBService.COLLECTION_TYPE.ADMINS);
         var messageToSend = Methods.sendMessage().setChatId(message.getChatId());
 
-        if (!message.getFrom().getId().equals(Services.botConfig().getMainAdmin()) || (!message.isUserMessage() && !message.getFrom().getUserName().equals(handler.getBotUsername()))) {
+        if (!message.getFrom().getId().equals(Services.botConfig().getMainAdmin()) || !message.isUserMessage() || message.getFrom().getUserName().equals(handler.getBotUsername())) {
             var adminList = new StringBuilder(Services.i18n().getString("adminList", locale) + "\n");
             for (TgUser owner : ownersSet) {
                 adminList.append(owner.getLink()).append("\n");
