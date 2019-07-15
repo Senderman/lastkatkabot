@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.Set;
 
 public interface DBService {
@@ -19,6 +20,10 @@ public interface DBService {
     void incBNCWins(int id, int points);
 
     Map<String, Integer> getStats(int id);
+
+    NavigableMap<Integer, Integer> getTop(); // return map of <id, score> sorted by descending order
+
+    Long findChatWithUser(int id) throws Exception;
 
     void addTgUser(int id, String name, COLLECTION_TYPE type);
 

@@ -6,6 +6,7 @@ import com.senderman.lastkatkabot.LastResourceBundleLocalizationService;
 import com.senderman.lastkatkabot.LastkatkaBot;
 import com.senderman.lastkatkabot.LastkatkaBotHandler;
 import com.senderman.lastkatkabot.Services;
+import com.senderman.lastkatkabot.TempObjects.BnCPlayer;
 import com.senderman.lastkatkabot.TempObjects.TgUser;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -19,6 +20,7 @@ import org.telegram.telegrambots.meta.logging.BotLogger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.NavigableMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -179,6 +181,39 @@ public class UsercommandsHandler {
                 .setChatId(message.getChatId())
                 .setText("✅" + Services.i18n().getString("bugreportSent", locale))
                 .setReplyToMessageId(message.getMessageId()));
+    }
+
+    public void bncTop(Message message) {
+        var chatId = message.getChatId();
+        if (!message.isUserMessage()) {
+            handler.sendMessage(chatId, "Команду можно использовать только в лс!");
+            return;
+        }
+
+        handler.sendMessage(chatId, "Сортируем список, находим имена...");
+        NavigableMap<Integer, Integer> top = Services.db().getTop();
+        var text = new StringBuilder("<b>Топ-10 задротов в bnc:</b>\n\n");
+        int counter = 1;
+        for (var id : top.keySet()) {
+            BnCPlayer player;
+            String name;
+            try {
+                var userChatId = Services.db().findChatWithUser(id);
+                var member = Methods.getChatMember(userChatId, id).call(handler);
+                if (member == null)
+                    throw new Exception("Unable to find name");
+                name = member.getUser().getFirstName();
+
+            } catch (Exception e) {
+                name = "Без имени";
+            }
+            player = new BnCPlayer(id, name, top.get(id));
+            text.append(counter).append(": ")
+                    .append(player.getLink())
+                    .append(" (").append(player.getScore()).append(")");
+            counter++;
+        }
+        handler.sendMessage(chatId, text.toString());
     }
 
     public void bnchelp(Message message) {

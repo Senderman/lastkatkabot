@@ -102,6 +102,42 @@ public class MongoDBService implements DBService {
     }
 
     @Override
+    public NavigableMap<Integer, Integer> getTop() {
+        NavigableMap<Integer, Integer> topIds = new TreeMap<>();
+        for (int i = 0; i < 10; i++) {
+            int score = 0;
+            int id = 0;
+
+            var stats = userstats.find();
+            for (var doc : stats) {
+                if (doc.getInteger("bnc") == null)
+                    continue;
+                int tempScore = doc.getInteger("bnc");
+                if (tempScore > score && !topIds.containsKey(doc.getInteger("id"))) {
+                    score = tempScore;
+                    id = doc.getInteger("id");
+                }
+            }
+            if (id != 0) {
+                topIds.put(id, score);
+            }
+        }
+        return topIds;
+    }
+
+    @Override
+    public Long findChatWithUser(int id) throws Exception {
+        var chats = chatMembersDB.listCollectionNames();
+        for (var chat : chats) {
+            var chatId = Long.parseLong(chat);
+            if (getChatMembersCollection(chatId).find(Filters.eq("id", id)).first() != null) {
+                return chatId;
+            }
+        }
+        throw new Exception("Unable to find user");
+    }
+
+    @Override
     public void setUserLocale(int id, String locale) {
         var doc = userstats.find(Filters.eq("id", id)).first();
         if (doc == null)
