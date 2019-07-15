@@ -339,6 +339,9 @@ public class LastkatkaBotHandler extends BotHandler {
             case "/stats":
                 usercommandsHandler.dstats(message);
                 return true;
+            case "/top":
+                usercommandsHandler.bncTop(message);
+                return true;
             case "/bnc":
                 if (!bullsAndCowsGames.containsKey(chatId))
                     bullsAndCowsGames.put(chatId, new BullsAndCowsGame(message));
