@@ -79,6 +79,8 @@ public interface DBService {
 
     Map<Long, String> getAllowedChats();
 
+    void cleanup();
+
 
     boolean pairExistsToday(long chatId);
 
