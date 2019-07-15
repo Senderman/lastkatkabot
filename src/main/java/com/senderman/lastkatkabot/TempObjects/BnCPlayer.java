@@ -11,6 +11,10 @@ public class BnCPlayer extends TgUser implements Comparable<BnCPlayer> {
         this.score = score;
     }
 
+    public void setName(String name) {
+        super.name = name.replace("<", "&lt;").replace(">", "&gt;");
+    }
+
     public int getScore() {
         return score;
     }
