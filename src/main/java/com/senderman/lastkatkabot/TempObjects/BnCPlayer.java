@@ -1,6 +1,8 @@
 package com.senderman.lastkatkabot.TempObjects;
 
-public class BnCPlayer extends TgUser {
+import org.jetbrains.annotations.NotNull;
+
+public class BnCPlayer extends TgUser implements Comparable<BnCPlayer> {
 
     private final int score;
 
@@ -11,5 +13,10 @@ public class BnCPlayer extends TgUser {
 
     public int getScore() {
         return score;
+    }
+
+    @Override
+    public int compareTo(@NotNull BnCPlayer bnCPlayer) {
+        return this.score - bnCPlayer.score;
     }
 }
