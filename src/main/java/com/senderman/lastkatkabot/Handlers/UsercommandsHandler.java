@@ -210,7 +210,7 @@ public class UsercommandsHandler {
             player = new BnCPlayer(id, name, top.get(id));
             text.append(counter).append(": ")
                     .append(player.getLink())
-                    .append(" (").append(player.getScore()).append(")");
+                    .append(" (").append(player.getScore()).append(")\n");
             counter++;
         }
         handler.sendMessage(chatId, text.toString());
