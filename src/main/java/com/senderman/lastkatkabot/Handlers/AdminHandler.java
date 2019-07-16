@@ -37,25 +37,52 @@ public class AdminHandler {
                 String.format(Services.i18n().getString("ownerAdded", message), message.getReplyToMessage().getFrom().getFirstName()));
     }
 
-    public void listOwners(Message message) {
+    public void listUsers(Message message, DBService.COLLECTION_TYPE type) {
         var locale = Services.i18n().getLocale(message);
-        var ownersSet = Services.db().getTgUsers(DBService.COLLECTION_TYPE.ADMINS);
+        var users = Services.db().getTgUsers(type);
         var messageToSend = Methods.sendMessage().setChatId(message.getChatId());
 
-        if (!message.getFrom().getId().equals(Services.botConfig().getMainAdmin()) || !message.isUserMessage() || message.getFrom().getUserName().equals(handler.getBotUsername())) {
-            var adminList = new StringBuilder(Services.i18n().getString("adminList", locale) + "\n");
-            for (TgUser owner : ownersSet) {
-                adminList.append(owner.getLink()).append("\n");
+        boolean allAdminsAccess = false;
+        String title = "";
+        switch (type) {
+            case ADMINS:
+                title = "\uD83D\uDE0E <b>Админы бота:</b>\n";
+                break;
+            case BLACKLIST:
+                title = "\uD83D\uDE3E <b>Список плохих кис:</b>\n";
+                allAdminsAccess = true;
+                break;
+            case PREMIUM:
+                title = "\uD83D\uDC51 <b>Список премиум-пользователей:</b>\n";
+                break;
+        }
+
+        if (!message.isUserMessage() || (message.getFrom().getId() != Services.botConfig().getMainAdmin() && !allAdminsAccess)) {
+            var userlist = new StringBuilder(title);
+            for (TgUser user : users) {
+                userlist.append(user.getLink()).append("\n");
             }
-            messageToSend.setText(adminList.toString());
+            messageToSend.setText(userlist.toString());
         } else {
             var markup = new InlineKeyboardMarkup();
             ArrayList<List<InlineKeyboardButton>> rows = new ArrayList<>();
             List<InlineKeyboardButton> row = new ArrayList<>();
-            for (TgUser owner : ownersSet) {
+            String callback = "";
+            switch (type) {
+                case ADMINS:
+                    callback = LastkatkaBot.CALLBACK_DELETE_ADMIN;
+                    break;
+                case BLACKLIST:
+                    callback = LastkatkaBot.CALLBACK_DELETE_NEKO;
+                    break;
+                case PREMIUM:
+                    callback = LastkatkaBot.CALLBACK_DELETE_PREM;
+                    break;
+            }
+            for (TgUser user : users) {
                 row.add(new InlineKeyboardButton()
-                        .setText(owner.getName())
-                        .setCallbackData(LastkatkaBot.CALLBACK_DELETE_ADMIN + " " + owner.getId()));
+                        .setText(user.getName())
+                        .setCallbackData(callback + " " + user.getId()));
                 if (row.size() == 2) {
                     rows.add(row);
                     row = new ArrayList<>();
@@ -68,8 +95,7 @@ public class AdminHandler {
                     .setText(Services.i18n().getString("closeMenu", locale))
                     .setCallbackData(LastkatkaBot.CALLBACK_CLOSE_MENU)));
             markup.setKeyboard(rows);
-            messageToSend.setText(Services.i18n().getString("howToDeleteAdmin", locale))
-                    .setReplyMarkup(markup);
+            messageToSend.setText(title + "Для удаления пользователя нажмите на него").setReplyMarkup(markup);
         }
         handler.sendMessage(messageToSend);
     }
@@ -101,12 +127,6 @@ public class AdminHandler {
                 String.format(Services.i18n().getString("addPremium", message), prem.getLink()));
     }
 
-    /* TODO public void listPremiums(Message message) {
-
-    }*/
-
-    // TODO remPremium in CallbackHandler
-
     public void goodneko(Message message) {
         if (!message.isReply())
             return;
@@ -115,16 +135,6 @@ public class AdminHandler {
         handler.blacklist.remove(message.getReplyToMessage().getFrom().getId());
         handler.sendMessage(message.getChatId(),
                 String.format(Services.i18n().getString("goodneko", message), neko.getLink()));
-    }
-
-    public void nekos(Message message) {
-        var badnekos = new StringBuilder().append(Services.i18n().getString("nekolist", message)).append("\n\n");
-        var nekoSet = Services.db().getTgUsers(DBService.COLLECTION_TYPE.BLACKLIST);
-        for (TgUser neko : nekoSet) {
-            badnekos.append(neko.getLink()).append("\n");
-        }
-        handler.sendMessage(Methods.sendMessage(message.getChatId(), badnekos.toString())
-                .disableNotification());
     }
 
     public void update(Message message) {
