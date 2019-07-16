@@ -215,9 +215,8 @@ public class LastkatkaBotHandler extends BotHandler {
         } else if (data.startsWith(LastkatkaBot.CALLBACK_DELETE_CHAT)) {
             callbackHandler.deleteChat(query);
             adminHandler.chats(query.getMessage());
-        } else if (data.startsWith(LastkatkaBot.CALLBACK_DELETE_ADMIN)) {
-            callbackHandler.deleteAdmin(query);
-            adminHandler.listOwners(query.getMessage());
+        } else if (data.startsWith("deleteuser_")) {
+            callbackHandler.deleteUser(query);
         } else if (data.startsWith(LastkatkaBot.CALLBACK_SET_LANG)) {
             callbackHandler.setLocale(query);
         } else {
@@ -452,10 +451,13 @@ public class LastkatkaBotHandler extends BotHandler {
                 adminHandler.goodneko(message);
                 return true;
             case "/nekos":
-                adminHandler.nekos(message);
+                adminHandler.listUsers(message, DBService.COLLECTION_TYPE.BLACKLIST);
                 return true;
             case "/owners":
-                adminHandler.listOwners(message);
+                adminHandler.listUsers(message, DBService.COLLECTION_TYPE.ADMINS);
+                return true;
+            case "/prem":
+                adminHandler.listUsers(message, DBService.COLLECTION_TYPE.PREMIUM);
                 return true;
             case "/critical":
                 duelController.critical(message);

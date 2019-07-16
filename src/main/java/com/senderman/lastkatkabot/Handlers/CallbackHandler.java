@@ -8,6 +8,7 @@ import com.senderman.lastkatkabot.Services;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 public class CallbackHandler {
 
@@ -173,16 +174,41 @@ public class CallbackHandler {
         Methods.deleteMessage(query.getMessage().getChatId(), query.getMessage().getMessageId()).call(handler);
     }
 
-    public void deleteAdmin(CallbackQuery query) {
-        var adminId = Integer.parseInt(query.getData().split(" ")[1]);
-        Services.db().removeTGUser(adminId, DBService.COLLECTION_TYPE.ADMINS);
-        handler.admins.remove(adminId);
+    public void deleteUser(CallbackQuery query) {
+        DBService.COLLECTION_TYPE type;
+        Set<Integer> userIds;
+        String listName;
+        switch (query.getData().split(" ")[0]) {
+            case LastkatkaBot.CALLBACK_DELETE_ADMIN:
+                type = DBService.COLLECTION_TYPE.ADMINS;
+                userIds = handler.admins;
+                listName = "админов";
+                break;
+            case LastkatkaBot.CALLBACK_DELETE_NEKO:
+                type = DBService.COLLECTION_TYPE.BLACKLIST;
+                userIds = handler.blacklist;
+                listName = "плохих кошечек";
+                break;
+            case LastkatkaBot.CALLBACK_DELETE_PREM:
+                type = DBService.COLLECTION_TYPE.PREMIUM;
+                userIds = handler.premiumUsers;
+                listName = "премиум-пользователей";
+                break;
+            default:
+                type = null;
+                userIds = handler.admins;
+                listName = "";
+                break;
+        }
+        var userId = Integer.parseInt(query.getData().split(" ")[1]);
+        Services.db().removeTGUser(userId, type);
+        userIds.remove(userId);
         Methods.answerCallbackQuery()
                 .setShowAlert(true)
-                .setText(Services.i18n().getString("adminDeleted", Services.i18n().getLocale(query)))
+                .setText("Пользователь удален из списка")
                 .setCallbackQueryId(query.getId())
                 .call(handler);
-        handler.sendMessage(adminId, Services.i18n().getString("adminDeletedMessage", Services.db().getUserLocale(adminId)));
+        handler.sendMessage(userId, "Разработчик удалил вас из " + listName + " бота!");
         Methods.deleteMessage(query.getMessage().getChatId(), query.getMessage().getMessageId()).call(handler);
     }
 
