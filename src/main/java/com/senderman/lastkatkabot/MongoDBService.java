@@ -104,26 +104,13 @@ public class MongoDBService implements DBService {
 
     @Override
     public List<BnCPlayer> getTop() {
-        List<BnCPlayer> top = new ArrayList<>();
-        List<Integer> topIds = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            int score = 0;
-            int id = 0;
-
-            var stats = userstats.find();
-            for (var doc : stats) {
-                if (doc.getInteger("bnc") == null)
-                    continue;
-                int tempScore = doc.getInteger("bnc");
-                if (tempScore > score && !topIds.contains(doc.getInteger("id"))) {
-                    score = tempScore;
-                    id = doc.getInteger("id");
-                }
-            }
-            if (id != 0) {
-                top.add(new BnCPlayer(id, "Без имени", score));
-                topIds.add(id);
-            }
+        var bnsPlayers = userstats
+                .find(Filters.exists("bnc", true))
+                .sort(new Document("bnc", -1))
+                .limit(10);
+        List<BnCPlayer> top = new ArrayList<>(10);
+        for (var doc : bnsPlayers) {
+            top.add(new BnCPlayer(doc.getInteger("id"), "Без имени", doc.getInteger("bnc")));
         }
         return top;
     }
