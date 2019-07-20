@@ -199,10 +199,9 @@ public class UsercommandsHandler {
             }
             text.append(counter).append(": ");
             if (message.isUserMessage())
-                text.append(player.getName());
-            else
                 text.append(player.getLink());
-
+            else
+                text.append(player.getName());
             text.append(" (").append(player.getScore()).append(")\n");
             counter++;
         }
