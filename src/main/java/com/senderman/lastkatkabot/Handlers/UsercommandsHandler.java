@@ -184,10 +184,6 @@ public class UsercommandsHandler {
 
     public void bncTop(Message message) {
         var chatId = message.getChatId();
-        if (!message.isUserMessage()) {
-            handler.sendMessage(chatId, "Команду можно использовать только в лс!");
-            return;
-        }
 
         handler.sendMessage(chatId, "Сортируем список, находим имена...");
         List<BnCPlayer> top = Services.db().getTop();
@@ -201,9 +197,13 @@ public class UsercommandsHandler {
 
             } catch (Exception ignored) {
             }
-            text.append(counter).append(": ")
-                    .append(player.getLink())
-                    .append(" (").append(player.getScore()).append(")\n");
+            text.append(counter).append(": ");
+            if (message.isUserMessage())
+                text.append(player.getName());
+            else
+                text.append(player.getLink());
+
+            text.append(" (").append(player.getScore()).append(")\n");
             counter++;
         }
         handler.sendMessage(chatId, text.toString());
