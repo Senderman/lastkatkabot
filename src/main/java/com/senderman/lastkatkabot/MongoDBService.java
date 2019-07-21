@@ -116,6 +116,24 @@ public class MongoDBService implements DBService {
     }
 
     @Override
+    public void setUserCity(int id, String city) {
+        var doc = userstats.find(Filters.eq("id", id)).first();
+        if (doc == null)
+            initStats(id);
+
+        userstats.updateOne(Filters.eq("id", id), new Document("$set", new Document("city", city)));
+    }
+
+    @Override
+    public String getUserCity(int id) {
+        var doc = userstats.find(Filters.eq("id", id)).first();
+        if (doc == null)
+            return null;
+
+        return doc.getString("city");
+    }
+
+    @Override
     public Long findChatWithUser(int id) throws Exception {
         var chats = chatMembersDB.listCollectionNames();
         for (var chat : chats) {

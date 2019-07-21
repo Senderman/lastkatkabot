@@ -311,6 +311,9 @@ public class LastkatkaBotHandler extends BotHandler {
             case "/stats":
                 usercommandsHandler.dstats(message);
                 return true;
+            case "/weather":
+                usercommandsHandler.weather(message);
+                return true;
             case "/top":
                 usercommandsHandler.bncTop(message);
                 return true;

@@ -23,6 +23,10 @@ public interface DBService {
 
     List<BnCPlayer> getTop(); // return map of <id, score> sorted by descending order
 
+    void setUserCity(int id, String city);
+
+    String getUserCity(int id);
+
 
     Long findChatWithUser(int id) throws Exception;
 
