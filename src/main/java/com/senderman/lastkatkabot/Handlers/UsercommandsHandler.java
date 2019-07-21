@@ -154,7 +154,10 @@ public class UsercommandsHandler {
 
     public void weather(Message message) {
         var chatId = message.getChatId();
-        String city = message.getText().replaceAll("^/weather", "").strip().toLowerCase();
+        String city = message.getText()
+                .replaceAll("^/weather", "")
+                .replaceAll("@" + handler.getBotUsername(), "")
+                .strip().toLowerCase();
         if (city.isBlank()) {
             city = Services.db().getUserCity(message.getFrom().getId());
             if (city == null) {
