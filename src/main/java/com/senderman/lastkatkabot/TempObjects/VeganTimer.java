@@ -9,13 +9,11 @@ import java.util.Set;
 
 public class VeganTimer {
     private final long chatId;
-    private final String locale;
     private Set<Integer> vegans;
     private boolean runTimer = true;
 
     public VeganTimer(long chatId) {
         this.chatId = chatId;
-        locale = Services.db().getChatLocale(chatId);
         vegans = new HashSet<>();
         new Thread(this::startVeganTimer).start();
     }
@@ -25,7 +23,8 @@ public class VeganTimer {
             Thread.sleep(60000);
             for (int i = 4; i > 0 && runTimer; i--) {
                 Services.handler().sendMessage(chatId,
-                        String.format(Services.i18n().getString("joinTime", locale), i));
+                        String.format("Осталось %1$d минуты чтобы джойнуться\n\n" +
+                                "Джоин --> /join@veganwarsbot", i));
                 Thread.sleep(60000);
 
             }
@@ -48,9 +47,9 @@ public class VeganTimer {
 
         vegans.add(id);
         int count = vegans.size();
-        String toSend = String.format(Services.i18n().getString("playersJoined", locale), count);
+        String toSend = String.format("Джойнулось %1$d игроков", count);
         if (count % 2 != 0 && count > 2) {
-            toSend += "\n" + Services.i18n().getString("ratWarning", locale);
+            toSend += "\nБудет крыса!";
         }
         Services.handler().sendMessage(chatId, toSend);
     }
@@ -61,9 +60,9 @@ public class VeganTimer {
 
         vegans.remove(id);
         int count = getVegansAmount();
-        String toSend = String.format(Services.i18n().getString("playersLeft", locale), count);
+        String toSend = String.format("Осталось %1$d игроков", count);
         if (count % 2 != 0 && count > 2) {
-            toSend += "\n" + Services.i18n().getString("ratWarning", locale);
+            toSend += "\nБудет крыса!";
         }
         Services.handler().sendMessage(chatId, toSend);
     }

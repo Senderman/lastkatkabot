@@ -5,7 +5,6 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.api.methods.send.SendMessageMethod;
 import com.senderman.lastkatkabot.Handlers.*;
 import com.senderman.lastkatkabot.TempObjects.BullsAndCowsGame;
-import com.senderman.lastkatkabot.TempObjects.RelayGame;
 import com.senderman.lastkatkabot.TempObjects.VeganTimer;
 import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -29,7 +28,6 @@ public class LastkatkaBotHandler extends BotHandler {
     public final Set<Long> allowedChats;
     public final Map<Long, VeganTimer> veganTimers;
     public final Map<Long, BullsAndCowsGame> bullsAndCowsGames;
-    public final Map<Long, RelayGame> relayGames;
     private final AdminHandler adminHandler;
     private final UsercommandsHandler usercommandsHandler;
     private final DuelController duelController;
@@ -44,7 +42,6 @@ public class LastkatkaBotHandler extends BotHandler {
         Services.setHandler(this);
         Services.setDBService(new MongoDBService());
         Services.db().cleanup();
-        Services.setLocalization(new LastResourceBundleLocalizationService("Language", Services.db()));
 
         admins = Services.db().getTgUsersIds(DBService.COLLECTION_TYPE.ADMINS);
         premiumUsers = Services.db().getTgUsersIds(DBService.COLLECTION_TYPE.PREMIUM);
@@ -60,10 +57,8 @@ public class LastkatkaBotHandler extends BotHandler {
         duelController = new DuelController(this);
         veganTimers = new HashMap<>();
         bullsAndCowsGames = Services.db().getBnCGames();
-        relayGames = new HashMap<>();
 
-        sendMessage(mainAdmin,
-                Services.i18n().getString("botIsReady", Services.db().getUserLocale(mainAdmin)));
+        sendMessage(mainAdmin, "Бот готов к работе!");
     }
 
     @Override
@@ -126,25 +121,6 @@ public class LastkatkaBotHandler extends BotHandler {
         if (text.matches("\\d{4,10}") && bullsAndCowsGames.containsKey(chatId) && isNotInBlacklist(message)) {
             bullsAndCowsGames.get(chatId).check(message);
             return null;
-        }
-
-        // for relay
-        if (message.isUserMessage() && text.matches("\\p{L}{4,10}")) {
-            RelayGame game = null;
-            for (var gameChatId : relayGames.keySet()) {
-                if (relayGames.get(gameChatId).players.contains(message.getFrom().getId())) {
-                    game = relayGames.get(gameChatId);
-                }
-            }
-            if (game != null) {
-                if (game.needToAskLeader && message.getFrom().getId() == game.leaderId) {
-                    game.checkLeaderWord(message);
-                    return null;
-                } else if (game.isGoing && !game.needToAskLeader) {
-                    game.checkWord(message);
-                    return null;
-                }
-            }
         }
 
         if (!message.isCommand())
@@ -217,8 +193,6 @@ public class LastkatkaBotHandler extends BotHandler {
             adminHandler.chats(query.getMessage());
         } else if (data.startsWith("deleteuser_")) {
             callbackHandler.deleteUser(query);
-        } else if (data.startsWith(LastkatkaBot.CALLBACK_SET_LANG)) {
-            callbackHandler.setLocale(query);
         } else {
             switch (data) {
                 case LastkatkaBot.CALLBACK_REGISTER_IN_TOURNAMENT:
@@ -260,24 +234,22 @@ public class LastkatkaBotHandler extends BotHandler {
                     .call(this); // say hi to new member
 
         } else if (newMembers.get(0).getUserName().equals(getBotUsername())) {
-            var locale = Services.i18n().getLocale(message);
             if (allowedChats.contains(chatId)) {// Say hello to new group if chat is allowed
-                sendMessage(chatId, Services.i18n().getString("chatAllowed", locale));
+                sendMessage(chatId, "Этот чат находится в списке разрешенных. Бот готов к работе здесь");
                 return;
             }
 
-            sendMessage(chatId, Services.i18n().getString("chatNotAllowed", locale));
-            var mainAdminLocale = Services.db().getUserLocale(Services.botConfig().getMainAdmin());
+            sendMessage(chatId, "Чата нет в списке разрешенных. Дождитесь решения разработчика");
             var row1 = List.of(new InlineKeyboardButton()
-                    .setText(Services.i18n().getString("acceptChat", mainAdminLocale))
+                    .setText("Добавить")
                     .setCallbackData(LastkatkaBot.CALLBACK_ALLOW_CHAT + chatId));
             var row2 = List.of(new InlineKeyboardButton()
-                    .setText(Services.i18n().getString("denyChat", mainAdminLocale))
+                    .setText("Отклонить")
                     .setCallbackData(LastkatkaBot.CALLBACK_DONT_ALLOW_CHAT + chatId));
             var markup = new InlineKeyboardMarkup();
             markup.setKeyboard(List.of(row1, row2));
             sendMessage(Methods.sendMessage((long) Services.botConfig().getMainAdmin(),
-                    String.format(Services.i18n().getString("addChat", mainAdminLocale),
+                    String.format("Добавить чат %1$s (%2$d) в список разрешенных? - %3$s",
                             message.getChat().getTitle(), chatId, message.getFrom().getFirstName()))
                     .setReplyMarkup(markup));
         }
@@ -346,7 +318,7 @@ public class LastkatkaBotHandler extends BotHandler {
                 if (!bullsAndCowsGames.containsKey(chatId))
                     bullsAndCowsGames.put(chatId, new BullsAndCowsGame(message));
                 else
-                    sendMessage(chatId, Services.i18n().getString("bncIsGoing", Services.db().getChatLocale(chatId)));
+                    sendMessage(chatId, "В этом чате игра уже идет!");
                 return true;
             case "/bncinfo":
                 if (bullsAndCowsGames.containsKey(chatId))
@@ -363,40 +335,10 @@ public class LastkatkaBotHandler extends BotHandler {
             case "/bnchelp":
                 usercommandsHandler.bnchelp(message);
                 return true;
-            case "/relay":
-                if (message.isUserMessage())
-                    return true;
-                if (relayGames.containsKey(chatId))
-                    sendMessage(chatId, "В этом чате игра уже идет!");
-                else
-                    relayGames.put(chatId, new RelayGame(message));
-                return true;
-            case "/joinrelay":
-                if (relayGames.containsKey(chatId)) {
-                    for (var game : relayGames.values()) {
-                        if (game.players.contains(message.getFrom().getId())) {
-                            sendMessage(chatId, "Вы уже в игре в одном из чатов!");
-                            return true;
-                        }
-                    }
-                    relayGames.get(chatId).addPlayer(message);
-                }
-                return true;
-            case "/leaverelay":
-                if (relayGames.containsKey(chatId))
-                    relayGames.get(chatId).kickPlayer(message);
-                return true;
-            case "/startrelay":
-                if (relayGames.containsKey(chatId) && !relayGames.get(chatId).isGoing)
-                    relayGames.get(chatId).startGame();
-                return true;
-            case "/relayhelp":
-                sendMessage(chatId, RelayGame.relayHelp());
-                return true;
             case "/reset":
                 if (veganTimers.containsKey(chatId)) {
                     veganTimers.get(chatId).stop();
-                    sendMessage(chatId, Services.i18n().getString("vegansRemoved", Services.db().getChatLocale(chatId)));
+                    sendMessage(chatId, "Список игроков сброшен!");
                 }
                 return true;
             case "/feedback":
@@ -404,9 +346,6 @@ public class LastkatkaBotHandler extends BotHandler {
                 return true;
             case "/help":
                 usercommandsHandler.help(message);
-                return true;
-            case "/setlocale":
-                usercommandsHandler.setLocale(message);
                 return true;
             case "/getinfo":
                 usercommandsHandler.getinfo(message);
@@ -485,9 +424,10 @@ public class LastkatkaBotHandler extends BotHandler {
         return admins.contains(message.getFrom().getId());
     }
 
-    private boolean isPremiumUser(Message message) {
+    // TODO uncomment when needed
+    /*private boolean isPremiumUser(Message message) {
         return premiumUsers.contains(message.getFrom().getId());
-    }
+    }*/
 
     private boolean isNotInBlacklist(Message message) {
         var result = blacklist.contains(message.getFrom().getId());

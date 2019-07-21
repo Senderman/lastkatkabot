@@ -128,26 +128,6 @@ public class MongoDBService implements DBService {
     }
 
     @Override
-    public void setUserLocale(int id, String locale) {
-        var doc = userstats.find(Filters.eq("id", id)).first();
-        if (doc == null)
-            initStats(id);
-        userstats.updateOne(Filters.eq("id", id),
-                new Document("$set", new Document("locale", locale)));
-    }
-
-    @Override
-    public String getUserLocale(int id) {
-        var doc = userstats.find(Filters.eq("id", id)).first();
-        if (doc == null) {
-            initStats(id);
-            return "en";
-        }
-        var locale = doc.getString("locale");
-        return (locale != null) ? locale : "en";
-    }
-
-    @Override
     public void addTgUser(int id, String name, COLLECTION_TYPE type) {
         var collection = Objects.requireNonNull(getUsersCollection(type));
         if (collection.find(Filters.eq("id", id)).first() == null)
@@ -162,7 +142,7 @@ public class MongoDBService implements DBService {
     }
 
     @Override
-    public Set<TgUser> getTgUsers(COLLECTION_TYPE collection_type) {
+    public Set<TgUser> getTgUsersFromList(COLLECTION_TYPE collection_type) {
         Set<TgUser> result = new HashSet<>();
         var collection = Objects.requireNonNull(getUsersCollection(collection_type));
         for (var doc : collection.find()) {
@@ -228,27 +208,6 @@ public class MongoDBService implements DBService {
     public void removeOldUsers(long chatId, int date) {
         var chat = getChatMembersCollection(chatId);
         chat.deleteMany(Filters.lt("lastMessageDate", date));
-    }
-
-    @Override
-    public void setChatLocale(long chatId, String locale) {
-        var doc = allowedchats.find(Filters.eq("chatId", chatId)).first();
-        if (doc == null) {
-            allowedchats.insertOne(new Document("chatId", chatId)
-                    .append("locale", locale));
-        } else {
-            allowedchats.updateOne(Filters.eq("chatId", chatId),
-                    new Document("$set", new Document("locale", locale)));
-        }
-    }
-
-    @Override
-    public String getChatLocale(long chatId) {
-        var doc = allowedchats.find(Filters.eq("chatId", chatId)).first();
-        if (doc == null)
-            return "en";
-        var locale = doc.getString("locale");
-        return (locale != null) ? locale : "en";
     }
 
     @Override

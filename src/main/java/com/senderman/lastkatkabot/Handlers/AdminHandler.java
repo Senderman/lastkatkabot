@@ -34,12 +34,38 @@ public class AdminHandler {
                 message.getReplyToMessage().getFrom().getFirstName(), DBService.COLLECTION_TYPE.ADMINS);
         handler.admins.add(message.getReplyToMessage().getFrom().getId());
         handler.sendMessage(message.getChatId(),
-                String.format(Services.i18n().getString("ownerAdded", message), message.getReplyToMessage().getFrom().getFirstName()));
+                String.format("✅ %1$s теперь мой хозяин!", message.getReplyToMessage().getFrom().getFirstName()));
+    }
+
+    public void badneko(Message message) {
+        if (!message.isReply())
+            return;
+        if (handler.blacklist.contains(message.getReplyToMessage().getFrom().getId()))
+            return;
+
+        var neko = new TgUser(message.getReplyToMessage().getFrom().getId(), message.getReplyToMessage().getFrom().getFirstName());
+        Services.db().addTgUser(neko.getId(), neko.getName(), DBService.COLLECTION_TYPE.BLACKLIST);
+        handler.blacklist.add(neko.getId());
+        handler.sendMessage(message.getChatId(),
+                String.format("\uD83D\uDE3E %1$s - плохая киса!", neko.getLink()));
+
+    }
+
+    public void addPremium(Message message) {
+        if (!message.isReply())
+            return;
+        if (handler.premiumUsers.contains(message.getReplyToMessage().getFrom().getId()))
+            return;
+
+        var prem = new TgUser(message.getReplyToMessage().getFrom().getId(), message.getReplyToMessage().getFrom().getFirstName());
+        Services.db().addTgUser(prem.getId(), prem.getName(), DBService.COLLECTION_TYPE.PREMIUM);
+        handler.premiumUsers.add(message.getReplyToMessage().getFrom().getId());
+        handler.sendMessage(message.getChatId(),
+                String.format("\uD83D\uDC51 %1$s теперь премиум пользователь!", prem.getLink()));
     }
 
     public void listUsers(Message message, DBService.COLLECTION_TYPE type) {
-        var locale = Services.i18n().getLocale(message);
-        var users = Services.db().getTgUsers(type);
+        var users = Services.db().getTgUsersFromList(type);
         var messageToSend = Methods.sendMessage().setChatId(message.getChatId());
 
         boolean allAdminsAccess = false;
@@ -92,39 +118,12 @@ public class AdminHandler {
                 rows.add(row);
             }
             rows.add(List.of(new InlineKeyboardButton()
-                    .setText(Services.i18n().getString("closeMenu", locale))
+                    .setText("Закрыть меню")
                     .setCallbackData(LastkatkaBot.CALLBACK_CLOSE_MENU)));
             markup.setKeyboard(rows);
             messageToSend.setText(title + "Для удаления пользователя нажмите на него").setReplyMarkup(markup);
         }
         handler.sendMessage(messageToSend);
-    }
-
-    public void badneko(Message message) {
-        if (!message.isReply())
-            return;
-        if (handler.blacklist.contains(message.getReplyToMessage().getFrom().getId()))
-            return;
-
-        var neko = new TgUser(message.getReplyToMessage().getFrom().getId(), message.getReplyToMessage().getFrom().getFirstName());
-        Services.db().addTgUser(neko.getId(), neko.getName(), DBService.COLLECTION_TYPE.BLACKLIST);
-        handler.blacklist.add(neko.getId());
-        handler.sendMessage(message.getChatId(),
-                String.format(Services.i18n().getString("badneko", message), neko.getLink()));
-
-    }
-
-    public void addPremium(Message message) {
-        if (!message.isReply())
-            return;
-        if (handler.premiumUsers.contains(message.getReplyToMessage().getFrom().getId()))
-            return;
-
-        var prem = new TgUser(message.getReplyToMessage().getFrom().getId(), message.getReplyToMessage().getFrom().getFirstName());
-        Services.db().addTgUser(prem.getId(), prem.getName(), DBService.COLLECTION_TYPE.PREMIUM);
-        handler.premiumUsers.add(message.getReplyToMessage().getFrom().getId());
-        handler.sendMessage(message.getChatId(),
-                String.format(Services.i18n().getString("addPremium", message), prem.getLink()));
     }
 
     public void goodneko(Message message) {
@@ -134,13 +133,13 @@ public class AdminHandler {
         Services.db().removeTGUser(neko.getId(), DBService.COLLECTION_TYPE.BLACKLIST);
         handler.blacklist.remove(message.getReplyToMessage().getFrom().getId());
         handler.sendMessage(message.getChatId(),
-                String.format(Services.i18n().getString("goodneko", message), neko.getLink()));
+                String.format("\uD83D\uDE38 %1$s - хорошая киса!", neko.getLink()));
     }
 
     public void update(Message message) {
         var params = message.getText().split("\n");
         if (params.length < 2) {
-            handler.sendMessage(message.getChatId(), Services.i18n().getString("argsError", message));
+            handler.sendMessage(message.getChatId(),"Неверное количество аргументов!");
             return;
         }
         var update = new StringBuilder().append("\uD83D\uDCE3 <b>ВАЖНОЕ ОБНОВЛЕНИЕ:</b> \n\n");
@@ -153,9 +152,8 @@ public class AdminHandler {
     }
 
     public void chats(Message message) {
-        var locale = Services.i18n().getLocale(message);
         if (!message.isUserMessage()) {
-            handler.sendMessage(message.getChatId(), Services.i18n().getString("pmOnly", locale));
+            handler.sendMessage(message.getChatId(), "Команду можно использовать только в лс бота!");
             return;
         }
         var markup = new InlineKeyboardMarkup();
@@ -175,11 +173,10 @@ public class AdminHandler {
             rows.add(row);
         }
         rows.add(List.of(new InlineKeyboardButton()
-                .setText(Services.i18n().getString("closeMenu", locale))
+                .setText("Закрыть меню")
                 .setCallbackData(LastkatkaBot.CALLBACK_CLOSE_MENU)));
         markup.setKeyboard(rows);
-        handler.sendMessage(Methods.sendMessage(message.getChatId(),
-                Services.i18n().getString("howToDeleteChat", locale))
+        handler.sendMessage(Methods.sendMessage(message.getChatId(), "Для удаления чата нажите на него")
                 .setReplyMarkup(markup));
     }
 
@@ -202,8 +199,7 @@ public class AdminHandler {
     }
 
     public void announce(Message message) {
-        var locale = Services.i18n().getLocale(message);
-        handler.sendMessage(message.getChatId(), Services.i18n().getString("broadcastStarted", locale));
+        handler.sendMessage(message.getChatId(), "Рассылка запущена. На время рассылки бот будет недоступен");
         var text = message.getText();
         text = "\uD83D\uDCE3 <b>Объявление</b>\n\n" + text.split("\\s+", 2)[1];
         var usersIds = Services.db().getAllUsersIds();
@@ -217,10 +213,10 @@ public class AdminHandler {
             }
         }
         handler.sendMessage(message.getChatId(),
-                String.format(Services.i18n().getString("broadcastResult", locale), counter, usersIds.size()));
+                String.format("Объявление получили %1$d/%2$d человек", counter, usersIds.size()));
     }
 
     public void setupHelp(Message message) {
-        handler.sendMessage(Methods.sendMessage(message.getChatId(), Services.i18n().getString("setupHelp", message)));
+        handler.sendMessage(message.getChatId(), Services.botConfig().getSetupHelp());
     }
 }

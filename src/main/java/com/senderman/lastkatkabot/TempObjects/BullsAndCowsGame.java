@@ -22,7 +22,6 @@ public class BullsAndCowsGame {
     private final long startTime;
     private final String answer;
     private final StringBuilder history;
-    private final String locale;
     private final Set<Integer> messagesToDelete;
     private final Set<Character> antiRuinSet;
     private final Set<Integer> votedUsers;
@@ -44,7 +43,6 @@ public class BullsAndCowsGame {
         } catch (Exception e) {
             this.length = 4;
         }
-        locale = Services.i18n().getLocale(message);
         attempts = (int) (this.length * 2.5);
         voted = 0;
         antiRuinEnabled = false;
@@ -53,11 +51,16 @@ public class BullsAndCowsGame {
         antiRuinSet = new HashSet<>();
         votedUsers = new HashSet<>();
         checkedNumbers = new HashSet<>();
-        gameMessage(chatId, Services.i18n().getString("generatingNumber", locale));
+        gameMessage(chatId, "Генерируем число...");
         answer = generateRandom();
         startTime = new Date().getTime();
         Services.db().saveBncGame(chatId, this);
-        gameMessage(chatId, Services.i18n().getString("bncStart", locale));
+        gameMessage(chatId, "Число загадано!\n" +
+                "Отправляйте в чат ваши варианты, они должны состоять только из неповторяющихся чисел!\n" +
+                "Правила игры - /bnchelp.\n" +
+                "Вкл/выкл режима антируина (когда все цифры известны) - /bncruin\n" +
+                "Просмотр хода игры - /bncinfo\n" +
+                "Остановить игру (голосование) - /bncstop");
     }
 
     public void check(Message message) {
@@ -69,10 +72,10 @@ public class BullsAndCowsGame {
 
         if (number.equals(answer)) { // win
             history.insert(0,
-                    String.format(Services.i18n().getString("bncWin", locale) + "\n\n",
+                    String.format("%1$s выиграл за %2$d попыток! %3$s - правильный ответ!\n\n",
                             message.getFrom().getFirstName(), (int) (length * 2.5 - (attempts - 1)), answer));
             history.append("\n")
-                    .append(String.format(Services.i18n().getString("timeSpent", locale), getSpentTime()));
+                    .append(String.format("Вот столько вы потратили времени: %1$s", getSpentTime()));
             Services.handler().sendMessage(chatId, history.toString());
             Services.db().incBNCWins(message.getFrom().getId(), length);
             endGame();
@@ -81,7 +84,7 @@ public class BullsAndCowsGame {
         }
 
         if (hasRepeatingDigits(number)) {
-            gameMessage(chatId, Services.i18n().getString("noRepeatingDigits", locale));
+            gameMessage(chatId, "Загаданное число не может содержать повторяющиеся числа!");
             return;
         }
 
@@ -95,7 +98,7 @@ public class BullsAndCowsGame {
                 }
             }
             if (ruined) {
-                gameMessage(chatId, Services.i18n().getString("bncRuin", locale));
+                gameMessage(chatId, "Все правильные цифры уже известны, следите за игрой!");
                 if (antiRuinEnabled)
                     return;
             }
@@ -104,7 +107,7 @@ public class BullsAndCowsGame {
         var results = calculate(number);
 
         if (checkedNumbers.contains(number)) {
-            gameMessage(chatId, String.format(Services.i18n().getString("checkedAlready", locale),
+            gameMessage(chatId, String.format("%1$s - уже проверяли! %2$dБ %3$dК",
                     number, results[0], results[1]));
             return;
         }
@@ -115,12 +118,12 @@ public class BullsAndCowsGame {
                 antiRuinSet.add(number.charAt(i));
             }
         }
-        history.append(String.format(Services.i18n().getString("bncHistory", locale) + "\n",
+        history.append(String.format("%1$s - %2$s: %3$dБ %4$dК\n",
                 message.getFrom().getFirstName(), number, results[0], results[1]));
 
         if (attempts > 0) {
             gameMessage(chatId,
-                    String.format(Services.i18n().getString("bncCheck", locale) + "\n",
+                    String.format("%1$s: %2$dБ %3$dК, попыток: %4$d\n",
                             number, results[0], results[1], attempts));
             checkedNumbers.add(number);
             Services.db().saveBncGame(chatId, this);
@@ -131,14 +134,17 @@ public class BullsAndCowsGame {
 
     public void sendGameInfo(Message message) {
         messagesToDelete.add(message.getMessageId());
-        var info = String.format(Services.i18n().getString("bncInfo", locale), length, attempts, history.toString());
+        var info = String.format("Длина числа: %1$d\n" +
+                "Попыток осталось: %2$d\n" +
+                "История:\n" +
+                "%3$s", length, attempts, history.toString());
         gameMessage(chatId, info);
     }
 
     public void changeAntiRuin() {
         antiRuinEnabled = !antiRuinEnabled;
-        String key = antiRuinEnabled ? "bncRuinOn" : "bncRuinOff";
-        gameMessage(chatId, Services.i18n().getString(key, locale));
+        String status = antiRuinEnabled ? "Антируин включен!" : "Антируин выключен!";
+        gameMessage(chatId, status);
     }
 
     public void createPoll(Message message) {
@@ -150,7 +156,9 @@ public class BullsAndCowsGame {
 
         gameMessage(Methods.sendMessage()
                 .setChatId(chatId)
-                .setText(String.format(Services.i18n().getString("bncVote", locale), 5 - voted))
+                .setText(String.format("<b>Голосование за завершение игры</b>\n" +
+                        "Осталось %1$d голосов для завершения. Голос админа чата сразу заканчивает игру",
+                        5 - voted))
                 .setReplyMarkup(getEndgameMarkup())
                 .setParseMode(ParseMode.HTML));
     }
@@ -158,7 +166,7 @@ public class BullsAndCowsGame {
     public void addVote(CallbackQuery query) {
         if (votedUsers.contains(query.getFrom().getId())) {
             Methods.answerCallbackQuery()
-                    .setText(Services.i18n().getString("votedAlready", locale))
+                    .setText("Вы уже голосовали!")
                     .setShowAlert(true)
                     .setCallbackQueryId(query.getId())
                     .call(Services.handler());
@@ -173,7 +181,9 @@ public class BullsAndCowsGame {
 
         votedUsers.add(query.getFrom().getId());
         Methods.editMessageText()
-                .setText(String.format(Services.i18n().getString("bncVote", locale), 5 - voted))
+                .setText(String.format("<b>Голосование за завершение игры</b>\n" +
+                        "Осталось %1$d голосов для завершения. Голос админа чата сразу заканчивает игру",
+                        5 - voted))
                 .setChatId(chatId)
                 .setMessageId(query.getMessage().getMessageId())
                 .setReplyMarkup(getEndgameMarkup())
@@ -189,11 +199,11 @@ public class BullsAndCowsGame {
         messagesToDelete.add(Services.handler().sendMessage(sm).getMessageId());
     }
 
-    private InlineKeyboardMarkup getEndgameMarkup() {
+    private static InlineKeyboardMarkup getEndgameMarkup() {
         var markup = new InlineKeyboardMarkup();
         var rows = List.of(List.of(
                 new InlineKeyboardButton()
-                        .setText(Services.i18n().getString("vote", locale))
+                        .setText("Голосовать")
                         .setCallbackData(LastkatkaBot.CALLBACK_VOTE_BNC)));
         markup.setKeyboard(rows);
         return markup;
@@ -209,9 +219,9 @@ public class BullsAndCowsGame {
 
     private void gameOver() {
         history.insert(0,
-                String.format(Services.i18n().getString("bncLose", locale) + "\n\n", answer));
+                String.format("Вы проиграли! Ответ: %1$s\n\n", answer));
         history.append("\n")
-                .append(String.format(Services.i18n().getString("timeSpent", locale), getSpentTime()));
+                .append(String.format("Вот столько вы потратили времени: %1$s", getSpentTime()));
         Services.handler().sendMessage(chatId, history.toString());
         endGame();
     }

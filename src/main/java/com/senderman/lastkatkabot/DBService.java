@@ -23,17 +23,14 @@ public interface DBService {
 
     List<BnCPlayer> getTop(); // return map of <id, score> sorted by descending order
 
+
     Long findChatWithUser(int id) throws Exception;
 
     void addTgUser(int id, String name, COLLECTION_TYPE type);
 
     void removeTGUser(int id, COLLECTION_TYPE type);
 
-    void setUserLocale(int id, String locale);
-
-    String getUserLocale(int id);
-
-    Set<TgUser> getTgUsers(COLLECTION_TYPE type);
+    Set<TgUser> getTgUsersFromList(COLLECTION_TYPE type);
 
     Set<Integer> getTgUsersIds(COLLECTION_TYPE type);
 
@@ -47,10 +44,6 @@ public interface DBService {
     List<Integer> getChatMemebersIds(long chatId);
 
     void removeOldUsers(long chatId, int date);
-
-    void setChatLocale(long chatId, String locale);
-
-    String getChatLocale(long chatId);
 
 
     Map<Long, BullsAndCowsGame> getBnCGames();
