@@ -17,8 +17,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.logging.BotLogger;
 
-import java.io.IOException;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
@@ -163,15 +164,18 @@ public class UsercommandsHandler {
         }
         Document weatherPage;
         try {
-            weatherPage = Jsoup.parse(new URL("https://yandex.ru/pogoda/" + city), 10000);
-        } catch (IOException e) {
-            handler.sendMessage(chatId, "Ошибка запроса");
+            var searchPage = Jsoup.parse(new URL("https://yandex.ru/pogoda/search?request=" + URLEncoder.encode(city, StandardCharsets.UTF_8)), 10000);
+            var table = searchPage.selectFirst("div.grid");
+            var searchResult = table.selectFirst("li.place-list__item");
+            var link = searchResult.selectFirst("a").attr("href");
+            System.out.println("https://yandex.ru/pogoda" + link);
+            weatherPage = Jsoup.parse(new URL("https://yandex.ru" + link), 10000);
+
+        } catch (Exception e) {
+            handler.sendMessage(chatId, "Ошибка запроса/Город не найден");
             return;
         }
-        if (weatherPage.selectFirst("span.header-title__title-wrap").text().equals("Такой страницы не существует")) {
-            handler.sendMessage(chatId, "Город не существует!");
-            return;
-        }
+
         Services.db().setUserCity(message.getFrom().getId(), city);
 
         var title = weatherPage.selectFirst("span.header-title__title-wrap").text();
