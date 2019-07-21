@@ -165,17 +165,17 @@ public class UsercommandsHandler {
             if (city == null) {
                 handler.sendMessage(chatId, "Вы не указали город!");
                 return;
-            } else {
-                // find a city
-                try {
-                    var searchPage = Jsoup.parse(new URL("https://yandex.ru/pogoda/search?request=" + URLEncoder.encode(city, StandardCharsets.UTF_8)), 10000);
-                    var table = searchPage.selectFirst("div.grid");
-                    var searchResult = table.selectFirst("li.place-list__item");
-                    city = searchResult.selectFirst("a").attr("href");
-                } catch (Exception e) {
-                    handler.sendMessage(chatId, "Ошибка запроса/Город не найден");
-                    return;
-                }
+            }
+        } else {
+            // find a city
+            try {
+                var searchPage = Jsoup.parse(new URL("https://yandex.ru/pogoda/search?request=" + URLEncoder.encode(city, StandardCharsets.UTF_8)), 10000);
+                var table = searchPage.selectFirst("div.grid");
+                var searchResult = table.selectFirst("li.place-list__item");
+                city = searchResult.selectFirst("a").attr("href");
+            } catch (Exception e) {
+                handler.sendMessage(chatId, "Ошибка запроса/Город не найден");
+                return;
             }
         }
 
