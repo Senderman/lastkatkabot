@@ -185,9 +185,15 @@ public class UsercommandsHandler {
         var temperature = "\uD83C\uDF21: " + weatherPage.selectFirst("div.fact__temp").selectFirst("span.temp__value").text() + " °C";
         var feelings = weatherPage.selectFirst("div.fact__feelings").selectFirst("div.link__condition").text();
         var windData = weatherPage.selectFirst("dl.fact__wind-speed");
-        var windSpeed = windData.selectFirst("span.wind-speed").text();
-        var windUnitsAndDir = windData.selectFirst("span.fact__unit").text();
-        var wind = "\uD83D\uDCA8: " + windSpeed + " " + windUnitsAndDir;
+        String windSpeed, windUnitsAndDir, wind;
+        /*try {
+            windSpeed = windData.selectFirst("span.wind-speed").text();
+            windUnitsAndDir = windData.selectFirst("span.fact__unit").text();
+            wind = "\uD83D\uDCA8: " + windSpeed + " " + windUnitsAndDir;
+        } catch (NullPointerException e) {*/
+        wind = "\uD83D\uDCA8: " + windData.selectFirst("dd.term__value").text();
+        //}
+        
         var humidity = "\uD83D\uDCA7: " + weatherPage.selectFirst("dl.fact__humidity").selectFirst("dd").text() + "%";
         var pressure = "\uD83E\uDDED: " + weatherPage.selectFirst("dl.fact__pressure").selectFirst("dd").text();
 
