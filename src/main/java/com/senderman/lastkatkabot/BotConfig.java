@@ -45,6 +45,21 @@ public class BotConfig {
     @JsonProperty
     private String higif;
 
+    @JsonProperty
+    private String help;
+
+    @JsonProperty
+    private String adminHelp;
+
+    @JsonProperty
+    private String mainAdminHelp;
+
+    @JsonProperty
+    private String setupHelp;
+
+    @JsonProperty
+    private String[] loveStrings;
+
     public String getToken() {
         return token;
     }
@@ -147,5 +162,45 @@ public class BotConfig {
 
     public void setHigif(String higif) {
         this.higif = higif;
+    }
+
+    public String getHelp() {
+        return help;
+    }
+
+    public void setHelp(String help) {
+        this.help = help;
+    }
+
+    public String getAdminHelp() {
+        return adminHelp;
+    }
+
+    public void setAdminHelp(String adminHelp) {
+        this.adminHelp = adminHelp;
+    }
+
+    public String getMainAdminHelp() {
+        return mainAdminHelp;
+    }
+
+    public void setMainAdminHelp(String mainAdminHelp) {
+        this.mainAdminHelp = mainAdminHelp;
+    }
+
+    public String getSetupHelp() {
+        return setupHelp;
+    }
+
+    public void setSetupHelp(String setupHelp) {
+        this.setupHelp = setupHelp;
+    }
+
+    public String[] getLoveStrings() {
+        return loveStrings;
+    }
+
+    public void setLoveStrings(String[] loveStrings) {
+        this.loveStrings = loveStrings;
     }
 }

@@ -24,12 +24,11 @@ public class TournamentHandler {
         if (isEnabled)
             return;
 
-        var locale = Services.i18n().getLocale(message);
         members = new HashSet<>();
         membersIds = new HashSet<>();
         var params = message.getText().split("\n");
         if (params.length != 4) {
-            handler.sendMessage(message.getChatId(), Services.i18n().getString("argsError", locale));
+            handler.sendMessage(message.getChatId(), "Неверное количество аргументов!");
             return;
         }
 
@@ -38,9 +37,9 @@ public class TournamentHandler {
         roundName = params[3].strip();
 
         var checkText = new StringBuilder()
-                .append(Services.i18n().getString("checkData", locale))
+                .append("⚠️ Проверьте правильность введенных данных")
                 .append("\n\n")
-                .append(Services.i18n().getString("round", locale))
+                .append("<b>Раунд: </b>")
                 .append(roundName);
 
         if (isTeamMode) {
@@ -52,21 +51,15 @@ public class TournamentHandler {
                     members.add(paramString[j].replace("@", ""));
                 }
             }
-            checkText.append("\n")
-                    .append(Services.i18n().getString("teams", locale))
-                    .append(" ")
-                    .append(getTeamsAsString());
+            checkText.append("\n<b>Команды: </b> ").append(getTeamsAsString());
 
         } else {
             members.add(params[1].replace("@", "").strip());
             members.add(params[2].replace("@", "").strip());
         }
-        checkText.append("\n")
-                .append(Services.i18n().getString("members", locale))
-                .append(" ")
+        checkText.append("\n<b>Участники: </b>" )
                 .append(getMembersAsString())
-                .append("\n\n")
-                .append(Services.i18n().getString("tCommands", locale));
+                .append("\n\n/go - подтвердить, /ct - отменить");
 
         handler.sendMessage(Methods.sendMessage()
                 .setChatId(Services.botConfig().getLastvegan())
@@ -78,23 +71,23 @@ public class TournamentHandler {
         if (members.isEmpty() || isEnabled)
             return;
 
-        var locale = Services.db().getChatLocale(Services.botConfig().getLastvegan());
         var markup = new InlineKeyboardMarkup();
         var row1 = List.of(new InlineKeyboardButton()
-                .setText(Services.i18n().getString("remRestrs", locale))
+                .setText("Снять ограничения")
                 .setCallbackData(LastkatkaBot.CALLBACK_REGISTER_IN_TOURNAMENT)
         );
         var row2 = List.of(new InlineKeyboardButton()
-                .setText(Services.i18n().getString("tourGroup", locale))
+                .setText("Группа турнира")
                 .setUrl("https://t.me/" + Services.botConfig().getTourgroupname().replace("@", "")));
         var row3 = List.of(new InlineKeyboardButton()
-                .setText(Services.i18n().getString("tourChannel", locale))
+                .setText("Канал турнира")
                 .setUrl("https://t.me/" + Services.botConfig().getTourchannel().replace("@", "")));
         markup.setKeyboard(List.of(row1, row2, row3));
 
         var toVegans = Methods.sendMessage()
                 .setChatId(Services.botConfig().getLastvegan())
-                .setText(String.format(Services.i18n().getString("tActivated", locale), getMembersAsString()))
+                .setText(String.format("\uD83D\uDCE3 <b>Турнир активирован!</b>\n\n" +
+                        "%1$s, нажмите на кнопку ниже для снятия ограничений в группе турнира", getMembersAsString()))
                 .setReplyMarkup(markup);
 
         Methods.Administration.pinChatMessage()
@@ -123,8 +116,7 @@ public class TournamentHandler {
         members.clear();
         if (isTeamMode)
             teams.clear();
-        handler.sendMessage(Methods.sendMessage(Services.botConfig().getLastvegan(),
-                Services.i18n().getString("actionCancel", Services.db().getChatLocale(Services.botConfig().getLastvegan()))));
+        handler.sendMessage(Services.botConfig().getLastvegan(),"\uD83D\uDEAB Действие отменено");
     }
 
     private static String getScore(String[] params) {
@@ -163,7 +155,7 @@ public class TournamentHandler {
     public static void score(Message message, LastkatkaBotHandler handler) {
         var params = message.getText().split("\\s+");
         if (params.length != 5) {
-            handler.sendMessage(message.getChatId(), Services.i18n().getString("argsError", message));
+            handler.sendMessage(message.getChatId(), "Неверное количество аргументов!");
             return;
         }
         var score = getScore(params);
@@ -171,10 +163,9 @@ public class TournamentHandler {
     }
 
     public static void win(Message message, LastkatkaBotHandler handler) {
-        var locale = Services.db().getChatLocale(Services.botConfig().getLastvegan());
         var params = message.getText().split("\\s+");
         if (params.length != 6) {
-            handler.sendMessage(message.getChatId(), Services.i18n().getString("argsError", message));
+            handler.sendMessage(message.getChatId(), "Неверное количество аргументов!");
             return;
         }
         var score = getScore(params);
@@ -183,12 +174,12 @@ public class TournamentHandler {
         String goingTo;
         if (isTeamMode)
             goingTo = (params[5].equals("over")) ?
-                    " " + Services.i18n().getString("winTour", locale) :
-                    " " + Services.i18n().getString("proceedTo", locale) + " " + params[5].replace("_", " ");
+                    " выиграли турнир" :
+                    " выходят в " + params[5].replace("_", " ");
         else
             goingTo = (params[5].equals("over")) ?
-                    " " + Services.i18n().getString("winsTour", locale) :
-                    " " + Services.i18n().getString("proceedsTo", locale) + " " + params[5].replace("_", " ");
+                    " выиграл турнир" :
+                    " выходит в " + params[5].replace("_", " ");
 
         handler.sendMessage(Methods.sendMessage()
                 .setChatId(Services.botConfig().getTourchannel())
@@ -196,20 +187,20 @@ public class TournamentHandler {
 
         handler.sendMessage(Methods.sendMessage()
                 .setChatId(Services.botConfig().getLastvegan())
-                .setText(String.format(Services.i18n().getString("tResult", locale), params[1], Services.botConfig().getTourchannel())));
+                .setText(String.format("\uD83D\uDCE3 <b>Раунд завершен. Победитель:</b> %1$s\n" +
+                        "Болельщики, посетите %2$s, чтобы узнать подробности", params[1], Services.botConfig().getTourchannel())));
     }
 
     public static void rt(LastkatkaBotHandler handler) {
         restrictMembers(handler);
-        handler.sendMessage(Services.botConfig().getLastvegan(),
-                Services.i18n().getString("tCancel", Services.db().getChatLocale(Services.botConfig().getLastvegan())));
+        handler.sendMessage(Services.botConfig().getLastvegan(),"\uD83D\uDEAB <b>Раунд отменен из-за непредвиденных обстоятельств!</b>");
     }
 
     public static void tourmessage(LastkatkaBotHandler handler, Message message) {
         if (!message.getChatId().equals(Services.botConfig().getLastvegan()) || !message.isReply())
             return;
         Services.db().setTournamentMessage(message.getReplyToMessage().getMessageId());
-        handler.sendMessage(message.getChatId(), Services.i18n().getString("tMessage", message));
+        handler.sendMessage(message.getChatId(), "✅ Главное сообщение турнира установлено!");
     }
 
     private static String getMembersAsString() {

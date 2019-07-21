@@ -7,7 +7,6 @@ import com.senderman.lastkatkabot.LastkatkaBotHandler;
 import com.senderman.lastkatkabot.Services;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
-import java.util.ArrayList;
 import java.util.Set;
 
 public class CallbackHandler {
@@ -41,12 +40,10 @@ public class CallbackHandler {
     }
 
     public void cake(CallbackQuery query, CAKE_ACTIONS actions) {
-        var userLocale = Services.i18n().getLocale(query);
-        var chatLocale = Services.db().getChatLocale(query.getMessage().getChatId());
         if (!query.getFrom().getId().equals(query.getMessage().getReplyToMessage().getFrom().getId())) {
             Methods.answerCallbackQuery()
                     .setCallbackQueryId(query.getId())
-                    .setText(Services.i18n().getString("notForU", userLocale))
+                    .setText("Этот тортик не вам!")
                     .setShowAlert(true)
                     .call(handler);
             return;
@@ -55,12 +52,12 @@ public class CallbackHandler {
         if (query.getMessage().getDate() + 2400 < System.currentTimeMillis() / 1000) {
             Methods.answerCallbackQuery()
                     .setCallbackQueryId(query.getId())
-                    .setText(Services.i18n().getString("ripCake", userLocale))
+                    .setText("Тортик испортился!")
                     .setShowAlert(true)
                     .call(handler);
             Methods.editMessageText()
                     .setChatId(query.getMessage().getChatId())
-                    .setText("\uD83E\uDD22 " + Services.i18n().getString("ripCake", chatLocale))
+                    .setText("\uD83E\uDD22 Тортик попытались взять, но он испортился!")
                     .setMessageId(query.getMessage().getMessageId())
                     .setReplyMarkup(null)
                     .call(handler);
@@ -75,11 +72,11 @@ public class CallbackHandler {
                 .setReplyMarkup(null);
         if (actions == CAKE_ACTIONS.CAKE_OK) {
             acq.setText("n p u я m н o r o  a n n e m u m a");
-            emt.setText("\uD83C\uDF82 " + query.getFrom().getFirstName() + " " + Services.i18n().getString("gotCake", chatLocale)
+            emt.setText("\uD83C\uDF82 " + query.getFrom().getFirstName() + " принял тортик"
                     + query.getData().replace(LastkatkaBot.CALLBACK_CAKE_OK, ""));
         } else {
             acq.setText("Ну и ладно");
-            emt.setText("\uD83D\uDEAB \uD83C\uDF82 " + query.getFrom().getFirstName() + " " + Services.i18n().getString("fuckTheCake", chatLocale)
+            emt.setText("\uD83D\uDEAB \uD83C\uDF82 " + query.getFrom().getFirstName() + " отказался от тортика"
                     + query.getData().replace(LastkatkaBot.CALLBACK_CAKE_NOT, ""));
         }
         acq.call(handler);
@@ -88,12 +85,10 @@ public class CallbackHandler {
 
     public void registerInTournament(CallbackQuery query) {
         var memberId = query.getFrom().getId();
-        var userLocale = Services.db().getUserLocale(memberId);
-        var chatLocale = Services.db().getChatLocale(Services.botConfig().getTourgroup());
         if (!TournamentHandler.isEnabled) {
             Methods.answerCallbackQuery()
                     .setCallbackQueryId(query.getId())
-                    .setText("⚠️ " + Services.i18n().getString("noOpenRounds", userLocale))
+                    .setText("⚠️ На данный момент нет открытых раундов!")
                     .setShowAlert(true)
                     .call(handler);
             return;
@@ -102,7 +97,7 @@ public class CallbackHandler {
         if (TournamentHandler.membersIds.contains(memberId)) {
             Methods.answerCallbackQuery()
                     .setCallbackQueryId(query.getId())
-                    .setText("⚠️ " + Services.i18n().getString("uHavePermission", userLocale))
+                    .setText("⚠️ Вы уже получили разрешение на отправку сообщений!")
                     .setShowAlert(true)
                     .call(handler);
             return;
@@ -111,7 +106,7 @@ public class CallbackHandler {
         if (!TournamentHandler.members.contains(query.getFrom().getUserName())) {
             Methods.answerCallbackQuery()
                     .setCallbackQueryId(query.getId())
-                    .setText(Services.i18n().getString("notAPart", userLocale))
+                    .setText("\uD83D\uDEAB Вы не являетесь участником текущего раунда!")
                     .setShowAlert(true)
                     .call(handler);
             return;
@@ -127,11 +122,10 @@ public class CallbackHandler {
                 .call(handler);
         Methods.answerCallbackQuery()
                 .setCallbackQueryId(query.getId())
-                .setText("✅ " + Services.i18n().getString("permissionGiven", userLocale))
+                .setText("✅ Вам даны права на отправку сообщений в группе турнира!")
                 .setShowAlert(true)
                 .call(handler);
-        handler.sendMessage(Services.botConfig().getTourgroup(),
-                "✅ " + String.format(Services.i18n().getString("accessAllowed", chatLocale), query.getFrom().getFirstName()));
+        handler.sendMessage(Services.botConfig().getTourgroup(), String.format("✅ %1$s получил доступ к игре!", query.getFrom().getFirstName()));
     }
 
     public void addChat(CallbackQuery query) {
@@ -139,11 +133,12 @@ public class CallbackHandler {
         handler.allowedChats.add(chatId);
         Methods.editMessageText()
                 .setChatId(query.getMessage().getChatId())
-                .setText(Services.i18n().getString("chatAccepted", query.getFrom()))
+                .setText("✅ Чат добавлен в разрешенные!")
                 .setMessageId(query.getMessage().getMessageId())
                 .setReplyMarkup(null)
                 .call(handler);
-        var message = handler.sendMessage(chatId, Services.i18n().getString("helloMessage", Services.db().getChatLocale(chatId)));
+        var message = handler.sendMessage(chatId, "Разработчик принял данный чат. Бот готов к работе здесь!\n" +
+                "Для некоторых фичей бота требуются права админа на удаление и закреп сообщений.");
         Services.db().addAllowedChat(chatId, message.getChat().getTitle());
     }
 
@@ -152,10 +147,10 @@ public class CallbackHandler {
         Methods.editMessageText()
                 .setChatId(query.getMessage().getChatId())
                 .setMessageId(query.getMessage().getMessageId())
-                .setText(Services.i18n().getString("chatDenied", query.getFrom()))
+                .setText("\uD83D\uDEAB Чат отклонен!")
                 .setReplyMarkup(null)
                 .call(handler);
-        handler.sendMessage(chatId, Services.i18n().getString("goodbyeMessage", Services.db().getChatLocale(chatId)));
+        handler.sendMessage(chatId, "Разработчик отклонил данный чат. Всем пока!");
         Methods.leaveChat(chatId).call(handler);
     }
 
@@ -166,10 +161,10 @@ public class CallbackHandler {
         handler.allowedChats.remove(chatId);
         Methods.answerCallbackQuery()
                 .setShowAlert(true)
-                .setText(Services.i18n().getString("chatDeleted", Services.i18n().getLocale(query)))
+                .setText("Чат удален!")
                 .setCallbackQueryId(query.getId())
                 .call(handler);
-        handler.sendMessage(chatId, Services.i18n().getString("chatDeletedMessage", Services.db().getChatLocale(chatId)));
+        handler.sendMessage(chatId, "Разработчик решил удалить бота из данного чата. Всем пока!");
         Methods.leaveChat(chatId).call(handler);
         Methods.deleteMessage(query.getMessage().getChatId(), query.getMessage().getMessageId()).call(handler);
     }
@@ -212,39 +207,11 @@ public class CallbackHandler {
         Methods.deleteMessage(query.getMessage().getChatId(), query.getMessage().getMessageId()).call(handler);
     }
 
-    public void setLocale(CallbackQuery query) {
-        var chatId = query.getMessage().getChatId();
-        var locale = query.getData().split(" ")[1];
-        if (query.getMessage().isUserMessage()) {
-            Services.db().setUserLocale(query.getFrom().getId(), locale);
-        } else {
-            var admins = Methods.getChatAdministrators(chatId).call(handler);
-            var adminsIds = new ArrayList<Integer>();
-            for (var member : admins) {
-                adminsIds.add(member.getUser().getId());
-            }
-            if (!adminsIds.contains(query.getFrom().getId())) {
-                Methods.answerCallbackQuery()
-                        .setText(Services.i18n().getString("notChatAdmin", locale))
-                        .setShowAlert(true)
-                        .setCallbackQueryId(query.getId())
-                        .call(handler);
-                return;
-            }
-            Services.db().setChatLocale(chatId, locale);
-            Methods.deleteMessage(chatId, query.getMessage().getMessageId()).call(handler);
-        }
-        Methods.answerCallbackQuery()
-                .setText(Services.i18n().getString("langSet", locale))
-                .setCallbackQueryId(query.getId())
-                .call(handler);
-    }
-
     public void closeMenu(CallbackQuery query) {
         Methods.editMessageText()
                 .setChatId(query.getMessage().getChatId())
                 .setMessageId(query.getMessage().getMessageId())
-                .setText(Services.i18n().getString("menuClosed", Services.i18n().getLocale(query)))
+                .setText("Меню закрыто")
                 .setReplyMarkup(null)
                 .call(handler);
     }

@@ -8,8 +8,6 @@ public class Services {
 
     private static BotConfig botConfig;
 
-    private static LastResourceBundleLocalizationService localization;
-
     public static LastkatkaBotHandler handler() {
         return handler;
     }
@@ -32,13 +30,5 @@ public class Services {
 
     static void setBotConfig(BotConfig config) {
         Services.botConfig = config;
-    }
-
-    static void setLocalization(LastResourceBundleLocalizationService localization) {
-        Services.localization = localization;
-    }
-
-    public static LastResourceBundleLocalizationService i18n() {
-        return localization;
     }
 }
