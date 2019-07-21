@@ -17,6 +17,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.logging.BotLogger;
 
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -158,29 +159,36 @@ public class UsercommandsHandler {
                 .replaceAll("^/weather", "")
                 .replaceAll("@" + handler.getBotUsername(), "")
                 .strip().toLowerCase();
-        if (city.isBlank()) {
+
+        if (city.isBlank()) { // city is not specified
             city = Services.db().getUserCity(message.getFrom().getId());
             if (city == null) {
                 handler.sendMessage(chatId, "Вы не указали город!");
                 return;
+            } else {
+                // find a city
+                try {
+                    var searchPage = Jsoup.parse(new URL("https://yandex.ru/pogoda/search?request=" + URLEncoder.encode(city, StandardCharsets.UTF_8)), 10000);
+                    var table = searchPage.selectFirst("div.grid");
+                    var searchResult = table.selectFirst("li.place-list__item");
+                    city = searchResult.selectFirst("a").attr("href");
+                } catch (Exception e) {
+                    handler.sendMessage(chatId, "Ошибка запроса/Город не найден");
+                    return;
+                }
             }
-        }
-        Document weatherPage;
-        try {
-            var searchPage = Jsoup.parse(new URL("https://yandex.ru/pogoda/search?request=" + URLEncoder.encode(city, StandardCharsets.UTF_8)), 10000);
-            var table = searchPage.selectFirst("div.grid");
-            var searchResult = table.selectFirst("li.place-list__item");
-            var link = searchResult.selectFirst("a").attr("href");
-            System.out.println("https://yandex.ru/pogoda" + link);
-            weatherPage = Jsoup.parse(new URL("https://yandex.ru" + link), 10000);
-
-        } catch (Exception e) {
-            handler.sendMessage(chatId, "Ошибка запроса/Город не найден");
-            return;
         }
 
         Services.db().setUserCity(message.getFrom().getId(), city);
+        Document weatherPage;
+        try {
+            weatherPage = Jsoup.parse(new URL("https://yandex.ru" + city), 10000);
+        } catch (IOException e) {
+            handler.sendMessage(chatId, "Ошибка запроса");
+            return;
+        }
 
+        // parse weather
         var title = weatherPage.selectFirst("span.header-title__title-wrap").text();
         var temperature = "\uD83C\uDF21: " + weatherPage.selectFirst("div.fact__temp").selectFirst("span.temp__value").text() + " °C";
         var feelings = weatherPage.selectFirst("div.fact__feelings").selectFirst("div.link__condition").text();
