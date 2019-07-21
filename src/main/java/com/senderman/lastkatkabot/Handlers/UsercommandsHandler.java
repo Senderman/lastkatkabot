@@ -6,6 +6,8 @@ import com.senderman.lastkatkabot.LastkatkaBotHandler;
 import com.senderman.lastkatkabot.Services;
 import com.senderman.lastkatkabot.TempObjects.BnCPlayer;
 import com.senderman.lastkatkabot.TempObjects.TgUser;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.ChatMember;
@@ -15,6 +17,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.logging.BotLogger;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
@@ -145,6 +149,48 @@ public class UsercommandsHandler {
                 .replaceAll("(\\w*[iI]d=)(-?\\d+)", "$1<code>$2</code>")
                 .replaceAll("([{,])", "$1\n")
                 .replaceAll("(})", "\n$1"));
+    }
+
+    public void weather(Message message) {
+        var chatId = message.getChatId();
+        String city = message.getText().replaceAll("^/weather", "").strip().toLowerCase();
+        if (city.isBlank()) {
+            city = Services.db().getUserCity(message.getFrom().getId());
+            if (city == null) {
+                handler.sendMessage(chatId, "Вы не указали город!");
+                return;
+            }
+        }
+        Document weatherPage;
+        try {
+            weatherPage = Jsoup.parse(new URL("https://yandex.ru/pogoda/" + city), 10000);
+        } catch (IOException e) {
+            handler.sendMessage(chatId, "Ошибка запроса");
+            return;
+        }
+        if (weatherPage.selectFirst("span.header-title__title-wrap").text().equals("Такой страницы не существует")) {
+            handler.sendMessage(chatId, "Город не существует!");
+            return;
+        }
+        Services.db().setUserCity(message.getFrom().getId(), city);
+
+        var title = weatherPage.selectFirst("span.header-title__title-wrap").text();
+        var temperature = "\uD83C\uDF21: " + weatherPage.selectFirst("div.fact__temp").selectFirst("span.temp__value").text() + " °C";
+        var feelings = weatherPage.selectFirst("div.fact__feelings").selectFirst("div.link__condition").text();
+        var windData = weatherPage.selectFirst("dl.fact__wind-speed");
+        var windSpeed = windData.selectFirst("span.wind-speed").text();
+        var windUnitsAndDir = windData.selectFirst("span.fact__unit").text();
+        var wind = "\uD83D\uDCA8: " + windSpeed + " " + windUnitsAndDir;
+        var humidity = "\uD83D\uDCA7: " + weatherPage.selectFirst("dl.fact__humidity").selectFirst("dd").text() + "%";
+        var pressure = "\uD83E\uDDED: " + weatherPage.selectFirst("dl.fact__pressure").selectFirst("dd").text();
+
+        String forecast = "<b>" + title + "</b>\n\n" +
+                feelings + "\n" +
+                temperature + "\n" +
+                wind + "\n" +
+                humidity + "\n" +
+                pressure + "\n";
+        handler.sendMessage(chatId, forecast);
     }
 
     public void testRegex(Message message) {
