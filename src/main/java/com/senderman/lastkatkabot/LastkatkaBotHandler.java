@@ -363,10 +363,10 @@ public class LastkatkaBotHandler extends BotHandler {
     private boolean processMainAdminCommand(Message message, String command) {
         switch (command) {
             case "/owner":
-                adminHandler.addOwner(message);
+                adminHandler.addUser(message, DBService.COLLECTION_TYPE.ADMINS);
                 return true;
             case "/addpremium":
-                adminHandler.addPremium(message);
+                adminHandler.addUser(message, DBService.COLLECTION_TYPE.PREMIUM);
                 return true;
             case "/update":
                 adminHandler.update(message);
@@ -387,7 +387,7 @@ public class LastkatkaBotHandler extends BotHandler {
     private boolean processAdminCommand(Message message, String command) {
         switch (command) {
             case "/badneko":
-                adminHandler.badneko(message);
+                adminHandler.addUser(message, DBService.COLLECTION_TYPE.BLACKLIST);
                 return true;
             case "/goodneko":
                 adminHandler.goodneko(message);

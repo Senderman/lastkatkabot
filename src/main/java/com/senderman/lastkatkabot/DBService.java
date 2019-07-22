@@ -2,7 +2,6 @@ package com.senderman.lastkatkabot;
 
 import com.senderman.lastkatkabot.TempObjects.BnCPlayer;
 import com.senderman.lastkatkabot.TempObjects.BullsAndCowsGame;
-import com.senderman.lastkatkabot.TempObjects.TgUser;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.List;
@@ -28,11 +27,11 @@ public interface DBService {
     String getUserCity(int id);
 
 
-    void addTgUser(int id, String name, COLLECTION_TYPE type);
+    void addTgUser(int id, COLLECTION_TYPE type);
 
     void removeTGUser(int id, COLLECTION_TYPE type);
 
-    Set<TgUser> getTgUsersFromList(COLLECTION_TYPE type);
+    Set<Integer> getTgUsersFromList(COLLECTION_TYPE type);
 
     Set<Integer> getTgUsersIds(COLLECTION_TYPE type);
 
