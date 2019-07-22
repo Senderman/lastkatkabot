@@ -76,7 +76,7 @@ public class AdminHandler {
                 break;
         }
 
-        var showButtons = allAdminsAccess && message.getFrom().getId().equals(Services.botConfig().getMainAdmin());
+        var showButtons = allAdminsAccess || message.getFrom().getId().equals(Services.botConfig().getMainAdmin());
 
         if (!showButtons || !message.isUserMessage()) {
             var userlist = new StringBuilder(title);
