@@ -28,8 +28,6 @@ public interface DBService {
     String getUserCity(int id);
 
 
-    Long findChatWithUser(int id) throws Exception;
-
     void addTgUser(int id, String name, COLLECTION_TYPE type);
 
     void removeTGUser(int id, COLLECTION_TYPE type);

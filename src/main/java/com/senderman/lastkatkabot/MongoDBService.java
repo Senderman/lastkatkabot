@@ -134,18 +134,6 @@ public class MongoDBService implements DBService {
     }
 
     @Override
-    public Long findChatWithUser(int id) throws Exception {
-        var chats = chatMembersDB.listCollectionNames();
-        for (var chat : chats) {
-            var chatId = Long.parseLong(chat);
-            if (getChatMembersCollection(chatId).find(Filters.eq("id", id)).first() != null) {
-                return chatId;
-            }
-        }
-        throw new Exception("Unable to find user");
-    }
-
-    @Override
     public void addTgUser(int id, String name, COLLECTION_TYPE type) {
         var collection = Objects.requireNonNull(getUsersCollection(type));
         if (collection.find(Filters.eq("id", id)).first() == null)
