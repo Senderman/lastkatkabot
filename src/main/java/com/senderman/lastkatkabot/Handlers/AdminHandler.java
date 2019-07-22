@@ -15,6 +15,7 @@ import org.telegram.telegrambots.meta.logging.BotLogger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class AdminHandler {
 
@@ -24,44 +25,32 @@ public class AdminHandler {
         this.handler = handler;
     }
 
-    public void addOwner(Message message) {
+    public void addUser(Message message, DBService.COLLECTION_TYPE type) {
         if (!message.isReply())
             return;
-        if (handler.admins.contains(message.getReplyToMessage().getFrom().getId()))
-            return;
 
-        Services.db().addTgUser(message.getReplyToMessage().getFrom().getId(),
-                message.getReplyToMessage().getFrom().getFirstName(), DBService.COLLECTION_TYPE.ADMINS);
-        handler.admins.add(message.getReplyToMessage().getFrom().getId());
-        handler.sendMessage(message.getChatId(),
-                String.format("✅ %1$s теперь мой хозяин!", message.getReplyToMessage().getFrom().getFirstName()));
-    }
-
-    public void badneko(Message message) {
-        if (!message.isReply())
-            return;
-        if (handler.blacklist.contains(message.getReplyToMessage().getFrom().getId()))
-            return;
-
-        var neko = new TgUser(message.getReplyToMessage().getFrom().getId(), message.getReplyToMessage().getFrom().getFirstName());
-        Services.db().addTgUser(neko.getId(), neko.getName(), DBService.COLLECTION_TYPE.BLACKLIST);
-        handler.blacklist.add(neko.getId());
-        handler.sendMessage(message.getChatId(),
-                String.format("\uD83D\uDE3E %1$s - плохая киса!", neko.getLink()));
-
-    }
-
-    public void addPremium(Message message) {
-        if (!message.isReply())
-            return;
-        if (handler.premiumUsers.contains(message.getReplyToMessage().getFrom().getId()))
-            return;
-
-        var prem = new TgUser(message.getReplyToMessage().getFrom().getId(), message.getReplyToMessage().getFrom().getFirstName());
-        Services.db().addTgUser(prem.getId(), prem.getName(), DBService.COLLECTION_TYPE.PREMIUM);
-        handler.premiumUsers.add(message.getReplyToMessage().getFrom().getId());
-        handler.sendMessage(message.getChatId(),
-                String.format("\uD83D\uDC51 %1$s теперь премиум пользователь!", prem.getLink()));
+        Set<Integer> list = null;
+        String format = "";
+        switch (type) {
+            case ADMINS:
+                list = handler.admins;
+                format = "✅ %1$s теперь мой хозяин!";
+                break;
+            case BLACKLIST:
+                list = handler.blacklist;
+                format = "\uD83D\uDE3E %1$s - плохая киса!";
+                break;
+            case PREMIUM:
+                list = handler.premiumUsers;
+                format = "\uD83D\uDC51 %1$s теперь премиум пользователь!";
+                break;
+        }
+        var id = message.getReplyToMessage().getFrom().getId();
+        var name = message.getReplyToMessage().getFrom().getFirstName();
+        var user = new TgUser(id, name);
+        list.remove(id);
+        Services.db().addTgUser(id, type);
+        handler.sendMessage(message.getChatId(), String.format(format, user.getName()));
     }
 
     public void listUsers(Message message, DBService.COLLECTION_TYPE type) {
@@ -70,22 +59,28 @@ public class AdminHandler {
 
         boolean allAdminsAccess = false;
         String title = "";
+        String callback = "";
         switch (type) {
             case ADMINS:
                 title = "\uD83D\uDE0E <b>Админы бота:</b>\n";
+                callback = LastkatkaBot.CALLBACK_DELETE_ADMIN;
                 break;
             case BLACKLIST:
-                title = "\uD83D\uDE3E <b>Список плохих кис:</b>\n";
                 allAdminsAccess = true;
+                title = "\uD83D\uDE3E <b>Список плохих кис:</b>\n";
+                callback = LastkatkaBot.CALLBACK_DELETE_NEKO;
                 break;
             case PREMIUM:
                 title = "\uD83D\uDC51 <b>Список премиум-пользователей:</b>\n";
+                callback = LastkatkaBot.CALLBACK_DELETE_PREM;
                 break;
         }
 
-        if (!message.isUserMessage() || (message.getFrom().getId() != Services.botConfig().getMainAdmin() && !allAdminsAccess)) {
+        if (!allAdminsAccess || !message.isUserMessage()) {
             var userlist = new StringBuilder(title);
-            for (TgUser user : users) {
+            for (var id : users) {
+                var name = Methods.getChatMember(id, id).call(handler).getUser().getFirstName();
+                var user = new TgUser(id, name);
                 userlist.append(user.getLink()).append("\n");
             }
             messageToSend.setText(userlist.toString());
@@ -93,19 +88,9 @@ public class AdminHandler {
             var markup = new InlineKeyboardMarkup();
             ArrayList<List<InlineKeyboardButton>> rows = new ArrayList<>();
             List<InlineKeyboardButton> row = new ArrayList<>();
-            String callback = "";
-            switch (type) {
-                case ADMINS:
-                    callback = LastkatkaBot.CALLBACK_DELETE_ADMIN;
-                    break;
-                case BLACKLIST:
-                    callback = LastkatkaBot.CALLBACK_DELETE_NEKO;
-                    break;
-                case PREMIUM:
-                    callback = LastkatkaBot.CALLBACK_DELETE_PREM;
-                    break;
-            }
-            for (TgUser user : users) {
+            for (var id : users) {
+                var name = Methods.getChatMember(id, id).call(handler).getUser().getFirstName();
+                var user = new TgUser(id, name);
                 row.add(new InlineKeyboardButton()
                         .setText(user.getName())
                         .setCallbackData(callback + " " + user.getId()));
@@ -129,6 +114,7 @@ public class AdminHandler {
     public void goodneko(Message message) {
         if (!message.isReply())
             return;
+
         var neko = new TgUser(message.getReplyToMessage().getFrom().getId(), message.getReplyToMessage().getFrom().getFirstName());
         Services.db().removeTGUser(neko.getId(), DBService.COLLECTION_TYPE.BLACKLIST);
         handler.blacklist.remove(message.getReplyToMessage().getFrom().getId());
@@ -139,7 +125,7 @@ public class AdminHandler {
     public void update(Message message) {
         var params = message.getText().split("\n");
         if (params.length < 2) {
-            handler.sendMessage(message.getChatId(),"Неверное количество аргументов!");
+            handler.sendMessage(message.getChatId(), "Неверное количество аргументов!");
             return;
         }
         var update = new StringBuilder().append("\uD83D\uDCE3 <b>ВАЖНОЕ ОБНОВЛЕНИЕ:</b> \n\n");

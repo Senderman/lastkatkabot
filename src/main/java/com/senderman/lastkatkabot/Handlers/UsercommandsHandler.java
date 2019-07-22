@@ -240,7 +240,6 @@ public class UsercommandsHandler {
     public void bncTop(Message message) {
         var chatId = message.getChatId();
 
-        handler.sendMessage(chatId, "Сортируем список, находим имена...");
         List<BnCPlayer> top = Services.db().getTop();
         var text = new StringBuilder("<b>Топ-10 задротов в bnc:</b>\n\n");
         int counter = 1;

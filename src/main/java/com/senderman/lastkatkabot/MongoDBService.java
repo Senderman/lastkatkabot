@@ -8,7 +8,6 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.senderman.lastkatkabot.TempObjects.BnCPlayer;
 import com.senderman.lastkatkabot.TempObjects.BullsAndCowsGame;
-import com.senderman.lastkatkabot.TempObjects.TgUser;
 import org.bson.Document;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
@@ -134,11 +133,10 @@ public class MongoDBService implements DBService {
     }
 
     @Override
-    public void addTgUser(int id, String name, COLLECTION_TYPE type) {
+    public void addTgUser(int id, COLLECTION_TYPE type) {
         var collection = Objects.requireNonNull(getUsersCollection(type));
         if (collection.find(Filters.eq("id", id)).first() == null)
-            collection.insertOne(new Document("id", id)
-                    .append("name", name));
+            collection.insertOne(new Document("id", id));
 
     }
 
@@ -148,11 +146,11 @@ public class MongoDBService implements DBService {
     }
 
     @Override
-    public Set<TgUser> getTgUsersFromList(COLLECTION_TYPE collection_type) {
-        Set<TgUser> result = new HashSet<>();
+    public Set<Integer> getTgUsersFromList(COLLECTION_TYPE collection_type) {
+        Set<Integer> result = new HashSet<>();
         var collection = Objects.requireNonNull(getUsersCollection(collection_type));
         for (var doc : collection.find()) {
-            result.add(new TgUser(doc.getInteger("id"), doc.getString("name")));
+            result.add(doc.getInteger("id"));
         }
         return result;
     }
