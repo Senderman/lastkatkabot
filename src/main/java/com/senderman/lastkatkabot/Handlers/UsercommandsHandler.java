@@ -245,18 +245,8 @@ public class UsercommandsHandler {
         var text = new StringBuilder("<b>Топ-10 задротов в bnc:</b>\n\n");
         int counter = 1;
         for (var player : top) {
-            try {
-                var member = Methods.getChatMember(player.getId(), player.getId()).call(handler);
-                if (member != null)
-                    player.setName(member.getUser().getFirstName());
-                else {
-                    var userChatId = Services.db().findChatWithUser(player.getId());
-                    member = Methods.getChatMember(userChatId, player.getId()).call(handler);
-                    player.setName(member.getUser().getFirstName());
-                }
-
-            } catch (Exception ignored) {
-            }
+            var member = Methods.getChatMember(player.getId(), player.getId()).call(handler);
+            player.setName(member.getUser().getFirstName());
             text.append(counter).append(": ");
             if (message.isUserMessage())
                 text.append(player.getLink());
