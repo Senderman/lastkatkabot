@@ -76,7 +76,9 @@ public class AdminHandler {
                 break;
         }
 
-        if (!allAdminsAccess || !message.isUserMessage()) {
+        var showButtons = allAdminsAccess && message.getFrom().getId().equals(Services.botConfig().getMainAdmin());
+
+        if (!showButtons || !message.isUserMessage()) {
             var userlist = new StringBuilder(title);
             for (var id : users) {
                 var name = Methods.getChatMember(id, id).call(handler).getUser().getFirstName();
