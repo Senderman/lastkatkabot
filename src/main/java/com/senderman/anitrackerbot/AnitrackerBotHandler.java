@@ -16,7 +16,6 @@ public class AnitrackerBotHandler extends BotHandler {
 
     AnitrackerBotHandler(BotConfig config) {
         this.config = config;
-
         Services.setDataBase(new MongoDBService());
     }
 

@@ -1,10 +1,10 @@
 package com.senderman.anitrackerbot;
 
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.senderman.MongoClientKeeper;
 import org.bson.Document;
 
 import java.util.HashMap;
@@ -13,7 +13,7 @@ import java.util.Objects;
 
 public class MongoDBService implements DBService {
 
-    private final MongoClient client = MongoClients.create(System.getenv("database"));
+    private final MongoClient client = MongoClientKeeper.getClient();
     private final MongoDatabase database = client.getDatabase("anime");
 
     private MongoCollection<Document> user(int id) {

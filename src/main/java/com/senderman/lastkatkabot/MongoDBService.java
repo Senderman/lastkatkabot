@@ -2,10 +2,10 @@ package com.senderman.lastkatkabot;
 
 import com.google.gson.Gson;
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.senderman.MongoClientKeeper;
 import com.senderman.lastkatkabot.TempObjects.BnCPlayer;
 import com.senderman.lastkatkabot.TempObjects.BullsAndCowsGame;
 import org.bson.Document;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class MongoDBService implements DBService {
     private final TimeZone timeZone = TimeZone.getTimeZone("Europe/Moscow");
-    private final MongoClient client = MongoClients.create(System.getenv("database"));
+    private final MongoClient client = MongoClientKeeper.getClient();
     private final MongoDatabase lastkatkaDB = client.getDatabase("lastkatka");
     private final MongoDatabase chatMembersDB = client.getDatabase("chatmembers");
     private final MongoCollection<Document> admins = lastkatkaDB.getCollection("admins");
