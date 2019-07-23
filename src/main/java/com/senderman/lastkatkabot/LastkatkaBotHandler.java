@@ -98,9 +98,10 @@ public class LastkatkaBotHandler extends BotHandler {
 
         if (message.getMigrateFromChatId() != null) {
             migrateChat(message.getMigrateFromChatId(), chatId);
+            return null;
         }
 
-        if (message.getLeftChatMember() != null && !message.getLeftChatMember().getUserName().equals(getBotUsername())) {
+        if (message.getLeftChatMember() != null && !message.getLeftChatMember().getUserName().equals(getBotUsername()) && !message.getChatId().equals(Services.botConfig().getTourgroup())) {
             Methods.sendDocument()
                     .setChatId(chatId)
                     .setFile(Services.botConfig().getLeavesticker())
