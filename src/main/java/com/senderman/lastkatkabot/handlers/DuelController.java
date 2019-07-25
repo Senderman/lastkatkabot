@@ -1,10 +1,10 @@
-package com.senderman.lastkatkabot.Handlers;
+package com.senderman.lastkatkabot.handlers;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.LastkatkaBot;
 import com.senderman.lastkatkabot.LastkatkaBotHandler;
 import com.senderman.lastkatkabot.Services;
-import com.senderman.lastkatkabot.TempObjects.TgUser;
+import com.senderman.TgUser;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;

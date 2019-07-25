@@ -3,9 +3,9 @@ package com.senderman.lastkatkabot;
 import com.annimon.tgbotsmodule.BotHandler;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.api.methods.send.SendMessageMethod;
-import com.senderman.lastkatkabot.Handlers.*;
-import com.senderman.lastkatkabot.TempObjects.BullsAndCowsGame;
-import com.senderman.lastkatkabot.TempObjects.VeganTimer;
+import com.senderman.lastkatkabot.handlers.*;
+import com.senderman.lastkatkabot.tempobjects.BullsAndCowsGame;
+import com.senderman.lastkatkabot.tempobjects.VeganTimer;
 import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -31,7 +31,7 @@ public class LastkatkaBotHandler extends BotHandler {
     private final AdminHandler adminHandler;
     private final UsercommandsHandler usercommandsHandler;
     private final DuelController duelController;
-    private CallbackHandler callbackHandler;
+    final private CallbackHandler callbackHandler;
 
     LastkatkaBotHandler() {
 
@@ -249,7 +249,7 @@ public class LastkatkaBotHandler extends BotHandler {
                     .setCallbackData(LastkatkaBot.CALLBACK_DONT_ALLOW_CHAT + chatId));
             var markup = new InlineKeyboardMarkup();
             markup.setKeyboard(List.of(row1, row2));
-            sendMessage(Methods.sendMessage((long) Services.botConfig().getMainAdmin(),
+            sendMessage(Methods.sendMessage(Services.botConfig().getMainAdmin(),
                     String.format("Добавить чат %1$s (%2$d) в список разрешенных? - %3$s",
                             message.getChat().getTitle(), chatId, message.getFrom().getFirstName()))
                     .setReplyMarkup(markup));
