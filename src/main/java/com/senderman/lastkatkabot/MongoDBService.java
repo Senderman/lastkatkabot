@@ -6,8 +6,8 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.senderman.MongoClientKeeper;
-import com.senderman.lastkatkabot.TempObjects.BnCPlayer;
-import com.senderman.lastkatkabot.TempObjects.BullsAndCowsGame;
+import com.senderman.lastkatkabot.tempobjects.BnCPlayer;
+import com.senderman.lastkatkabot.tempobjects.BullsAndCowsGame;
 import org.bson.Document;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
@@ -33,15 +33,12 @@ public class MongoDBService implements DBService {
     }
 
     private MongoCollection<Document> getUsersCollection(COLLECTION_TYPE type) {
-        switch (type) {
-            case ADMINS:
-                return admins;
-            case PREMIUM:
-                return premiumUsers;
-            case BLACKLIST:
-                return blacklist;
-        }
-        return null; // never used
+        if (type == COLLECTION_TYPE.ADMINS)
+            return admins;
+        else if (type == COLLECTION_TYPE.BLACKLIST)
+            return blacklist;
+        else
+            return premiumUsers;
     }
 
     public void initStats(int id) {
@@ -134,7 +131,7 @@ public class MongoDBService implements DBService {
 
     @Override
     public void addTgUser(int id, COLLECTION_TYPE type) {
-        var collection = Objects.requireNonNull(getUsersCollection(type));
+        var collection = getUsersCollection(type);
         if (collection.find(Filters.eq("id", id)).first() == null)
             collection.insertOne(new Document("id", id));
 
@@ -142,13 +139,13 @@ public class MongoDBService implements DBService {
 
     @Override
     public void removeTGUser(int id, COLLECTION_TYPE type) {
-        Objects.requireNonNull(getUsersCollection(type)).deleteOne(Filters.eq("id", id));
+        getUsersCollection(type).deleteOne(Filters.eq("id", id));
     }
 
     @Override
     public Set<Integer> getTgUsersFromList(COLLECTION_TYPE collection_type) {
         Set<Integer> result = new HashSet<>();
-        var collection = Objects.requireNonNull(getUsersCollection(collection_type));
+        var collection = getUsersCollection(collection_type);
         for (var doc : collection.find()) {
             result.add(doc.getInteger("id"));
         }
@@ -158,7 +155,7 @@ public class MongoDBService implements DBService {
     @Override
     public Set<Integer> getTgUsersIds(COLLECTION_TYPE collection_type) {
         Set<Integer> result = new HashSet<>();
-        var collection = Objects.requireNonNull(getUsersCollection(collection_type));
+        var collection = getUsersCollection(collection_type);
         for (var doc : collection.find()) {
             result.add(doc.getInteger("id"));
         }

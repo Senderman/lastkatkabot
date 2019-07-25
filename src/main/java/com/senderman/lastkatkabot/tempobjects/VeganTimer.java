@@ -1,4 +1,4 @@
-package com.senderman.lastkatkabot.TempObjects;
+package com.senderman.lastkatkabot.tempobjects;
 
 import com.senderman.lastkatkabot.Services;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class VeganTimer {
     private final long chatId;
-    private Set<Integer> vegans;
+    private final Set<Integer> vegans;
     private boolean runTimer = true;
 
     public VeganTimer(long chatId) {

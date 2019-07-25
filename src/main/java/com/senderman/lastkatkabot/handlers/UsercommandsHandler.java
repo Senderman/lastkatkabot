@@ -1,11 +1,11 @@
-package com.senderman.lastkatkabot.Handlers;
+package com.senderman.lastkatkabot.handlers;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.LastkatkaBot;
 import com.senderman.lastkatkabot.LastkatkaBotHandler;
 import com.senderman.lastkatkabot.Services;
-import com.senderman.lastkatkabot.TempObjects.BnCPlayer;
-import com.senderman.lastkatkabot.TempObjects.TgUser;
+import com.senderman.lastkatkabot.tempobjects.BnCPlayer;
+import com.senderman.TgUser;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -173,9 +173,11 @@ public class UsercommandsHandler {
                 var table = searchPage.selectFirst("div.grid");
                 var searchResult = table.selectFirst("li.place-list__item");
                 city = searchResult.selectFirst("a").attr("href");
-            } catch (Exception e) {
-                handler.sendMessage(chatId, "Ошибка запроса/Город не найден");
+            } catch (NullPointerException e) {
+                handler.sendMessage(chatId, "Город не найден");
                 return;
+            } catch (IOException e) {
+                handler.sendMessage(chatId, "Ошибка запроса");
             }
         }
 
@@ -226,11 +228,11 @@ public class UsercommandsHandler {
     public void feedback(Message message) {
         var user = new TgUser(message.getFrom().getId(), message.getFrom().getFirstName());
         var bugreport = "⚠️ <b>Фидбек</b>\n\n" +
-                "От:" +
+                "От: " +
                 user.getLink() + "\n\n"
                 +
                 message.getText().replace("/feedback ", "");
-        handler.sendMessage((long) Services.botConfig().getMainAdmin(), bugreport);
+        handler.sendMessage(Services.botConfig().getMainAdmin(), bugreport);
         handler.sendMessage(Methods.sendMessage()
                 .setChatId(message.getChatId())
                 .setText("✅ Отправлено разрабу бота!")

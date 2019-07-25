@@ -1,5 +1,6 @@
-package com.senderman.lastkatkabot.TempObjects;
+package com.senderman.lastkatkabot.tempobjects;
 
+import com.senderman.TgUser;
 import org.jetbrains.annotations.NotNull;
 
 public class BnCPlayer extends TgUser implements Comparable<BnCPlayer> {

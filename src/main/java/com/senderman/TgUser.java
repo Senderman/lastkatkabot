@@ -1,8 +1,8 @@
-package com.senderman.lastkatkabot.TempObjects;
+package com.senderman;
 
 public class TgUser {
 
-    private int id;
+    private final int id;
     protected String name;
 
     public TgUser(int id, String name) {

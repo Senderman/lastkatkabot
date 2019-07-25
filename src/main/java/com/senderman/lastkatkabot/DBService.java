@@ -1,7 +1,7 @@
 package com.senderman.lastkatkabot;
 
-import com.senderman.lastkatkabot.TempObjects.BnCPlayer;
-import com.senderman.lastkatkabot.TempObjects.BullsAndCowsGame;
+import com.senderman.lastkatkabot.tempobjects.BnCPlayer;
+import com.senderman.lastkatkabot.tempobjects.BullsAndCowsGame;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.List;
