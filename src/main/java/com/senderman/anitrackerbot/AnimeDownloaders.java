@@ -21,8 +21,8 @@ public class AnimeDownloaders {
         if (anidubCookies != null) {
             conn.cookies(anidubCookies);
         } else {
-            var username = System.getenv("anidata".split(":")[0]);
-            var password = System.getenv("anidata".split(":")[1]);
+            var username = System.getenv("anidata").split(":")[0];
+            var password = System.getenv("anidata").split(":")[1];
             conn.data("login_name", username, "login_password", password, "login", "submit");
         }
         var resp = conn.execute();

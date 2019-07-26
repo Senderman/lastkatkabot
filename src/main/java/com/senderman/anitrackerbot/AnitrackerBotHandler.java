@@ -92,6 +92,7 @@ public class AnitrackerBotHandler extends BotHandler {
                     file.delete();
                 } catch (Exception e) {
                     sendMessage(chatId, "Ошибка!");
+                    e.printStackTrace();
                 }
                 return null;
         }
