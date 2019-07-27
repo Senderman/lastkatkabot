@@ -1,11 +1,11 @@
 package com.senderman.lastkatkabot.handlers;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.senderman.TgUser;
 import com.senderman.lastkatkabot.DBService;
 import com.senderman.lastkatkabot.LastkatkaBot;
 import com.senderman.lastkatkabot.LastkatkaBotHandler;
 import com.senderman.lastkatkabot.Services;
-import com.senderman.TgUser;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -76,7 +76,7 @@ public class AdminHandler {
                 break;
         }
 
-        var showButtons = allAdminsAccess || message.getFrom().getId().equals(Services.botConfig().getMainAdmin());
+        var showButtons = allAdminsAccess || message.getFrom().getId().equals(Services.config().getMainAdmin());
 
         if (!showButtons || !message.isUserMessage()) {
             var userlist = new StringBuilder(title);
@@ -205,6 +205,6 @@ public class AdminHandler {
     }
 
     public void setupHelp(Message message) {
-        handler.sendMessage(message.getChatId(), Services.botConfig().getSetupHelp());
+        handler.sendMessage(message.getChatId(), Services.config().getSetupHelp());
     }
 }

@@ -14,6 +14,9 @@ public class BotConfig {
     private String help;
 
     @JsonProperty
+    private String anidata;
+
+    @JsonProperty
     private int position;
 
     public String getToken() {
@@ -46,5 +49,13 @@ public class BotConfig {
 
     public void setPosition(int position) {
         this.position = position;
+    }
+
+    public String getAnidata() {
+        return anidata;
+    }
+
+    public void setAnidata(String anidata) {
+        this.anidata = anidata;
     }
 }

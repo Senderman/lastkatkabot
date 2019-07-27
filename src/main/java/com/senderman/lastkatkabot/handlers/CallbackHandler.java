@@ -114,7 +114,7 @@ public class CallbackHandler {
 
         TournamentHandler.membersIds.add(memberId);
         Methods.Administration.restrictChatMember()
-                .setChatId(Services.botConfig().getTourgroup())
+                .setChatId(Services.config().getTourgroup())
                 .setUserId(memberId)
                 .setCanSendMessages(true)
                 .setCanSendMediaMessages(true)
@@ -125,7 +125,7 @@ public class CallbackHandler {
                 .setText("✅ Вам даны права на отправку сообщений в группе турнира!")
                 .setShowAlert(true)
                 .call(handler);
-        handler.sendMessage(Services.botConfig().getTourgroup(), String.format("✅ %1$s получил доступ к игре!", query.getFrom().getFirstName()));
+        handler.sendMessage(Services.config().getTourgroup(), String.format("✅ %1$s получил доступ к игре!", query.getFrom().getFirstName()));
     }
 
     public void addChat(CallbackQuery query) {

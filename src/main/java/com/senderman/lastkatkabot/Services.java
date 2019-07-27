@@ -24,7 +24,7 @@ public class Services {
         Services.db = db;
     }
 
-    public static BotConfig botConfig() {
+    public static BotConfig config() {
         return botConfig;
     }
 
