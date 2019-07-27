@@ -119,6 +119,10 @@ public class UsercommandsHandler {
 
     public void dstats(Message message) {
         var player = !message.isReply() ? message.getFrom() : message.getReplyToMessage().getFrom();
+        if (player.getBot()) {
+            handler.sendMessage(message.getChatId(), "Но это же бот!");
+            return;
+        }
         var user = new TgUser(player.getId(), player.getFirstName());
         var stats = Services.db().getStats(player.getId());
         var wins = stats.get("wins");
