@@ -1,6 +1,7 @@
 position: 1
 username: env(username)
 token: env(token)
+anidata: env(anidata)
 
 help: |
   Привет! Это бот который поможет тебе отслеживать статус твоих любимых онгоингов, а так же просто составлять списки аниме!

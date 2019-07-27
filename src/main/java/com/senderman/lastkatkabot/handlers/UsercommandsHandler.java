@@ -1,11 +1,11 @@
 package com.senderman.lastkatkabot.handlers;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.senderman.TgUser;
 import com.senderman.lastkatkabot.LastkatkaBot;
 import com.senderman.lastkatkabot.LastkatkaBotHandler;
 import com.senderman.lastkatkabot.Services;
 import com.senderman.lastkatkabot.tempobjects.BnCPlayer;
-import com.senderman.TgUser;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -118,8 +118,9 @@ public class UsercommandsHandler {
     }
 
     public void dstats(Message message) {
-        var player = message.getFrom().getFirstName();
-        var stats = Services.db().getStats(message.getFrom().getId());
+        var player = !message.isReply() ? message.getFrom() : message.getReplyToMessage().getFrom();
+        var user = new TgUser(player.getId(), player.getFirstName());
+        var stats = Services.db().getStats(player.getId());
         var wins = stats.get("wins");
         var total = stats.get("total");
         var winrate = (total == 0) ? 0 : 100 * wins / total;
@@ -130,7 +131,7 @@ public class UsercommandsHandler {
                         "Винрейт: %4$d\n" +
                         "\n" +
                         "\uD83D\uDC2E Баллов за быки и коровы: %5$d",
-                player, wins, total, winrate, bncwins);
+                user.getName(), wins, total, winrate, bncwins);
         handler.sendMessage(message.getChatId(), text);
 
     }
@@ -232,7 +233,7 @@ public class UsercommandsHandler {
                 user.getLink() + "\n\n"
                 +
                 message.getText().replace("/feedback ", "");
-        handler.sendMessage(Services.botConfig().getMainAdmin(), bugreport);
+        handler.sendMessage(Services.config().getMainAdmin(), bugreport);
         handler.sendMessage(Methods.sendMessage()
                 .setChatId(message.getChatId())
                 .setText("✅ Отправлено разрабу бота!")
@@ -262,7 +263,7 @@ public class UsercommandsHandler {
     public void bnchelp(Message message) {
         var sendPhoto = Methods.sendPhoto()
                 .setChatId(message.getChatId())
-                .setFile(Services.botConfig().getBncphoto());
+                .setFile(Services.config().getBncphoto());
         if (message.isReply())
             sendPhoto.setReplyToMessageId(message.getReplyToMessage().getMessageId());
         else
@@ -271,12 +272,12 @@ public class UsercommandsHandler {
     }
 
     public void help(Message message) {
-        var sb = new StringBuilder(Services.botConfig().getHelp());
+        var sb = new StringBuilder(Services.config().getHelp());
         if (handler.admins.contains(message.getFrom().getId()))// admins want to get extra help
-            sb.append("\n").append(Services.botConfig().getAdminHelp());
+            sb.append("\n").append(Services.config().getAdminHelp());
 
-        if (message.getFrom().getId().equals(Services.botConfig().getMainAdmin()))
-            sb.append("\n").append(Services.botConfig().getMainAdminHelp());
+        if (message.getFrom().getId().equals(Services.config().getMainAdmin()))
+            sb.append("\n").append(Services.config().getMainAdminHelp());
 
         if (message.isUserMessage()) {
             var sm = Methods.sendMessage()
@@ -330,7 +331,7 @@ public class UsercommandsHandler {
         }
 
         // get a random text and set up a pair
-        var loveArray = Services.botConfig().getLoveStrings();
+        var loveArray = Services.config().getLoveStrings();
         var loveStrings = loveArray[ThreadLocalRandom.current().nextInt(loveArray.length)].split("\n");
 
         try {
@@ -381,7 +382,7 @@ public class UsercommandsHandler {
     }
 
     private boolean isFromWwBot(Message message) {
-        return Services.botConfig().getWwBots().contains(message.getReplyToMessage().getFrom().getUserName()) &&
+        return Services.config().getWwBots().contains(message.getReplyToMessage().getFrom().getUserName()) &&
                 message.getReplyToMessage().getText().startsWith("#players");
     }
 }

@@ -10,19 +10,20 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public class AnimeDownloaders {
+class AnimeDownloaders {
 
     private static Map<String, String> anidubCookies = null;
 
-    public static File getAnidubTorrent(String url) throws Exception {
+    static File getAnidubTorrent(String url) throws Exception {
 
         // login to anidub
         var conn = Jsoup.connect(url).method(Connection.Method.POST);
         if (anidubCookies != null) {
             conn.cookies(anidubCookies);
         } else {
-            var username = System.getenv("anidata").split(":")[0];
-            var password = System.getenv("anidata").split(":")[1];
+            var account = Services.config().getAnidata();
+            var username = account.split(":")[0];
+            var password = account.split(":")[1];
             conn.data("login_name", username, "login_password", password, "login", "submit");
         }
         var resp = conn.execute();
@@ -54,7 +55,7 @@ public class AnimeDownloaders {
 
     }
 
-    public static File getAnistarTorrent(String url) throws Exception {
+    static File getAnistarTorrent(String url) throws Exception {
         var doc = Jsoup.parse(new URL(url), 10000);
         var torrentList = doc.selectFirst("div.list_torrent").select("div.torrent");
 

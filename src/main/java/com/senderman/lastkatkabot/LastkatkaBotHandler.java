@@ -35,7 +35,7 @@ public class LastkatkaBotHandler extends BotHandler {
 
     LastkatkaBotHandler() {
 
-        var mainAdmin = Services.botConfig().getMainAdmin();
+        var mainAdmin = Services.config().getMainAdmin();
         sendMessage(mainAdmin, "Initialization...");
 
         // settings
@@ -48,8 +48,8 @@ public class LastkatkaBotHandler extends BotHandler {
         blacklist = Services.db().getTgUsersIds(DBService.COLLECTION_TYPE.BLACKLIST);
 
         allowedChats = Services.db().getAllowedChatsSet();
-        allowedChats.add(Services.botConfig().getLastvegan());
-        allowedChats.add(Services.botConfig().getTourgroup());
+        allowedChats.add(Services.config().getLastvegan());
+        allowedChats.add(Services.config().getTourgroup());
 
         adminHandler = new AdminHandler(this);
         usercommandsHandler = new UsercommandsHandler(this);
@@ -101,10 +101,10 @@ public class LastkatkaBotHandler extends BotHandler {
             return null;
         }
 
-        if (message.getLeftChatMember() != null && !message.getLeftChatMember().getUserName().equals(getBotUsername()) && !message.getChatId().equals(Services.botConfig().getTourgroup())) {
+        if (message.getLeftChatMember() != null && !message.getLeftChatMember().getUserName().equals(getBotUsername()) && !message.getChatId().equals(Services.config().getTourgroup())) {
             Methods.sendDocument()
                     .setChatId(chatId)
-                    .setFile(Services.botConfig().getLeavesticker())
+                    .setFile(Services.config().getLeavesticker())
                     .setReplyToMessageId(message.getMessageId())
                     .call(this);
             Services.db().removeUserFromChatDB(message.getLeftChatMember().getId(), chatId);
@@ -145,7 +145,7 @@ public class LastkatkaBotHandler extends BotHandler {
             return null;
 
         // commands for main admin only
-        if (message.getFrom().getId().equals(Services.botConfig().getMainAdmin()) && processMainAdminCommand(message, command))
+        if (message.getFrom().getId().equals(Services.config().getMainAdmin()) && processMainAdminCommand(message, command))
             return null;
 
         // commands for all admins
@@ -170,12 +170,12 @@ public class LastkatkaBotHandler extends BotHandler {
 
     @Override
     public String getBotUsername() {
-        return Services.botConfig().getUsername().split(" ")[Services.botConfig().getPosition()];
+        return Services.config().getUsername().split(" ")[Services.config().getPosition()];
     }
 
     @Override
     public String getBotToken() {
-        return Services.botConfig().getToken().split(" ")[Services.botConfig().getPosition()];
+        return Services.config().getToken().split(" ")[Services.config().getPosition()];
     }
 
     private void processCallbackQuery(CallbackQuery query) {
@@ -218,11 +218,11 @@ public class LastkatkaBotHandler extends BotHandler {
         var chatId = message.getChatId();
         var newMembers = message.getNewChatMembers();
 
-        if (chatId == Services.botConfig().getTourgroup()) { // restrict any user who isn't in tournament
+        if (chatId == Services.config().getTourgroup()) { // restrict any user who isn't in tournament
             for (User user : newMembers) {
                 if (TournamentHandler.membersIds == null || !TournamentHandler.membersIds.contains(user.getId())) {
                     Methods.Administration.restrictChatMember()
-                            .setChatId(Services.botConfig().getTourgroup())
+                            .setChatId(Services.config().getTourgroup())
                             .setUserId(user.getId())
                             .setCanSendMessages(false).call(this);
                 }
@@ -230,7 +230,7 @@ public class LastkatkaBotHandler extends BotHandler {
 
         } else if (!newMembers.get(0).getBot()) {
             Methods.sendDocument(chatId)
-                    .setFile(Services.botConfig().getHigif())
+                    .setFile(Services.config().getHigif())
                     .setReplyToMessageId(message.getMessageId())
                     .call(this); // say hi to new member
 
@@ -249,7 +249,7 @@ public class LastkatkaBotHandler extends BotHandler {
                     .setCallbackData(LastkatkaBot.CALLBACK_DONT_ALLOW_CHAT + chatId));
             var markup = new InlineKeyboardMarkup();
             markup.setKeyboard(List.of(row1, row2));
-            sendMessage(Methods.sendMessage(Services.botConfig().getMainAdmin(),
+            sendMessage(Methods.sendMessage(Services.config().getMainAdmin(),
                     String.format("Добавить чат %1$s (%2$d) в список разрешенных? - %3$s",
                             message.getChat().getTitle(), chatId, message.getFrom().getFirstName()))
                     .setReplyMarkup(markup));
@@ -260,7 +260,7 @@ public class LastkatkaBotHandler extends BotHandler {
         var chatId = message.getChatId();
         var text = message.getText();
 
-        if (Services.botConfig().getVeganWarsCommands().contains(text) && !veganTimers.containsKey(chatId)) { // start veganwars timer
+        if (Services.config().getVeganWarsCommands().contains(text) && !veganTimers.containsKey(chatId)) { // start veganwars timer
             veganTimers.put(chatId, new VeganTimer(chatId));
             return true;
 
