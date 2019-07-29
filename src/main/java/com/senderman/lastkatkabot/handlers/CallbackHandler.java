@@ -169,31 +169,24 @@ public class CallbackHandler {
         Methods.deleteMessage(query.getMessage().getChatId(), query.getMessage().getMessageId()).call(handler);
     }
 
-    public void deleteUser(CallbackQuery query) {
-        DBService.COLLECTION_TYPE type;
+    public void deleteUser(CallbackQuery query, DBService.COLLECTION_TYPE type) {
         Set<Integer> userIds;
         String listName;
-        switch (query.getData().split(" ")[0]) {
-            case LastkatkaBot.CALLBACK_DELETE_ADMIN:
-                type = DBService.COLLECTION_TYPE.ADMINS;
+        switch (type) {
+            case ADMINS:
                 userIds = handler.admins;
                 listName = "админов";
                 break;
-            case LastkatkaBot.CALLBACK_DELETE_NEKO:
-                type = DBService.COLLECTION_TYPE.BLACKLIST;
+            case BLACKLIST:
                 userIds = handler.blacklist;
                 listName = "плохих кошечек";
                 break;
-            case LastkatkaBot.CALLBACK_DELETE_PREM:
-                type = DBService.COLLECTION_TYPE.PREMIUM;
+            case PREMIUM:
                 userIds = handler.premiumUsers;
                 listName = "премиум-пользователей";
                 break;
             default:
-                type = null;
-                userIds = handler.admins;
-                listName = "";
-                break;
+                return;
         }
         var userId = Integer.parseInt(query.getData().split(" ")[1]);
         Services.db().removeTGUser(userId, type);

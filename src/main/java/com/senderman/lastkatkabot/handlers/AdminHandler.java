@@ -58,8 +58,8 @@ public class AdminHandler {
         var messageToSend = Methods.sendMessage().setChatId(message.getChatId());
 
         boolean allAdminsAccess = false;
-        String title = "";
-        String callback = "";
+        String title;
+        String callback;
         switch (type) {
             case ADMINS:
                 title = "\uD83D\uDE0E <b>Админы бота:</b>\n";
@@ -74,9 +74,11 @@ public class AdminHandler {
                 title = "\uD83D\uDC51 <b>Список премиум-пользователей:</b>\n";
                 callback = LastkatkaBot.CALLBACK_DELETE_PREM;
                 break;
+            default:
+                return;
         }
 
-        var showButtons = allAdminsAccess || message.getFrom().getId().equals(Services.config().getMainAdmin());
+        var showButtons = allAdminsAccess || message.getChatId().equals((long) Services.config().getMainAdmin());
 
         if (!showButtons || !message.isUserMessage()) {
             var userlist = new StringBuilder(title);
