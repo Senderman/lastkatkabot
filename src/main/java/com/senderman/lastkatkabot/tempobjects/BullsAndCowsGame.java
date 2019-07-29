@@ -264,8 +264,8 @@ public class BullsAndCowsGame {
 
     // same as before but for an array under generating
     private boolean hasRepeatingDigits(int[] array, int genIndex) {
-        for (int i = 0; i < genIndex + 1; i++) {
-            for (int j = i + 1; j < genIndex + 1; j++) {
+        for (int i = 0; i <= genIndex; i++) {
+            for (int j = i + 1; j <= genIndex; j++) {
                 if (array[i] == array[j]) {
                     return true;
                 }
