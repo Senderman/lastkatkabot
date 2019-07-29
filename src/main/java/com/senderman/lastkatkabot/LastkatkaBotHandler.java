@@ -3,6 +3,7 @@ package com.senderman.lastkatkabot;
 import com.annimon.tgbotsmodule.BotHandler;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.api.methods.send.SendMessageMethod;
+import com.senderman.TgUser;
 import com.senderman.lastkatkabot.handlers.*;
 import com.senderman.lastkatkabot.tempobjects.BullsAndCowsGame;
 import com.senderman.lastkatkabot.tempobjects.VeganTimer;
@@ -249,9 +250,10 @@ public class LastkatkaBotHandler extends BotHandler {
                     .setCallbackData(LastkatkaBot.CALLBACK_DONT_ALLOW_CHAT + chatId));
             var markup = new InlineKeyboardMarkup();
             markup.setKeyboard(List.of(row1, row2));
+            var inviter = new TgUser(message.getFrom().getId(), message.getFrom().getFirstName());
             sendMessage(Methods.sendMessage(Services.config().getMainAdmin(),
                     String.format("Добавить чат %1$s (%2$d) в список разрешенных? - %3$s",
-                            message.getChat().getTitle(), chatId, message.getFrom().getFirstName()))
+                            message.getChat().getTitle(), chatId, inviter.getLink()))
                     .setReplyMarkup(markup));
         }
     }
