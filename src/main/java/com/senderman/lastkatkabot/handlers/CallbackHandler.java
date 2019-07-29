@@ -85,7 +85,7 @@ public class CallbackHandler {
 
     public void registerInTournament(CallbackQuery query) {
         var memberId = query.getFrom().getId();
-        if (!TournamentHandler.isEnabled) {
+        if (!handler.tournamentHandler.isEnabled) {
             Methods.answerCallbackQuery()
                     .setCallbackQueryId(query.getId())
                     .setText("⚠️ На данный момент нет открытых раундов!")
@@ -94,7 +94,7 @@ public class CallbackHandler {
             return;
         }
 
-        if (TournamentHandler.membersIds.contains(memberId)) {
+        if (handler.tournamentHandler.membersIds.contains(memberId)) {
             Methods.answerCallbackQuery()
                     .setCallbackQueryId(query.getId())
                     .setText("⚠️ Вы уже получили разрешение на отправку сообщений!")
@@ -103,7 +103,7 @@ public class CallbackHandler {
             return;
         }
 
-        if (!TournamentHandler.members.contains(query.getFrom().getUserName())) {
+        if (!handler.tournamentHandler.members.contains(query.getFrom().getUserName())) {
             Methods.answerCallbackQuery()
                     .setCallbackQueryId(query.getId())
                     .setText("\uD83D\uDEAB Вы не являетесь участником текущего раунда!")
@@ -112,7 +112,7 @@ public class CallbackHandler {
             return;
         }
 
-        TournamentHandler.membersIds.add(memberId);
+        handler.tournamentHandler.membersIds.add(memberId);
         Methods.Administration.restrictChatMember()
                 .setChatId(Services.config().getTourgroup())
                 .setUserId(memberId)

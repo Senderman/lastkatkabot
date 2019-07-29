@@ -45,7 +45,7 @@ public class Duel {
         start();
     }
 
-    public void start() {
+    private void start() {
         var randomInt = ThreadLocalRandom.current().nextInt(100);
         var winner = (randomInt < 50) ? player1 : player2;
         var loser = (randomInt < 50) ? player2 : player1;

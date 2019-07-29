@@ -23,9 +23,6 @@ bncphoto: "AgADAgAD2qkxG1TVaUjH0X-0YjLur08E9Q4ABAG8AAEj0FdnA6d7AgABAg" # picture
 higif: "CgADAQADiwAD0r04RoeZTv5wklZNAg" # gif for new members
 leavesticker: "CAADAgADDAADea1UE9LCz-IGyKZhAg" # sticker that bot will send after someone leaves the chat
 
-help: |
-  /duel - начать дуэль
-
 adminHelp: |
   <b>Информация для админов бота</b>
 

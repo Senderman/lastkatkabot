@@ -34,6 +34,7 @@ public class LastkatkaBotHandler extends BotHandler {
     private final Map<String, Method> commands;
     private final AdminHandler adminHandler;
     private final CallbackHandler callbackHandler;
+    public final TournamentHandler tournamentHandler;
 
     LastkatkaBotHandler() {
 
@@ -57,6 +58,7 @@ public class LastkatkaBotHandler extends BotHandler {
         commands = new HashMap<>();
         adminHandler = new AdminHandler(this);
         callbackHandler = new CallbackHandler(this);
+        tournamentHandler = new TournamentHandler(this);
         bullsAndCowsGames = Services.db().getBnCGames();
         duels = new HashMap<>();
 
@@ -157,20 +159,6 @@ public class LastkatkaBotHandler extends BotHandler {
         } catch (Exception e) {
             return null;
         }
-
-        /* TODO implement commands for tournament
-        if (TournamentHandler.isEnabled && isFromAdmin(message)) {
-            switch (command) {
-                case "/score":
-                    TournamentHandler.score(message, this);
-                    return null;
-                case "/win":
-                    TournamentHandler.win(message, this);
-                    return null;
-                case "/rt":
-                    TournamentHandler.rt(this);
-            }
-        }*/
         return null;
     }
 
@@ -251,7 +239,7 @@ public class LastkatkaBotHandler extends BotHandler {
 
         if (chatId == Services.config().getTourgroup()) { // restrict any user who isn't in tournament
             for (User user : newMembers) {
-                if (TournamentHandler.membersIds == null || !TournamentHandler.membersIds.contains(user.getId())) {
+                if (!tournamentHandler.membersIds.contains(user.getId())) {
                     Methods.Administration.restrictChatMember()
                             .setChatId(Services.config().getTourgroup())
                             .setUserId(user.getId())
@@ -285,24 +273,6 @@ public class LastkatkaBotHandler extends BotHandler {
                             message.getChat().getTitle(), chatId, message.getFrom().getFirstName()))
                     .setReplyMarkup(markup));
         }
-    }
-
-    private boolean processAdminCommand(Message message, String command) {
-        switch (command) {
-            case "/setup":
-                TournamentHandler.setup(message, this);
-                return true;
-            case "/go":
-                TournamentHandler.startTournament(this);
-                return true;
-            case "/ct":
-                TournamentHandler.cancelSetup(this);
-                return true;
-            case "/tourmessage":
-                TournamentHandler.tourmessage(this, message);
-                return true;
-        }
-        return false;
     }
 
     private boolean isFromAdmin(Message message) {

@@ -2,6 +2,7 @@ package com.senderman.lastkatkabot;
 
 import com.senderman.Command;
 import com.senderman.lastkatkabot.handlers.AdminHandler;
+import com.senderman.lastkatkabot.handlers.TournamentHandler;
 import com.senderman.lastkatkabot.handlers.UsercommandsHandler;
 import com.senderman.lastkatkabot.tempobjects.BullsAndCowsGame;
 import com.senderman.lastkatkabot.tempobjects.Duel;
@@ -14,11 +15,13 @@ public class CommandListener {
     private final LastkatkaBotHandler handler;
     private final UsercommandsHandler usercommands;
     private final AdminHandler adminCommands;
+    private final TournamentHandler tournamentHandler;
 
     public CommandListener(LastkatkaBotHandler handler) {
         this.handler = handler;
         usercommands = new UsercommandsHandler(handler);
         adminCommands = new AdminHandler(handler);
+        tournamentHandler = handler.tournamentHandler;
     }
 
     @Command(name = "/action", desc = "сделать действие. Действие указывать чере пробел, можно реплаем")
@@ -162,6 +165,49 @@ public class CommandListener {
     @Command(name = "/setuphelp", desc = "инфо о команде /setup", forAllAdmins = true)
     public void setupHelp(Message message) {
         adminCommands.setupHelp(message);
+    }
+
+    @Command(name = "/score", desc = "name1 score1 name2 score2 - сообщить счет", forAllAdmins = true)
+    public void score(Message message) {
+        if (!tournamentHandler.isEnabled)
+            return;
+        tournamentHandler.score(message);
+    }
+
+    @Command(name = "/win",
+            desc = "winner score loser score типСледующегоРаунда - завершить турнир (если текущий раунд - финал, используйте тип раунда over)",
+            forAllAdmins = true)
+    public void win(Message message) {
+        if (!tournamentHandler.isEnabled)
+            return;
+        tournamentHandler.win(message);
+    }
+
+    @Command(name = "/rt", desc = "отменить турнир", forAllAdmins = true)
+    public void resetTournament(Message message) {
+        if (!tournamentHandler.isEnabled)
+            return;
+        tournamentHandler.resetTournament();
+    }
+
+    @Command(name = "/setup", desc = "настроить турнир", showInHelp = false, forAllAdmins = true)
+    public void setup(Message message) {
+        tournamentHandler.setup(message);
+    }
+
+    @Command(name = "/go", desc = "подтвердить данные", showInHelp = false, forAllAdmins = true)
+    public void go(Message message) {
+        tournamentHandler.startTournament();
+    }
+
+    @Command(name = "/ct", desc = "отменить введеные данные", showInHelp = false, forAllAdmins = true)
+    public void ct(Message message) {
+        tournamentHandler.cancelSetup();
+    }
+
+    @Command(name = "/tourmessage", desc = "(reply) главное сообщение турнира", showInHelp = true, forAllAdmins = true)
+    public void tourMessage(Message message) {
+        tournamentHandler.tourmessage(message);
     }
 
     @Command(name = "/owner", desc = "(reply) добавить админа бота", forMainAdmin = true)
