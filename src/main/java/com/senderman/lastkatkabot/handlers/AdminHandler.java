@@ -83,9 +83,14 @@ public class AdminHandler {
         if (!showButtons || !message.isUserMessage()) {
             var userlist = new StringBuilder(title);
             for (var id : users) {
-                var name = Methods.getChatMember(id, id).call(handler).getUser().getFirstName();
-                var user = new TgUser(id, name);
-                userlist.append(user.getLink()).append("\n");
+                try {
+                    var name = Methods.getChatMember(id, id).call(handler).getUser().getFirstName();
+                    var user = new TgUser(id, name);
+                    userlist.append(user.getLink()).append("\n");
+                } catch (Exception e) {
+                    Services.db().removeTGUser(id, type);
+                    handler.sendMessage(message.getChatId(), "Юзер с id " + id + " удален из бд!");
+                }
             }
             messageToSend.setText(userlist.toString());
         } else {
