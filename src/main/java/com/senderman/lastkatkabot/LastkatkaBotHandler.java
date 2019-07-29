@@ -132,7 +132,7 @@ public class LastkatkaBotHandler extends BotHandler {
         var text = message.getText();
 
         // for bulls and cows
-        if (text.matches("\\d{4,10}") && bullsAndCowsGames.containsKey(chatId) && isNotInBlacklist(message)) {
+        if (text.matches("\\d{4,10}") && bullsAndCowsGames.containsKey(chatId) && !isInBlacklist(message)) {
             bullsAndCowsGames.get(chatId).check(message);
             return null;
         }
@@ -154,11 +154,16 @@ public class LastkatkaBotHandler extends BotHandler {
         try {
             var m = commands.get(command);
             var annotation = m.getAnnotation(Command.class);
-            if (isFromAdmin(message) && annotation.forAllAdmins()
-                    || message.getFrom().getId().equals(Services.config().getMainAdmin()) && annotation.forMainAdmin()
-                    || isNotInBlacklist(message)
-            )
-                m.invoke(commandListener, message);
+            if (annotation.forMainAdmin()) {
+                if (!message.getFrom().getId().equals(Services.config().getMainAdmin()))
+                    return null;
+            } else if (annotation.forAllAdmins()) {
+                if (!isFromAdmin(message))
+                    return null;
+            } else if (isInBlacklist(message))
+                return null;
+
+            m.invoke(commandListener, message);
         } catch (Exception e) {
             return null;
         }
@@ -288,12 +293,12 @@ public class LastkatkaBotHandler extends BotHandler {
         return premiumUsers.contains(message.getFrom().getId());
     }*/
 
-    private boolean isNotInBlacklist(Message message) {
+    private boolean isInBlacklist(Message message) {
         var result = blacklist.contains(message.getFrom().getId());
         if (result) {
             Methods.deleteMessage(message.getChatId(), message.getMessageId()).call(this);
         }
-        return !result;
+        return result;
     }
 
     private void migrateChat(long oldChatId, long newChatId) {
