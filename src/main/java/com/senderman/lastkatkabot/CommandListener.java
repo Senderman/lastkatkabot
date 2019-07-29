@@ -4,7 +4,11 @@ import com.senderman.Command;
 import com.senderman.lastkatkabot.handlers.AdminHandler;
 import com.senderman.lastkatkabot.handlers.UsercommandsHandler;
 import com.senderman.lastkatkabot.tempobjects.BullsAndCowsGame;
+import com.senderman.lastkatkabot.tempobjects.Duel;
 import org.telegram.telegrambots.meta.api.objects.Message;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class CommandListener {
     private final LastkatkaBotHandler handler;
@@ -90,6 +94,17 @@ public class CommandListener {
             handler.sendMessage(message.getChatId(), "В этом чате игра уже идет!");
     }
 
+    @Command(name = "/duel", desc = "начать дуэль (мини-игра на рандом)")
+    public void duel(Message message) {
+        if (message.isUserMessage())
+            return;
+        Map<Integer, Duel> messageDuel = new HashMap<>();
+        var duel = new Duel(message);
+        int duelMessageId = duel.getMessageId();
+        messageDuel.put(duelMessageId, duel);
+        handler.duels.put(message.getChatId(), messageDuel);
+    }
+
     @Command(name = "/bnchelp", desc = "помощь по игре Быки и Коровы")
     public void bncHelp(Message message) {
         usercommands.bncHelp(message);
@@ -126,6 +141,12 @@ public class CommandListener {
     @Command(name = "/nekos", desc = "посмотреть чс бота. В лс работает как управление чс", forAllAdmins = true)
     public void nekos(Message message) {
         adminCommands.listUsers(message, DBService.COLLECTION_TYPE.BLACKLIST);
+    }
+
+    @Command(name = "/critical", desc = "очистка незакончившихся дуэлей", forAllAdmins = true)
+    public void critical(Message message) {
+        handler.duels.clear();
+        handler.sendMessage(message.getChatId(), "✅ Все неначатые дуэли были очищены!");
     }
 
     @Command(name = "/owners", desc = "управление/просмотр админами бота. Управление доступно только главному админу в лс", forAllAdmins = true)

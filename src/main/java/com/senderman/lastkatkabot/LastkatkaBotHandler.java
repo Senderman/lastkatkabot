@@ -4,11 +4,9 @@ import com.annimon.tgbotsmodule.BotHandler;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.api.methods.send.SendMessageMethod;
 import com.senderman.Command;
-import com.senderman.lastkatkabot.handlers.AdminHandler;
-import com.senderman.lastkatkabot.handlers.CallbackHandler;
-import com.senderman.lastkatkabot.handlers.DuelController;
-import com.senderman.lastkatkabot.handlers.TournamentHandler;
+import com.senderman.lastkatkabot.handlers.*;
 import com.senderman.lastkatkabot.tempobjects.BullsAndCowsGame;
+import com.senderman.lastkatkabot.tempobjects.Duel;
 import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -31,10 +29,10 @@ public class LastkatkaBotHandler extends BotHandler {
     public final Set<Integer> premiumUsers;
     public final Set<Long> allowedChats;
     public final Map<Long, BullsAndCowsGame> bullsAndCowsGames;
+    public final Map<Long, Map<Integer, Duel>> duels;
     public final CommandListener commandListener;
     private final Map<String, Method> commands;
     private final AdminHandler adminHandler;
-    private final DuelController duelController;
     private final CallbackHandler callbackHandler;
 
     LastkatkaBotHandler() {
@@ -59,8 +57,8 @@ public class LastkatkaBotHandler extends BotHandler {
         commands = new HashMap<>();
         adminHandler = new AdminHandler(this);
         callbackHandler = new CallbackHandler(this);
-        duelController = new DuelController(this);
         bullsAndCowsGames = Services.db().getBnCGames();
+        duels = new HashMap<>();
 
         // init command-method map
         for (var m : commandListener.getClass().getDeclaredMethods()) {
@@ -229,7 +227,17 @@ public class LastkatkaBotHandler extends BotHandler {
                     callbackHandler.closeMenu(query);
                     return;
                 case LastkatkaBot.CALLBACK_JOIN_DUEL:
-                    duelController.joinDuel(query);
+                    var chat = duels.get(query.getMessage().getChatId());
+                    if (chat == null) {
+                        Duel.answerCallbackQuery(query, "⏰ Дуэль устарела!", true);
+                        return;
+                    }
+                    var duel = chat.get(query.getMessage().getMessageId());
+                    if (duel == null) {
+                        Duel.answerCallbackQuery(query, "⏰ Дуэль устарела!", true);
+                        return;
+                    }
+                    duel.join(query);
                     return;
                 case LastkatkaBot.CALLBACK_VOTE_BNC:
                     bullsAndCowsGames.get(query.getMessage().getChatId()).addVote(query);
@@ -281,10 +289,6 @@ public class LastkatkaBotHandler extends BotHandler {
 
     private boolean processAdminCommand(Message message, String command) {
         switch (command) {
-            //TODO implement
-            case "/critical":
-                duelController.critical(message);
-                return true;
             case "/setup":
                 TournamentHandler.setup(message, this);
                 return true;
