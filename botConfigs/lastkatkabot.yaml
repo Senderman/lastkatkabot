@@ -23,16 +23,6 @@ bncphoto: "AgADAgAD2qkxG1TVaUjH0X-0YjLur08E9Q4ABAG8AAEj0FdnA6d7AgABAg" # picture
 higif: "CgADAQADiwAD0r04RoeZTv5wklZNAg" # gif for new members
 leavesticker: "CAADAgADDAADea1UE9LCz-IGyKZhAg" # sticker that bot will send after someone leaves the chat
 
-adminHelp: |
-  <b>Информация для админов бота</b>
-
-  /setup - помощь по этой команде - /tourhelp
-  /score name1 score1 name2 score2 - сообщить счет
-  /win winner score loser score типСледующегоРаунда - завершить турнир (если текущий раунд - финал, используйте тип раунда over)
-  /rt - отменить турнир
-  /tourmessage - ответьте этим на главный пост турнира
-  /critical - сброс всех дуэлей
-
 setupHelp: |
   Есть два режима турнира - командный и дуэль. Дуэль вызывается так:
   /setup
