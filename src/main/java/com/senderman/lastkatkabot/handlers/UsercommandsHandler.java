@@ -258,11 +258,11 @@ public class UsercommandsHandler {
 
     public void help(Message message) {
         var help = new StringBuilder("Привет! Это очень полезный бот для проекта @lastkatka, который многое что умеет! Основные команды:\n\n");
-        var adminHelp = new StringBuilder("<b>Информация для админов бота</b>");
-        var mainAdminHelp = new StringBuilder("<b>Информация для главного админа бота</b>");
+        var adminHelp = new StringBuilder("<b>Информация для админов бота</b>\n\n");
+        var mainAdminHelp = new StringBuilder("<b>Информация для главного админа бота</b>\n\n");
         var noobId = message.getFrom().getId();
 
-        for (var m : handler.commandListener.getClass().getDeclaredMethods()) {
+        for (var m : handler.commands.values()) {
             if (!m.isAnnotationPresent(Command.class))
                 continue;
             var annotation = m.getAnnotation(Command.class);
@@ -292,8 +292,9 @@ public class UsercommandsHandler {
                     .setReplyToMessageId(message.getMessageId()));
             return;
         }
-        handler.sendMessage(Methods.sendMessage(message.getChatId(), "✅ Помощь была отправлена вам в лс")
-                .setReplyToMessageId(message.getMessageId()));
+        if (!message.isUserMessage())
+            handler.sendMessage(Methods.sendMessage(message.getChatId(), "✅ Помощь была отправлена вам в лс")
+                    .setReplyToMessageId(message.getMessageId()));
     }
 
     public void pair(Message message) {
