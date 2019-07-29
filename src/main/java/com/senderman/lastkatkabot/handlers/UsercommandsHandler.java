@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.handlers;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.senderman.Command;
 import com.senderman.TgUser;
 import com.senderman.lastkatkabot.LastkatkaBot;
 import com.senderman.lastkatkabot.LastkatkaBotHandler;
@@ -23,8 +24,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 public class UsercommandsHandler {
 
@@ -56,7 +55,7 @@ public class UsercommandsHandler {
         handler.sendMessage(sm);
     }
 
-    public void payRespects(Message message) { // /f
+    public void pressF(Message message) { // /f
         if (message.isUserMessage())
             return;
 
@@ -117,7 +116,7 @@ public class UsercommandsHandler {
                 .setReplyToMessageId(message.getMessageId()));
     }
 
-    public void dstats(Message message) {
+    public void stats(Message message) {
         var player = !message.isReply() ? message.getFrom() : message.getReplyToMessage().getFrom();
         if (player.getBot()) {
             handler.sendMessage(message.getChatId(), "Но это же бот!");
@@ -212,24 +211,6 @@ public class UsercommandsHandler {
         handler.sendMessage(chatId, forecast);
     }
 
-    public void testRegex(Message message) {
-        var chatId = message.getChatId();
-        var params = message.getText().split("\n");
-        if (params.length != 3) {
-            handler.sendMessage(chatId, "Неверное количество аргументов!");
-            return;
-        }
-        var regex = params[1];
-        try {
-            Pattern.compile(regex);
-        } catch (PatternSyntaxException e) {
-            handler.sendMessage(chatId, "Invalid regex");
-            return;
-        }
-        handler.sendMessage(Methods.sendMessage(chatId, (params[2].matches(regex) ? "✅" : "❌"))
-                .setReplyToMessageId(message.getMessageId()));
-    }
-
     public void feedback(Message message) {
         var user = new TgUser(message.getFrom().getId(), message.getFrom().getFirstName());
         var bugreport = "⚠️ <b>Фидбек</b>\n\n" +
@@ -264,7 +245,7 @@ public class UsercommandsHandler {
         handler.sendMessage(chatId, text.toString());
     }
 
-    public void bnchelp(Message message) {
+    public void bncHelp(Message message) {
         var sendPhoto = Methods.sendPhoto()
                 .setChatId(message.getChatId())
                 .setFile(Services.config().getBncphoto());
@@ -276,24 +257,35 @@ public class UsercommandsHandler {
     }
 
     public void help(Message message) {
-        var sb = new StringBuilder(Services.config().getHelp());
-        if (handler.admins.contains(message.getFrom().getId()))// admins want to get extra help
-            sb.append("\n").append(Services.config().getAdminHelp());
+        var help = new StringBuilder("Привет! Это очень полезный бот для проекта @lastkatka, который многое что умеет! Основные команды:\n\n");
+        var adminHelp = new StringBuilder("<b>Информация для админов бота</b>");
+        var mainAdminHelp = new StringBuilder("<b>Информация для главного админа бота</b>");
+        var noobId = message.getFrom().getId();
 
-        if (message.getFrom().getId().equals(Services.config().getMainAdmin()))
-            sb.append("\n").append(Services.config().getMainAdminHelp());
+        for (var m : handler.commandListener.getClass().getDeclaredMethods()) {
+            if (!m.isAnnotationPresent(Command.class))
+                continue;
+            var annotation = m.getAnnotation(Command.class);
+            if (!annotation.showInHelp())
+                continue;
 
-        if (message.isUserMessage()) {
-            var sm = Methods.sendMessage()
-                    .setChatId(message.getChatId())
-                    .setText(sb.toString());
-            handler.sendMessage(sm);
-            return;
+            var commandLine = annotation.name() + " - " + annotation.desc() + "\n";
+            if (noobId.equals(Services.config().getMainAdmin()) && annotation.forMainAdmin())
+                mainAdminHelp.append(commandLine);
+            else if (handler.admins.contains(noobId) && annotation.forAllAdmins())
+                adminHelp.append(commandLine);
+            else
+                help.append(commandLine);
         }
+
+        if (handler.admins.contains(noobId))
+            help.append("\n").append(adminHelp);
+        if (noobId.equals(Services.config().getMainAdmin()))
+            help.append("\n").append(mainAdminHelp);
 
         // attempt to send help to PM
         try {
-            handler.execute(new SendMessage((long) message.getFrom().getId(), sb.toString())
+            handler.execute(new SendMessage((long) message.getFrom().getId(), help.toString())
                     .setParseMode(ParseMode.HTML));
         } catch (TelegramApiException e) {
             handler.sendMessage(Methods.sendMessage(message.getChatId(), "Пожалуйста, начните диалог со мной в лс")
@@ -303,7 +295,6 @@ public class UsercommandsHandler {
         handler.sendMessage(Methods.sendMessage(message.getChatId(), "✅ Помощь была отправлена вам в лс")
                 .setReplyToMessageId(message.getMessageId()));
     }
-
 
     public void pair(Message message) {
         if (message.isUserMessage())
