@@ -147,7 +147,7 @@ public class BullsAndCowsGame {
         gameMessage(chatId, status);
     }
 
-    public void createPoll(Message message) {
+    public void createStopPoll(Message message) {
         messagesToDelete.add(message.getMessageId());
         if (message.isUserMessage()) { // who needs to vote in pm? :)
             gameOver();

@@ -13,19 +13,24 @@ import java.util.List;
 import java.util.Set;
 
 public class TournamentHandler {
-    public static boolean isEnabled = false;
-    public static Set<Integer> membersIds;
-    static Set<String> members;
-    private static Set<String> teams;
-    private static boolean isTeamMode;
-    private static String roundName;
+    public boolean isEnabled = false;
+    public Set<Integer> membersIds;
+    Set<String> members;
+    private Set<String> teams;
+    private boolean isTeamMode;
+    private String roundName;
+    private final LastkatkaBotHandler handler;
 
-    public static void setup(Message message, LastkatkaBotHandler handler) {
+    public TournamentHandler(LastkatkaBotHandler handler) {
+        this.handler = handler;
+        membersIds = new HashSet<>();
+        teams = new HashSet<>();
+    }
+
+    public void setup(Message message) {
         if (isEnabled)
             return;
 
-        members = new HashSet<>();
-        membersIds = new HashSet<>();
         var params = message.getText().split("\n");
         if (params.length != 4) {
             handler.sendMessage(message.getChatId(), "Неверное количество аргументов!");
@@ -57,7 +62,7 @@ public class TournamentHandler {
             members.add(params[1].replace("@", "").strip());
             members.add(params[2].replace("@", "").strip());
         }
-        checkText.append("\n<b>Участники: </b>" )
+        checkText.append("\n<b>Участники: </b>")
                 .append(getMembersAsString())
                 .append("\n\n/go - подтвердить, /ct - отменить");
 
@@ -67,7 +72,7 @@ public class TournamentHandler {
                 .setReplyToMessageId(message.getMessageId()));
     }
 
-    public static void startTournament(LastkatkaBotHandler handler) {
+    public void startTournament() {
         if (members.isEmpty() || isEnabled)
             return;
 
@@ -110,7 +115,7 @@ public class TournamentHandler {
         isEnabled = true;
     }
 
-    public static void cancelSetup(LastkatkaBotHandler handler) {
+    public void cancelSetup() {
         if (isEnabled)
             return;
         members.clear();
@@ -119,7 +124,7 @@ public class TournamentHandler {
         handler.sendMessage(Services.config().getLastvegan(), "\uD83D\uDEAB Действие отменено");
     }
 
-    private static String getScore(String[] params) {
+    private String getScore(String[] params) {
         String player1;
         String player2;
         if (isTeamMode) {
@@ -132,7 +137,7 @@ public class TournamentHandler {
         return String.format("%1$s - %2$s\n%3$s:%4$s", player1, player2, params[2], params[4]);
     }
 
-    private static void restrictMembers(LastkatkaBotHandler handler) {
+    private void restrictMembers() {
         isEnabled = false;
         for (var memberId : membersIds) {
             Methods.Administration.restrictChatMember(Services.config().getTourgroup(), memberId).call(handler);
@@ -152,7 +157,7 @@ public class TournamentHandler {
         }
     }
 
-    public static void score(Message message, LastkatkaBotHandler handler) {
+    public void score(Message message) {
         var params = message.getText().split("\\s+");
         if (params.length != 5) {
             handler.sendMessage(message.getChatId(), "Неверное количество аргументов!");
@@ -162,14 +167,14 @@ public class TournamentHandler {
         handler.sendMessage(Methods.sendMessage(Services.config().getTourchannel(), score));
     }
 
-    public static void win(Message message, LastkatkaBotHandler handler) {
+    public void win(Message message) {
         var params = message.getText().split("\\s+");
         if (params.length != 6) {
             handler.sendMessage(message.getChatId(), "Неверное количество аргументов!");
             return;
         }
         var score = getScore(params);
-        restrictMembers(handler);
+        restrictMembers();
 
         String goingTo;
         if (isTeamMode)
@@ -191,19 +196,19 @@ public class TournamentHandler {
                         "Болельщики, посетите %2$s, чтобы узнать подробности", params[1], Services.config().getTourchannel())));
     }
 
-    public static void rt(LastkatkaBotHandler handler) {
-        restrictMembers(handler);
+    public void resetTournament() {
+        restrictMembers();
         handler.sendMessage(Services.config().getLastvegan(), "\uD83D\uDEAB <b>Раунд отменен из-за непредвиденных обстоятельств!</b>");
     }
 
-    public static void tourmessage(LastkatkaBotHandler handler, Message message) {
+    public void tourmessage(Message message) {
         if (!message.getChatId().equals(Services.config().getLastvegan()) || !message.isReply())
             return;
         Services.db().setTournamentMessage(message.getReplyToMessage().getMessageId());
         handler.sendMessage(message.getChatId(), "✅ Главное сообщение турнира установлено!");
     }
 
-    private static String getMembersAsString() {
+    private String getMembersAsString() {
         var memberList = new StringBuilder();
         for (var member : members) {
             memberList.append("@").append(member).append(", ");
@@ -212,7 +217,7 @@ public class TournamentHandler {
         return memberList.toString();
     }
 
-    private static String getTeamsAsString() {
+    private String getTeamsAsString() {
         var teamList = new StringBuilder();
         for (var team : teams) {
             teamList.append(team).append(", ");
