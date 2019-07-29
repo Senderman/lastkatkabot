@@ -85,7 +85,7 @@ public class CallbackHandler {
 
     public void registerInTournament(CallbackQuery query) {
         var memberId = query.getFrom().getId();
-        if (!TournamentHandler.isEnabled) {
+        if (!handler.tournamentHandler.isEnabled) {
             Methods.answerCallbackQuery()
                     .setCallbackQueryId(query.getId())
                     .setText("⚠️ На данный момент нет открытых раундов!")
@@ -94,7 +94,7 @@ public class CallbackHandler {
             return;
         }
 
-        if (TournamentHandler.membersIds.contains(memberId)) {
+        if (handler.tournamentHandler.membersIds.contains(memberId)) {
             Methods.answerCallbackQuery()
                     .setCallbackQueryId(query.getId())
                     .setText("⚠️ Вы уже получили разрешение на отправку сообщений!")
@@ -103,7 +103,7 @@ public class CallbackHandler {
             return;
         }
 
-        if (!TournamentHandler.members.contains(query.getFrom().getUserName())) {
+        if (!handler.tournamentHandler.members.contains(query.getFrom().getUserName())) {
             Methods.answerCallbackQuery()
                     .setCallbackQueryId(query.getId())
                     .setText("\uD83D\uDEAB Вы не являетесь участником текущего раунда!")
@@ -112,7 +112,7 @@ public class CallbackHandler {
             return;
         }
 
-        TournamentHandler.membersIds.add(memberId);
+        handler.tournamentHandler.membersIds.add(memberId);
         Methods.Administration.restrictChatMember()
                 .setChatId(Services.config().getTourgroup())
                 .setUserId(memberId)
@@ -169,31 +169,24 @@ public class CallbackHandler {
         Methods.deleteMessage(query.getMessage().getChatId(), query.getMessage().getMessageId()).call(handler);
     }
 
-    public void deleteUser(CallbackQuery query) {
-        DBService.COLLECTION_TYPE type;
+    public void deleteUser(CallbackQuery query, DBService.COLLECTION_TYPE type) {
         Set<Integer> userIds;
         String listName;
-        switch (query.getData().split(" ")[0]) {
-            case LastkatkaBot.CALLBACK_DELETE_ADMIN:
-                type = DBService.COLLECTION_TYPE.ADMINS;
+        switch (type) {
+            case ADMINS:
                 userIds = handler.admins;
                 listName = "админов";
                 break;
-            case LastkatkaBot.CALLBACK_DELETE_NEKO:
-                type = DBService.COLLECTION_TYPE.BLACKLIST;
+            case BLACKLIST:
                 userIds = handler.blacklist;
                 listName = "плохих кошечек";
                 break;
-            case LastkatkaBot.CALLBACK_DELETE_PREM:
-                type = DBService.COLLECTION_TYPE.PREMIUM;
+            case PREMIUM:
                 userIds = handler.premiumUsers;
                 listName = "премиум-пользователей";
                 break;
             default:
-                type = null;
-                userIds = handler.admins;
-                listName = "";
-                break;
+                return;
         }
         var userId = Integer.parseInt(query.getData().split(" ")[1]);
         Services.db().removeTGUser(userId, type);

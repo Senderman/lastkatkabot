@@ -46,15 +46,6 @@ public class BotConfig {
     private String higif;
 
     @JsonProperty
-    private String help;
-
-    @JsonProperty
-    private String adminHelp;
-
-    @JsonProperty
-    private String mainAdminHelp;
-
-    @JsonProperty
     private String setupHelp;
 
     @JsonProperty
@@ -162,30 +153,6 @@ public class BotConfig {
 
     public void setHigif(String higif) {
         this.higif = higif;
-    }
-
-    public String getHelp() {
-        return help;
-    }
-
-    public void setHelp(String help) {
-        this.help = help;
-    }
-
-    public String getAdminHelp() {
-        return adminHelp;
-    }
-
-    public void setAdminHelp(String adminHelp) {
-        this.adminHelp = adminHelp;
-    }
-
-    public String getMainAdminHelp() {
-        return mainAdminHelp;
-    }
-
-    public void setMainAdminHelp(String mainAdminHelp) {
-        this.mainAdminHelp = mainAdminHelp;
     }
 
     public String getSetupHelp() {

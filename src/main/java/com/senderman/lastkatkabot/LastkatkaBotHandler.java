@@ -3,10 +3,11 @@ package com.senderman.lastkatkabot;
 import com.annimon.tgbotsmodule.BotHandler;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.api.methods.send.SendMessageMethod;
+import com.senderman.Command;
 import com.senderman.TgUser;
 import com.senderman.lastkatkabot.handlers.*;
 import com.senderman.lastkatkabot.tempobjects.BullsAndCowsGame;
-import com.senderman.lastkatkabot.tempobjects.VeganTimer;
+import com.senderman.lastkatkabot.tempobjects.Duel;
 import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -19,6 +20,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
+import java.lang.reflect.Method;
 import java.util.*;
 
 public class LastkatkaBotHandler extends BotHandler {
@@ -27,12 +29,13 @@ public class LastkatkaBotHandler extends BotHandler {
     public final Set<Integer> blacklist;
     public final Set<Integer> premiumUsers;
     public final Set<Long> allowedChats;
-    public final Map<Long, VeganTimer> veganTimers;
     public final Map<Long, BullsAndCowsGame> bullsAndCowsGames;
+    public final Map<Long, Map<Integer, Duel>> duels;
+    public final CommandListener commandListener;
+    private final Map<String, Method> commands;
     private final AdminHandler adminHandler;
-    private final UsercommandsHandler usercommandsHandler;
-    private final DuelController duelController;
-    final private CallbackHandler callbackHandler;
+    private final CallbackHandler callbackHandler;
+    public final TournamentHandler tournamentHandler;
 
     LastkatkaBotHandler() {
 
@@ -52,12 +55,19 @@ public class LastkatkaBotHandler extends BotHandler {
         allowedChats.add(Services.config().getLastvegan());
         allowedChats.add(Services.config().getTourgroup());
 
+        commandListener = new CommandListener(this);
+        commands = new HashMap<>();
         adminHandler = new AdminHandler(this);
-        usercommandsHandler = new UsercommandsHandler(this);
         callbackHandler = new CallbackHandler(this);
-        duelController = new DuelController(this);
-        veganTimers = new HashMap<>();
+        tournamentHandler = new TournamentHandler(this);
         bullsAndCowsGames = Services.db().getBnCGames();
+        duels = new HashMap<>();
+
+        // init command-method map
+        for (var m : commandListener.getClass().getDeclaredMethods()) {
+            if (m.isAnnotationPresent(Command.class))
+                commands.put(m.getAnnotation(Command.class).name(), m);
+        }
 
         sendMessage(mainAdmin, "Бот готов к работе!");
     }
@@ -128,43 +138,27 @@ public class LastkatkaBotHandler extends BotHandler {
         if (!message.isCommand())
             return null;
 
-        if (!message.isUserMessage()) { // handle other's bots commands
-            if (processVeganCommands(message))
-                return null;
-        }
-
         /* bot should only trigger on general commands (like /command) or on commands for this bot (/command@mybot),
          * and NOT on commands for another bots (like /command@notmybot)
          */
 
-        final var command = text.split("\\s+", 2)[0].toLowerCase(Locale.ENGLISH).replace("@" + getBotUsername(), "");
+        final var command = text.split("\\s+", 2)[0]
+                .toLowerCase(Locale.ENGLISH)
+                .replace("@" + getBotUsername(), "");
 
         if (command.contains("@"))
             return null;
 
-        if (isNotInBlacklist(message) && processUserCommand(message, command))
+        try {
+            var m = commands.get(command);
+            var annotation = m.getAnnotation(Command.class);
+            if (isFromAdmin(message) && annotation.forAllAdmins()
+                    || message.getFrom().getId().equals(Services.config().getMainAdmin()) && annotation.forMainAdmin()
+                    || isNotInBlacklist(message)
+            )
+                m.invoke(commandListener, message);
+        } catch (Exception e) {
             return null;
-
-        // commands for main admin only
-        if (message.getFrom().getId().equals(Services.config().getMainAdmin()) && processMainAdminCommand(message, command))
-            return null;
-
-        // commands for all admins
-        if (isFromAdmin(message) && processAdminCommand(message, command))
-            return null;
-
-        // commands for tournament
-        if (TournamentHandler.isEnabled && isFromAdmin(message)) {
-            switch (command) {
-                case "/score":
-                    TournamentHandler.score(message, this);
-                    return null;
-                case "/win":
-                    TournamentHandler.win(message, this);
-                    return null;
-                case "/rt":
-                    TournamentHandler.rt(this);
-            }
         }
         return null;
     }
@@ -194,7 +188,22 @@ public class LastkatkaBotHandler extends BotHandler {
             callbackHandler.deleteChat(query);
             adminHandler.chats(query.getMessage());
         } else if (data.startsWith("deleteuser_")) {
-            callbackHandler.deleteUser(query);
+            DBService.COLLECTION_TYPE type;
+            switch (query.getData().split(" ")[0]) {
+                case LastkatkaBot.CALLBACK_DELETE_ADMIN:
+                    type = DBService.COLLECTION_TYPE.ADMINS;
+                    break;
+                case LastkatkaBot.CALLBACK_DELETE_NEKO:
+                    type = DBService.COLLECTION_TYPE.BLACKLIST;
+                    break;
+                case LastkatkaBot.CALLBACK_DELETE_PREM:
+                    type = DBService.COLLECTION_TYPE.PREMIUM;
+                    break;
+                default:
+                    return;
+            }
+            callbackHandler.deleteUser(query, type);
+            adminHandler.listUsers(query.getMessage(), type);
         } else {
             switch (data) {
                 case LastkatkaBot.CALLBACK_REGISTER_IN_TOURNAMENT:
@@ -207,7 +216,17 @@ public class LastkatkaBotHandler extends BotHandler {
                     callbackHandler.closeMenu(query);
                     return;
                 case LastkatkaBot.CALLBACK_JOIN_DUEL:
-                    duelController.joinDuel(query);
+                    var chat = duels.get(query.getMessage().getChatId());
+                    if (chat == null) {
+                        Duel.answerCallbackQuery(query, "⏰ Дуэль устарела!", true);
+                        return;
+                    }
+                    var duel = chat.get(query.getMessage().getMessageId());
+                    if (duel == null) {
+                        Duel.answerCallbackQuery(query, "⏰ Дуэль устарела!", true);
+                        return;
+                    }
+                    duel.join(query);
                     return;
                 case LastkatkaBot.CALLBACK_VOTE_BNC:
                     bullsAndCowsGames.get(query.getMessage().getChatId()).addVote(query);
@@ -221,7 +240,7 @@ public class LastkatkaBotHandler extends BotHandler {
 
         if (chatId == Services.config().getTourgroup()) { // restrict any user who isn't in tournament
             for (User user : newMembers) {
-                if (TournamentHandler.membersIds == null || !TournamentHandler.membersIds.contains(user.getId())) {
+                if (!tournamentHandler.membersIds.contains(user.getId())) {
                     Methods.Administration.restrictChatMember()
                             .setChatId(Services.config().getTourgroup())
                             .setUserId(user.getId())
@@ -256,174 +275,6 @@ public class LastkatkaBotHandler extends BotHandler {
                             message.getChat().getTitle(), chatId, inviter.getLink()))
                     .setReplyMarkup(markup));
         }
-    }
-
-    private boolean processVeganCommands(Message message) {
-        var chatId = message.getChatId();
-        var text = message.getText();
-
-        if (Services.config().getVeganWarsCommands().contains(text) && !veganTimers.containsKey(chatId)) { // start veganwars timer
-            veganTimers.put(chatId, new VeganTimer(chatId));
-            return true;
-
-        } else if (text.startsWith("/join") && veganTimers.containsKey(chatId)) {
-            veganTimers.get(chatId).addPlayer(message.getFrom().getId(), message);
-            return true;
-
-        } else if (text.startsWith("/flee") && veganTimers.containsKey(chatId)) {
-            veganTimers.get(chatId).removePlayer(message.getFrom().getId());
-            return true;
-
-        } else if (text.startsWith("/fight") && veganTimers.containsKey(chatId)) {
-            if (veganTimers.get(chatId).getVegansAmount() > 1) {
-                veganTimers.get(chatId).stop();
-            }
-            return true;
-        }
-        return false;
-    }
-
-    private boolean processUserCommand(Message message, String command) {
-        var chatId = message.getChatId();
-
-        switch (command) {
-            case "/pinlist":
-                usercommandsHandler.pinlist(message);
-                return true;
-            case "/pair":
-                usercommandsHandler.pair(message);
-                return true;
-            case "/lastpairs":
-                usercommandsHandler.lastpairs(message);
-                return true;
-            case "/action":
-                usercommandsHandler.action(message);
-                return true;
-            case "/f":
-                usercommandsHandler.payRespects(message);
-                return true;
-            case "/dice":
-                usercommandsHandler.dice(message);
-                return true;
-            case "/cake":
-                usercommandsHandler.cake(message);
-                return true;
-            case "/duel":
-                duelController.createNewDuel(message);
-                return true;
-            case "/stats":
-                usercommandsHandler.dstats(message);
-                return true;
-            case "/weather":
-                usercommandsHandler.weather(message);
-                return true;
-            case "/top":
-                usercommandsHandler.bncTop(message);
-                return true;
-            case "/bnc":
-                if (!bullsAndCowsGames.containsKey(chatId))
-                    bullsAndCowsGames.put(chatId, new BullsAndCowsGame(message));
-                else
-                    sendMessage(chatId, "В этом чате игра уже идет!");
-                return true;
-            case "/bncinfo":
-                if (bullsAndCowsGames.containsKey(chatId))
-                    bullsAndCowsGames.get(chatId).sendGameInfo(message);
-                return true;
-            case "/bncstop":
-                if (bullsAndCowsGames.containsKey(chatId))
-                    bullsAndCowsGames.get(chatId).createPoll(message);
-                return true;
-            case "/bncruin":
-                if (bullsAndCowsGames.containsKey(chatId))
-                    bullsAndCowsGames.get(chatId).changeAntiRuin();
-                return true;
-            case "/bnchelp":
-                usercommandsHandler.bnchelp(message);
-                return true;
-            case "/reset":
-                if (veganTimers.containsKey(chatId)) {
-                    veganTimers.get(chatId).stop();
-                    sendMessage(chatId, "Список игроков сброшен!");
-                }
-                return true;
-            case "/feedback":
-                usercommandsHandler.feedback(message);
-                return true;
-            case "/help":
-                usercommandsHandler.help(message);
-                return true;
-            case "/getinfo":
-                usercommandsHandler.getinfo(message);
-                return true;
-            case "/regtest":
-                usercommandsHandler.testRegex(message);
-                return true;
-        }
-        return false;
-    }
-
-    private boolean processMainAdminCommand(Message message, String command) {
-        switch (command) {
-            case "/owner":
-                adminHandler.addUser(message, DBService.COLLECTION_TYPE.ADMINS);
-                return true;
-            case "/addpremium":
-                adminHandler.addUser(message, DBService.COLLECTION_TYPE.PREMIUM);
-                return true;
-            case "/update":
-                adminHandler.update(message);
-                return true;
-            case "/announce":
-                adminHandler.announce(message);
-                return true;
-            case "/chats":
-                adminHandler.chats(message);
-                return true;
-            case "/cc":
-                adminHandler.cleanChats(message);
-                return true;
-        }
-        return false;
-    }
-
-    private boolean processAdminCommand(Message message, String command) {
-        switch (command) {
-            case "/badneko":
-                adminHandler.addUser(message, DBService.COLLECTION_TYPE.BLACKLIST);
-                return true;
-            case "/goodneko":
-                adminHandler.goodneko(message);
-                return true;
-            case "/nekos":
-                adminHandler.listUsers(message, DBService.COLLECTION_TYPE.BLACKLIST);
-                return true;
-            case "/owners":
-                adminHandler.listUsers(message, DBService.COLLECTION_TYPE.ADMINS);
-                return true;
-            case "/prem":
-                adminHandler.listUsers(message, DBService.COLLECTION_TYPE.PREMIUM);
-                return true;
-            case "/critical":
-                duelController.critical(message);
-                return true;
-            case "/setup":
-                TournamentHandler.setup(message, this);
-                return true;
-            case "/go":
-                TournamentHandler.startTournament(this);
-                return true;
-            case "/ct":
-                TournamentHandler.cancelSetup(this);
-                return true;
-            case "/tourhelp":
-                adminHandler.setupHelp(message);
-                return true;
-            case "/tourmessage":
-                TournamentHandler.tourmessage(this, message);
-                return true;
-        }
-        return false;
     }
 
     private boolean isFromAdmin(Message message) {
