@@ -29,6 +29,7 @@ public class AdminHandler {
         if (!message.isReply())
             return;
 
+        var id = message.getReplyToMessage().getFrom().getId();
         Set<Integer> list = null;
         String format = "";
         switch (type) {
@@ -37,6 +38,10 @@ public class AdminHandler {
                 format = "✅ %1$s теперь мой хозяин!";
                 break;
             case BLACKLIST:
+                if (handler.admins.contains(id) || handler.premiumUsers.contains(id)) {
+                    handler.sendMessage(message.getChatId(), "Мы таких в плохие киси не берем!");
+                    return;
+                }
                 list = handler.blacklist;
                 format = "\uD83D\uDE3E %1$s - плохая киса!";
                 break;
@@ -45,10 +50,10 @@ public class AdminHandler {
                 format = "\uD83D\uDC51 %1$s теперь премиум пользователь!";
                 break;
         }
-        var id = message.getReplyToMessage().getFrom().getId();
+
         var name = message.getReplyToMessage().getFrom().getFirstName();
         var user = new TgUser(id, name);
-        list.remove(id);
+        list.add(id);
         Services.db().addTgUser(id, type);
         handler.sendMessage(message.getChatId(), String.format(format, user.getName()));
     }
@@ -82,6 +87,7 @@ public class AdminHandler {
 
         if (!showButtons || !message.isUserMessage()) {
             var userlist = new StringBuilder(title);
+            var dropList = new StringBuilder("\n");
             for (var id : users) {
                 try {
                     var name = Methods.getChatMember(id, id).call(handler).getUser().getFirstName();
@@ -89,10 +95,10 @@ public class AdminHandler {
                     userlist.append(user.getLink()).append("\n");
                 } catch (Exception e) {
                     Services.db().removeTGUser(id, type);
-                    handler.sendMessage(message.getChatId(), "Юзер с id " + id + " удален из бд!");
+                    dropList.append("Юзер с id ").append(id).append(" удален из бд!\n");
                 }
             }
-            messageToSend.setText(userlist.toString());
+            messageToSend.setText(userlist.append(dropList).toString());
         } else {
             var markup = new InlineKeyboardMarkup();
             ArrayList<List<InlineKeyboardButton>> rows = new ArrayList<>();
