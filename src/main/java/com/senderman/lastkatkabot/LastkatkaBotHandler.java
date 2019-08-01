@@ -233,7 +233,6 @@ public class LastkatkaBotHandler extends BotHandler {
                         Duel.answerCallbackQuery(query, "⏰ Дуэль устарела!", true);
                         return;
                     }
-                    sendMessage(query.getMessage().getChatId(), String.valueOf(duel == null));
                     duel.join(query);
                     return;
                 case LastkatkaBot.CALLBACK_VOTE_BNC:
