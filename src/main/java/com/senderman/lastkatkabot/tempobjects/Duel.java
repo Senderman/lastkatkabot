@@ -55,14 +55,14 @@ public class Duel {
 
         var duelResult = new StringBuilder();
         duelResult.append(String.format("<b>Дуэль</b>\n" +
-                        "%1$s vs %2$sn\n" +
+                        "%1$s vs %2$s\n" +
                         "Противники разошлись в разные стороны, развернулись лицом друг к другу, и %3$s выстрелил первым\n" +
                         "%4$s лежит на земле, истекая кровью!\n\n",
                 player1.getName(), player2.getName(), winnerName, loserName));
 
         if (ThreadLocalRandom.current().nextInt(100) < 20) {
             duelResult.append(String.format("Но, умирая, %1$s успевает выстрелить в голову %2$s!\n" +
-                            "%2$s падает замертво!n\n" +
+                            "%2$s падает замертво!\n" +
                             "\uD83D\uDC80 <b>Дуэль окончилась ничьей!</b>",
                     loserName, winnerName));
             Services.db().incTotalDuels(winner.getId());
