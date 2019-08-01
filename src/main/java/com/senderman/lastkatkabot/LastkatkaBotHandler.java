@@ -223,16 +223,19 @@ public class LastkatkaBotHandler extends BotHandler {
                     callbackHandler.closeMenu(query);
                     return;
                 case LastkatkaBot.CALLBACK_JOIN_DUEL:
+                    sendMessage(query.getMessage().getChatId(), query.getMessage().getMessageId() + " ");
                     var chat = duels.get(query.getMessage().getChatId());
                     if (chat == null) {
                         Duel.answerCallbackQuery(query, "⏰ Дуэль устарела!", true);
-                        return;
+                        //return;
                     }
+                    sendMessage(query.getMessage().getChatId(), String.valueOf(chat == null));
                     var duel = chat.get(query.getMessage().getMessageId());
                     if (duel == null) {
                         Duel.answerCallbackQuery(query, "⏰ Дуэль устарела!", true);
-                        return;
+                        //return;
                     }
+                    sendMessage(query.getMessage().getChatId(), String.valueOf(duel == null));
                     duel.join(query);
                     return;
                 case LastkatkaBot.CALLBACK_VOTE_BNC:
