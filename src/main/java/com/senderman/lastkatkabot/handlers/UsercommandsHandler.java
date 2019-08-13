@@ -360,7 +360,7 @@ public class UsercommandsHandler {
                     throw new Exception("Not enough users");
                 }
             }
-        } while (member == null);
+        } while (member == null || member.getUser().getFirstName().isBlank());
 
         return new TgUser(member.getUser().getId(), member.getUser().getFirstName());
     }
