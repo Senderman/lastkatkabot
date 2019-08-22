@@ -195,7 +195,7 @@ public class UsercommandsHandler {
         }
 
         // parse weather
-        var title = weatherPage.selectFirst("span.header-title__title-wrap").text();
+        var title = weatherPage.selectFirst("h1.header-title__title").text();
         var temperature = "\uD83C\uDF21: " + weatherPage.selectFirst("div.fact__temp").selectFirst("span.temp__value").text() + " °C";
         var feelings = weatherPage.selectFirst("div.fact__feelings").selectFirst("div.link__condition").text();
         var wind = "\uD83D\uDCA8: " + weatherPage.selectFirst("dl.fact__wind-speed").selectFirst("dd.term__value").text();
