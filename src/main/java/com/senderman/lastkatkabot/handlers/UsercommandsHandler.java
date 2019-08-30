@@ -62,8 +62,12 @@ public class UsercommandsHandler {
         if (message.getFrom().getFirstName().equals(message.getReplyToMessage().getFrom().getFirstName()))
             return;
 
+        var object = message.getText().split(" ").length > 1
+                ? message.getText().split(" ", 2)[1]
+                : message.getReplyToMessage().getFrom().getFirstName();
+
         Methods.deleteMessage(message.getChatId(), message.getMessageId()).call(handler);
-        var text = "\uD83D\uDD6F Press F to pay respects to " + message.getReplyToMessage().getFrom().getFirstName() +
+        var text = "\uD83D\uDD6F Press F to pay respects to " + object +
                 "\n" + message.getFrom().getFirstName() + " has payed respects";
         handler.sendMessage(Methods.sendMessage()
                 .setChatId(message.getChatId())
@@ -160,8 +164,7 @@ public class UsercommandsHandler {
     public void weather(Message message) {
         var chatId = message.getChatId();
         String city = message.getText()
-                .replaceAll("^/weather", "")
-                .replaceAll("@" + handler.getBotUsername(), "")
+                .split(" ", 2)[1]
                 .strip().toLowerCase();
 
         if (city.isBlank()) { // city is not specified

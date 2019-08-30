@@ -29,7 +29,7 @@ public class CommandListener {
         usercommands.action(message);
     }
 
-    @Command(name = "/f", desc = "(reply) press f to pay respects")
+    @Command(name = "/f", desc = "(reply) press f to pay respects. А можно вот так: /f штаны за 40 хривень")
     public void pressF(Message message) {
         usercommands.pressF(message);
     }
