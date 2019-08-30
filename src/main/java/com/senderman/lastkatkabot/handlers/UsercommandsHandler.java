@@ -59,8 +59,11 @@ public class UsercommandsHandler {
         if (message.isUserMessage())
             return;
 
-        if (message.getFrom().getFirstName().equals(message.getReplyToMessage().getFrom().getFirstName()))
-            return;
+        try {
+            if (message.getFrom().getFirstName().equals(message.getReplyToMessage().getFrom().getFirstName()))
+                return;
+        } catch (NullPointerException ignored) {
+        }
 
         var object = message.getText().split(" ").length > 1
                 ? message.getText().split(" ", 2)[1]
