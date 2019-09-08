@@ -166,10 +166,7 @@ public class UsercommandsHandler {
 
     public void weather(Message message) {
         var chatId = message.getChatId();
-        String city = message.getText()
-                .split(" ", 2)[1]
-                .strip().toLowerCase();
-
+        String city = message.getText().strip().replaceAll("^/weather\\s*", "");
         if (city.isBlank()) { // city is not specified
             city = Services.db().getUserCity(message.getFrom().getId());
             if (city == null) {
