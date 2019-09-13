@@ -326,7 +326,7 @@ public class LastkatkaBotHandler extends BotHandler {
     }
 
     public Message sendMessage(SendMessageMethod sm) {
-        var sendMessage = new SendMessage(sm.getChatId(), sm.getText().replaceAll("(\\p{L}{5,})","кибер$1"))
+        var sendMessage = new SendMessage(sm.getChatId(), sm.getText())
                 .enableHtml(true)
                 .disableWebPagePreview()
                 .setReplyMarkup(sm.getReplyMarkup())
