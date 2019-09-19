@@ -366,4 +366,73 @@ public class MongoDBService implements DBService {
         var doc = allowedchats.find(Filters.eq("chatId", chatId)).first();
         return (doc != null) ? doc.getString("history") : null;
     }
+
+    private Document getRavenStats() {
+        var doc = settings.find(Filters.eq("raven", true)).first();
+        if (doc != null)
+            return doc;
+        settings.insertOne(new Document("raven", true)
+                .append("messages", 0)
+                .append("interruptions", 0)
+                .append("record", 0)
+                .append("lastMessageDate", Integer.MIN_VALUE));
+        return settings.find(Filters.eq("raven", true)).first();
+    }
+
+    @Override
+    public void incRavenMessages() {
+        getRavenStats();
+        settings.updateOne(Filters.eq("raven", true), new Document("$inc",
+                new Document("messages", 1)));
+    }
+
+    @Override
+    public int getRavenMessages() {
+        return getRavenStats().getInteger("messages");
+    }
+
+    @Override
+    public void updateRavenRecord() {
+        var doc = getRavenStats();
+        int record = doc.getInteger("record");
+        int current = doc.getInteger("messages");
+        if (record > current)
+            return;
+        record = current;
+        current = 0;
+        var commit = new Document("record", record)
+                .append("messages", current)
+                .append("interruptions", 0)
+                .append("lastMessageDate", Integer.MIN_VALUE);
+        settings.updateOne(Filters.eq("raven", true), new Document("$set", commit));
+    }
+
+    @Override
+    public void incInterruptions() {
+        getRavenStats();
+        settings.updateOne(Filters.eq("raven", true), new Document("$inc",
+                new Document("interruptions", 1)));
+    }
+
+    @Override
+    public void redInterruptions() {
+        getRavenStats();
+        settings.updateOne(Filters.eq("raven", true), new Document("$inc",
+                new Document("interruptions", -1)));
+    }
+
+    @Override
+    public int getInterruptions() {
+        return getRavenStats().getInteger("interruptions");
+    }
+
+    @Override
+    public int getLastRavenDate() {
+        return getRavenStats().getInteger("lastMessageDate");
+    }
+
+    @Override
+    public int getRavenRecord() {
+        return getRavenStats().getInteger("record");
+    }
 }

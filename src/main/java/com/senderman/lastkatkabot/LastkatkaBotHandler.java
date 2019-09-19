@@ -129,6 +129,32 @@ public class LastkatkaBotHandler extends BotHandler {
         if (message.isGroupMessage() || message.isSuperGroupMessage()) // add user to DB
             Services.db().addUserToChatDB(message);
 
+        // Raven stats
+        if (message.getChatId().equals(-1001339940111L)) {
+            int sender = message.getFrom().getId();
+            if (!(sender == 580020934 || sender == 589981574)) {
+                if (Services.db().getRavenMessages() == 0)
+                    return null;
+                Services.db().incInterruptions();
+                if (Services.db().getInterruptions() == 4) {
+                    Services.db().updateRavenRecord();
+                }
+                return null;
+            }
+
+            int lastMessageDate = Services.db().getLastRavenDate();
+            if (message.getDate() - lastMessageDate > 7200) {
+                Services.db().updateRavenRecord();
+                Services.db().incRavenMessages();
+            } else {
+                Services.db().incRavenMessages();
+                if (Services.db().getInterruptions() > 0) {
+                    Services.db().redInterruptions();
+                }
+            }
+
+        }
+
         var text = message.getText();
 
         // for bulls and cows

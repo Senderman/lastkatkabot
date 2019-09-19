@@ -17,7 +17,7 @@ public class CommandListener {
     private final AdminHandler adminCommands;
     private final TournamentHandler tournamentHandler;
 
-    public CommandListener(LastkatkaBotHandler handler) {
+    CommandListener(LastkatkaBotHandler handler) {
         this.handler = handler;
         usercommands = new UsercommandsHandler(handler);
         adminCommands = new AdminHandler(handler);
@@ -238,5 +238,11 @@ public class CommandListener {
     @Command(name = "/cc", desc = "очистка списка чатов от мусора и обновление названий", forMainAdmin = true)
     public void cleanChats(Message message) {
         adminCommands.cleanChats(message);
+    }
+
+    @Command(name = "/raven", desc = "Стата по сообщениям равен", forMainAdmin = true)
+    public void raven(Message message) {
+        Services.handler().sendMessage(message.getChatId(),
+                "Самая долгая переписка Равен и Жамы в котомафии - " + Services.db().getRavenRecord());
     }
 }

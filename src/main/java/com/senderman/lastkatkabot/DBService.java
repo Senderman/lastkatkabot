@@ -84,4 +84,23 @@ public interface DBService {
 
     String getPairsHistory(long chatId);
 
+
+    // will be removed after a while
+
+    void incRavenMessages();
+
+    int getRavenMessages();
+
+    void updateRavenRecord();
+
+    void incInterruptions();
+
+    void redInterruptions();
+
+    int getInterruptions();
+
+    int getLastRavenDate();
+
+    int getRavenRecord();
+
 }
