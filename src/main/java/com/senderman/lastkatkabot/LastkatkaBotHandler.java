@@ -136,7 +136,7 @@ public class LastkatkaBotHandler extends BotHandler {
                 if (Services.db().getRavenMessages() == 0)
                     return null;
                 Services.db().incInterruptions();
-                if (Services.db().getInterruptions() == 4) {
+                if (Services.db().getInterruptions() > 3) {
                     Services.db().updateRavenRecord();
                 }
                 return null;
