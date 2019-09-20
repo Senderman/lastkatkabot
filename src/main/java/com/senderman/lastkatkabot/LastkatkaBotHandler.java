@@ -143,7 +143,7 @@ public class LastkatkaBotHandler extends BotHandler {
             }
 
             int lastMessageDate = Services.db().getLastRavenDate();
-            if (message.getDate() - lastMessageDate > 7200) {
+            if (lastMessageDate != Integer.MIN_VALUE && message.getDate() - lastMessageDate > 7200) {
                 Services.db().updateRavenRecord();
                 Services.db().incRavenMessages();
             } else {
