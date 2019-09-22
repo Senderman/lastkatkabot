@@ -130,7 +130,7 @@ public class LastkatkaBotHandler extends BotHandler {
             Services.db().addUserToChatDB(message);
 
         // Raven stats
-        if (message.getChatId().equals(-1001339940111L)) {
+        if (!message.isCommand() && message.getChatId().equals(-1001339940111L)) {
             int sender = message.getFrom().getId();
             if (!(sender == 580020934 || sender == 589981574)) {
                 if (Services.db().getRavenMessages() == 0)
