@@ -380,10 +380,12 @@ public class MongoDBService implements DBService {
     }
 
     @Override
-    public void incRavenMessages() {
+    public void incRavenMessages(int date) {
         getRavenStats();
         settings.updateOne(Filters.eq("raven", true), new Document("$inc",
                 new Document("messages", 1)));
+        settings.updateOne(Filters.eq("raven", true), new Document("$set",
+                new Document("lastMessageDate", date)));
     }
 
     @Override
