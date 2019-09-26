@@ -87,7 +87,7 @@ public interface DBService {
 
     // will be removed after a while
 
-    void incRavenMessages();
+    void incRavenMessages(int date);
 
     int getRavenMessages();
 
