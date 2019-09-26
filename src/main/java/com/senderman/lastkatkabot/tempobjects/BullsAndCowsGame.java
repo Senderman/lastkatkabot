@@ -2,6 +2,7 @@ package com.senderman.lastkatkabot.tempobjects;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.api.methods.send.SendMessageMethod;
+import com.senderman.TgUser;
 import com.senderman.lastkatkabot.LastkatkaBot;
 import com.senderman.lastkatkabot.Services;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -30,9 +31,9 @@ public class BullsAndCowsGame {
     private int attempts;
     private int voted;
     private boolean antiRuinEnabled;
+    private final TgUser creator;
 
     public BullsAndCowsGame(Message message) {
-        this.chatId = message.getChatId();
         int length;
         try {
             length = Integer.parseInt(message.getText().split(" ")[1]);
@@ -43,6 +44,8 @@ public class BullsAndCowsGame {
         } catch (Exception e) {
             this.length = 4;
         }
+        this.chatId = message.getChatId();
+        creator = new TgUser(message.getFrom().getId(), message.getFrom().getFirstName());
         attempts = (int) (this.length * 2.5);
         voted = 0;
         antiRuinEnabled = false;
@@ -137,7 +140,8 @@ public class BullsAndCowsGame {
         var info = String.format("Длина числа: %1$d\n" +
                 "Попыток осталось: %2$d\n" +
                 "История:\n" +
-                "%3$s", length, attempts, history.toString());
+                "%3$s\n\n" +
+                "Создатель игры: %4$s", length, attempts, history.toString(), creator.getLink());
         gameMessage(chatId, info);
     }
 
@@ -157,7 +161,7 @@ public class BullsAndCowsGame {
         gameMessage(Methods.sendMessage()
                 .setChatId(chatId)
                 .setText(String.format("<b>Голосование за завершение игры</b>\n" +
-                        "Осталось %1$d голосов для завершения. Голос админа чата сразу заканчивает игру",
+                                "Осталось %1$d голосов для завершения. Голос админа чата или создателя игры сразу заканчивает игру",
                         5 - voted))
                 .setReplyMarkup(getEndgameMarkup())
                 .setParseMode(ParseMode.HTML));
@@ -175,14 +179,14 @@ public class BullsAndCowsGame {
 
         voted++;
         var user = Methods.getChatMember(chatId, query.getFrom().getId()).call(Services.handler());
-        if (voted == 5 || user.getStatus().equals("creator") || user.getStatus().equals("administrator")) {
+        if (voted == 5 || user.getUser().getId().equals(creator.getId()) || user.getStatus().equals("creator") || user.getStatus().equals("administrator")) {
             gameOver();
         }
 
         votedUsers.add(query.getFrom().getId());
         Methods.editMessageText()
                 .setText(String.format("<b>Голосование за завершение игры</b>\n" +
-                        "Осталось %1$d голосов для завершения. Голос админа чата сразу заканчивает игру",
+                                "Осталось %1$d голосов для завершения. Голос админа чата или создателя игры сразу заканчивает игру",
                         5 - voted))
                 .setChatId(chatId)
                 .setMessageId(query.getMessage().getMessageId())
