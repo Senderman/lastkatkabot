@@ -266,22 +266,21 @@ public class UsercommandsHandler {
         var noobId = message.getFrom().getId();
 
         for (var m : handler.commands.values()) {
-            if (!m.isAnnotationPresent(Command.class))
-                continue;
             var annotation = m.getAnnotation(Command.class);
             if (!annotation.showInHelp())
                 continue;
 
-            var commandLine = annotation.name() + " - " + annotation.desc() + "\n";
+            var helpLine = annotation.name() + " - " + annotation.desc() + "\n";
             if (noobId.equals(Services.config().getMainAdmin()) && annotation.forMainAdmin())
-                mainAdminHelp.append(commandLine);
-            else if (handler.admins.contains(noobId) && annotation.forAllAdmins())
-                adminHelp.append(commandLine);
+                mainAdminHelp.append(helpLine);
+            else if (handler.isFromAdmin(message) && annotation.forAllAdmins())
+                adminHelp.append(helpLine);
             else
-                help.append(commandLine);
+                help.append(helpLine);
+            // TODO add help for premium users when needed
         }
 
-        if (handler.admins.contains(noobId))
+        if (handler.isFromAdmin(message))
             help.append("\n").append(adminHelp);
         if (noobId.equals(Services.config().getMainAdmin()))
             help.append("\n").append(mainAdminHelp);

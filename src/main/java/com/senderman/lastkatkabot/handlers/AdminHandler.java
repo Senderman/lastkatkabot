@@ -38,7 +38,7 @@ public class AdminHandler {
                 format = "✅ %1$s теперь мой хозяин!";
                 break;
             case BLACKLIST:
-                if (handler.admins.contains(id) || handler.premiumUsers.contains(id)) {
+                if (handler.isFromAdmin(message.getReplyToMessage()) || handler.isPremiumUser(message.getReplyToMessage())) {
                     handler.sendMessage(message.getChatId(), "Мы таких в плохие киси не берем!");
                     return;
                 }

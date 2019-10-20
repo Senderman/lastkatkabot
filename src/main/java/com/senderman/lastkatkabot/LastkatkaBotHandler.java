@@ -180,12 +180,12 @@ public class LastkatkaBotHandler extends BotHandler {
         try {
             var m = commands.get(command);
             var annotation = m.getAnnotation(Command.class);
-            if (annotation.forMainAdmin()) {
-                if (!message.getFrom().getId().equals(Services.config().getMainAdmin()))
-                    return null;
-            } else if (annotation.forAllAdmins()) {
-                if (!isFromAdmin(message))
-                    return null;
+            if (!message.getFrom().getId().equals(Services.config().getMainAdmin()) && annotation.forMainAdmin()) {
+                return null;
+            } else if (annotation.forAllAdmins() && !isFromAdmin(message)) {
+                return null;
+            } else if (annotation.forPremium() && !isPremiumUser(message)) {
+                return null;
             } else if (isInBlacklist(message))
                 return null;
 
@@ -310,14 +310,13 @@ public class LastkatkaBotHandler extends BotHandler {
         }
     }
 
-    private boolean isFromAdmin(Message message) {
+    public boolean isFromAdmin(Message message) {
         return admins.contains(message.getFrom().getId());
     }
 
-    // TODO uncomment when needed
-    /*private boolean isPremiumUser(Message message) {
+    public boolean isPremiumUser(Message message) {
         return premiumUsers.contains(message.getFrom().getId());
-    }*/
+    }
 
     private boolean isInBlacklist(Message message) {
         var result = blacklist.contains(message.getFrom().getId());
