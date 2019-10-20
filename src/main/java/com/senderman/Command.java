@@ -12,5 +12,6 @@ public @interface Command {
     String desc();
     boolean showInHelp() default true;
     boolean forAllAdmins() default false;
+    boolean forPremium() default false;
     boolean forMainAdmin() default false;
 }

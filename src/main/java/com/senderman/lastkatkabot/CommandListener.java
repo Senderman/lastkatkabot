@@ -205,7 +205,7 @@ public class CommandListener {
         tournamentHandler.cancelSetup();
     }
 
-    @Command(name = "/tourmessage", desc = "(reply) главное сообщение турнира", showInHelp = true, forAllAdmins = true)
+    @Command(name = "/tourmessage", desc = "(reply) главное сообщение турнира", forAllAdmins = true)
     public void tourMessage(Message message) {
         tournamentHandler.tourmessage(message);
     }
@@ -240,9 +240,9 @@ public class CommandListener {
         adminCommands.cleanChats(message);
     }
 
-    @Command(name = "/raven", desc = "Стата по сообщениям равен", forMainAdmin = true)
+    @Command(name = "/raven", desc = "Стата по сообщениям равен", forPremium = true, showInHelp = false)
     public void raven(Message message) {
         Services.handler().sendMessage(message.getChatId(),
-                "Самая долгая переписка Равен и Жамы в котомафии - " + Services.db().getRavenRecord());
+                "Самая долгая переписка Равен и Жамы в котомафии - " + Services.db().getRavenRecord() + " сообщений подряд");
     }
 }
