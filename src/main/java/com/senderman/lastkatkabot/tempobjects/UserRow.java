@@ -38,7 +38,7 @@ public class UserRow {
         if (checkedUsers.size() % divider == 0)
             messageText += checkedUsers.size() + ". " +user.getLink() + " - " + name + "!\n";
         else
-            messageText += checkedUsers.size() + ". " +user.getLink() + "\n";
+            messageText += checkedUsers.size() + ". " +user.getLink() + " - не " + name + "\n";
         updateMessage();
     }
 
