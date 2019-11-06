@@ -250,11 +250,8 @@ public class CommandListener {
     @Command(name = "/row",
             desc = "Рассчет юзеров, например няшек. Синтаксис: 1 строка - /row Список няшек " +
                     "2 строка - няшка" +
-                    "3 строка - 5 (т.е. няшкой буде каждый пятый")
+                    "3 строка - 5 (т.е. няшкой будет каждый пятый")
     public void row(Message message) {
-        if (!message.isUserMessage())
-            return;
-
         try {
             handler.userRows.put(message.getChatId(), new UserRow(message));
         } catch (Exception e) {

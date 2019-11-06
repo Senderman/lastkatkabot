@@ -3,6 +3,7 @@ package com.senderman.lastkatkabot.tempobjects;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.TgUser;
 import com.senderman.lastkatkabot.Services;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.HashSet;
@@ -35,9 +36,9 @@ public class UserRow {
 
         checkedUsers.add(user.getId());
         if (checkedUsers.size() % divider == 0)
-            messageText += checkedUsers.size() + ". " +user.getLink() + " - " + name + "\n!";
+            messageText += checkedUsers.size() + ". " +user.getLink() + " - " + name + "!\n";
         else
-            messageText += checkedUsers.size() + ". " +user.getLink();
+            messageText += checkedUsers.size() + ". " +user.getLink() + "\n";
         updateMessage();
     }
 
@@ -46,6 +47,7 @@ public class UserRow {
                 .setChatId(message.getChatId())
                 .setMessageId(message.getMessageId())
                 .setText(messageText)
+                .setParseMode(ParseMode.HTML)
                 .call(Services.handler());
     }
 }
