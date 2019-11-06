@@ -1,5 +1,7 @@
 package com.senderman;
 
+import org.telegram.telegrambots.meta.api.objects.User;
+
 public class TgUser {
 
     private final int id;
@@ -7,7 +9,16 @@ public class TgUser {
 
     public TgUser(int id, String name) {
         this.id = id;
-        this.name = name.replace("<", "&lt;").replace(">", "&gt;");
+        this.name = getSafeName(name);
+    }
+
+    public TgUser(User user) {
+        this.id = user.getId();
+        this.name = getSafeName(user.getFirstName());
+    }
+
+    private String getSafeName(String name) {
+        return name.replace("<", "&lt;").replace(">", "&gt;");
     }
 
     public int getId() {
