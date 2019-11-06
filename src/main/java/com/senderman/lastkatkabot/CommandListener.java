@@ -252,10 +252,15 @@ public class CommandListener {
                     "2 строка - няшка" +
                     "3 строка - 5 (т.е. няшкой будет каждый пятый")
     public void row(Message message) {
+        UserRow oldRow = null;
+        if (handler.userRows.containsKey(message.getChatId()))
+            oldRow = handler.userRows.get(message.getChatId());
         try {
             handler.userRows.put(message.getChatId(), new UserRow(message));
         } catch (Exception e) {
             handler.sendMessage(message.getChatId(), "Неверный формат!");
         }
+        if (oldRow != null)
+            handler.userRows.remove(message.getChatId(), oldRow);
     }
 }
