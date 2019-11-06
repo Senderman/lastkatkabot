@@ -10,6 +10,7 @@ import com.senderman.lastkatkabot.handlers.CallbackHandler;
 import com.senderman.lastkatkabot.handlers.TournamentHandler;
 import com.senderman.lastkatkabot.tempobjects.BullsAndCowsGame;
 import com.senderman.lastkatkabot.tempobjects.Duel;
+import com.senderman.lastkatkabot.tempobjects.UserRow;
 import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -33,6 +34,7 @@ public class LastkatkaBotHandler extends BotHandler {
     public final Set<Long> allowedChats;
     public final Map<Long, BullsAndCowsGame> bullsAndCowsGames;
     public final Map<Long, Map<Integer, Duel>> duels;
+    public final Map<Long, UserRow> userRows;
     public final Map<String, Method> commands;
     private final CommandListener commandListener;
     private final AdminHandler adminHandler;
@@ -64,6 +66,7 @@ public class LastkatkaBotHandler extends BotHandler {
         tournamentHandler = new TournamentHandler(this);
         bullsAndCowsGames = Services.db().getBnCGames();
         duels = new HashMap<>();
+        userRows = new HashMap<>();
 
         // init command-method map
         for (var m : commandListener.getClass().getDeclaredMethods()) {
@@ -161,6 +164,12 @@ public class LastkatkaBotHandler extends BotHandler {
         if (text.matches("\\d{4,10}") && bullsAndCowsGames.containsKey(chatId) && !isInBlacklist(message)) {
             bullsAndCowsGames.get(chatId).check(message);
             return null;
+        }
+
+        // for userRows
+
+        if (userRows.containsKey(chatId) && !message.isUserMessage()) {
+            userRows.get(chatId).addUser(message);
         }
 
         if (!message.isCommand())

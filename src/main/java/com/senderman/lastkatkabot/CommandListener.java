@@ -6,6 +6,7 @@ import com.senderman.lastkatkabot.handlers.TournamentHandler;
 import com.senderman.lastkatkabot.handlers.UsercommandsHandler;
 import com.senderman.lastkatkabot.tempobjects.BullsAndCowsGame;
 import com.senderman.lastkatkabot.tempobjects.Duel;
+import com.senderman.lastkatkabot.tempobjects.UserRow;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.HashMap;
@@ -242,7 +243,22 @@ public class CommandListener {
 
     @Command(name = "/raven", desc = "Стата по сообщениям равен", forPremium = true, showInHelp = false)
     public void raven(Message message) {
-        Services.handler().sendMessage(message.getChatId(),
+        handler.sendMessage(message.getChatId(),
                 "Самая долгая переписка Равен и Жамы в котомафии - " + Services.db().getRavenRecord() + " сообщений подряд");
+    }
+
+    @Command(name = "/row",
+            desc = "Рассчет юзеров, например няшек. Синтаксис: 1 строка - /row Список няшек " +
+                    "2 строка - няшка" +
+                    "3 строка - 5 (т.е. няшкой буде каждый пятый")
+    public void row(Message message) {
+        if (!message.isUserMessage())
+            return;
+
+        try {
+            handler.userRows.put(message.getChatId(), new UserRow(message));
+        } catch (Exception e) {
+            handler.sendMessage(message.getChatId(), "Неверный формат!");
+        }
     }
 }

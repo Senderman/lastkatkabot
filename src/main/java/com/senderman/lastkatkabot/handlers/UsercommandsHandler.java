@@ -59,11 +59,8 @@ public class UsercommandsHandler {
         if (message.isUserMessage())
             return;
 
-        try {
-            if (message.getFrom().getFirstName().equals(message.getReplyToMessage().getFrom().getFirstName()))
-                return;
-        } catch (NullPointerException ignored) {
-        }
+        if (message.isReply() && message.getFrom().getFirstName().equals(message.getReplyToMessage().getFrom().getFirstName()))
+            return;
 
         var object = message.getText().split(" ").length > 1
                 ? message.getText().split(" ", 2)[1]
@@ -91,10 +88,12 @@ public class UsercommandsHandler {
                         .setCallbackData(LastkatkaBot.CALLBACK_CAKE_NOT + message.getText().replace("/cake", "")));
         markup.setKeyboard(List.of(row1));
         Methods.deleteMessage(message.getChatId(), message.getMessageId()).call(handler);
+        var presenter = new TgUser(message.getFrom());
+        var luckyOne = new TgUser(message.getReplyToMessage().getFrom());
         handler.sendMessage(Methods.sendMessage()
                 .setChatId(message.getChatId())
                 .setText(String.format("\uD83C\uDF82 %1$s, пользователь %2$s подарил вам тортик %3$s",
-                        message.getReplyToMessage().getFrom().getFirstName(), message.getFrom().getFirstName(),
+                        luckyOne, presenter,
                         message.getText().replace("/cake", "")))
                 .setReplyToMessageId(message.getReplyToMessage().getMessageId())
                 .setReplyMarkup(markup));
@@ -129,7 +128,7 @@ public class UsercommandsHandler {
             handler.sendMessage(message.getChatId(), "Но это же бот!");
             return;
         }
-        var user = new TgUser(player.getId(), player.getFirstName());
+        var user = new TgUser(player);
         var stats = Services.db().getStats(player.getId());
         var wins = stats.get("wins");
         var total = stats.get("total");
@@ -215,7 +214,7 @@ public class UsercommandsHandler {
     }
 
     public void feedback(Message message) {
-        var user = new TgUser(message.getFrom().getId(), message.getFrom().getFirstName());
+        var user = new TgUser(message.getFrom());
         var bugreport = "⚠️ <b>Фидбек</b>\n\n" +
                 "От: " +
                 user.getLink() + "\n\n"
@@ -364,7 +363,7 @@ public class UsercommandsHandler {
             }
         } while (member == null || member.getUser().getFirstName().isBlank());
 
-        return new TgUser(member.getUser().getId(), member.getUser().getFirstName());
+        return new TgUser(member.getUser());
     }
 
     public void lastpairs(Message message) {
