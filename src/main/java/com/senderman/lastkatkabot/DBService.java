@@ -2,6 +2,7 @@ package com.senderman.lastkatkabot;
 
 import com.senderman.lastkatkabot.tempobjects.BnCPlayer;
 import com.senderman.lastkatkabot.tempobjects.BullsAndCowsGame;
+import com.senderman.lastkatkabot.tempobjects.UserRow;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.List;
@@ -52,6 +53,11 @@ public interface DBService {
     void saveBncGame(long chatId, BullsAndCowsGame game);
 
     void deleteBncGame(long chatId);
+
+
+    void saveRow(long chatId, UserRow row);
+
+    Map<Long,UserRow> getUserRows();
 
 
     int getTournamentMessageId();

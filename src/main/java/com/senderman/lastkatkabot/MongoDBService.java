@@ -8,6 +8,7 @@ import com.mongodb.client.model.Filters;
 import com.senderman.MongoClientKeeper;
 import com.senderman.lastkatkabot.tempobjects.BnCPlayer;
 import com.senderman.lastkatkabot.tempobjects.BullsAndCowsGame;
+import com.senderman.lastkatkabot.tempobjects.UserRow;
 import org.bson.Document;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
@@ -26,6 +27,7 @@ public class MongoDBService implements DBService {
     private final MongoCollection<Document> userstats = lastkatkaDB.getCollection("userstats");
     private final MongoCollection<Document> settings = lastkatkaDB.getCollection("settings");
     private final MongoCollection<Document> bncgames = lastkatkaDB.getCollection("bncgames");
+    private final MongoCollection<Document> userrows = lastkatkaDB.getCollection("userrows");
     private final MongoCollection<Document> allowedchats = lastkatkaDB.getCollection("allowedchats");
 
     private MongoCollection<Document> getChatMembersCollection(long chatId) {
@@ -239,6 +241,26 @@ public class MongoDBService implements DBService {
     @Override
     public void deleteBncGame(long chatId) {
         bncgames.deleteOne(Filters.eq("chatId", chatId));
+    }
+
+    @Override
+    public void saveRow(long chatId, UserRow row) {
+        userrows.deleteOne(Filters.eq("chatId", chatId));
+        var gson = new Gson();
+        var rowAsJson = gson.toJson(row);
+        userrows.insertOne(new Document("chatId", chatId)
+                .append("row", rowAsJson));
+    }
+
+    @Override
+    public Map<Long, UserRow> getUserRows() {
+        Map<Long, UserRow> rows = new HashMap<>();
+        var gson = new Gson();
+        for (var doc : userrows.find()) {
+            var row = gson.fromJson(doc.getString("row"), UserRow.class);
+            rows.put(doc.getLong("chatId"), row);
+        }
+        return rows;
     }
 
     @Override

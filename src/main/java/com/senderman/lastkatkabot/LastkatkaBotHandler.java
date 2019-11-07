@@ -34,7 +34,7 @@ public class LastkatkaBotHandler extends BotHandler {
     public final Set<Long> allowedChats;
     public final Map<Long, BullsAndCowsGame> bullsAndCowsGames;
     public final Map<Long, Map<Integer, Duel>> duels;
-    public final Map<Long, UserRow> userRows;
+    final Map<Long, UserRow> userRows;
     public final Map<String, Method> commands;
     private final CommandListener commandListener;
     private final AdminHandler adminHandler;
@@ -65,8 +65,8 @@ public class LastkatkaBotHandler extends BotHandler {
         callbackHandler = new CallbackHandler(this);
         tournamentHandler = new TournamentHandler(this);
         bullsAndCowsGames = Services.db().getBnCGames();
+        userRows = Services.db().getUserRows();
         duels = new HashMap<>();
-        userRows = new HashMap<>();
 
         // init command-method map
         for (var m : commandListener.getClass().getDeclaredMethods()) {
@@ -126,6 +126,10 @@ public class LastkatkaBotHandler extends BotHandler {
             Services.db().removeUserFromChatDB(message.getLeftChatMember().getId(), chatId);
         }
 
+        if (userRows.containsKey(chatId) && !message.isUserMessage()) {
+            userRows.get(chatId).addUser(message);
+        }
+
         if (!message.hasText())
             return null;
 
@@ -167,10 +171,6 @@ public class LastkatkaBotHandler extends BotHandler {
         }
 
         // for userRows
-
-        if (userRows.containsKey(chatId) && !message.isUserMessage()) {
-            userRows.get(chatId).addUser(message);
-        }
 
         if (!message.isCommand())
             return null;

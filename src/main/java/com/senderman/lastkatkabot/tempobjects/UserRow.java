@@ -49,5 +49,6 @@ public class UserRow {
                 .setText(messageText)
                 .setParseMode(ParseMode.HTML)
                 .call(Services.handler());
+        Services.db().saveRow(message.getChatId(), this);
     }
 }
