@@ -252,6 +252,9 @@ public class CommandListener {
                     "2 строка - няшка" +
                     "3 строка - 5 (т.е. няшкой будет каждый пятый")
     public void row(Message message) {
+        if(!message.isGroupMessage() && !message.isSuperGroupMessage())
+            return;
+
         UserRow oldRow = null;
         if (handler.userRows.containsKey(message.getChatId()))
             oldRow = handler.userRows.get(message.getChatId());
