@@ -12,7 +12,8 @@ import java.util.Set;
 public class UserRow {
     private final int divider;
     private final String name;
-    private Message message;
+    private long chatId;
+    private int messageId;
     private final Set<Integer> checkedUsers;
     private String messageText;
 
@@ -21,13 +22,15 @@ public class UserRow {
         if (lines.length != 3)
             throw new Exception("Неверный формат");
 
-        String title = lines[0].replaceAll("/row ", "");
+        chatId = message.getChatId();
+        String title = lines[0].split(" ",2)[1];
         name = lines[1];
         divider = Integer.parseInt(lines[2]);
         checkedUsers = new HashSet<>();
         messageText = "<b>" + title + ":</b>\n\n";
-        this.message = Services.handler().sendMessage(message.getChatId(), messageText);
-        Services.db().saveRow(this.message.getChatId(), this);
+        var resultMessage = Services.handler().sendMessage(message.getChatId(), messageText);
+        messageId = resultMessage.getMessageId();
+        Services.db().saveRow(chatId, this);
     }
 
     public void addUser(Message message) {
@@ -45,11 +48,11 @@ public class UserRow {
 
     private void updateMessage() {
         Methods.editMessageText()
-                .setChatId(message.getChatId())
-                .setMessageId(message.getMessageId())
+                .setChatId(chatId)
+                .setMessageId(messageId)
                 .setText(messageText)
                 .setParseMode(ParseMode.HTML)
                 .call(Services.handler());
-        Services.db().saveRow(message.getChatId(), this);
+        Services.db().saveRow(chatId, this);
     }
 }
