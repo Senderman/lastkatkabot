@@ -27,6 +27,7 @@ public class UserRow {
         checkedUsers = new HashSet<>();
         messageText = "<b>" + title + ":</b>\n\n";
         this.message = Services.handler().sendMessage(message.getChatId(), messageText);
+        Services.db().saveRow(this.message.getChatId(), this);
     }
 
     public void addUser(Message message) {
