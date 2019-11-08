@@ -93,7 +93,7 @@ public class UsercommandsHandler {
         handler.sendMessage(Methods.sendMessage()
                 .setChatId(message.getChatId())
                 .setText(String.format("\uD83C\uDF82 %1$s, пользователь %2$s подарил вам тортик %3$s",
-                        luckyOne, presenter,
+                        luckyOne.getName(), presenter.getName(),
                         message.getText().replace("/cake", "")))
                 .setReplyToMessageId(message.getReplyToMessage().getMessageId())
                 .setReplyMarkup(markup));
