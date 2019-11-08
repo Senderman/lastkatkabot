@@ -262,6 +262,7 @@ public class CommandListener {
             handler.userRows.put(message.getChatId(), new UserRow(message));
         } catch (Exception e) {
             handler.sendMessage(message.getChatId(), "Неверный формат!");
+return;
         }
         if (oldRow != null)
             handler.userRows.remove(message.getChatId(), oldRow);
