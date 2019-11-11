@@ -10,9 +10,6 @@ import com.senderman.lastkatkabot.tempobjects.Duel;
 import com.senderman.lastkatkabot.tempobjects.UserRow;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class CommandListener {
     private final LastkatkaBotHandler handler;
     private final UsercommandsHandler usercommands;
