@@ -1,5 +1,6 @@
 package com.senderman.lastkatkabot;
 
+import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.Command;
 import com.senderman.lastkatkabot.handlers.AdminHandler;
 import com.senderman.lastkatkabot.handlers.TournamentHandler;
@@ -248,11 +249,12 @@ public class CommandListener {
     }
 
     @Command(name = "/row",
-            desc = "Рассчет юзеров, например няшек. Синтаксис: 1 строка - /row Список няшек " +
-                    "2 строка - няшка" +
-                    "3 строка - 5 (т.е. няшкой будет каждый пятый")
+            desc = "Рассчет юзеров, например няшек. Синтаксис: 1 строка - /row Список няшек\n" +
+                    "2 строка - няшка\n" +
+                    "3 строка - 5\n" +
+                    "(т.е. няшкой будет каждый пятый")
     public void row(Message message) {
-        if(!message.isGroupMessage() && !message.isSuperGroupMessage())
+        if (!message.isGroupMessage() && !message.isSuperGroupMessage())
             return;
 
         UserRow oldRow = null;
@@ -262,9 +264,21 @@ public class CommandListener {
             handler.userRows.put(message.getChatId(), new UserRow(message));
         } catch (Exception e) {
             handler.sendMessage(message.getChatId(), "Неверный формат!");
-return;
+            return;
         }
         if (oldRow != null)
             handler.userRows.remove(message.getChatId(), oldRow);
+    }
+
+    @Command(name = "/getrow", desc = "Показать сообщение с рассчетом юзеров")
+    public void getrow(Message message) {
+        if (!message.isGroupMessage() && !message.isSuperGroupMessage())
+            return;
+        if (!handler.userRows.containsKey(message.getChatId())) {
+            handler.sendMessage(message.getChatId(), "У вас пока еще нет списка!");
+            return;
+        }
+        handler.sendMessage(Methods.sendMessage(message.getChatId(), "Вот!")
+                .setReplyToMessageId(handler.userRows.get(message.getChatId()).getMessageId()));
     }
 }

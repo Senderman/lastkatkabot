@@ -55,4 +55,8 @@ public class UserRow {
                 .call(Services.handler());
         Services.db().saveRow(chatId, this);
     }
+
+    public int getMessageId() {
+        return messageId;
+    }
 }
