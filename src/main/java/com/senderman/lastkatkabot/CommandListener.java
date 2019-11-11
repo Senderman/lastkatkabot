@@ -103,11 +103,8 @@ public class CommandListener {
     public void duel(Message message) {
         if (message.isUserMessage())
             return;
-        Map<Integer, Duel> messageDuel = new HashMap<>();
         var duel = new Duel(message);
-        int duelMessageId = duel.getMessageId();
-        messageDuel.put(duelMessageId, duel);
-        handler.duels.put(message.getChatId(), messageDuel);
+        handler.duels.put(duel.getDuelId(), duel);
     }
 
     @Command(name = "/bnchelp", desc = "помощь по игре Быки и Коровы")

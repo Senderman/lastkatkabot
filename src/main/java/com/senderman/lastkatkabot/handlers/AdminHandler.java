@@ -13,9 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.logging.BotLogger;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class AdminHandler {
 
@@ -147,7 +145,9 @@ public class AdminHandler {
         for (int i = 1; i < params.length; i++) {
             update.append("* ").append(params[i]).append("\n");
         }
-        for (long chat : handler.allowedChats) {
+        var tempChatSet = new HashSet<>(handler.allowedChats);
+        tempChatSet.remove(Services.config().getTourgroup());
+        for (long chat : tempChatSet) {
             handler.sendMessage(chat, update.toString());
         }
     }

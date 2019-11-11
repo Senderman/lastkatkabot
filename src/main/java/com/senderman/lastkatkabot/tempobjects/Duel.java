@@ -19,6 +19,7 @@ public class Duel {
     private final int messageId;
     private final TgUser player1;
     private TgUser player2;
+    private final String duelId;
 
     public Duel(Message message) {
         chatId = message.getChatId();
@@ -27,6 +28,7 @@ public class Duel {
                 .setChatId(chatId)
                 .setText("\uD83C\uDFAF Набор на дуэль! Жмите кнопку ниже\nДжойнулись:\n" + player1.getName());
         messageId = sm.call(Services.handler()).getMessageId();
+        duelId = chatId + " " + messageId;
         setReplyMarkup(chatId, messageId);
     }
 
@@ -80,7 +82,7 @@ public class Duel {
                 .setText(duelResult.toString())
                 .setParseMode(ParseMode.HTML)
                 .call(Services.handler());
-        Services.handler().duels.get(chatId).remove(messageId);
+        Services.handler().duels.remove(duelId);
     }
 
     public int getMessageId() {
@@ -106,5 +108,9 @@ public class Duel {
                 .setMessageId(duelMessageId)
                 .setReplyMarkup(markup)
                 .call(Services.handler());
+    }
+
+    public String getDuelId() {
+        return duelId;
     }
 }

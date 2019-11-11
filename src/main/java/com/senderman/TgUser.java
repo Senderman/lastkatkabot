@@ -18,7 +18,10 @@ public class TgUser {
     }
 
     private String getSafeName(String name) {
-        return name.replace("<", "&lt;").replace(">", "&gt;");
+        return name
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("&", "&amp;");
     }
 
     public int getId() {

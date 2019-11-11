@@ -33,7 +33,7 @@ public class LastkatkaBotHandler extends BotHandler {
     public final Set<Integer> premiumUsers;
     public final Set<Long> allowedChats;
     public final Map<Long, BullsAndCowsGame> bullsAndCowsGames;
-    public final Map<Long, Map<Integer, Duel>> duels;
+    public final Map<String, Duel> duels;
     final Map<Long, UserRow> userRows;
     public final Map<String, Method> commands;
     private final CommandListener commandListener;
@@ -258,12 +258,8 @@ public class LastkatkaBotHandler extends BotHandler {
                     callbackHandler.closeMenu(query);
                     return;
                 case LastkatkaBot.CALLBACK_JOIN_DUEL:
-                    var chat = duels.get(query.getMessage().getChatId());
-                    if (chat == null) {
-                        Duel.answerCallbackQuery(query, "⏰ Дуэль устарела!", true);
-                        return;
-                    }
-                    var duel = chat.get(query.getMessage().getMessageId());
+                    var message = query.getMessage();
+                    var duel = duels.get(message.getChatId() + " " + message.getMessageId());
                     if (duel == null) {
                         Duel.answerCallbackQuery(query, "⏰ Дуэль устарела!", true);
                         return;
