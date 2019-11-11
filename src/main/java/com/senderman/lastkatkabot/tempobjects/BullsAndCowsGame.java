@@ -235,7 +235,7 @@ public class BullsAndCowsGame {
         long mins = sec / 60;
         sec -= mins * 60;
         long hours = mins / 60;
-        mins -= hours / 60;
+        mins -= hours * 60;
         return String.format("%02d:%02d:%02d", hours, mins, sec);
 
     }
