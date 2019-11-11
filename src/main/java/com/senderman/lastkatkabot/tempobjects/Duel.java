@@ -23,13 +23,13 @@ public class Duel {
 
     public Duel(Message message) {
         chatId = message.getChatId();
-        player1 = new TgUser(message.getFrom().getId(), message.getFrom().getFirstName());
+        player1 = new TgUser(message.getFrom());
         var sm = Methods.sendMessage()
                 .setChatId(chatId)
-                .setText("\uD83C\uDFAF Набор на дуэль! Жмите кнопку ниже\nДжойнулись:\n" + player1.getName());
+                .setText("\uD83C\uDFAF Набор на дуэль! Жмите кнопку ниже\nДжойнулись:\n" + player1.getName())
+                .setReplyMarkup(getDuelReplyMarkup());
         messageId = sm.call(Services.handler()).getMessageId();
         duelId = chatId + " " + messageId;
-        setReplyMarkup(chatId, messageId);
     }
 
     public void join(CallbackQuery query) {
@@ -97,17 +97,13 @@ public class Duel {
                 .call(Services.handler());
     }
 
-    private static void setReplyMarkup(long chatId, int duelMessageId) {
+    private static InlineKeyboardMarkup getDuelReplyMarkup() {
         var markup = new InlineKeyboardMarkup();
         var row1 = List.of(new InlineKeyboardButton()
                 .setText("Присоединиться")
                 .setCallbackData(LastkatkaBot.CALLBACK_JOIN_DUEL));
         markup.setKeyboard(List.of(row1));
-        Methods.editMessageReplyMarkup()
-                .setChatId(chatId)
-                .setMessageId(duelMessageId)
-                .setReplyMarkup(markup)
-                .call(Services.handler());
+        return markup;
     }
 
     public String getDuelId() {
