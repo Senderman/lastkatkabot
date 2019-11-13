@@ -1,6 +1,5 @@
 package com.senderman.anitrackerbot;
 
-import com.google.api.client.json.JsonFactory;
 import org.jsoup.Jsoup;
 
 import java.net.URL;

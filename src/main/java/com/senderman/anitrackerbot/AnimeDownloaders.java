@@ -1,9 +1,7 @@
 package com.senderman.anitrackerbot;
 
-import com.google.api.client.json.JsonFactory;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
-import retrofit2.http.Url;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -81,16 +79,16 @@ class AnimeDownloaders {
         return zipFile;
     }
 
-    static File getNyaasiTorrent(String url) throws Exception{
+    static File getNyaasiTorrent(String url) throws Exception {
         var doc = Jsoup.parse(new URL(url), 10000);
-        var torrentlink = "https://nyaa.si" +doc.selectFirst("div.panel-footer").selectFirst("a").attr("href");
+        var torrentlink = "https://nyaa.si" + doc.selectFirst("div.panel-footer").selectFirst("a").attr("href");
         var u = new URL(torrentlink);
         var in = u.openStream();
         var file = new File("anime.torrent");
         var fos = new FileOutputStream(file);
         int length;
         byte[] buffer = new byte[4096];
-        while ((length = in.read(buffer)) != -1){
+        while ((length = in.read(buffer)) != -1) {
             fos.write(buffer, 0, length);
         }
         in.close();
