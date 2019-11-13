@@ -1,5 +1,6 @@
 package com.senderman.anitrackerbot;
 
+import com.google.api.client.json.JsonFactory;
 import org.jsoup.Jsoup;
 
 import java.net.URL;
@@ -64,5 +65,12 @@ class AnimeParsers {
         var img = doc.selectFirst("img.main-img").attr("src");
         img = "https://anistar.org" + img;
         return new Anime(title, series, img, url);
+    }
+
+    static Anime parseNyaasi(String url) throws Exception {
+        var doc = Jsoup.parse(new URL(url), 10000);
+        var title = doc.selectFirst("div.panel-heading").selectFirst("h3.panel-title").text();
+        var img = "http://kongbakpao.com/wp-content/uploads/2018/06/kbp_azurlane_banner-696x265.png";
+        return new Anime(title, "N/A", img, url);
     }
 }

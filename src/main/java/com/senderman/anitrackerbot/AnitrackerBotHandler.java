@@ -160,6 +160,8 @@ public class AnitrackerBotHandler extends BotHandler {
             return AnimeParsers::parseAnimerost;
         else if (url.startsWith("https://anistar.org/"))
             return AnimeParsers::parseAnistar;
+        else if (url.startsWith("https://nyaa.si/view/"))
+            return AnimeParsers::parseNyaasi;
         else
             return null;
     }
@@ -169,6 +171,8 @@ public class AnitrackerBotHandler extends BotHandler {
             return AnimeDownloaders::getAnidubTorrent;
         else if (url.startsWith("https://anistar.org/"))
             return AnimeDownloaders::getAnistarTorrent;
+        else if (url.startsWith("https://nyaa.si/view/"))
+            return AnimeDownloaders::getNyaasiTorrent;
         else
             return null;
     }
