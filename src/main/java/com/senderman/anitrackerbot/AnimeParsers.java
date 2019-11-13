@@ -69,7 +69,7 @@ class AnimeParsers {
     static Anime parseNyaasi(String url) throws Exception {
         var doc = Jsoup.parse(new URL(url), 10000);
         var title = doc.selectFirst("div.panel-heading").selectFirst("h3.panel-title").text();
-        var img = "http://kongbakpao.com/wp-content/uploads/2018/06/kbp_azurlane_banner-696x265.png";
+        var img = "https://pbs.twimg.com/profile_images/865586129059201024/fH1dmIuo_400x400.jpg";
         return new Anime(title, "N/A", img, url);
     }
 }
