@@ -262,6 +262,7 @@ public class CommandListener {
         }
         if (oldRow != null)
             handler.userRows.remove(message.getChatId(), oldRow);
+        Methods.deleteMessage(message.getChatId(), message.getMessageId()).call(Services.handler());
     }
 
     @Command(name = "/getrow", desc = "Показать сообщение с рассчетом юзеров")
