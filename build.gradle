@@ -19,6 +19,7 @@ dependencies {
     implementation 'org.mongodb:mongodb-driver-sync:3.10.1'
     implementation 'com.google.code.gson:gson:1.7.2'
     implementation 'org.jsoup:jsoup:1.12.1'
+    implementation 'org.sejda.webp-imageio:webp-imageio-sejda:0.1.0'
 }
 
 shadowJar {

@@ -23,7 +23,11 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.*;
 
 public class LastkatkaBotHandler extends BotHandler {
@@ -287,10 +291,22 @@ public class LastkatkaBotHandler extends BotHandler {
             }
 
         } else if (!newMembers.get(0).getBot()) {
-            Methods.sendDocument(chatId)
-                    .setFile(Services.config().getHigif())
-                    .setReplyToMessageId(message.getMessageId())
-                    .call(this); // say hi to new member
+            var membername = newMembers.get(0).getFirstName();
+            if (membername.length() <= 8) {
+                try {
+                    var sticker = getHelloSticker(membername);
+                    Methods.sendPhoto(chatId)
+                            .setFile(sticker)
+                            .call(this); // send senko
+                    sticker.delete();
+                    return;
+                } catch (IOException ignored) {
+                }
+            }
+                Methods.sendDocument(chatId)
+                        .setFile(Services.config().getHigif())
+                        .setReplyToMessageId(message.getMessageId())
+                        .call(this); // say hi to new member
 
         } else if (newMembers.get(0).getUserName().equals(getBotUsername())) {
             if (allowedChats.contains(chatId)) {// Say hello to new group if chat is allowed
@@ -313,6 +329,25 @@ public class LastkatkaBotHandler extends BotHandler {
                             message.getChat().getTitle(), chatId, inviter.getLink()))
                     .setReplyMarkup(markup));
         }
+    }
+
+    private java.io.File getHelloSticker(String name) throws IOException {
+        var image = ImageIO.read(new java.io.File("res/senko.png"));
+        var g = (Graphics2D) image.getGraphics();
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        var font = new Font(Font.SANS_SERIF, Font.BOLD, 40);
+        var frc = g.getFontRenderContext();
+        var nameOutline = font.createGlyphVector(frc, name + "!").getOutline(315, 170);
+        g.setColor(Color.BLACK);
+        g.setStroke(new BasicStroke(2.5f));
+        g.draw(nameOutline);
+        g.setColor(Color.WHITE);
+        g.fill(nameOutline);
+        g.dispose();
+        var out = new java.io.File("senko.webp");
+        ImageIO.write(image, "webp", out);
+        return out;
     }
 
     public boolean isFromAdmin(Message message) {
