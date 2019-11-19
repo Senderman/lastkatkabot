@@ -297,6 +297,7 @@ public class LastkatkaBotHandler extends BotHandler {
                     var sticker = getHelloSticker(membername);
                     Methods.sendDocument(chatId)
                             .setFile(sticker)
+                            .setReplyToMessageId(message.getMessageId())
                             .call(this); // send senko
                     sticker.delete();
                     return;
