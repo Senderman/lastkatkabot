@@ -295,7 +295,7 @@ public class LastkatkaBotHandler extends BotHandler {
             if (membername.length() <= 8) {
                 try {
                     var sticker = getHelloSticker(membername);
-                    Methods.sendPhoto(chatId)
+                    Methods.sendDocument(chatId)
                             .setFile(sticker)
                             .call(this); // send senko
                     sticker.delete();
