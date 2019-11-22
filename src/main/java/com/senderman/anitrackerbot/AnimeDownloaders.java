@@ -3,8 +3,7 @@ package com.senderman.anitrackerbot;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -13,6 +12,19 @@ import java.util.zip.ZipOutputStream;
 class AnimeDownloaders {
 
     private static Map<String, String> anidubCookies = null;
+
+    private static File downloadFile(InputStream in) throws IOException {
+        byte[] buffer = new byte[4096];
+        var file = new File("anime.torrent");
+        var fos = new FileOutputStream(file);
+        int length;
+        while ((length = in.read(buffer)) != -1) {
+            fos.write(buffer, 0, length);
+        }
+        in.close();
+        fos.close();
+        return file;
+    }
 
     static File getAnidubTorrent(String url) throws Exception {
 
@@ -42,16 +54,7 @@ class AnimeDownloaders {
                 .execute()
                 .bodyStream();
 
-        byte[] buffer = new byte[4096];
-        var file = new File("anime.torrent");
-        var fos = new FileOutputStream(file);
-        int length;
-        while ((length = torrent.read(buffer)) != -1) {
-            fos.write(buffer, 0, length);
-        }
-        torrent.close();
-        fos.close();
-        return file;
+        return downloadFile(torrent);
 
     }
 
@@ -84,16 +87,7 @@ class AnimeDownloaders {
         var torrentlink = "https://nyaa.si" + doc.selectFirst("div.panel-footer").selectFirst("a").attr("href");
         var u = new URL(torrentlink);
         var in = u.openStream();
-        var file = new File("anime.torrent");
-        var fos = new FileOutputStream(file);
-        int length;
-        byte[] buffer = new byte[4096];
-        while ((length = in.read(buffer)) != -1) {
-            fos.write(buffer, 0, length);
-        }
-        in.close();
-        fos.close();
-        return file;
+        return downloadFile(in);
     }
 
 }
