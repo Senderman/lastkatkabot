@@ -27,8 +27,7 @@ public class MongoDBService implements DBService {
     private final MongoCollection<Document> userstats = lastkatkaDB.getCollection("userstats");
     private final MongoCollection<Document> settings = lastkatkaDB.getCollection("settings");
     private final MongoCollection<Document> bncgames = lastkatkaDB.getCollection("bncgames");
-    private final MongoCollection<Document> userrows = lastkatkaDB.getCollection("userrows");
-    private final MongoCollection<Document> allowedchats = lastkatkaDB.getCollection("allowedchats");
+    private final MongoCollection<Document> chats = lastkatkaDB.getCollection("chats");
 
     private MongoCollection<Document> getChatMembersCollection(long chatId) {
         return chatMembersDB.getCollection(String.valueOf(chatId));
@@ -245,18 +244,17 @@ public class MongoDBService implements DBService {
 
     @Override
     public void saveRow(long chatId, UserRow row) {
-        userrows.deleteOne(Filters.eq("chatId", chatId));
         var gson = new Gson();
         var rowAsJson = gson.toJson(row);
-        userrows.insertOne(new Document("chatId", chatId)
-                .append("row", rowAsJson));
+        chats.updateOne(Filters.eq("chatId", chatId),
+                new Document("$set", new Document("row", rowAsJson)));
     }
 
     @Override
     public Map<Long, UserRow> getUserRows() {
         Map<Long, UserRow> rows = new HashMap<>();
         var gson = new Gson();
-        for (var doc : userrows.find()) {
+        for (var doc : chats.find()) {
             var row = gson.fromJson(doc.getString("row"), UserRow.class);
             rows.put(doc.getLong("chatId"), row);
         }
@@ -286,7 +284,7 @@ public class MongoDBService implements DBService {
     @Override
     public Set<Long> getAllowedChatsSet() {
         Set<Long> allowedChats = new HashSet<>();
-        for (var doc : allowedchats.find()) {
+        for (var doc : chats.find()) {
             allowedChats.add(doc.getLong("chatId"));
         }
         return allowedChats;
@@ -294,32 +292,32 @@ public class MongoDBService implements DBService {
 
     @Override
     public void updateChatId(long oldChatId, long newChatId) {
-        allowedchats.updateOne(Filters.eq("chatId", oldChatId),
+        chats.updateOne(Filters.eq("chatId", oldChatId),
                 new Document("$set", new Document("chatId", newChatId)));
     }
 
     @Override
     public void addAllowedChat(long chatId, String title) {
-        allowedchats.insertOne(new Document("chatId", chatId)
+        chats.insertOne(new Document("chatId", chatId)
                 .append("title", title));
     }
 
     @Override
     public void updateTitle(long chatId, String title) {
         var commit = new Document("title", title);
-        allowedchats.updateOne(Filters.eq("chatId", chatId), new Document("$set", commit));
+        chats.updateOne(Filters.eq("chatId", chatId), new Document("$set", commit));
     }
 
     @Override
     public void removeAllowedChat(long chatId) {
-        allowedchats.deleteOne(Filters.eq("chatId", chatId));
+        chats.deleteOne(Filters.eq("chatId", chatId));
         getChatMembersCollection(chatId).drop();
     }
 
     @Override
     public Map<Long, String> getAllowedChats() {
         Map<Long, String> chats = new HashMap<>();
-        for (var doc : allowedchats.find()) {
+        for (var doc : this.chats.find()) {
             chats.put(doc.getLong("chatId"), doc.getString("title"));
         }
         return chats;
@@ -328,14 +326,14 @@ public class MongoDBService implements DBService {
     @Override
     public void cleanup() {
         for (var chat : chatMembersDB.listCollectionNames()) {
-            if (allowedchats.find(Filters.eq("chatId", Long.parseLong(chat))).first() == null)
+            if (chats.find(Filters.eq("chatId", Long.parseLong(chat))).first() == null)
                 getChatMembersCollection(Long.parseLong(chat)).drop();
         }
     }
 
     @Override
     public boolean pairExistsToday(long chatId) {
-        var doc = allowedchats.find(Filters.eq("chatId", chatId)).first();
+        var doc = chats.find(Filters.eq("chatId", chatId)).first();
         if (doc == null)
             return false;
 
@@ -370,22 +368,22 @@ public class MongoDBService implements DBService {
         commit.append("date", Long.parseLong(dateFormat.format(date)))
                 .append("hours", hours);
 
-        if (allowedchats.find(Filters.eq("chatId", chatId)).first() == null) {
+        if (chats.find(Filters.eq("chatId", chatId)).first() == null) {
             commit.append("chatId", chatId);
-            allowedchats.insertOne(commit);
+            chats.insertOne(commit);
         } else
-            allowedchats.updateOne(Filters.eq("chatId", chatId), new Document("$set", commit));
+            chats.updateOne(Filters.eq("chatId", chatId), new Document("$set", commit));
     }
 
     @Override
     public String getPairOfTheDay(long chatId) {
-        var doc = allowedchats.find(Filters.eq("chatId", chatId)).first();
+        var doc = chats.find(Filters.eq("chatId", chatId)).first();
         return (doc != null) ? doc.getString("pair") : null;
     }
 
     @Override
     public String getPairsHistory(long chatId) {
-        var doc = allowedchats.find(Filters.eq("chatId", chatId)).first();
+        var doc = chats.find(Filters.eq("chatId", chatId)).first();
         return (doc != null) ? doc.getString("history") : null;
     }
 

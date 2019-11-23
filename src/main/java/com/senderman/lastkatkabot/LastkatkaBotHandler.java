@@ -38,12 +38,12 @@ public class LastkatkaBotHandler extends BotHandler {
     public final Set<Long> allowedChats;
     public final Map<Long, BullsAndCowsGame> bullsAndCowsGames;
     public final Map<String, Duel> duels;
-    final Map<Long, UserRow> userRows;
     public final Map<String, Method> commands;
+    public final TournamentHandler tournamentHandler;
+    final Map<Long, UserRow> userRows;
     private final CommandListener commandListener;
     private final AdminHandler adminHandler;
     private final CallbackHandler callbackHandler;
-    public final TournamentHandler tournamentHandler;
 
     LastkatkaBotHandler() {
 
@@ -304,10 +304,10 @@ public class LastkatkaBotHandler extends BotHandler {
                 } catch (IOException ignored) {
                 }
             }
-                Methods.sendDocument(chatId)
-                        .setFile(Services.config().getHigif())
-                        .setReplyToMessageId(message.getMessageId())
-                        .call(this); // say hi to new member
+            Methods.sendDocument(chatId)
+                    .setFile(Services.config().getHigif())
+                    .setReplyToMessageId(message.getMessageId())
+                    .call(this); // say hi to new member
 
         } else if (newMembers.get(0).getUserName().equals(getBotUsername())) {
             if (allowedChats.contains(chatId)) {// Say hello to new group if chat is allowed
