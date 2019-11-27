@@ -401,7 +401,7 @@ public class UsercommandsHandler {
 
     private TgUser getUserForPair(long chatId, List<Integer> userIds, TgUser first) throws Exception {
         var loverId = Services.db().getLover(first.getId());
-        if (loverId != 0) {
+        if (loverId != 0 && userIds.contains(loverId)) {
             return new TgUser(Methods.getChatMember(chatId, loverId).call(handler).getUser());
         }
         return getUserForPair(chatId, userIds);
