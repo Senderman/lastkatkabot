@@ -246,12 +246,12 @@ public class CallbackHandler {
 
         Methods.answerCallbackQuery()
                 .setShowAlert(false)
-                .setText("Принято")
+                .setText("Такое упускаете...")
                 .setCallbackQueryId(query.getId())
                 .call(handler);
         Methods.editMessageText()
                 .setChatId(message.getChatId())
-                .setText("Пользователь " + query.getFrom().getFirstName() + "отказался от брака :(")
+                .setText("Пользователь " + query.getFrom().getFirstName() + " отказался от брака :(")
                 .setReplyMarkup(null)
                 .setMessageId(message.getMessageId())
                 .call(handler);
