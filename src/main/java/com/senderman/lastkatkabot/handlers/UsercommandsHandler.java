@@ -268,6 +268,7 @@ public class UsercommandsHandler {
             handler.sendMessage(chatId, forecast);
         } catch (Exception e) {
             handler.sendMessage(chatId, e.toString());
+            e.printStackTrace();
         }
     }
 
