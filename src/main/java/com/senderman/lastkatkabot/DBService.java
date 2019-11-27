@@ -28,6 +28,13 @@ public interface DBService {
     String getUserCity(int id);
 
 
+    void setLover(int userId, int loverId);
+
+    int getLover(int userId);
+
+    void divorce(int userId);
+
+
     void addTgUser(int id, COLLECTION_TYPE type);
 
     void removeTGUser(int id, COLLECTION_TYPE type);
@@ -89,24 +96,5 @@ public interface DBService {
     String getPairOfTheDay(long chatId);
 
     String getPairsHistory(long chatId);
-
-
-    // will be removed after a while
-
-    void incRavenMessages(int date);
-
-    int getRavenMessages();
-
-    void updateRavenRecord();
-
-    void incInterruptions();
-
-    void redInterruptions();
-
-    int getInterruptions();
-
-    int getLastRavenDate();
-
-    int getRavenRecord();
 
 }

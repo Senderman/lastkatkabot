@@ -236,12 +236,6 @@ public class CommandListener {
         adminCommands.cleanChats(message);
     }
 
-    @Command(name = "/raven", desc = "Стата по сообщениям равен", forPremium = true, showInHelp = false)
-    public void raven(Message message) {
-        handler.sendMessage(message.getChatId(),
-                "Самая долгая переписка Равен и Жамы в котомафии - " + Services.db().getRavenRecord() + " сообщений подряд");
-    }
-
     @Command(name = "/row",
             desc = "Рассчет юзеров, например няшек. Синтаксис: 1 строка - /row Список няшек\n" +
                     "2 строка - няшка\n" +
@@ -275,5 +269,15 @@ public class CommandListener {
         }
         handler.sendMessage(Methods.sendMessage(message.getChatId(), "Вот!")
                 .setReplyToMessageId(handler.userRows.get(message.getChatId()).getMessageId()));
+    }
+
+    @Command(name = "/marryme", desc = "(reply) пожениться на ком-нибудь")
+    public void marryme(Message message) {
+        usercommands.marryme(message);
+    }
+
+    @Command(name = "/divorce", desc = "подать на развод")
+    public void divorce(Message message) {
+        usercommands.divorce(message);
     }
 }

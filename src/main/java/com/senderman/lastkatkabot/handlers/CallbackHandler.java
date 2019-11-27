@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.handlers;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.senderman.TgUser;
 import com.senderman.lastkatkabot.DBService;
 import com.senderman.lastkatkabot.LastkatkaBot;
 import com.senderman.lastkatkabot.LastkatkaBotHandler;
@@ -198,6 +199,61 @@ public class CallbackHandler {
                 .call(handler);
         handler.sendMessage(userId, "Разработчик удалил вас из " + listName + " бота!");
         Methods.deleteMessage(query.getMessage().getChatId(), query.getMessage().getMessageId()).call(handler);
+    }
+
+    public void accept_marriage(CallbackQuery query) {
+        var userId = query.getFrom().getId();
+        var message = query.getMessage();
+        if (!message.getReplyToMessage().getFrom().getId().equals(userId)) {
+            Methods.answerCallbackQuery()
+                    .setShowAlert(true)
+                    .setText("Куда лезете? Это не вам!")
+                    .setCallbackQueryId(query.getId())
+                    .call(handler);
+            return;
+        }
+
+        Methods.answerCallbackQuery()
+                .setShowAlert(true)
+                .setText("Поздравляем! Теперь у вас есть вторая половинка")
+                .setCallbackQueryId(query.getId())
+                .call(handler);
+
+        Methods.deleteMessage(message.getChatId(), message.getMessageId());
+
+        // user - accepter, couple - inviter
+        var user = new TgUser(userId, query.getFrom().getFirstName());
+        var coupleId = Integer.parseInt(query.getData().replaceAll(LastkatkaBot.CALLBACK_ACCEPT_MARRIAGE, ""));
+        var couple = new TgUser(Methods.getChatMember(message.getChatId(), coupleId).call(handler).getUser());
+        Services.db().setLover(user.getId(), couple.getId());
+        handler.sendMessage(couple.getId(), "Поздравляем! Теперь ваша вторая половинка - " + user.getLink());
+        var format = "Внимание все! Сегодня великий день свадьбы %s и %s! Так давайте же поздравим их и съедим шавуху в часть такого праздника!";
+        var text = String.format(format, user.getLink(), couple.getLink());
+        handler.sendMessage(message.getChatId(), text);
+    }
+
+    public void deny_marriage(CallbackQuery query) {
+        var userId = query.getFrom().getId();
+        var message = query.getMessage();
+        if (!message.getReplyToMessage().getFrom().getId().equals(userId)) {
+            Methods.answerCallbackQuery()
+                    .setShowAlert(true)
+                    .setText("Куда лезете? Это не вам!")
+                    .setCallbackQueryId(query.getId())
+                    .call(handler);
+            return;
+        }
+
+        Methods.answerCallbackQuery()
+                .setShowAlert(false)
+                .setText("Принято")
+                .setCallbackQueryId(query.getId())
+                .call(handler);
+        Methods.editMessageText()
+                .setChatId(message.getChatId())
+                .setText("Пользователь " + query.getFrom().getFirstName() + "отказался от брака :(")
+                .setReplyMarkup(null)
+                .call(handler);
     }
 
     public void closeMenu(CallbackQuery query) {

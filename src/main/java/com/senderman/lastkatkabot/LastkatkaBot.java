@@ -21,6 +21,8 @@ public class LastkatkaBot implements BotModule {
     public static final String CALLBACK_DELETE_NEKO = "deleteuser_neko";
     public static final String CALLBACK_DELETE_PREM = "deleteuser_prem";
     public static final String CALLBACK_VOTE_BNC = "vote_bnc";
+    public static final String CALLBACK_ACCEPT_MARRIAGE = "accept_marriage";
+    public static final String CALLBACK_DENY_MARRIAGE = "deny_marriage";
 
     @NotNull
     @Override

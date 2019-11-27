@@ -122,6 +122,56 @@ public class UsercommandsHandler {
                 .setReplyToMessageId(message.getMessageId()));
     }
 
+    public void marryme(Message message) {
+        if (!message.isReply())
+            return;
+
+        var chatId = message.getChatId();
+        var userId = message.getFrom().getId();
+        var loverId = Services.db().getLover(userId);
+        if (loverId != 0) {
+            handler.sendMessage(chatId, "Всмысле? Вы что, хотите изменить своей второй половинке?!");
+            return;
+        }
+
+        if (Services.db().getLover(message.getReplyToMessage().getFrom().getId()) != 0) {
+            handler.sendMessage(chatId, "У этого пользователя уже есть своя вторая половинка!");
+            return;
+        }
+
+        var markup = new InlineKeyboardMarkup();
+        markup.setKeyboard(List.of(List.of(
+                new InlineKeyboardButton()
+                        .setText("Принять")
+                        .setCallbackData(LastkatkaBot.CALLBACK_ACCEPT_MARRIAGE + userId),
+                new InlineKeyboardButton()
+                        .setText("Отказаться")
+                        .setCallbackData(LastkatkaBot.CALLBACK_DENY_MARRIAGE)
+        )));
+        var user = new TgUser(Methods.getChatMember(chatId, userId).call(handler).getUser());
+        var text = "Пользователь " + user.getLink() + " предлагает вам руку, сердце и шавуху. Вы согласны?";
+        var sm = Methods.sendMessage()
+                .setChatId(chatId)
+                .setText(text)
+                .setReplyToMessageId(message.getReplyToMessage().getMessageId())
+                .setReplyMarkup(markup);
+        handler.sendMessage(sm);
+    }
+
+    public void divorce(Message message) {
+        var chatId = message.getChatId();
+        var userId = message.getFrom().getId();
+        var loverId = Services.db().getLover(userId);
+        if (loverId == 0) {
+            handler.sendMessage(chatId, "У вас и так никого нет!");
+            return;
+        }
+
+        Services.db().divorce(userId);
+        handler.sendMessage(chatId, "Вы расстались со своей половинкой! А ведь так все хорошо начиналось...");
+        handler.sendMessage(loverId, "Ваша половинка покинула вас... Теперь вы одни,,,");
+    }
+
     public void stats(Message message) {
         var player = !message.isReply() ? message.getFrom() : message.getReplyToMessage().getFrom();
         if (player.getBot()) {
@@ -134,6 +184,7 @@ public class UsercommandsHandler {
         var total = stats.get("total");
         var winrate = (total == 0) ? 0 : 100 * wins / total;
         var bncwins = stats.get("bnc");
+        var lover = stats.get("lover");
         var text = String.format("\uD83D\uDCCA Статистика %1$s:\n\n" +
                         "Дуэлей выиграно: %2$d\n" +
                         "Всего дуэлей: %3$d\n" +
@@ -141,6 +192,10 @@ public class UsercommandsHandler {
                         "\n" +
                         "\uD83D\uDC2E Баллов за быки и коровы: %5$d",
                 user.getName(), wins, total, winrate, bncwins);
+        if (lover != 0) {
+            text += "\n❤️ Вторая половинка: " +
+                    new TgUser(Methods.getChatMember(lover, lover).call(handler).getUser()).getLink();
+        }
         handler.sendMessage(message.getChatId(), text);
 
     }
@@ -321,7 +376,7 @@ public class UsercommandsHandler {
         try {
             user1 = getUserForPair(chatId, userIds);
             userIds.remove((Integer) user1.getId());
-            user2 = getUserForPair(chatId, userIds);
+            user2 = getUserForPair(chatId, userIds, user1);
         } catch (Exception e) {
             handler.sendMessage(chatId, "Недостаточно пользователей для создания пары! Подождите, пока кто-то еще напишет в чат!");
             return;
@@ -342,6 +397,14 @@ public class UsercommandsHandler {
         var pair = user1.getName() + " ❤ " + user2.getName();
         Services.db().setPair(chatId, pair);
         handler.sendMessage(chatId, String.format(loveStrings[loveStrings.length - 1], user1.getLink(), user2.getLink()));
+    }
+
+    private TgUser getUserForPair(long chatId, List<Integer> userIds, TgUser first) throws Exception {
+        var loverId = Services.db().getLover(first.getId());
+        if (loverId != 0) {
+            return new TgUser(Methods.getChatMember(chatId, loverId).call(handler).getUser());
+        }
+        return getUserForPair(chatId, userIds);
     }
 
     private TgUser getUserForPair(long chatId, List<Integer> userIds) throws Exception {
