@@ -226,6 +226,7 @@ public class CallbackHandler {
         var coupleId = Integer.parseInt(query.getData().replaceAll(LastkatkaBot.CALLBACK_ACCEPT_MARRIAGE, ""));
         var couple = new TgUser(Methods.getChatMember(message.getChatId(), coupleId).call(handler).getUser());
         Services.db().setLover(user.getId(), couple.getId());
+        handler.sendMessage(message.getChatId(), user.getId() + " " + couple.getId());
         handler.sendMessage(couple.getId(), "Поздравляем! Теперь ваша вторая половинка - " + user.getLink());
         var format = "Внимание все! Сегодня великий день свадьбы %s и %s! Так давайте же поздравим их и съедим шавуху в часть такого праздника!";
         var text = String.format(format, user.getLink(), couple.getLink());
