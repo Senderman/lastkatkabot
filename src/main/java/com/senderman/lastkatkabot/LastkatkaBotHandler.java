@@ -140,32 +140,6 @@ public class LastkatkaBotHandler extends BotHandler {
         if (message.isGroupMessage() || message.isSuperGroupMessage()) // add user to DB
             Services.db().addUserToChatDB(message);
 
-        // Raven stats
-        if (!message.isCommand() && message.getChatId().equals(-1001339940111L)) {
-            int sender = message.getFrom().getId();
-            if (!(sender == 580020934 || sender == 589981574)) {
-                if (Services.db().getRavenMessages() == 0)
-                    return null;
-                Services.db().incInterruptions();
-                if (Services.db().getInterruptions() > 3) {
-                    Services.db().updateRavenRecord();
-                }
-                return null;
-            }
-
-            int lastMessageDate = Services.db().getLastRavenDate();
-            if (lastMessageDate != Integer.MIN_VALUE && message.getDate() - lastMessageDate > 7200) {
-                Services.db().updateRavenRecord();
-                Services.db().incRavenMessages(lastMessageDate);
-            } else {
-                Services.db().incRavenMessages(lastMessageDate);
-                if (Services.db().getInterruptions() > 0) {
-                    Services.db().redInterruptions();
-                }
-            }
-
-        }
-
         var text = message.getText();
 
         // for bulls and cows
@@ -230,6 +204,8 @@ public class LastkatkaBotHandler extends BotHandler {
             callbackHandler.addChat(query);
         } else if (data.startsWith(LastkatkaBot.CALLBACK_DONT_ALLOW_CHAT)) {
             callbackHandler.denyChat(query);
+        } else if (data.startsWith(LastkatkaBot.CALLBACK_ACCEPT_MARRIAGE)) {
+            callbackHandler.accept_marriage(query);
         } else if (data.startsWith(LastkatkaBot.CALLBACK_DELETE_CHAT)) {
             callbackHandler.deleteChat(query);
             adminHandler.chats(query.getMessage());
@@ -269,6 +245,9 @@ public class LastkatkaBotHandler extends BotHandler {
                         return;
                     }
                     duel.join(query);
+                    return;
+                case LastkatkaBot.CALLBACK_DENY_MARRIAGE:
+                    callbackHandler.deny_marriage(query);
                     return;
                 case LastkatkaBot.CALLBACK_VOTE_BNC:
                     bullsAndCowsGames.get(query.getMessage().getChatId()).addVote(query);

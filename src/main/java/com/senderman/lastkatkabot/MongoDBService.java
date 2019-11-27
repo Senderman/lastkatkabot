@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
 import com.senderman.MongoClientKeeper;
 import com.senderman.lastkatkabot.tempobjects.BnCPlayer;
 import com.senderman.lastkatkabot.tempobjects.BullsAndCowsGame;
@@ -15,6 +14,8 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.mongodb.client.model.Filters.*;
 
 public class MongoDBService implements DBService {
     private final TimeZone timeZone = TimeZone.getTimeZone("Europe/Moscow");
@@ -51,58 +52,60 @@ public class MongoDBService implements DBService {
     }
 
     public void incDuelWins(int id) {
-        var doc = userstats.find(Filters.eq("id", id)).first();
+        var doc = userstats.find(eq("id", id)).first();
         if (doc == null)
             initStats(id);
 
         var updateDoc = new Document()
                 .append("$inc", new Document("wins", 1).append("total", 1));
 
-        userstats.updateOne(Filters.eq("id", id), updateDoc);
+        userstats.updateOne(eq("id", id), updateDoc);
     }
 
     public void incTotalDuels(int id) {
-        var doc = userstats.find(Filters.eq("id", id)).first();
+        var doc = userstats.find(eq("id", id)).first();
         if (doc == null)
             initStats(id);
 
         var updateDoc = new Document()
                 .append("$inc", new Document("total", 1));
-        userstats.updateOne(Filters.eq("id", id), updateDoc);
+        userstats.updateOne(eq("id", id), updateDoc);
     }
 
     @Override
     public void incBNCWins(int id, int points) {
-        var doc = userstats.find(Filters.eq("id", id)).first();
+        var doc = userstats.find(eq("id", id)).first();
         if (doc == null)
             initStats(id);
 
         var updateDoc = new Document()
                 .append("$inc", new Document("bnc", points));
-        userstats.updateOne(Filters.eq("id", id), updateDoc);
+        userstats.updateOne(eq("id", id), updateDoc);
     }
 
     public Map<String, Integer> getStats(int id) {
-        int total = 0, wins = 0, bncwins = 0;
-        var doc = userstats.find(Filters.eq("id", id)).first();
+        int total = 0, wins = 0, bncwins = 0, lover = 0;
+        var doc = userstats.find(eq("id", id)).first();
         if (doc == null) {
             initStats(id);
         } else {
             total = doc.getInteger("total");
             wins = doc.getInteger("wins");
             bncwins = doc.getInteger("bnc");
+            lover = doc.getInteger("lover");
         }
         Map<String, Integer> stats = new HashMap<>();
         stats.put("total", total);
         stats.put("wins", wins);
         stats.put("bnc", bncwins);
+        stats.put("lover", lover);
         return stats;
     }
 
     @Override
     public List<BnCPlayer> getTop() {
         var bnsPlayers = userstats
-                .find(Filters.exists("bnc", true))
+                .find(exists("bnc", true))
                 .sort(new Document("bnc", -1))
                 .limit(10);
         List<BnCPlayer> top = new ArrayList<>(10);
@@ -114,16 +117,16 @@ public class MongoDBService implements DBService {
 
     @Override
     public void setUserCity(int id, String city) {
-        var doc = userstats.find(Filters.eq("id", id)).first();
+        var doc = userstats.find(eq("id", id)).first();
         if (doc == null)
             initStats(id);
 
-        userstats.updateOne(Filters.eq("id", id), new Document("$set", new Document("city", city)));
+        userstats.updateOne(eq("id", id), new Document("$set", new Document("city", city)));
     }
 
     @Override
     public String getUserCity(int id) {
-        var doc = userstats.find(Filters.eq("id", id)).first();
+        var doc = userstats.find(eq("id", id)).first();
         if (doc == null)
             return null;
 
@@ -131,16 +134,59 @@ public class MongoDBService implements DBService {
     }
 
     @Override
+    public void setLover(int userId, int loverId) {
+        var doc = userstats.find(eq("id", userId)).first();
+        if (doc == null)
+            initStats(userId);
+
+        var lover = userstats.find(eq("id", loverId)).first();
+        if (lover == null)
+            initStats(loverId);
+
+        userstats.updateOne(eq("id", userId), new Document("$set",
+                new Document("lover", loverId)));
+        userstats.updateOne(eq("id", lover), new Document("$set",
+                new Document("lover", userId)));
+    }
+
+    @Override
+    public int getLover(int userId) {
+        var doc = userstats.find(eq("id", userId)).first();
+        if (doc == null || doc.getInteger("lover") == null)
+            return 0;
+        return doc.getInteger("lover");
+    }
+
+    @Override
+    public void divorce(int userId) {
+        var doc = userstats.find(eq("id", userId)).first();
+        if (doc == null)
+            return;
+        if (doc.getInteger("lover") == null)
+            return;
+
+        int lover = doc.getInteger("lover");
+
+        userstats.updateMany(
+                or(
+                        eq("id", lover),
+                        eq("id", userId)
+                ),
+                new Document("$unset", new Document("lover", 0)));
+
+    }
+
+    @Override
     public void addTgUser(int id, COLLECTION_TYPE type) {
         var collection = getUsersCollection(type);
-        if (collection.find(Filters.eq("id", id)).first() == null)
+        if (collection.find(eq("id", id)).first() == null)
             collection.insertOne(new Document("id", id));
 
     }
 
     @Override
     public void removeTGUser(int id, COLLECTION_TYPE type) {
-        getUsersCollection(type).deleteOne(Filters.eq("id", id));
+        getUsersCollection(type).deleteOne(eq("id", id));
     }
 
     @Override
@@ -183,17 +229,17 @@ public class MongoDBService implements DBService {
         var chat = getChatMembersCollection(chatId);
         var commit = new Document("lastMessageDate", message.getDate());
 
-        var doc = chat.find(Filters.eq("id", user.getId())).first();
+        var doc = chat.find(eq("id", user.getId())).first();
         if (doc == null) {
             commit.append("id", user.getId());
             chat.insertOne(commit);
         } else
-            chat.updateOne(Filters.eq("id", user.getId()), new Document("$set", commit));
+            chat.updateOne(eq("id", user.getId()), new Document("$set", commit));
     }
 
     @Override
     public void removeUserFromChatDB(int userId, long chatId) {
-        getChatMembersCollection(chatId).deleteOne(Filters.eq("id", userId));
+        getChatMembersCollection(chatId).deleteOne(eq("id", userId));
     }
 
     @Override
@@ -209,7 +255,7 @@ public class MongoDBService implements DBService {
     @Override
     public void removeOldUsers(long chatId, int date) {
         var chat = getChatMembersCollection(chatId);
-        chat.deleteMany(Filters.lt("lastMessageDate", date));
+        chat.deleteMany(lt("lastMessageDate", date));
     }
 
     @Override
@@ -225,12 +271,12 @@ public class MongoDBService implements DBService {
 
     @Override
     public void saveBncGame(long chatId, BullsAndCowsGame game) {
-        var gameSaved = bncgames.find(Filters.eq("chatId", chatId)).first() != null;
+        var gameSaved = bncgames.find(eq("chatId", chatId)).first() != null;
         var gson = new Gson();
         var gameAsJson = gson.toJson(game);
         var commit = new Document("game", gameAsJson);
         if (gameSaved) {
-            bncgames.updateOne(Filters.eq("chatId", chatId),
+            bncgames.updateOne(eq("chatId", chatId),
                     new Document("$set", commit));
         } else {
             bncgames.insertOne(commit.append("chatId", chatId));
@@ -239,14 +285,14 @@ public class MongoDBService implements DBService {
 
     @Override
     public void deleteBncGame(long chatId) {
-        bncgames.deleteOne(Filters.eq("chatId", chatId));
+        bncgames.deleteOne(eq("chatId", chatId));
     }
 
     @Override
     public void saveRow(long chatId, UserRow row) {
         var gson = new Gson();
         var rowAsJson = gson.toJson(row);
-        chats.updateOne(Filters.eq("chatId", chatId),
+        chats.updateOne(eq("chatId", chatId),
                 new Document("$set", new Document("row", rowAsJson)));
     }
 
@@ -263,7 +309,7 @@ public class MongoDBService implements DBService {
 
     @Override
     public int getTournamentMessageId() {
-        var doc = settings.find(Filters.exists("messageId", true)).first();
+        var doc = settings.find(exists("messageId", true)).first();
         if (doc == null)
             return 0;
         return doc.getInteger("messageId");
@@ -271,11 +317,11 @@ public class MongoDBService implements DBService {
 
     @Override
     public void setTournamentMessage(int messageId) {
-        var doc = settings.find(Filters.exists("messageId", true)).first();
+        var doc = settings.find(exists("messageId", true)).first();
         if (doc == null)
             settings.insertOne(new Document("messageId", messageId));
         else
-            settings.updateOne(Filters.exists("messageId", true),
+            settings.updateOne(exists("messageId", true),
                     new Document(
                             "$set", new Document("messageId", messageId)
                     ));
@@ -292,7 +338,7 @@ public class MongoDBService implements DBService {
 
     @Override
     public void updateChatId(long oldChatId, long newChatId) {
-        chats.updateOne(Filters.eq("chatId", oldChatId),
+        chats.updateOne(eq("chatId", oldChatId),
                 new Document("$set", new Document("chatId", newChatId)));
     }
 
@@ -305,12 +351,12 @@ public class MongoDBService implements DBService {
     @Override
     public void updateTitle(long chatId, String title) {
         var commit = new Document("title", title);
-        chats.updateOne(Filters.eq("chatId", chatId), new Document("$set", commit));
+        chats.updateOne(eq("chatId", chatId), new Document("$set", commit));
     }
 
     @Override
     public void removeAllowedChat(long chatId) {
-        chats.deleteOne(Filters.eq("chatId", chatId));
+        chats.deleteOne(eq("chatId", chatId));
         getChatMembersCollection(chatId).drop();
     }
 
@@ -326,14 +372,14 @@ public class MongoDBService implements DBService {
     @Override
     public void cleanup() {
         for (var chat : chatMembersDB.listCollectionNames()) {
-            if (chats.find(Filters.eq("chatId", Long.parseLong(chat))).first() == null)
+            if (chats.find(eq("chatId", Long.parseLong(chat))).first() == null)
                 getChatMembersCollection(Long.parseLong(chat)).drop();
         }
     }
 
     @Override
     public boolean pairExistsToday(long chatId) {
-        var doc = chats.find(Filters.eq("chatId", chatId)).first();
+        var doc = chats.find(eq("chatId", chatId)).first();
         if (doc == null)
             return false;
 
@@ -368,93 +414,23 @@ public class MongoDBService implements DBService {
         commit.append("date", Long.parseLong(dateFormat.format(date)))
                 .append("hours", hours);
 
-        if (chats.find(Filters.eq("chatId", chatId)).first() == null) {
+        if (chats.find(eq("chatId", chatId)).first() == null) {
             commit.append("chatId", chatId);
             chats.insertOne(commit);
         } else
-            chats.updateOne(Filters.eq("chatId", chatId), new Document("$set", commit));
+            chats.updateOne(eq("chatId", chatId), new Document("$set", commit));
     }
 
     @Override
     public String getPairOfTheDay(long chatId) {
-        var doc = chats.find(Filters.eq("chatId", chatId)).first();
+        var doc = chats.find(eq("chatId", chatId)).first();
         return (doc != null) ? doc.getString("pair") : null;
     }
 
     @Override
     public String getPairsHistory(long chatId) {
-        var doc = chats.find(Filters.eq("chatId", chatId)).first();
+        var doc = chats.find(eq("chatId", chatId)).first();
         return (doc != null) ? doc.getString("history") : null;
     }
 
-    private Document getRavenStats() {
-        var doc = settings.find(Filters.eq("raven", true)).first();
-        if (doc != null)
-            return doc;
-        settings.insertOne(new Document("raven", true)
-                .append("messages", 0)
-                .append("interruptions", 0)
-                .append("record", 0)
-                .append("lastMessageDate", Integer.MIN_VALUE));
-        return settings.find(Filters.eq("raven", true)).first();
-    }
-
-    @Override
-    public void incRavenMessages(int date) {
-        getRavenStats();
-        settings.updateOne(Filters.eq("raven", true), new Document("$inc",
-                new Document("messages", 1)));
-        settings.updateOne(Filters.eq("raven", true), new Document("$set",
-                new Document("lastMessageDate", date)));
-    }
-
-    @Override
-    public int getRavenMessages() {
-        return getRavenStats().getInteger("messages");
-    }
-
-    @Override
-    public void updateRavenRecord() {
-        var doc = getRavenStats();
-        int record = doc.getInteger("record");
-        int current = doc.getInteger("messages");
-        if (record > current)
-            return;
-        record = current;
-        current = 0;
-        var commit = new Document("record", record)
-                .append("messages", current)
-                .append("interruptions", 0)
-                .append("lastMessageDate", Integer.MIN_VALUE);
-        settings.updateOne(Filters.eq("raven", true), new Document("$set", commit));
-    }
-
-    @Override
-    public void incInterruptions() {
-        getRavenStats();
-        settings.updateOne(Filters.eq("raven", true), new Document("$inc",
-                new Document("interruptions", 1)));
-    }
-
-    @Override
-    public void redInterruptions() {
-        getRavenStats();
-        settings.updateOne(Filters.eq("raven", true), new Document("$inc",
-                new Document("interruptions", -1)));
-    }
-
-    @Override
-    public int getInterruptions() {
-        return getRavenStats().getInteger("interruptions");
-    }
-
-    @Override
-    public int getLastRavenDate() {
-        return getRavenStats().getInteger("lastMessageDate");
-    }
-
-    @Override
-    public int getRavenRecord() {
-        return getRavenStats().getInteger("record");
-    }
 }
