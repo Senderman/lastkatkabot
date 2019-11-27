@@ -253,23 +253,18 @@ public class UsercommandsHandler {
         }
 
         // parse weather
-        try {
-            var table = weatherPage.selectFirst("div.card_size_big");
-            var title = weatherPage.selectFirst("h1.header-title__title").text();
-            var temperature = "\uD83C\uDF21: " + table.selectFirst("div.fact__temp").selectFirst("span.temp__value").text() + " °C";
-            var feelsLike = "\uD83E\uDD17 Ощущается как " + table.selectFirst("div.fact__feels-like").selectFirst("div.term__value").text();
-            var feelings = table.selectFirst("div.fact__feelings").selectFirst("div.link__condition").text();
-            var wind = "\uD83D\uDCA8: " + table.selectFirst("div.fact__wind-speed").selectFirst("div.term__value").text();
-            var humidity = "\uD83D\uDCA7: " + table.selectFirst("div.fact__humidity").selectFirst("div.term__value").text();
-            var pressure = "\uD83E\uDDED: " + table.selectFirst("div.fact__pressure").selectFirst("div.term_value").text();
+        var table = weatherPage.selectFirst("div.card_size_big");
+        var title = weatherPage.selectFirst("h1.header-title__title").text();
+        var temperature = "\uD83C\uDF21: " + table.selectFirst("div.fact__temp").selectFirst("span.temp__value").text() + " °C";
+        var feelsLike = "\uD83E\uDD17 Ощущается как " + table.selectFirst("div.fact__feels-like").selectFirst("div.term__value").text();
+        var feelings = table.selectFirst("div.fact__feelings").selectFirst("div.link__condition").text();
+        var wind = "\uD83D\uDCA8: " + table.selectFirst("div.fact__wind-speed").selectFirst("div.term__value").text();
+        var humidity = "\uD83D\uDCA7: " + table.selectFirst("div.fact__humidity").selectFirst("div.term__value").text();
+        var pressure = "\uD83E\uDDED: " + table.selectFirst("div.fact__pressure").selectFirst("div.term__value").text();
 
-            String forecast = "<b>" + title + "</b>\n\n" +
-                    String.join("\n", feelings, temperature, wind, humidity, pressure);
-            handler.sendMessage(chatId, forecast);
-        } catch (Exception e) {
-            handler.sendMessage(chatId, e.toString());
-            e.printStackTrace();
-        }
+        String forecast = "<b>" + title + "</b>\n\n" +
+                String.join("\n", feelings, temperature, feelsLike, wind, humidity, pressure);
+        handler.sendMessage(chatId, forecast);
     }
 
     public void feedback(Message message) {
