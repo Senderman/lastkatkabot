@@ -302,7 +302,7 @@ public class MongoDBService implements DBService {
     public Map<Long, UserRow> getUserRows() {
         Map<Long, UserRow> rows = new HashMap<>();
         var gson = new Gson();
-        for (var doc : chats.find()) {
+        for (var doc : chats.find(exists("row", true))) {
             var row = gson.fromJson(doc.getString("row"), UserRow.class);
             rows.put(doc.getLong("chatId"), row);
         }
