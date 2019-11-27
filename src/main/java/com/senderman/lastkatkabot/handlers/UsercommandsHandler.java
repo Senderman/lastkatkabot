@@ -175,7 +175,8 @@ public class UsercommandsHandler {
     public void stats(Message message) {
         var player = !message.isReply() ? message.getFrom() : message.getReplyToMessage().getFrom();
         if (player.getBot()) {
-            handler.sendMessage(message.getChatId(), "Но это же бот!");
+            handler.sendMessage(message.getChatId(), "Но это же просто бот, имитация человека!" +
+                    "Разве может бот написать симфонию, иметь статистику, играть в BnC, любить?");
             return;
         }
         var user = new TgUser(player);
@@ -252,20 +253,22 @@ public class UsercommandsHandler {
         }
 
         // parse weather
-        var title = weatherPage.selectFirst("h1.header-title__title").text();
-        var temperature = "\uD83C\uDF21: " + weatherPage.selectFirst("div.fact__temp").selectFirst("span.temp__value").text() + " °C";
-        var feelings = weatherPage.selectFirst("div.fact__feelings").selectFirst("div.link__condition").text();
-        var wind = "\uD83D\uDCA8: " + weatherPage.selectFirst("dl.fact__wind-speed").selectFirst("dd.term__value").text();
-        var humidity = "\uD83D\uDCA7: " + weatherPage.selectFirst("dl.fact__humidity").selectFirst("dd").text();
-        var pressure = "\uD83E\uDDED: " + weatherPage.selectFirst("dl.fact__pressure").selectFirst("dd").text();
+        try {
 
-        String forecast = "<b>" + title + "</b>\n\n" +
-                feelings + "\n" +
-                temperature + "\n" +
-                wind + "\n" +
-                humidity + "\n" +
-                pressure + "\n";
-        handler.sendMessage(chatId, forecast);
+            var title = weatherPage.selectFirst("h1.header-title__title").text();
+            var temperature = "\uD83C\uDF21: " + weatherPage.selectFirst("div.fact__temp").selectFirst("span.temp__value").text() + " °C";
+            var feelsLike = "\uD83E\uDD17 Ощущается как " + weatherPage.selectFirst("div.fact__feels-like").selectFirst("div.temp__value").text();
+            var feelings = weatherPage.selectFirst("div.fact__feelings").selectFirst("div.link__condition").text();
+            var wind = "\uD83D\uDCA8: " + weatherPage.selectFirst("dl.fact__wind-speed").selectFirst("dd.term__value").text();
+            var humidity = "\uD83D\uDCA7: " + weatherPage.selectFirst("dl.fact__humidity").selectFirst("dd").text();
+            var pressure = "\uD83E\uDDED: " + weatherPage.selectFirst("dl.fact__pressure").selectFirst("dd").text();
+
+            String forecast = "<b>" + title + "</b>\n\n" +
+                    String.join("\n", feelings, temperature, feelsLike, wind, humidity, pressure);
+            handler.sendMessage(chatId, forecast);
+        } catch (Exception e) {
+            handler.sendMessage(chatId, e.toString());
+        }
     }
 
     public void feedback(Message message) {
@@ -401,7 +404,7 @@ public class UsercommandsHandler {
 
     private TgUser getUserForPair(long chatId, List<Integer> userIds, TgUser first) throws Exception {
         var loverId = Services.db().getLover(first.getId());
-        if (loverId != 0 && userIds.contains(loverId)) {
+        if (userIds.contains(loverId)) {
             return new TgUser(Methods.getChatMember(chatId, loverId).call(handler).getUser());
         }
         return getUserForPair(chatId, userIds);
