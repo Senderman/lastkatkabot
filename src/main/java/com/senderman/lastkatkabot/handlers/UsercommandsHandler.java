@@ -123,7 +123,7 @@ public class UsercommandsHandler {
     }
 
     public void marryme(Message message) {
-        if (!message.isReply())
+        if (!message.isReply() || message.getFrom().getId().equals(message.getReplyToMessage().getFrom().getId()))
             return;
 
         var chatId = message.getChatId();

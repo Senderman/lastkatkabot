@@ -92,7 +92,9 @@ public class MongoDBService implements DBService {
             total = doc.getInteger("total");
             wins = doc.getInteger("wins");
             bncwins = doc.getInteger("bnc");
-            lover = doc.getInteger("lover");
+            var lid = doc.getInteger("lover");
+            if (lid != null)
+            lover = lid;
         }
         Map<String, Integer> stats = new HashMap<>();
         stats.put("total", total);

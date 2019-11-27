@@ -219,7 +219,7 @@ public class CallbackHandler {
                 .setCallbackQueryId(query.getId())
                 .call(handler);
 
-        Methods.deleteMessage(message.getChatId(), message.getMessageId());
+        Methods.deleteMessage(message.getChatId(), message.getMessageId()).call(handler);
 
         // user - accepter, couple - inviter
         var user = new TgUser(userId, query.getFrom().getFirstName());
@@ -253,6 +253,7 @@ public class CallbackHandler {
                 .setChatId(message.getChatId())
                 .setText("Пользователь " + query.getFrom().getFirstName() + "отказался от брака :(")
                 .setReplyMarkup(null)
+                .setMessageId(message.getMessageId())
                 .call(handler);
     }
 
