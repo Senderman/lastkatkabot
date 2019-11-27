@@ -147,12 +147,7 @@ public class MongoDBService implements DBService {
 
         userstats.updateOne(eq("id", userId), new Document("$set",
                 new Document("lover", loverId)));
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        userstats.updateOne(eq("id", lover), new Document("$set",
+        userstats.updateOne(eq("id", loverId), new Document("$set",
                 new Document("lover", userId)));
     }
 
