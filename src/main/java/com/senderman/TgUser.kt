@@ -4,9 +4,9 @@ import org.telegram.telegrambots.meta.api.objects.User
 
 open class TgUser {
 
-    public val id: Int
-    public val name: String
-    public val link: String
+    val id: Int
+    val name: String
+    val link: String
         get() = String.format("<a href=\"tg://user?id=$id\">$name</a>", id, name)
 
     constructor(id: Int, name: String) {
