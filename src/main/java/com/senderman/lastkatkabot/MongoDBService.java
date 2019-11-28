@@ -105,14 +105,14 @@ public class MongoDBService implements DBService {
     }
 
     @Override
-    public List<BnCPlayer> getTop() {
+    public Map<Integer, Integer> getTop() {
         var bnsPlayers = userstats
                 .find(exists("bnc", true))
                 .sort(new Document("bnc", -1))
                 .limit(10);
-        List<BnCPlayer> top = new ArrayList<>(10);
+        Map<Integer, Integer>top = new HashMap<>(10);
         for (var doc : bnsPlayers) {
-            top.add(new BnCPlayer(doc.getInteger("id"), "Без имени", doc.getInteger("bnc")));
+            top.put(doc.getInteger("id"), doc.getInteger("bnc"));
         }
         return top;
     }
