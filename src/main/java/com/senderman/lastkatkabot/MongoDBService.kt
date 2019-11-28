@@ -12,6 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.Message
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.stream.Collectors
+import kotlin.collections.LinkedHashMap
 
 class MongoDBService : DBService {
     private val timeZone = TimeZone.getTimeZone("Europe/Moscow")
@@ -90,7 +91,7 @@ class MongoDBService : DBService {
                 .find(exists("bnc", true))
                 .sort(Document("bnc", -1))
                 .limit(10)
-        val top: MutableMap<Int, Int> = HashMap(10)
+        val top =  LinkedHashMap<Int, Int>()
         for (doc in bnsPlayers) {
             top[doc.getInteger("id")] = doc.getInteger("bnc")
         }
