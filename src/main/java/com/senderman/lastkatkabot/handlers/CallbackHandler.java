@@ -213,6 +213,15 @@ public class CallbackHandler {
             return;
         }
 
+        if (Services.db().getLover(userId) != 0) {
+            Methods.answerCallbackQuery()
+                    .setShowAlert(true)
+                    .setText("У вас уже есть вторая половинка!")
+                    .setCallbackQueryId(query.getId())
+                    .call(handler);
+            return;
+        }
+
         Methods.answerCallbackQuery()
                 .setShowAlert(true)
                 .setText("Поздравляем! Теперь у вас есть вторая половинка")
