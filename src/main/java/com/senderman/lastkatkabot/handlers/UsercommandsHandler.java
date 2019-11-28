@@ -175,7 +175,7 @@ public class UsercommandsHandler {
     public void stats(Message message) {
         var player = !message.isReply() ? message.getFrom() : message.getReplyToMessage().getFrom();
         if (player.getBot()) {
-            handler.sendMessage(message.getChatId(), "Но это же просто бот, имитация человека!" +
+            handler.sendMessage(message.getChatId(), "Но это же просто бот, имитация человека! " +
                     "Разве может бот написать симфонию, иметь статистику, играть в BnC, любить?");
             return;
         }
@@ -221,7 +221,7 @@ public class UsercommandsHandler {
 
     public void weather(Message message) {
         var chatId = message.getChatId();
-        String city = message.getText().strip().replaceAll("^/weather\\s*", "");
+        String city = message.getText().strip().split("\\s+", 2)[1];
         if (city.isBlank()) { // city is not specified
             city = Services.db().getUserCity(message.getFrom().getId());
             if (city == null) {
