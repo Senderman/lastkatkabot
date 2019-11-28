@@ -63,7 +63,6 @@ public class LastkatkaBotHandler extends BotHandler {
         allowedChats.add(Services.config().getLastvegan());
         allowedChats.add(Services.config().getTourgroup());
 
-        commandListener = new CommandListener(this);
         commands = new HashMap<>();
         adminHandler = new AdminHandler(this);
         callbackHandler = new CallbackHandler(this);
@@ -73,6 +72,7 @@ public class LastkatkaBotHandler extends BotHandler {
         duels = new HashMap<>();
 
         // init command-method map
+        commandListener = new CommandListener(this);
         for (var m : commandListener.getClass().getDeclaredMethods()) {
             if (m.isAnnotationPresent(Command.class))
                 commands.put(m.getAnnotation(Command.class).name(), m);
