@@ -21,7 +21,7 @@ public interface DBService {
 
     Map<String, Integer> getStats(int id);
 
-    List<BnCPlayer> getTop(); // return map of <id, score> sorted by descending order
+    Map<Integer, Integer> getTop(); // return map of <id, score> sorted by descending order
 
     void setUserCity(int id, String city);
 

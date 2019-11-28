@@ -124,7 +124,7 @@ public class LastkatkaBotHandler extends BotHandler {
         if (message.getLeftChatMember() != null && !message.getLeftChatMember().getUserName().equals(getBotUsername()) && !message.getChatId().equals(Services.config().getTourgroup())) {
             Methods.sendDocument()
                     .setChatId(chatId)
-                    .setFile(Services.config().getLeavesticker())
+                    .setFile(Objects.requireNonNull(Services.config().getLeavesticker()))
                     .setReplyToMessageId(message.getMessageId())
                     .call(this);
             Services.db().removeUserFromChatDB(message.getLeftChatMember().getId(), chatId);
@@ -185,12 +185,12 @@ public class LastkatkaBotHandler extends BotHandler {
 
     @Override
     public String getBotUsername() {
-        return Services.config().getUsername().split(" ")[Services.config().getPosition()];
+        return Objects.requireNonNull(Services.config().getUsername()).split(" ")[Services.config().getPosition()];
     }
 
     @Override
     public String getBotToken() {
-        return Services.config().getToken().split(" ")[Services.config().getPosition()];
+        return Objects.requireNonNull(Services.config().getToken()).split(" ")[Services.config().getPosition()];
     }
 
     private void processCallbackQuery(CallbackQuery query) {
@@ -284,7 +284,7 @@ public class LastkatkaBotHandler extends BotHandler {
                 }
             }
             Methods.sendDocument(chatId)
-                    .setFile(Services.config().getHigif())
+                    .setFile(Objects.requireNonNull(Services.config().getHigif()))
                     .setReplyToMessageId(message.getMessageId())
                     .call(this); // say hi to new member
 

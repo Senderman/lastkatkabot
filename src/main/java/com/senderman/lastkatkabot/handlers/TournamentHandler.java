@@ -10,6 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class TournamentHandler {
@@ -83,10 +84,10 @@ public class TournamentHandler {
         );
         var row2 = List.of(new InlineKeyboardButton()
                 .setText("Группа турнира")
-                .setUrl("https://t.me/" + Services.config().getTourgroupname().replace("@", "")));
+                .setUrl("https://t.me/" + Objects.requireNonNull(Services.config().getTourgroupname()).replace("@", "")));
         var row3 = List.of(new InlineKeyboardButton()
                 .setText("Канал турнира")
-                .setUrl("https://t.me/" + Services.config().getTourchannel().replace("@", "")));
+                .setUrl("https://t.me/" + Objects.requireNonNull(Services.config().getTourchannel()).replace("@", "")));
         markup.setKeyboard(List.of(row1, row2, row3));
 
         var toVegans = Methods.sendMessage()
@@ -164,7 +165,7 @@ public class TournamentHandler {
             return;
         }
         var score = getScore(params);
-        handler.sendMessage(Methods.sendMessage(Services.config().getTourchannel(), score));
+        handler.sendMessage(Methods.sendMessage(Objects.requireNonNull(Services.config().getTourchannel()), score));
     }
 
     public void win(Message message) {
@@ -187,7 +188,7 @@ public class TournamentHandler {
                     " выходит в " + params[5].replace("_", " ");
 
         handler.sendMessage(Methods.sendMessage()
-                .setChatId(Services.config().getTourchannel())
+                .setChatId(Objects.requireNonNull(Services.config().getTourchannel()))
                 .setText(score + "\n\n" + params[1].replace("_", " ") + "<b>" + goingTo + "!</b>"));
 
         handler.sendMessage(Methods.sendMessage()

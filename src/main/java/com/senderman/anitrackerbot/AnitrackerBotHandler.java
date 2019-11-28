@@ -205,11 +205,11 @@ public class AnitrackerBotHandler extends BotHandler {
 
     @Override
     public String getBotUsername() {
-        return config.getUsername().split(" ")[config.getPosition()];
+        return Objects.requireNonNull(config.getUsername()).split(" ")[config.getPosition()];
     }
 
     @Override
     public String getBotToken() {
-        return config.getToken().split(" ")[config.getPosition()];
+        return Objects.requireNonNull(config.getToken()).split(" ")[config.getPosition()];
     }
 }

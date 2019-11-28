@@ -23,6 +23,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class UsercommandsHandler {
@@ -284,12 +286,12 @@ public class UsercommandsHandler {
     public void bncTop(Message message) {
         var chatId = message.getChatId();
 
-        List<BnCPlayer> top = Services.db().getTop();
+        Map<Integer, Integer> top = Services.db().getTop();
         var text = new StringBuilder("<b>Топ-10 задротов в bnc:</b>\n\n");
         int counter = 1;
-        for (var player : top) {
-            var member = Methods.getChatMember(player.getId(), player.getId()).call(handler);
-            player.setName(member.getUser().getFirstName());
+        for (var playerId : top.keySet()) {
+            var member = Methods.getChatMember(playerId,playerId).call(handler);
+            var player = new BnCPlayer(playerId, member.getUser().getFirstName(), top.get(playerId));
             text.append(counter).append(": ");
             if (message.isUserMessage())
                 text.append(player.getLink());
@@ -304,7 +306,7 @@ public class UsercommandsHandler {
     public void bncHelp(Message message) {
         var sendPhoto = Methods.sendPhoto()
                 .setChatId(message.getChatId())
-                .setFile(Services.config().getBncphoto());
+                .setFile(Objects.requireNonNull(Services.config().getBncphoto()));
         if (message.isReply())
             sendPhoto.setReplyToMessageId(message.getReplyToMessage().getMessageId());
         else
@@ -383,6 +385,7 @@ public class UsercommandsHandler {
 
         // get a random text and set up a pair
         var loveArray = Services.config().getLoveStrings();
+        assert loveArray != null;
         var loveStrings = loveArray[ThreadLocalRandom.current().nextInt(loveArray.length)].split("\n");
 
         try {
@@ -441,7 +444,7 @@ public class UsercommandsHandler {
     }
 
     private boolean isFromWwBot(Message message) {
-        return Services.config().getWwBots().contains(message.getReplyToMessage().getFrom().getUserName()) &&
+        return Objects.requireNonNull(Services.config().getWwBots()).contains(message.getReplyToMessage().getFrom().getUserName()) &&
                 message.getReplyToMessage().getText().startsWith("#players");
     }
 }
