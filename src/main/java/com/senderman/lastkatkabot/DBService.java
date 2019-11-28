@@ -1,8 +1,8 @@
 package com.senderman.lastkatkabot;
 
-import com.senderman.lastkatkabot.tempobjects.BnCPlayer;
 import com.senderman.lastkatkabot.tempobjects.BullsAndCowsGame;
 import com.senderman.lastkatkabot.tempobjects.UserRow;
+import org.bson.Document;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.Set;
 
 public interface DBService {
 
-    void initStats(int id);
+    Document initStats(int id);
 
     void incTotalDuels(int id);
 
