@@ -171,7 +171,8 @@ public class UsercommandsHandler {
 
         Services.db().divorce(userId);
         handler.sendMessage(chatId, "Вы расстались со своей половинкой! А ведь так все хорошо начиналось...");
-        handler.sendMessage(loverId, "Ваша половинка покинула вас... Теперь вы одни,,,");
+        var user = new TgUser(Methods.getChatMember(userId, userId).call(handler).getUser());
+        handler.sendMessage(loverId, "Ваша половинка (" + user.getLink() + ") покинула вас... Теперь вы одни...");
     }
 
     public void stats(Message message) {
