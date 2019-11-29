@@ -173,25 +173,27 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
     private fun processCallbackQuery(query: CallbackQuery) {
         val data = query.data
         when {
-            data.startsWith(LastkatkaBot.CALLBACK_CAKE_OK) -> {
+            data.startsWith(LastkatkaBot.CALLBACK_CAKE_OK) ->
                 callbackHandler.cake(query, CallbackHandler.CAKE_ACTIONS.CAKE_OK)
-            }
-            data.startsWith(LastkatkaBot.CALLBACK_CAKE_NOT) -> {
+
+            data.startsWith(LastkatkaBot.CALLBACK_CAKE_NOT) ->
                 callbackHandler.cake(query, CallbackHandler.CAKE_ACTIONS.CAKE_NOT)
-            }
-            data.startsWith(LastkatkaBot.CALLBACK_ALLOW_CHAT) -> {
+
+            data.startsWith(LastkatkaBot.CALLBACK_ALLOW_CHAT) ->
                 callbackHandler.addChat(query)
-            }
-            data.startsWith(LastkatkaBot.CALLBACK_DONT_ALLOW_CHAT) -> {
+
+            data.startsWith(LastkatkaBot.CALLBACK_DONT_ALLOW_CHAT) ->
                 callbackHandler.denyChat(query)
-            }
-            data.startsWith(LastkatkaBot.CALLBACK_ACCEPT_MARRIAGE) -> {
+
+            data.startsWith(LastkatkaBot.CALLBACK_ACCEPT_MARRIAGE) ->
                 callbackHandler.accept_marriage(query)
-            }
+
             data.startsWith(LastkatkaBot.CALLBACK_DELETE_CHAT) -> {
+
                 callbackHandler.deleteChat(query)
                 adminHandler.chats(query.message)
             }
+
             data.startsWith("deleteuser_") -> {
                 val type: COLLECTION_TYPE = when (query.data.split(" ")[0]) {
                     LastkatkaBot.CALLBACK_DELETE_ADMIN -> COLLECTION_TYPE.ADMINS
@@ -202,36 +204,31 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
                 callbackHandler.deleteUser(query, type)
                 adminHandler.listUsers(query.message, type)
             }
-            else -> {
-                when (data) {
-                    LastkatkaBot.CALLBACK_REGISTER_IN_TOURNAMENT -> {
-                        callbackHandler.registerInTournament(query)
+
+            else -> when (data) {
+                LastkatkaBot.CALLBACK_REGISTER_IN_TOURNAMENT ->
+                    callbackHandler.registerInTournament(query)
+
+                LastkatkaBot.CALLBACK_PAY_RESPECTS ->
+                    callbackHandler.payRespects(query)
+
+                LastkatkaBot.CALLBACK_CLOSE_MENU ->
+                    callbackHandler.closeMenu(query)
+
+                LastkatkaBot.CALLBACK_JOIN_DUEL -> {
+                    val message = query.message
+                    val duel = duels[message.chatId.toString() + " " + message.messageId]
+                    if (duel == null) {
+                        Duel.answerCallbackQuery(query, "⏰ Дуэль устарела!", true)
                         return
                     }
-                    LastkatkaBot.CALLBACK_PAY_RESPECTS -> {
-                        callbackHandler.payRespects(query)
-                        return
-                    }
-                    LastkatkaBot.CALLBACK_CLOSE_MENU -> {
-                        callbackHandler.closeMenu(query)
-                        return
-                    }
-                    LastkatkaBot.CALLBACK_JOIN_DUEL -> {
-                        val message = query.message
-                        val duel = duels[message.chatId.toString() + " " + message.messageId]
-                        if (duel == null) {
-                            Duel.answerCallbackQuery(query, "⏰ Дуэль устарела!", true)
-                            return
-                        }
-                        duel.join(query)
-                        return
-                    }
-                    LastkatkaBot.CALLBACK_DENY_MARRIAGE -> {
-                        callbackHandler.deny_marriage(query)
-                        return
-                    }
-                    LastkatkaBot.CALLBACK_VOTE_BNC -> bullsAndCowsGames[query.message.chatId]?.addVote(query)
+                    duel.join(query)
+                    return
                 }
+                LastkatkaBot.CALLBACK_DENY_MARRIAGE ->
+                    callbackHandler.deny_marriage(query)
+
+                LastkatkaBot.CALLBACK_VOTE_BNC -> bullsAndCowsGames[query.message.chatId]?.addVote(query)
             }
         }
     }
