@@ -93,9 +93,33 @@ public class AnitrackerBotHandler extends BotHandler {
                     file.delete();
                 } catch (Exception e) {
                     sendMessage(chatId, "Ошибка!");
-                    e.printStackTrace();
                 }
                 return null;
+
+            case "/get": {
+                var textArr = text.split(" ", 2);
+                if (textArr.length < 2)
+                    return null;
+
+                var url = textArr[1];
+                var downloader = getAnimeDownloader(url);
+                if (downloader == null) {
+                    sendMessage(chatId, "Отсюда аниме скачивать я еще не умею!");
+                    return null;
+                }
+
+                sendMessage(chatId, "Скачиваем торрент...");
+                try {
+                    var file = downloader.download(url);
+                    Methods.sendDocument(chatId)
+                            .setFile(file)
+                            .call(this);
+                    file.delete();
+                } catch (Exception e) {
+                    sendMessage(chatId, "Ошибка!");
+                }
+                return null;
+            }
         }
 
         if (!text.startsWith("http"))
