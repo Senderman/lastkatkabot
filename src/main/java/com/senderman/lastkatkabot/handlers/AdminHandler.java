@@ -26,7 +26,7 @@ public class AdminHandler {
         this.handler = handler;
     }
 
-    public void addUser(Message message, DBService.COLLECTION_TYPE type) {
+    public void addUser(Message message, DBService.UserType type) {
         if (!message.isReply())
             return;
 
@@ -59,8 +59,8 @@ public class AdminHandler {
         handler.sendMessage(message.getChatId(), String.format(format, user.getName()));
     }
 
-    public void listUsers(Message message, DBService.COLLECTION_TYPE type) {
-        var users = Services.db().getTgUsersFromList(type);
+    public void listUsers(Message message, DBService.UserType type) {
+        var users = Services.db().getTgUsersByType(type);
         var messageToSend = Methods.sendMessage().setChatId(message.getChatId());
 
         boolean allAdminsAccess = false;
@@ -132,7 +132,7 @@ public class AdminHandler {
             return;
 
         var neko = new TgUser(message.getReplyToMessage().getFrom().getId(), message.getReplyToMessage().getFrom().getFirstName());
-        Services.db().removeTGUser(neko.getId(), DBService.COLLECTION_TYPE.BLACKLIST);
+        Services.db().removeTGUser(neko.getId(), DBService.UserType.BLACKLIST);
         handler.getBlacklist().remove(message.getReplyToMessage().getFrom().getId());
         handler.sendMessage(message.getChatId(),
                 String.format("\uD83D\uDE38 %1$s - хорошая киса!", neko.getLink()));
@@ -162,7 +162,7 @@ public class AdminHandler {
         }
         var markup = new InlineKeyboardMarkup();
         ArrayList<List<InlineKeyboardButton>> rows = new ArrayList<>();
-        var chats = Services.db().getAllowedChats();
+        var chats = Services.db().getAllowedChatsMap();
         List<InlineKeyboardButton> row = new ArrayList<>();
         for (long chatId : chats.keySet()) {
             row.add(new InlineKeyboardButton()
@@ -185,7 +185,7 @@ public class AdminHandler {
     }
 
     public void cleanChats(Message message) {
-        var chats = Services.db().getAllowedChats();
+        var chats = Services.db().getAllowedChatsMap();
         for (long chatId : chats.keySet()) {
             try {
                 var chatMsg = handler.execute(new SendMessage(chatId, "Сервисное сообщение, оно будет удалено через пару секунд"));

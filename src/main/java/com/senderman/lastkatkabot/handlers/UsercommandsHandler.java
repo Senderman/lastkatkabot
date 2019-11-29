@@ -292,7 +292,7 @@ public class UsercommandsHandler {
         var text = new StringBuilder("<b>Топ-10 задротов в bnc:</b>\n\n");
         int counter = 1;
         for (var playerId : top.keySet()) {
-            var member = Methods.getChatMember(playerId,playerId).call(handler);
+            var member = Methods.getChatMember(playerId, playerId).call(handler);
             var player = new BnCPlayer(playerId, member.getUser().getFirstName(), top.get(playerId));
             text.append(counter).append(": ");
             if (message.isUserMessage())

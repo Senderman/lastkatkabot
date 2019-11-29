@@ -170,7 +170,7 @@ public class CallbackHandler {
         Methods.deleteMessage(query.getMessage().getChatId(), query.getMessage().getMessageId()).call(handler);
     }
 
-    public void deleteUser(CallbackQuery query, DBService.COLLECTION_TYPE type) {
+    public void deleteUser(CallbackQuery query, DBService.UserType type) {
         Set<Integer> userIds;
         String listName;
         switch (type) {
