@@ -216,7 +216,7 @@ public class BullsAndCowsGame {
             Methods.deleteMessage(chatId, messageId).call(Services.handler());
         }
         Services.db().deleteBncGame(chatId);
-        Services.handler().bullsAndCowsGames.remove(chatId);
+        Services.handler().getBullsAndCowsGames().remove(chatId);
     }
 
     private void gameOver() {

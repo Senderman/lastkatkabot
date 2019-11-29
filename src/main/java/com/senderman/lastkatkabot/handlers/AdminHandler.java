@@ -13,7 +13,10 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.logging.BotLogger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class AdminHandler {
 
@@ -32,7 +35,7 @@ public class AdminHandler {
         String format = "";
         switch (type) {
             case ADMINS:
-                list = handler.admins;
+                list = handler.getAdmins();
                 format = "✅ %1$s теперь мой хозяин!";
                 break;
             case BLACKLIST:
@@ -40,11 +43,11 @@ public class AdminHandler {
                     handler.sendMessage(message.getChatId(), "Мы таких в плохие киси не берем!");
                     return;
                 }
-                list = handler.blacklist;
+                list = handler.getBlacklist();
                 format = "\uD83D\uDE3E %1$s - плохая киса!";
                 break;
             case PREMIUM:
-                list = handler.premiumUsers;
+                list = handler.getPremiumUsers();
                 format = "\uD83D\uDC51 %1$s теперь премиум пользователь!";
                 break;
         }
@@ -130,7 +133,7 @@ public class AdminHandler {
 
         var neko = new TgUser(message.getReplyToMessage().getFrom().getId(), message.getReplyToMessage().getFrom().getFirstName());
         Services.db().removeTGUser(neko.getId(), DBService.COLLECTION_TYPE.BLACKLIST);
-        handler.blacklist.remove(message.getReplyToMessage().getFrom().getId());
+        handler.getBlacklist().remove(message.getReplyToMessage().getFrom().getId());
         handler.sendMessage(message.getChatId(),
                 String.format("\uD83D\uDE38 %1$s - хорошая киса!", neko.getLink()));
     }
@@ -145,7 +148,7 @@ public class AdminHandler {
         for (int i = 1; i < params.length; i++) {
             update.append("* ").append(params[i]).append("\n");
         }
-        var tempChatSet = new HashSet<>(handler.allowedChats);
+        var tempChatSet = new HashSet<>(handler.getAllowedChats());
         tempChatSet.remove(Services.config().getTourgroup());
         for (long chat : tempChatSet) {
             handler.sendMessage(chat, update.toString());
@@ -193,7 +196,7 @@ public class AdminHandler {
                 Services.db().removeAllowedChat(chatId);
                 Services.db().cleanup();
                 handler.sendMessage(message.getFrom().getId(), "Чат \"" + chats.get(chatId) + "\" удален из списка!");
-                handler.allowedChats.remove(chatId);
+                handler.getAllowedChats().remove(chatId);
             }
         }
         handler.sendMessage(message.getFrom().getId(), "Чаты обновлены!");

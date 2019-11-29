@@ -1,388 +1,356 @@
-package com.senderman.lastkatkabot;
+package com.senderman.lastkatkabot
 
-import com.annimon.tgbotsmodule.BotHandler;
-import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.api.methods.send.SendMessageMethod;
-import com.senderman.Command;
-import com.senderman.TgUser;
-import com.senderman.lastkatkabot.handlers.AdminHandler;
-import com.senderman.lastkatkabot.handlers.CallbackHandler;
-import com.senderman.lastkatkabot.handlers.TournamentHandler;
-import com.senderman.lastkatkabot.tempobjects.BullsAndCowsGame;
-import com.senderman.lastkatkabot.tempobjects.Duel;
-import com.senderman.lastkatkabot.tempobjects.UserRow;
-import org.jetbrains.annotations.NotNull;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.User;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
+import com.annimon.tgbotsmodule.BotHandler
+import com.annimon.tgbotsmodule.api.methods.Methods
+import com.annimon.tgbotsmodule.api.methods.send.SendMessageMethod
+import com.senderman.Command
+import com.senderman.TgUser
+import com.senderman.lastkatkabot.DBService.COLLECTION_TYPE
+import com.senderman.lastkatkabot.handlers.AdminHandler
+import com.senderman.lastkatkabot.handlers.CallbackHandler
+import com.senderman.lastkatkabot.handlers.TournamentHandler
+import com.senderman.lastkatkabot.tempobjects.BullsAndCowsGame
+import com.senderman.lastkatkabot.tempobjects.Duel
+import com.senderman.lastkatkabot.tempobjects.UserRow
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery
+import org.telegram.telegrambots.meta.api.objects.Message
+import org.telegram.telegrambots.meta.api.objects.Update
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
+import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException
+import java.awt.*
+import java.io.File
+import java.io.IOException
+import java.lang.reflect.Method
+import java.util.*
+import javax.imageio.ImageIO
+import kotlin.collections.HashMap
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.*;
+class LastkatkaBotHandler internal constructor() : BotHandler() {
+    private val commandListener: CommandListener
+    private val adminHandler: AdminHandler
+    private val callbackHandler: CallbackHandler
+    val admins: MutableSet<Int>
+    val blacklist: MutableSet<Int>
+    val premiumUsers: MutableSet<Int>
+    val allowedChats: MutableSet<Long>
+    val bullsAndCowsGames: MutableMap<Long, BullsAndCowsGame?>
+    val duels: MutableMap<String, Duel>
+    val commands: MutableMap<String, Method>
+    val tournamentHandler: TournamentHandler
+    val userRows: MutableMap<Long, UserRow?>
 
-public class LastkatkaBotHandler extends BotHandler {
-
-    public final Set<Integer> admins;
-    public final Set<Integer> blacklist;
-    public final Set<Integer> premiumUsers;
-    public final Set<Long> allowedChats;
-    public final Map<Long, BullsAndCowsGame> bullsAndCowsGames;
-    public final Map<String, Duel> duels;
-    public final Map<String, Method> commands;
-    public final TournamentHandler tournamentHandler;
-    final Map<Long, UserRow> userRows;
-    private final CommandListener commandListener;
-    private final AdminHandler adminHandler;
-    private final CallbackHandler callbackHandler;
-
-    LastkatkaBotHandler() {
-
-        var mainAdmin = Services.config().getMainAdmin();
-        sendMessage(mainAdmin, "Initialization...");
+    init {
+        val mainAdmin = Services.config().mainAdmin
+        sendMessage(mainAdmin.toLong(), "Initialization...")
 
         // settings
-        Services.setHandler(this);
-        Services.setDBService(new MongoDBService());
-        Services.db().cleanup();
+        Services.setHandler(this)
+        Services.setDBService(MongoDBService())
+        Services.db().cleanup()
 
-        admins = Services.db().getTgUsersIds(DBService.COLLECTION_TYPE.ADMINS);
-        premiumUsers = Services.db().getTgUsersIds(DBService.COLLECTION_TYPE.PREMIUM);
-        blacklist = Services.db().getTgUsersIds(DBService.COLLECTION_TYPE.BLACKLIST);
-
-        allowedChats = Services.db().getAllowedChatsSet();
-        allowedChats.add(Services.config().getLastvegan());
-        allowedChats.add(Services.config().getTourgroup());
-
-        commands = new HashMap<>();
-        adminHandler = new AdminHandler(this);
-        callbackHandler = new CallbackHandler(this);
-        tournamentHandler = new TournamentHandler(this);
-        bullsAndCowsGames = Services.db().getBnCGames();
-        userRows = Services.db().getUserRows();
-        duels = new HashMap<>();
+        admins = Services.db().getTgUsersIds(COLLECTION_TYPE.ADMINS)
+        premiumUsers = Services.db().getTgUsersIds(COLLECTION_TYPE.PREMIUM)
+        blacklist = Services.db().getTgUsersIds(COLLECTION_TYPE.BLACKLIST)
+        allowedChats = Services.db().allowedChatsSet
+        allowedChats.add(Services.config().lastvegan)
+        allowedChats.add(Services.config().tourgroup)
+        commands = HashMap()
+        adminHandler = AdminHandler(this)
+        callbackHandler = CallbackHandler(this)
+        tournamentHandler = TournamentHandler(this)
+        bullsAndCowsGames = Services.db().bnCGames
+        userRows = Services.db().userRows
+        duels = HashMap()
 
         // init command-method map
-        commandListener = new CommandListener(this);
-        for (var m : commandListener.getClass().getDeclaredMethods()) {
-            if (m.isAnnotationPresent(Command.class))
-                commands.put(m.getAnnotation(Command.class).name(), m);
+        commandListener = CommandListener(this, adminHandler, tournamentHandler)
+        val annotationClass = Command::class.java
+        for (m in commandListener.javaClass.declaredMethods) {
+            if (m.isAnnotationPresent(annotationClass))
+                commands[m.getAnnotation(annotationClass).name] = m
         }
-
-        sendMessage(mainAdmin, "Бот готов к работе!");
+        sendMessage(mainAdmin, "Бот готов к работе!")
     }
 
-    @Override
-    public BotApiMethod onUpdate(@NotNull Update update) {
-
-        // first we will handle callbacks
+    public override fun onUpdate(update: Update): BotApiMethod<*>? { // first we will handle callbacks
         if (update.hasCallbackQuery()) {
-            processCallbackQuery(update.getCallbackQuery());
-            return null;
+            processCallbackQuery(update.callbackQuery)
+            return null
         }
 
-        if (!update.hasMessage())
-            return null;
+        if (!update.hasMessage()) return null
 
-        final var message = update.getMessage();
-
+        val message = update.message
         // don't handle old messages
-        if (message.getDate() + 120 < System.currentTimeMillis() / 1000)
-            return null;
+        if (message.date + 120 < System.currentTimeMillis() / 1000) return null
 
-        var newMembers = message.getNewChatMembers();
-
-        if (newMembers != null && newMembers.size() != 0) {
-            processNewMembers(message);
-            return null;
+        val newMembers = message.newChatMembers
+        if (newMembers != null && newMembers.size != 0) {
+            processNewMembers(message)
+            return null
         }
 
-        final var chatId = message.getChatId();
+        val chatId = message.chatId
 
-        if (message.getMigrateFromChatId() != null && allowedChats.contains(message.getMigrateFromChatId())) {
-            migrateChat(message.getMigrateFromChatId(), chatId);
-            sendMessage(message.getMigrateFromChatId(), "Id чата обновлен!");
+        // migrate cats if needed
+        if (message.migrateFromChatId != null && allowedChats.contains(message.migrateFromChatId)) {
+            migrateChat(message.migrateFromChatId, chatId)
+            sendMessage(message.migrateFromChatId, "Id чата обновлен!")
         }
 
-        if (!allowedChats.contains(chatId) && !message.isUserMessage()) // do not respond in not allowed chats
-            return null;
+        // do not respond in not allowed chats
+        if (!allowedChats.contains(chatId) && !message.isUserMessage)
+            return null
 
-        if (message.getMigrateFromChatId() != null) {
-            migrateChat(message.getMigrateFromChatId(), chatId);
-            return null;
-        }
-
-        if (message.getLeftChatMember() != null && !message.getLeftChatMember().getUserName().equals(getBotUsername()) && !message.getChatId().equals(Services.config().getTourgroup())) {
+        if (message.leftChatMember != null && message.leftChatMember.userName != botUsername && message.chatId != Services.config().tourgroup) {
             Methods.sendDocument()
                     .setChatId(chatId)
-                    .setFile(Objects.requireNonNull(Services.config().getLeavesticker()))
-                    .setReplyToMessageId(message.getMessageId())
-                    .call(this);
-            Services.db().removeUserFromChatDB(message.getLeftChatMember().getId(), chatId);
+                    .setFile(Services.config().leavesticker!!)
+                    .setReplyToMessageId(message.messageId)
+                    .call(this)
+            Services.db().removeUserFromChatDB(message.leftChatMember.id, chatId)
         }
 
-        if (userRows.containsKey(chatId) && !message.isUserMessage()) {
-            userRows.get(chatId).addUser(message);
+        // update current userrow in chat if exists
+        if (!message.isUserMessage) {
+            userRows[chatId]?.addUser(message)
         }
 
-        if (!message.hasText())
-            return null;
+        if (!message.hasText()) return null
 
-        if (message.isGroupMessage() || message.isSuperGroupMessage()) // add user to DB
-            Services.db().addUserToChatDB(message);
+        if (message.isGroupMessage || message.isSuperGroupMessage) // add user to DB
+            Services.db().addUserToChatDB(message)
 
-        var text = message.getText();
+        val text = message.text
 
         // for bulls and cows
-        if (text.matches("\\d{4,10}") && bullsAndCowsGames.containsKey(chatId) && !isInBlacklist(message)) {
-            bullsAndCowsGames.get(chatId).check(message);
-            return null;
+        if (text.matches(Regex("\\d{4,10}")) && !isInBlacklist(message)) {
+            bullsAndCowsGames[chatId]?.check(message)
+            return null
         }
 
-        // for userRows
-
-        if (!message.isCommand())
-            return null;
+        if (!message.isCommand) return null
 
         /* bot should only trigger on general commands (like /command) or on commands for this bot (/command@mybot),
          * and NOT on commands for another bots (like /command@notmybot)
          */
-
-        final var command = text.split("\\s+", 2)[0]
+        val command = text.split(Regex("\\s+"), 2)[0]
                 .toLowerCase(Locale.ENGLISH)
-                .replace("@" + getBotUsername(), "");
+                .replace("@$botUsername", "")
+        if (command.contains("@")) return null
 
-        if (command.contains("@"))
-            return null;
-
+        // find method by name and invoke it
         try {
-            var m = commands.get(command);
-            var annotation = m.getAnnotation(Command.class);
-            if (!message.getFrom().getId().equals(Services.config().getMainAdmin()) && annotation.forMainAdmin()) {
-                return null;
-            } else if (annotation.forAllAdmins() && !isFromAdmin(message)) {
-                return null;
-            } else if (annotation.forPremium() && !isPremiumUser(message)) {
-                return null;
-            } else if (isInBlacklist(message))
-                return null;
-
-            m.invoke(commandListener, message);
-        } catch (Exception e) {
-            return null;
+            if (!commands.contains(command)) return null
+            val method = commands.getValue(command)
+            val annotation = method.getAnnotation(Command::class.java)
+            if (message.from.id != Services.config().mainAdmin && annotation.forMainAdmin) {
+                return null
+            } else if (annotation.forAllAdmins && !isFromAdmin(message)) {
+                return null
+            } else if (annotation.forPremium && !isPremiumUser(message)) {
+                return null
+            } else if (isInBlacklist(message)) return null
+            method.invoke(commandListener, message)
+        } catch (e: Exception) {
+            return null
         }
-        return null;
+
+        return null
     }
 
-    @Override
-    public String getBotUsername() {
-        return Objects.requireNonNull(Services.config().getUsername()).split(" ")[Services.config().getPosition()];
+    override fun getBotUsername(): String {
+        return Services.config().username!!.split(" ")[Services.config().position]
     }
 
-    @Override
-    public String getBotToken() {
-        return Objects.requireNonNull(Services.config().getToken()).split(" ")[Services.config().getPosition()];
+    override fun getBotToken(): String {
+        return Services.config().token!!.split(" ")[Services.config().position]
     }
 
-    private void processCallbackQuery(CallbackQuery query) {
-        String data = query.getData();
-
-        if (data.startsWith(LastkatkaBot.CALLBACK_CAKE_OK)) {
-            callbackHandler.cake(query, CallbackHandler.CAKE_ACTIONS.CAKE_OK);
-        } else if (data.startsWith(LastkatkaBot.CALLBACK_CAKE_NOT)) {
-            callbackHandler.cake(query, CallbackHandler.CAKE_ACTIONS.CAKE_NOT);
-        } else if (data.startsWith(LastkatkaBot.CALLBACK_ALLOW_CHAT)) {
-            callbackHandler.addChat(query);
-        } else if (data.startsWith(LastkatkaBot.CALLBACK_DONT_ALLOW_CHAT)) {
-            callbackHandler.denyChat(query);
-        } else if (data.startsWith(LastkatkaBot.CALLBACK_ACCEPT_MARRIAGE)) {
-            callbackHandler.accept_marriage(query);
-        } else if (data.startsWith(LastkatkaBot.CALLBACK_DELETE_CHAT)) {
-            callbackHandler.deleteChat(query);
-            adminHandler.chats(query.getMessage());
-        } else if (data.startsWith("deleteuser_")) {
-            DBService.COLLECTION_TYPE type;
-            switch (query.getData().split(" ")[0]) {
-                case LastkatkaBot.CALLBACK_DELETE_ADMIN:
-                    type = DBService.COLLECTION_TYPE.ADMINS;
-                    break;
-                case LastkatkaBot.CALLBACK_DELETE_NEKO:
-                    type = DBService.COLLECTION_TYPE.BLACKLIST;
-                    break;
-                case LastkatkaBot.CALLBACK_DELETE_PREM:
-                    type = DBService.COLLECTION_TYPE.PREMIUM;
-                    break;
-                default:
-                    return;
+    private fun processCallbackQuery(query: CallbackQuery) {
+        val data = query.data
+        when {
+            data.startsWith(LastkatkaBot.CALLBACK_CAKE_OK) -> {
+                callbackHandler.cake(query, CallbackHandler.CAKE_ACTIONS.CAKE_OK)
             }
-            callbackHandler.deleteUser(query, type);
-            adminHandler.listUsers(query.getMessage(), type);
-        } else {
-            switch (data) {
-                case LastkatkaBot.CALLBACK_REGISTER_IN_TOURNAMENT:
-                    callbackHandler.registerInTournament(query);
-                    return;
-                case LastkatkaBot.CALLBACK_PAY_RESPECTS:
-                    callbackHandler.payRespects(query);
-                    return;
-                case LastkatkaBot.CALLBACK_CLOSE_MENU:
-                    callbackHandler.closeMenu(query);
-                    return;
-                case LastkatkaBot.CALLBACK_JOIN_DUEL:
-                    var message = query.getMessage();
-                    var duel = duels.get(message.getChatId() + " " + message.getMessageId());
-                    if (duel == null) {
-                        Duel.answerCallbackQuery(query, "⏰ Дуэль устарела!", true);
-                        return;
+            data.startsWith(LastkatkaBot.CALLBACK_CAKE_NOT) -> {
+                callbackHandler.cake(query, CallbackHandler.CAKE_ACTIONS.CAKE_NOT)
+            }
+            data.startsWith(LastkatkaBot.CALLBACK_ALLOW_CHAT) -> {
+                callbackHandler.addChat(query)
+            }
+            data.startsWith(LastkatkaBot.CALLBACK_DONT_ALLOW_CHAT) -> {
+                callbackHandler.denyChat(query)
+            }
+            data.startsWith(LastkatkaBot.CALLBACK_ACCEPT_MARRIAGE) -> {
+                callbackHandler.accept_marriage(query)
+            }
+            data.startsWith(LastkatkaBot.CALLBACK_DELETE_CHAT) -> {
+                callbackHandler.deleteChat(query)
+                adminHandler.chats(query.message)
+            }
+            data.startsWith("deleteuser_") -> {
+                val type: COLLECTION_TYPE = when (query.data.split(" ")[0]) {
+                    LastkatkaBot.CALLBACK_DELETE_ADMIN -> COLLECTION_TYPE.ADMINS
+                    LastkatkaBot.CALLBACK_DELETE_NEKO -> COLLECTION_TYPE.BLACKLIST
+                    LastkatkaBot.CALLBACK_DELETE_PREM -> COLLECTION_TYPE.PREMIUM
+                    else -> return
+                }
+                callbackHandler.deleteUser(query, type)
+                adminHandler.listUsers(query.message, type)
+            }
+            else -> {
+                when (data) {
+                    LastkatkaBot.CALLBACK_REGISTER_IN_TOURNAMENT -> {
+                        callbackHandler.registerInTournament(query)
+                        return
                     }
-                    duel.join(query);
-                    return;
-                case LastkatkaBot.CALLBACK_DENY_MARRIAGE:
-                    callbackHandler.deny_marriage(query);
-                    return;
-                case LastkatkaBot.CALLBACK_VOTE_BNC:
-                    bullsAndCowsGames.get(query.getMessage().getChatId()).addVote(query);
-            }
-        }
-    }
-
-    private void processNewMembers(Message message) {
-        var chatId = message.getChatId();
-        var newMembers = message.getNewChatMembers();
-
-        if (chatId == Services.config().getTourgroup()) { // restrict any user who isn't in tournament
-            for (User user : newMembers) {
-                if (!tournamentHandler.membersIds.contains(user.getId())) {
-                    Methods.Administration.restrictChatMember()
-                            .setChatId(Services.config().getTourgroup())
-                            .setUserId(user.getId())
-                            .setCanSendMessages(false).call(this);
+                    LastkatkaBot.CALLBACK_PAY_RESPECTS -> {
+                        callbackHandler.payRespects(query)
+                        return
+                    }
+                    LastkatkaBot.CALLBACK_CLOSE_MENU -> {
+                        callbackHandler.closeMenu(query)
+                        return
+                    }
+                    LastkatkaBot.CALLBACK_JOIN_DUEL -> {
+                        val message = query.message
+                        val duel = duels[message.chatId.toString() + " " + message.messageId]
+                        if (duel == null) {
+                            Duel.answerCallbackQuery(query, "⏰ Дуэль устарела!", true)
+                            return
+                        }
+                        duel.join(query)
+                        return
+                    }
+                    LastkatkaBot.CALLBACK_DENY_MARRIAGE -> {
+                        callbackHandler.deny_marriage(query)
+                        return
+                    }
+                    LastkatkaBot.CALLBACK_VOTE_BNC -> bullsAndCowsGames[query.message.chatId]?.addVote(query)
                 }
             }
+        }
+    }
 
-        } else if (!newMembers.get(0).getBot()) {
-            var membername = newMembers.get(0).getFirstName();
-            if (membername.length() <= 8) {
+    private fun processNewMembers(message: Message) {
+        val chatId = message.chatId
+        val newMembers = message.newChatMembers
+
+        if (chatId == Services.config().tourgroup) {
+            for (user in newMembers) {
+                // restrict any user who isn't in tournament
+                if (!tournamentHandler.membersIds.contains(user.id)) {
+                    Methods.Administration.restrictChatMember()
+                            .setChatId(Services.config().tourgroup)
+                            .setUserId(user.id)
+                            .setCanSendMessages(false).call(this)
+                }
+            }
+        } else if (!newMembers[0].bot) {
+            // say hi
+            val membername = newMembers[0].firstName
+            if (membername.length <= 8) {
                 try {
-                    var sticker = getHelloSticker(membername);
+                    val sticker = getHelloSticker(membername)
                     Methods.sendDocument(chatId)
                             .setFile(sticker)
-                            .setReplyToMessageId(message.getMessageId())
-                            .call(this); // send senko
-                    sticker.delete();
-                    return;
-                } catch (IOException ignored) {
+                            .setReplyToMessageId(message.messageId)
+                            .call(this) // send senko
+                    sticker.delete()
+                    return
+                } catch (ignored: IOException) {
                 }
             }
-            Methods.sendDocument(chatId)
-                    .setFile(Objects.requireNonNull(Services.config().getHigif()))
-                    .setReplyToMessageId(message.getMessageId())
-                    .call(this); // say hi to new member
 
-        } else if (newMembers.get(0).getUserName().equals(getBotUsername())) {
-            if (allowedChats.contains(chatId)) {// Say hello to new group if chat is allowed
-                sendMessage(chatId, "Этот чат находится в списке разрешенных. Бот готов к работе здесь");
-                return;
+            Methods.sendDocument(chatId)
+                    .setFile(Services.config().higif!!)
+                    .setReplyToMessageId(message.messageId)
+                    .call(this)
+
+        } else if (newMembers[0].userName == botUsername) {
+            // Say hello to new group if chat is allowed
+            if (allowedChats.contains(chatId)) {
+                sendMessage(chatId, "Этот чат находится в списке разрешенных. Бот готов к работе здесь")
+                return
             }
 
-            sendMessage(chatId, "Чата нет в списке разрешенных. Дождитесь решения разработчика");
-            var row1 = List.of(new InlineKeyboardButton()
+            sendMessage(chatId, "Чата нет в списке разрешенных. Дождитесь решения разработчика")
+
+            val row1 = listOf(InlineKeyboardButton()
                     .setText("Добавить")
-                    .setCallbackData(LastkatkaBot.CALLBACK_ALLOW_CHAT + chatId));
-            var row2 = List.of(new InlineKeyboardButton()
+                    .setCallbackData(LastkatkaBot.CALLBACK_ALLOW_CHAT + chatId))
+            val row2 = listOf(InlineKeyboardButton()
                     .setText("Отклонить")
-                    .setCallbackData(LastkatkaBot.CALLBACK_DONT_ALLOW_CHAT + chatId));
-            var markup = new InlineKeyboardMarkup();
-            markup.setKeyboard(List.of(row1, row2));
-            var inviter = new TgUser(message.getFrom().getId(), message.getFrom().getFirstName());
-            sendMessage(Methods.sendMessage(Services.config().getMainAdmin(),
-                    String.format("Добавить чат %1$s (%2$d) в список разрешенных? - %3$s",
-                            message.getChat().getTitle(), chatId, inviter.getLink()))
-                    .setReplyMarkup(markup));
+                    .setCallbackData(LastkatkaBot.CALLBACK_DONT_ALLOW_CHAT + chatId))
+            val markup = InlineKeyboardMarkup()
+            markup.keyboard = listOf(row1, row2)
+            val inviter = TgUser(message.from.id, message.from.firstName)
+            sendMessage(Methods.sendMessage(Services.config().mainAdmin.toLong(), String.format("Добавить чат %1\$s (%2\$d) в список разрешенных? - %3\$s",
+                    message.chat.title, chatId, inviter.link))
+                    .setReplyMarkup(markup))
         }
     }
 
-    private java.io.File getHelloSticker(String name) throws IOException {
-        var image = ImageIO.read(new java.io.File("res/senko.png"));
-        var g = (Graphics2D) image.getGraphics();
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        var font = new Font(Font.SANS_SERIF, Font.BOLD, 40);
-        var frc = g.getFontRenderContext();
-        var nameOutline = font.createGlyphVector(frc, name + "!").getOutline(315, 170);
-        g.setColor(Color.BLACK);
-        g.setStroke(new BasicStroke(2.5f));
-        g.draw(nameOutline);
-        g.setColor(Color.WHITE);
-        g.fill(nameOutline);
-        g.dispose();
-        var out = new java.io.File("senko.webp");
-        ImageIO.write(image, "webp", out);
-        return out;
+    @Throws(IOException::class)
+    private fun getHelloSticker(name: String): File {
+        val image = ImageIO.read(File("res/senko.png"))
+        val g = image.graphics as Graphics2D
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY)
+        val font = Font(Font.SANS_SERIF, Font.BOLD, 40)
+        val frc = g.fontRenderContext
+        val nameOutline = font.createGlyphVector(frc, "$name!").getOutline(315f, 170f)
+        g.color = Color.BLACK
+        g.stroke = BasicStroke(2.5f)
+        g.draw(nameOutline)
+        g.color = Color.WHITE
+        g.fill(nameOutline)
+        g.dispose()
+        val out = File("senko.webp")
+        ImageIO.write(image, "webp", out)
+        return out
     }
 
-    public boolean isFromAdmin(Message message) {
-        return admins.contains(message.getFrom().getId());
-    }
+    fun isFromAdmin(message: Message): Boolean = admins.contains(message.from.id)
 
-    public boolean isPremiumUser(Message message) {
-        return premiumUsers.contains(message.getFrom().getId());
-    }
+    fun isPremiumUser(message: Message): Boolean = premiumUsers.contains(message.from.id)
 
-    private boolean isInBlacklist(Message message) {
-        var result = blacklist.contains(message.getFrom().getId());
+    private fun isInBlacklist(message: Message): Boolean {
+        val result = blacklist.contains(message.from.id)
         if (result) {
-            Methods.deleteMessage(message.getChatId(), message.getMessageId()).call(this);
+            Methods.deleteMessage(message.chatId, message.messageId).call(this)
         }
-        return result;
+        return result
     }
 
-    private void migrateChat(long oldChatId, long newChatId) {
-        allowedChats.remove(oldChatId);
-        allowedChats.add(newChatId);
-        Services.db().updateChatId(oldChatId, newChatId);
+    private fun migrateChat(oldChatId: Long, newChatId: Long) {
+        allowedChats.remove(oldChatId)
+        allowedChats.add(newChatId)
+        Services.db().updateChatId(oldChatId, newChatId)
     }
 
-    private boolean isAbleToMigrateChat(long oldChatId, TelegramApiException e) {
-        if (!(e instanceof TelegramApiRequestException))
-            return false;
+    fun sendMessage(chatId: Int, text: String): Message = sendMessage(chatId.toLong(), text)
 
-        var ex = (TelegramApiRequestException) e;
-        if (ex.getParameters() == null)
-            return false;
-        if (ex.getParameters().getMigrateToChatId() == null)
-            return false;
-
-        migrateChat(oldChatId, ex.getParameters().getMigrateToChatId());
-        return true;
+    fun sendMessage(chatId: Long, text: String): Message {
+        return sendMessage(Methods.sendMessage(chatId, text))
     }
 
-    public Message sendMessage(long chatId, String text) {
-        return sendMessage(Methods.sendMessage(chatId, text));
-    }
-
-    public Message sendMessage(SendMessageMethod sm) {
-        var sendMessage = new SendMessage(sm.getChatId(), sm.getText())
+    fun sendMessage(sm: SendMessageMethod): Message {
+        val sendMessage = SendMessage(sm.chatId, sm.text)
                 .enableHtml(true)
                 .disableWebPagePreview()
-                .setReplyMarkup(sm.getReplyMarkup())
-                .setReplyToMessageId(sm.getReplyToMessageId());
-        try {
-            return execute(sendMessage);
-        } catch (TelegramApiException e) {
-            if (!isAbleToMigrateChat(Long.parseLong(sm.getChatId()), e))
-                return null;
-            sm.setChatId(((TelegramApiRequestException) e).getParameters().getMigrateToChatId());
-            return sm.call(this);
+                .setReplyMarkup(sm.replyMarkup)
+                .setReplyToMessageId(sm.replyToMessageId)
+        return try {
+            execute(sendMessage)
+        } catch (e: TelegramApiRequestException) {
+            migrateChat(sm.chatId.toLong(), e.parameters.migrateToChatId)
+            sm.setChatId(e.parameters.migrateToChatId)
+            return sm.call(this)
         }
     }
 }
