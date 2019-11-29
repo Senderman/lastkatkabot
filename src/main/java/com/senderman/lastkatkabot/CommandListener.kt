@@ -90,13 +90,13 @@ class CommandListener internal constructor(
     }
 
     @Command(name = "/badneko", desc = "(reply) добавить юзера в чс бота", forAllAdmins = true)
-    fun badneko(message: Message) = adminCommands.addUser(message, DBService.COLLECTION_TYPE.BLACKLIST)
+    fun badneko(message: Message) = adminCommands.addUser(message, DBService.UserType.BLACKLIST)
 
     @Command(name = "/goodneko", desc = "(reply) убрать юзера из чс бота", forAllAdmins = true)
     fun goodneko(message: Message) = adminCommands.goodneko(message)
 
     @Command(name = "/nekos", desc = "посмотреть чс бота. В лс работает как управление чс", forAllAdmins = true)
-    fun nekos(message: Message) = adminCommands.listUsers(message, DBService.COLLECTION_TYPE.BLACKLIST)
+    fun nekos(message: Message) = adminCommands.listUsers(message, DBService.UserType.BLACKLIST)
 
     @Command(name = "/critical", desc = "очистка незакончившихся дуэлей", forAllAdmins = true)
     fun critical(message: Message) {
@@ -105,10 +105,10 @@ class CommandListener internal constructor(
     }
 
     @Command(name = "/owners", desc = "управление/просмотр админами бота. Управление доступно только главному админу в лс", forAllAdmins = true)
-    fun owners(message: Message) = adminCommands.listUsers(message, DBService.COLLECTION_TYPE.ADMINS)
+    fun owners(message: Message) = adminCommands.listUsers(message, DBService.UserType.ADMINS)
 
     @Command(name = "/prem", desc = "управление/просмотр премиум-пользователями. Управление доступно только главному админу в лс", forAllAdmins = true)
-    fun prem(message: Message) = adminCommands.listUsers(message, DBService.COLLECTION_TYPE.PREMIUM)
+    fun prem(message: Message) = adminCommands.listUsers(message, DBService.UserType.PREMIUM)
 
     @Command(name = "/setuphelp", desc = "инфо о команде /setup", forAllAdmins = true)
     fun setupHelp(message: Message) = adminCommands.setupHelp(message)
@@ -144,10 +144,10 @@ class CommandListener internal constructor(
     fun tourMessage(message: Message) = tournamentHandler.tourmessage(message)
 
     @Command(name = "/owner", desc = "(reply) добавить админа бота", forMainAdmin = true)
-    fun owner(message: Message) = adminCommands.addUser(message, DBService.COLLECTION_TYPE.ADMINS)
+    fun owner(message: Message) = adminCommands.addUser(message, DBService.UserType.ADMINS)
 
     @Command(name = "/addpremium", desc = "(reply) добавить премиум-пользователя", forMainAdmin = true)
-    fun addPremium(message: Message) = adminCommands.addUser(message, DBService.COLLECTION_TYPE.PREMIUM)
+    fun addPremium(message: Message) = adminCommands.addUser(message, DBService.UserType.PREMIUM)
 
     @Command(name = "/update", desc = "рассылка информации по обновлениям в чаты. Обновления писать построчно", forMainAdmin = true)
     fun update(message: Message) = adminCommands.update(message)

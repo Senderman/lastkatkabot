@@ -5,7 +5,7 @@ import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.api.methods.send.SendMessageMethod
 import com.senderman.Command
 import com.senderman.TgUser
-import com.senderman.lastkatkabot.DBService.COLLECTION_TYPE
+import com.senderman.lastkatkabot.DBService.UserType
 import com.senderman.lastkatkabot.handlers.AdminHandler
 import com.senderman.lastkatkabot.handlers.CallbackHandler
 import com.senderman.lastkatkabot.handlers.TournamentHandler
@@ -36,11 +36,11 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
     val blacklist: MutableSet<Int>
     val premiumUsers: MutableSet<Int>
     val allowedChats: MutableSet<Long>
-    val bullsAndCowsGames: MutableMap<Long, BullsAndCowsGame?>
+    val bullsAndCowsGames: MutableMap<Long, BullsAndCowsGame>
     val duels: MutableMap<String, Duel>
     val commands: MutableMap<String, Method>
     val tournamentHandler: TournamentHandler
-    val userRows: MutableMap<Long, UserRow?>
+    val userRows: MutableMap<Long, UserRow>
 
     init {
         val mainAdmin = Services.config().mainAdmin
@@ -51,18 +51,18 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         Services.setDBService(MongoDBService())
         Services.db().cleanup()
 
-        admins = Services.db().getTgUsersIds(COLLECTION_TYPE.ADMINS)
-        premiumUsers = Services.db().getTgUsersIds(COLLECTION_TYPE.PREMIUM)
-        blacklist = Services.db().getTgUsersIds(COLLECTION_TYPE.BLACKLIST)
-        allowedChats = Services.db().allowedChatsSet
+        admins = Services.db().getTgUsersByType(UserType.ADMINS)
+        premiumUsers = Services.db().getTgUsersByType(UserType.PREMIUM)
+        blacklist = Services.db().getTgUsersByType(UserType.BLACKLIST)
+        allowedChats = Services.db().getAllowedChatsSet()
         allowedChats.add(Services.config().lastvegan)
         allowedChats.add(Services.config().tourgroup)
         commands = HashMap()
         adminHandler = AdminHandler(this)
         callbackHandler = CallbackHandler(this)
         tournamentHandler = TournamentHandler(this)
-        bullsAndCowsGames = Services.db().bnCGames
-        userRows = Services.db().userRows
+        bullsAndCowsGames = Services.db().getBnCGames()
+        userRows = Services.db().getUserRows()
         duels = HashMap()
 
         // init command-method map
@@ -195,10 +195,10 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
             }
 
             data.startsWith("deleteuser_") -> {
-                val type: COLLECTION_TYPE = when (query.data.split(" ")[0]) {
-                    LastkatkaBot.CALLBACK_DELETE_ADMIN -> COLLECTION_TYPE.ADMINS
-                    LastkatkaBot.CALLBACK_DELETE_NEKO -> COLLECTION_TYPE.BLACKLIST
-                    LastkatkaBot.CALLBACK_DELETE_PREM -> COLLECTION_TYPE.PREMIUM
+                val type: UserType = when (query.data.split(" ")[0]) {
+                    LastkatkaBot.CALLBACK_DELETE_ADMIN -> UserType.ADMINS
+                    LastkatkaBot.CALLBACK_DELETE_NEKO -> UserType.BLACKLIST
+                    LastkatkaBot.CALLBACK_DELETE_PREM -> UserType.PREMIUM
                     else -> return
                 }
                 callbackHandler.deleteUser(query, type)
