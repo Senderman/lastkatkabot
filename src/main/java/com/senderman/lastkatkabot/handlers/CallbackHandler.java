@@ -86,7 +86,7 @@ public class CallbackHandler {
 
     public void registerInTournament(CallbackQuery query) {
         var memberId = query.getFrom().getId();
-        if (!handler.tournamentHandler.isEnabled) {
+        if (!handler.getTournamentHandler().isEnabled) {
             Methods.answerCallbackQuery()
                     .setCallbackQueryId(query.getId())
                     .setText("⚠️ На данный момент нет открытых раундов!")
@@ -95,7 +95,7 @@ public class CallbackHandler {
             return;
         }
 
-        if (handler.tournamentHandler.membersIds.contains(memberId)) {
+        if (handler.getTournamentHandler().membersIds.contains(memberId)) {
             Methods.answerCallbackQuery()
                     .setCallbackQueryId(query.getId())
                     .setText("⚠️ Вы уже получили разрешение на отправку сообщений!")
@@ -104,7 +104,7 @@ public class CallbackHandler {
             return;
         }
 
-        if (!handler.tournamentHandler.members.contains(query.getFrom().getUserName())) {
+        if (!handler.getTournamentHandler().members.contains(query.getFrom().getUserName())) {
             Methods.answerCallbackQuery()
                     .setCallbackQueryId(query.getId())
                     .setText("\uD83D\uDEAB Вы не являетесь участником текущего раунда!")
@@ -113,7 +113,7 @@ public class CallbackHandler {
             return;
         }
 
-        handler.tournamentHandler.membersIds.add(memberId);
+        handler.getTournamentHandler().membersIds.add(memberId);
         Methods.Administration.restrictChatMember()
                 .setChatId(Services.config().getTourgroup())
                 .setUserId(memberId)
@@ -131,7 +131,7 @@ public class CallbackHandler {
 
     public void addChat(CallbackQuery query) {
         var chatId = Long.parseLong(query.getData().replace(LastkatkaBot.CALLBACK_ALLOW_CHAT, ""));
-        handler.allowedChats.add(chatId);
+        handler.getAllowedChats().add(chatId);
         Methods.editMessageText()
                 .setChatId(query.getMessage().getChatId())
                 .setText("✅ Чат добавлен в разрешенные!")
@@ -159,7 +159,7 @@ public class CallbackHandler {
         var chatId = Long.parseLong(query.getData().split(" ")[1]);
         Services.db().removeAllowedChat(chatId);
         Services.db().deleteBncGame(chatId);
-        handler.allowedChats.remove(chatId);
+        handler.getAllowedChats().remove(chatId);
         Methods.answerCallbackQuery()
                 .setShowAlert(true)
                 .setText("Чат удален!")
@@ -175,15 +175,15 @@ public class CallbackHandler {
         String listName;
         switch (type) {
             case ADMINS:
-                userIds = handler.admins;
+                userIds = handler.getAdmins();
                 listName = "админов";
                 break;
             case BLACKLIST:
-                userIds = handler.blacklist;
+                userIds = handler.getBlacklist();
                 listName = "плохих кошечек";
                 break;
             case PREMIUM:
-                userIds = handler.premiumUsers;
+                userIds = handler.getPremiumUsers();
                 listName = "премиум-пользователей";
                 break;
             default:

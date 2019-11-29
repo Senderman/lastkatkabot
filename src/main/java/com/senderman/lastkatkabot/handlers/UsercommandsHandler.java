@@ -321,7 +321,7 @@ public class UsercommandsHandler {
         var mainAdminHelp = new StringBuilder("<b>Информация для главного админа бота</b>\n\n");
         var noobId = message.getFrom().getId();
 
-        for (var m : handler.commands.values()) {
+        for (var m : handler.getCommands().values()) {
             var annotation = m.getAnnotation(Command.class);
             if (!annotation.showInHelp())
                 continue;

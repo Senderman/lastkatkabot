@@ -12,6 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.Message
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.stream.Collectors
+import kotlin.collections.HashMap
 import kotlin.collections.LinkedHashMap
 
 class MongoDBService : DBService {
@@ -78,7 +79,7 @@ class MongoDBService : DBService {
         val wins = doc.getInteger("wins")
         val bncwins = doc.getInteger("bnc")
         val lover = doc.getInteger("lover") ?: 0
-        val stats: MutableMap<String, Int> = HashMap()
+        val stats = HashMap<String, Int>()
         stats["total"] = total
         stats["wins"] = wins
         stats["bnc"] = bncwins
@@ -91,7 +92,7 @@ class MongoDBService : DBService {
                 .find(exists("bnc", true))
                 .sort(Document("bnc", -1))
                 .limit(10)
-        val top =  LinkedHashMap<Int, Int>()
+        val top = LinkedHashMap<Int, Int>()
         for (doc in bnsPlayers) {
             top[doc.getInteger("id")] = doc.getInteger("bnc")
         }
@@ -108,18 +109,17 @@ class MongoDBService : DBService {
     }
 
     override fun setLover(userId: Int, loverId: Int) {
-        userstats.getUser(userId)
-        userstats.getUser(loverId)
-        userstats.updateOne(eq("id", userId), Document("\$set",
-                Document("lover", loverId)))
-        userstats.updateOne(eq("id", loverId), Document("\$set",
-                Document("lover", userId)))
+        with(userstats) {
+            getUser(userId)
+            getUser(loverId)
+            updateOne(eq("id", userId), Document("\$set",
+                    Document("lover", loverId)))
+            updateOne(eq("id", loverId), Document("\$set",
+                    Document("lover", userId)))
+        }
     }
 
-    override fun getLover(userId: Int): Int {
-        val doc = userstats.getUser(userId)
-        return doc.getInteger("lover") ?: 0
-    }
+    override fun getLover(userId: Int): Int = userstats.getUser(userId).getInteger("lover") ?: 0
 
     override fun divorce(userId: Int) {
         val doc = userstats.getUser(userId)
@@ -135,7 +135,8 @@ class MongoDBService : DBService {
 
     override fun addTgUser(id: Int, type: COLLECTION_TYPE) {
         val collection = getUsersCollection(type)
-        if (collection.find(eq("id", id)).first() == null) collection.insertOne(Document("id", id))
+        if (collection.find(eq("id", id)).first() == null)
+            collection.insertOne(Document("id", id))
     }
 
     override fun removeTGUser(id: Int, type: COLLECTION_TYPE) {
@@ -143,7 +144,7 @@ class MongoDBService : DBService {
     }
 
     override fun getTgUsersFromList(collection_type: COLLECTION_TYPE): Set<Int> {
-        val result: MutableSet<Int> = HashSet()
+        val result = HashSet<Int>()
         val collection = getUsersCollection(collection_type)
         for (doc in collection.find()) {
             result.add(doc.getInteger("id"))
@@ -152,7 +153,7 @@ class MongoDBService : DBService {
     }
 
     override fun getTgUsersIds(collection_type: COLLECTION_TYPE): Set<Int> {
-        val result: MutableSet<Int> = HashSet()
+        val result = HashSet<Int>()
         val collection = getUsersCollection(collection_type)
         for (doc in collection.find()) {
             result.add(doc.getInteger("id"))
@@ -161,7 +162,7 @@ class MongoDBService : DBService {
     }
 
     override fun getAllUsersIds(): Set<Int> {
-        val userIds: MutableSet<Int> = HashSet()
+        val userIds = HashSet<Int>()
         for (collName in chatMembersDB.listCollectionNames()) {
             for (doc in chatMembersDB.getCollection(collName).find()) {
                 userIds.add(doc.getInteger("id"))
@@ -191,7 +192,7 @@ class MongoDBService : DBService {
 
     override fun getChatMemebersIds(chatId: Long): List<Int> {
         val chat = getChatMembersCollection(chatId)
-        val members: MutableList<Int> = ArrayList()
+        val members = ArrayList<Int>()
         for (doc in chat.find()) {
             members.add(doc.getInteger("id"))
         }
@@ -204,7 +205,7 @@ class MongoDBService : DBService {
     }
 
     override fun getBnCGames(): Map<Long, BullsAndCowsGame> {
-        val games: MutableMap<Long, BullsAndCowsGame> = HashMap()
+        val games = HashMap<Long, BullsAndCowsGame>()
         val gson = Gson()
         for (doc in bncgames.find()) {
             val game = gson.fromJson(doc.getString("game"), BullsAndCowsGame::class.java)
@@ -238,7 +239,7 @@ class MongoDBService : DBService {
     }
 
     override fun getUserRows(): Map<Long, UserRow> {
-        val rows: MutableMap<Long, UserRow> = HashMap()
+        val rows = HashMap<Long, UserRow>()
         val gson = Gson()
         for (doc in chats.find(exists("row", true))) {
             val row = gson.fromJson(doc.getString("row"), UserRow::class.java)
@@ -253,15 +254,20 @@ class MongoDBService : DBService {
     }
 
     override fun setTournamentMessage(messageId: Int) {
-        val doc = settings.find(exists("messageId", true)).first()
-        if (doc == null) settings.insertOne(Document("messageId", messageId)) else settings.updateOne(exists("messageId", true),
-                Document(
-                        "\$set", Document("messageId", messageId)
-                ))
+        with(settings) {
+            val doc = find(exists("messageId", true)).first()
+            if (doc == null)
+                insertOne(Document("messageId", messageId))
+            else
+                updateOne(exists("messageId", true),
+                        Document(
+                                "\$set", Document("messageId", messageId)
+                        ))
+        }
     }
 
     override fun getAllowedChatsSet(): Set<Long> {
-        val allowedChats: MutableSet<Long> = HashSet()
+        val allowedChats = HashSet<Long>()
         for (doc in chats.find()) {
             allowedChats.add(doc.getLong("chatId"))
         }
@@ -289,7 +295,7 @@ class MongoDBService : DBService {
     }
 
     override fun getAllowedChats(): Map<Long, String> {
-        val chats: MutableMap<Long, String> = HashMap()
+        val chats = HashMap<Long, String>()
         for (doc in this.chats.find()) {
             chats[doc.getLong("chatId")] = doc.getString("title")
         }
@@ -298,7 +304,8 @@ class MongoDBService : DBService {
 
     override fun cleanup() {
         for (chat in chatMembersDB.listCollectionNames()) {
-            if (chats.find(eq("chatId", chat.toLong())).first() == null) getChatMembersCollection(chat.toLong()).drop()
+            if (chats.find(eq("chatId", chat.toLong())).first() == null)
+                getChatMembersCollection(chat.toLong()).drop()
         }
     }
 
@@ -318,7 +325,13 @@ class MongoDBService : DBService {
 
     override fun setPair(chatId: Long, pair: String) {
         var history = getPairsHistory(chatId)
-        history = if (history == null) pair else pair + "\n" + java.lang.String(history).lines().limit(9).collect(Collectors.joining("\n"))
+        history = if (history == null) pair
+        else pair + "\n" +
+                java.lang.String(history)
+                        .lines()
+                        .limit(9)
+                        .collect(Collectors.joining("\n"))
+
         val date = Calendar.getInstance(timeZone).time
         val dateFormat = SimpleDateFormat("yyyyMMdd")
         dateFormat.timeZone = timeZone

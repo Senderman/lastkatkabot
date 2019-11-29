@@ -82,7 +82,7 @@ public class Duel {
                 .setText(duelResult.toString())
                 .setParseMode(ParseMode.HTML)
                 .call(Services.handler());
-        Services.handler().duels.remove(duelId);
+        Services.handler().getDuels().remove(duelId);
     }
 
     public int getMessageId() {
