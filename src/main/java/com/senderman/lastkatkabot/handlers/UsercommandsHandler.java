@@ -219,7 +219,8 @@ public class UsercommandsHandler {
                 .replaceAll("[ ,]*\\w+='?null'?", "")
                 .replaceAll("(\\w*[iI]d=)(-?\\d+)", "$1<code>$2</code>")
                 .replaceAll("([{,])", "$1\n")
-                .replaceAll("(})", "\n$1"));
+                .replaceAll("(})", "\n$1"))
+                .replaceAll("(=)", " $1 ");
     }
 
     public void weather(Message message) {
