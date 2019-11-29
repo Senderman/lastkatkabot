@@ -59,7 +59,7 @@ class CommandListener internal constructor(
 
     @Command(name = "/bnc", desc = "начать игру \"Быки и коровы\". Можно указать /bnc x, где x от 4 до 10 - длина числа")
     fun bnc(message: Message) {
-        if (!handler.bullsAndCowsGames.containsKey(message.chatId))
+        if (message.chatId !in handler.bullsAndCowsGames)
             handler.bullsAndCowsGames[message.chatId] = BullsAndCowsGame(message)
         else handler.sendMessage(message.chatId, "В этом чате игра уже идет!")
     }
@@ -179,7 +179,7 @@ class CommandListener internal constructor(
     @Command(name = "/getrow", desc = "Показать сообщение с рассчетом юзеров")
     fun getrow(message: Message) {
         if (!message.isGroupMessage && !message.isSuperGroupMessage) return
-        if (!handler.userRows.containsKey(message.chatId))
+        if (message.chatId !in handler.userRows)
             handler.sendMessage(message.chatId, "У вас пока еще нет списка!")
         else
             handler.sendMessage(Methods.sendMessage(message.chatId, "Вот!")
