@@ -240,7 +240,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         if (chatId == Services.config().tourgroup) {
             for (user in newMembers) {
                 // restrict any user who isn't in tournament
-                if (!tournamentHandler.membersIds.contains(user.id)) {
+                if (user.id !in tournamentHandler.membersIds) {
                     Methods.Administration.restrictChatMember()
                             .setChatId(Services.config().tourgroup)
                             .setUserId(user.id)
@@ -270,7 +270,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
 
         } else if (newMembers[0].userName == botUsername) {
             // Say hello to new group if chat is allowed
-            if (allowedChats.contains(chatId)) {
+            if (chatId in allowedChats) {
                 sendMessage(chatId, "Этот чат находится в списке разрешенных. Бот готов к работе здесь")
                 return
             }
@@ -312,12 +312,12 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         return out
     }
 
-    fun isFromAdmin(message: Message): Boolean = admins.contains(message.from.id)
+    fun isFromAdmin(message: Message): Boolean = message.from.id in admins
 
-    fun isPremiumUser(message: Message): Boolean = premiumUsers.contains(message.from.id)
+    fun isPremiumUser(message: Message): Boolean = message.from.id in premiumUsers
 
     private fun isInBlacklist(message: Message): Boolean {
-        val result = blacklist.contains(message.from.id)
+        val result = message.from.id in blacklist
         if (result) {
             Methods.deleteMessage(message.chatId, message.messageId).call(this)
         }
