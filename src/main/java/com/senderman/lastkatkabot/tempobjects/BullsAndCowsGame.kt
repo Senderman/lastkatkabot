@@ -50,13 +50,13 @@ class BullsAndCowsGame(message: Message) {
         startTime = System.currentTimeMillis()
         Services.db.saveBncGame(chatId, this)
         gameMessage(chatId, """
-                |Число загадано! 
-                |Отправляйте в чат ваши варианты, они должны состоять только из неповторяющихся чисел! 
-                ||Правила игры - /bnchelp. 
-                |Вкл/выкл режима антируина (когда все цифры известны) - /bncruin 
-                |Просмотр хода игры - /bncinfo 
-                |Остановить игру (голосование) - /bncstop)
-                """.trimMargin())
+                Число загадано! 
+                Отправляйте в чат ваши варианты, они должны состоять только из неповторяющихся чисел! 
+                Правила игры - /bnchelp. 
+                Вкл/выкл режима антируина (когда все цифры известны) - /bncruin 
+                Просмотр хода игры - /bncinfo 
+                Остановить игру (голосование) - /bncstop)
+                """.trimIndent())
     }
 
     fun check(message: Message) {
@@ -102,11 +102,11 @@ class BullsAndCowsGame(message: Message) {
     fun sendGameInfo(message: Message) {
         messagesToDelete.add(message.messageId)
         val info = """
-            |Длина числа: $length
-            |Попыток осталось: $attempts
-            |История: $history
-            |Создатель игры: ${creator.getLink()}
-            |Время игры: ${getSpentTime()}
+            Длина числа: $length
+            Попыток осталось: $attempts
+            История: $history
+            Создатель игры: ${creator.getLink()}
+            Время игры: ${getSpentTime()}
         """.trimIndent()
         gameMessage(chatId, info)
     }
