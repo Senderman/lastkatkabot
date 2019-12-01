@@ -10,8 +10,8 @@ import java.util.*
 class AnitrackerBotHandler internal constructor(private val config: BotConfig) : BotHandler() {
 
     init {
-        Services.setBotConfig(config)
-        Services.setDataBase(MongoDBService())
+        Services.botConfig = config
+        Services.db = MongoDBService()
     }
 
     override fun onUpdate(update: Update): BotApiMethod<*>? {
@@ -42,13 +42,13 @@ class AnitrackerBotHandler internal constructor(private val config: BotConfig) :
             "/del" -> {
                 return try {
                     val id = text.split(" ")[1].toInt()
-                    if (!Services.db().idExists(id, userId)) {
+                    if (!Services.db.idExists(id, userId)) {
                         sendMessage(chatId, "Id не существует!")
                     } else {
-                        Services.db().deleteAnime(id, userId)
+                        Services.db.deleteAnime(id, userId)
                         sendMessage(chatId, "Аниме удалено из списка!")
-                        if (Services.db().totalAnimes(userId) == 0) {
-                            Services.db().dropUser(userId)
+                        if (Services.db.totalAnimes(userId) == 0) {
+                            Services.db.dropUser(userId)
                         }
                     }
                     null
@@ -60,12 +60,12 @@ class AnitrackerBotHandler internal constructor(private val config: BotConfig) :
             "/dl" -> {
                 try {
                     val id = text.split(" ")[1].toInt()
-                    if (!Services.db().idExists(id, userId)) {
+                    if (!Services.db.idExists(id, userId)) {
                         sendMessage(chatId, "Id не существует!")
                         return null
                     }
 
-                    val url = Services.db().getAnimeUrl(id, userId)
+                    val url = Services.db.getAnimeUrl(id, userId)
                     val parser = getAnimeParser(url)!!
                     val (title) = parser.parse(url)
                     val downloader = getAnimeDownloader(url)
@@ -123,19 +123,19 @@ class AnitrackerBotHandler internal constructor(private val config: BotConfig) :
 
         sendMessage(chatId, parseAnimeData(anime, true))
 
-        if (Services.db().urlExists(text, userId)) {
+        if (Services.db.urlExists(text, userId)) {
             sendMessage(chatId, "Это аниме уже есть в вашем списке!")
             return null
         }
 
-        var animeId = Services.db().totalAnimes(userId)
+        var animeId = Services.db.totalAnimes(userId)
         if (animeId == 20) {
             sendMessage(chatId, "У вас и так много аниме!")
             return null
         }
 
-        while (Services.db().idExists(animeId, userId)) animeId++
-        Services.db().saveAnime(animeId, userId, text)
+        while (Services.db.idExists(animeId, userId)) animeId++
+        Services.db.saveAnime(animeId, userId, text)
         sendMessage(chatId, "Аниме добавлено в список!")
         return null
     }
@@ -176,7 +176,7 @@ class AnitrackerBotHandler internal constructor(private val config: BotConfig) :
 
     private fun listAnimes(userId: Int): String {
         val text = StringBuilder("<b>Ваше аниме:</b>\n\n")
-        val animes = Services.db().getAllAnimes(userId)
+        val animes = Services.db.getAllAnimes(userId)
         for ((animeId, url) in animes) {
             val parser = getAnimeParser(url) ?: break
             try {
@@ -197,10 +197,10 @@ class AnitrackerBotHandler internal constructor(private val config: BotConfig) :
     }
 
     override fun getBotUsername(): String {
-        return config.username!!.split(" ")[config.position]
+        return config.username.split(" ")[config.position]
     }
 
     override fun getBotToken(): String {
-        return config.token!!.split(" ")[config.position]
+        return config.token.split(" ")[config.position]
     }
 }

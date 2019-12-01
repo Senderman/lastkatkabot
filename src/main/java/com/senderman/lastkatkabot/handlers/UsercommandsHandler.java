@@ -130,13 +130,13 @@ public class UsercommandsHandler {
 
         var chatId = message.getChatId();
         var userId = message.getFrom().getId();
-        var loverId = Services.db().getLover(userId);
+        var loverId = Services.db.getLover(userId);
         if (loverId != 0) {
             handler.sendMessage(chatId, "Всмысле? Вы что, хотите изменить своей второй половинке?!");
             return;
         }
 
-        if (Services.db().getLover(message.getReplyToMessage().getFrom().getId()) != 0) {
+        if (Services.db.getLover(message.getReplyToMessage().getFrom().getId()) != 0) {
             handler.sendMessage(chatId, "У этого пользователя уже есть своя вторая половинка!");
             return;
         }
@@ -163,13 +163,13 @@ public class UsercommandsHandler {
     public void divorce(Message message) {
         var chatId = message.getChatId();
         var userId = message.getFrom().getId();
-        var loverId = Services.db().getLover(userId);
+        var loverId = Services.db.getLover(userId);
         if (loverId == 0) {
             handler.sendMessage(chatId, "У вас и так никого нет!");
             return;
         }
 
-        Services.db().divorce(userId);
+        Services.db.divorce(userId);
         handler.sendMessage(chatId, "Вы расстались со своей половинкой! А ведь так все хорошо начиналось...");
         var user = new TgUser(Methods.getChatMember(userId, userId).call(handler).getUser());
         handler.sendMessage(loverId, "Ваша половинка (" + user.getLink() + ") покинула вас... Теперь вы одни...");
@@ -183,7 +183,7 @@ public class UsercommandsHandler {
             return;
         }
         var user = new TgUser(player);
-        var stats = Services.db().getStats(player.getId());
+        var stats = Services.db.getStats(player.getId());
         var wins = stats.get("wins");
         var total = stats.get("total");
         var winrate = (total == 0) ? 0 : 100 * wins / total;
@@ -227,7 +227,7 @@ public class UsercommandsHandler {
         var chatId = message.getChatId();
         String city = message.getText().strip().replaceAll("/weather[_\\d\\w@]*\\s*", "");
         if (city.isBlank()) { // city is not specified
-            city = Services.db().getUserCity(message.getFrom().getId());
+            city = Services.db.getUserCity(message.getFrom().getId());
             if (city == null) {
                 handler.sendMessage(chatId, "Вы не указали город!");
                 return;
@@ -247,7 +247,7 @@ public class UsercommandsHandler {
             }
         }
 
-        Services.db().setUserCity(message.getFrom().getId(), city);
+        Services.db.setUserCity(message.getFrom().getId(), city);
         Document weatherPage;
         try {
             weatherPage = Jsoup.parse(new URL("https://yandex.ru" + city), 10000);
@@ -278,7 +278,7 @@ public class UsercommandsHandler {
                 user.getLink() + "\n\n"
                 +
                 message.getText().replace("/feedback ", "");
-        handler.sendMessage(Services.config().getMainAdmin(), bugreport);
+        handler.sendMessage(Services.botConfig.getMainAdmin(), bugreport);
         handler.sendMessage(Methods.sendMessage()
                 .setChatId(message.getChatId())
                 .setText("✅ Отправлено разрабу бота!")
@@ -288,7 +288,7 @@ public class UsercommandsHandler {
     public void bncTop(Message message) {
         var chatId = message.getChatId();
 
-        Map<Integer, Integer> top = Services.db().getTop();
+        Map<Integer, Integer> top = Services.db.getTop();
         var text = new StringBuilder("<b>Топ-10 задротов в bnc:</b>\n\n");
         int counter = 1;
         for (var playerId : top.keySet()) {
@@ -308,7 +308,7 @@ public class UsercommandsHandler {
     public void bncHelp(Message message) {
         var sendPhoto = Methods.sendPhoto()
                 .setChatId(message.getChatId())
-                .setFile(Objects.requireNonNull(Services.config().getBncphoto()));
+                .setFile(Objects.requireNonNull(Services.botConfig.getBncphoto()));
         if (message.isReply())
             sendPhoto.setReplyToMessageId(message.getReplyToMessage().getMessageId());
         else
@@ -328,7 +328,7 @@ public class UsercommandsHandler {
                 continue;
 
             var helpLine = annotation.name() + " - " + annotation.desc() + "\n";
-            if (noobId.equals(Services.config().getMainAdmin()) && annotation.forMainAdmin())
+            if (noobId.equals(Services.botConfig.getMainAdmin()) && annotation.forMainAdmin())
                 mainAdminHelp.append(helpLine);
             else if (handler.isFromAdmin(message) && annotation.forAllAdmins())
                 adminHelp.append(helpLine);
@@ -339,7 +339,7 @@ public class UsercommandsHandler {
 
         if (handler.isFromAdmin(message))
             help.append("\n").append(adminHelp);
-        if (noobId.equals(Services.config().getMainAdmin()))
+        if (noobId.equals(Services.botConfig.getMainAdmin()))
             help.append("\n").append(mainAdminHelp);
 
         // attempt to send help to PM
@@ -363,16 +363,16 @@ public class UsercommandsHandler {
         var chatId = message.getChatId();
 
         // check for existing pair
-        if (Services.db().pairExistsToday(chatId)) {
-            var pair = Services.db().getPairOfTheDay(chatId);
+        if (Services.db.pairExistsToday(chatId)) {
+            var pair = Services.db.getPairOfTheDay(chatId);
             pair = "Пара дня: " + pair;
             handler.sendMessage(chatId, pair);
             return;
         }
 
         // remove users without activity for 2 weeks and get list of actual users
-        Services.db().removeOldUsers(chatId, message.getDate() - 1209600);
-        var userIds = Services.db().getChatMemebersIds(chatId);
+        Services.db.removeOldUsers(chatId, message.getDate() - 1209600);
+        var userIds = Services.db.getChatMemebersIds(chatId);
 
         // generate 2 different random users
         TgUser user1, user2;
@@ -386,8 +386,7 @@ public class UsercommandsHandler {
         }
 
         // get a random text and set up a pair
-        var loveArray = Services.config().getLoveStrings();
-        assert loveArray != null;
+        var loveArray = Services.botConfig.getLoveStrings();
         var loveStrings = loveArray[ThreadLocalRandom.current().nextInt(loveArray.length)].split("\n");
 
         try {
@@ -399,12 +398,12 @@ public class UsercommandsHandler {
             BotLogger.error("PAIR", "Ошибка таймера");
         }
         var pair = user1.getName() + " ❤ " + user2.getName();
-        Services.db().setPair(chatId, pair);
+        Services.db.setPair(chatId, pair);
         handler.sendMessage(chatId, String.format(loveStrings[loveStrings.length - 1], user1.getLink(), user2.getLink()));
     }
 
     private TgUser getUserForPair(long chatId, List<Integer> userIds, TgUser first) throws Exception {
-        var loverId = Services.db().getLover(first.getId());
+        var loverId = Services.db.getLover(first.getId());
         if (userIds.contains(loverId)) {
             return new TgUser(Methods.getChatMember(chatId, loverId).call(handler).getUser());
         }
@@ -422,7 +421,7 @@ public class UsercommandsHandler {
             member = Methods.getChatMember(chatId, userId).call(handler);
             // delete not-found-user
             if (member == null) {
-                Services.db().removeUserFromChatDB(userId, chatId);
+                Services.db.removeUserFromChatDB(userId, chatId);
                 userIds.remove(userId);
                 if (userIds.size() < 3) {
                     throw new Exception("Not enough users");
@@ -438,7 +437,7 @@ public class UsercommandsHandler {
             return;
 
         var chatId = message.getChatId();
-        var history = Services.db().getPairsHistory(chatId);
+        var history = Services.db.getPairsHistory(chatId);
         if (history == null)
             handler.sendMessage(chatId, "В этом чате еще никогда не запускали команду /pair!");
         else
@@ -446,7 +445,7 @@ public class UsercommandsHandler {
     }
 
     private boolean isFromWwBot(Message message) {
-        return Objects.requireNonNull(Services.config().getWwBots()).contains(message.getReplyToMessage().getFrom().getUserName()) &&
+        return Objects.requireNonNull(Services.botConfig.getWwBots()).contains(message.getReplyToMessage().getFrom().getUserName()) &&
                 message.getReplyToMessage().getText().startsWith("#players");
     }
 }

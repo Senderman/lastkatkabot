@@ -68,7 +68,7 @@ public class TournamentHandler {
                 .append("\n\n/go - подтвердить, /ct - отменить");
 
         handler.sendMessage(Methods.sendMessage()
-                .setChatId(Services.config().getLastvegan())
+                .setChatId(Services.botConfig.getLastvegan())
                 .setText(checkText.toString())
                 .setReplyToMessageId(message.getMessageId()));
     }
@@ -84,26 +84,26 @@ public class TournamentHandler {
         );
         var row2 = List.of(new InlineKeyboardButton()
                 .setText("Группа турнира")
-                .setUrl("https://t.me/" + Objects.requireNonNull(Services.config().getTourgroupname()).replace("@", "")));
+                .setUrl("https://t.me/" + Objects.requireNonNull(Services.botConfig.getTourgroupname()).replace("@", "")));
         var row3 = List.of(new InlineKeyboardButton()
                 .setText("Канал турнира")
-                .setUrl("https://t.me/" + Objects.requireNonNull(Services.config().getTourchannel()).replace("@", "")));
+                .setUrl("https://t.me/" + Objects.requireNonNull(Services.botConfig.getTourchannel()).replace("@", "")));
         markup.setKeyboard(List.of(row1, row2, row3));
 
         var toVegans = Methods.sendMessage()
-                .setChatId(Services.config().getLastvegan())
+                .setChatId(Services.botConfig.getLastvegan())
                 .setText(String.format("\uD83D\uDCE3 <b>Турнир активирован!</b>\n\n" +
                         "%1$s, нажмите на кнопку ниже для снятия ограничений в группе турнира", getMembersAsString()))
                 .setReplyMarkup(markup);
 
         Methods.Administration.pinChatMessage()
-                .setChatId(Services.config().getLastvegan())
+                .setChatId(Services.botConfig.getLastvegan())
                 .setMessageId(handler.sendMessage(toVegans).getMessageId())
                 .setNotificationEnabled(false)
                 .call(handler);
 
         var toChannel = Methods.sendMessage()
-                .setChatId(Services.config().getTourchannel());
+                .setChatId(Services.botConfig.getTourchannel());
 
         if (isTeamMode)
             toChannel.setText("<b>" + roundName + "</b>\n\n"
@@ -122,7 +122,7 @@ public class TournamentHandler {
         members.clear();
         if (isTeamMode)
             teams.clear();
-        handler.sendMessage(Services.config().getLastvegan(), "\uD83D\uDEAB Действие отменено");
+        handler.sendMessage(Services.botConfig.getLastvegan(), "\uD83D\uDEAB Действие отменено");
     }
 
     private String getScore(String[] params) {
@@ -141,17 +141,17 @@ public class TournamentHandler {
     private void restrictMembers() {
         isEnabled = false;
         for (var memberId : membersIds) {
-            Methods.Administration.restrictChatMember(Services.config().getTourgroup(), memberId).call(handler);
+            Methods.Administration.restrictChatMember(Services.botConfig.getTourgroup(), memberId).call(handler);
         }
         members.clear();
         membersIds.clear();
         if (isTeamMode)
             teams.clear();
-        Methods.Administration.unpinChatMessage(Services.config().getLastvegan()).call(handler);
-        var tournamentMessageId = Services.db().getTournamentMessageId();
+        Methods.Administration.unpinChatMessage(Services.botConfig.getLastvegan()).call(handler);
+        var tournamentMessageId = Services.db.getTournamentMessageId();
         if (tournamentMessageId != 0) {
             Methods.Administration.pinChatMessage()
-                    .setChatId(Services.config().getLastvegan())
+                    .setChatId(Services.botConfig.getLastvegan())
                     .setMessageId(tournamentMessageId)
                     .setNotificationEnabled(false)
                     .call(handler);
@@ -165,7 +165,7 @@ public class TournamentHandler {
             return;
         }
         var score = getScore(params);
-        handler.sendMessage(Methods.sendMessage(Objects.requireNonNull(Services.config().getTourchannel()), score));
+        handler.sendMessage(Methods.sendMessage(Objects.requireNonNull(Services.botConfig.getTourchannel()), score));
     }
 
     public void win(Message message) {
@@ -188,24 +188,24 @@ public class TournamentHandler {
                     " выходит в " + params[5].replace("_", " ");
 
         handler.sendMessage(Methods.sendMessage()
-                .setChatId(Objects.requireNonNull(Services.config().getTourchannel()))
+                .setChatId(Objects.requireNonNull(Services.botConfig.getTourchannel()))
                 .setText(score + "\n\n" + params[1].replace("_", " ") + "<b>" + goingTo + "!</b>"));
 
         handler.sendMessage(Methods.sendMessage()
-                .setChatId(Services.config().getLastvegan())
+                .setChatId(Services.botConfig.getLastvegan())
                 .setText(String.format("\uD83D\uDCE3 <b>Раунд завершен. Победитель:</b> %1$s\n" +
-                        "Болельщики, посетите %2$s, чтобы узнать подробности", params[1], Services.config().getTourchannel())));
+                        "Болельщики, посетите %2$s, чтобы узнать подробности", params[1], Services.botConfig.getTourchannel())));
     }
 
     public void resetTournament() {
         restrictMembers();
-        handler.sendMessage(Services.config().getLastvegan(), "\uD83D\uDEAB <b>Раунд отменен из-за непредвиденных обстоятельств!</b>");
+        handler.sendMessage(Services.botConfig.getLastvegan(), "\uD83D\uDEAB <b>Раунд отменен из-за непредвиденных обстоятельств!</b>");
     }
 
     public void tourmessage(Message message) {
-        if (!message.getChatId().equals(Services.config().getLastvegan()) || !message.isReply())
+        if (!message.getChatId().equals(Services.botConfig.getLastvegan()) || !message.isReply())
             return;
-        Services.db().setTournamentMessage(message.getReplyToMessage().getMessageId());
+        Services.db.setTournamentMessage(message.getReplyToMessage().getMessageId());
         handler.sendMessage(message.getChatId(), "✅ Главное сообщение турнира установлено!");
     }
 

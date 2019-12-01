@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 class BotConfig {
     @JsonProperty(required = true)
-    var token: String? = null
+    lateinit var token: String
 
     @JsonProperty(required = true)
-    var username: String? = null
+    lateinit var username: String
 
     @JsonProperty
     var position = 0
@@ -22,27 +22,27 @@ class BotConfig {
     var tourgroup: Long = 0
 
     @JsonProperty
-    var tourchannel: String? = null
+    lateinit var tourchannel: String
 
     @JsonProperty
-    var tourgroupname: String? = null
+    lateinit var tourgroupname: String
 
     @JsonProperty
-    var wwBots: Set<String>? = null
+    lateinit var wwBots: Set<String>
 
     @JsonProperty
-    var bncphoto: String? = null
+    lateinit var bncphoto: String
 
     @JsonProperty
-    var leavesticker: String? = null
+    lateinit var leavesticker: String
 
     @JsonProperty
-    var higif: String? = null
+    lateinit var higif: String
 
     @JsonProperty
-    var setupHelp: String? = null
+    lateinit var setupHelp: String
 
     @JsonProperty
-    var loveStrings: Array<String>? = null
+    lateinit var loveStrings: Array<String>
 
 }

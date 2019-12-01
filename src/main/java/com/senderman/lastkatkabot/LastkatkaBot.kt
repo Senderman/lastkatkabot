@@ -10,7 +10,7 @@ class LastkatkaBot : BotModule {
         val configLoader = YamlConfigLoaderService<BotConfig>()
         val configFile = configLoader.configFile("botConfigs/lastkatkabot", config.profile)
         val botConfig = configLoader.load(configFile, BotConfig::class.java)
-        Services.setBotConfig(botConfig)
+        Services.botConfig = botConfig
         return LastkatkaBotHandler()
     }
 

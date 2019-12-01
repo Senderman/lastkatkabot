@@ -55,7 +55,7 @@ public class BullsAndCowsGame {
         gameMessage(chatId, "Генерируем число...");
         answer = generateRandom();
         startTime = System.currentTimeMillis();
-        Services.db().saveBncGame(chatId, this);
+        Services.db.saveBncGame(chatId, this);
         gameMessage(chatId, "Число загадано!\n" +
                 "Отправляйте в чат ваши варианты, они должны состоять только из неповторяющихся чисел!\n" +
                 "Правила игры - /bnchelp.\n" +
@@ -77,8 +77,8 @@ public class BullsAndCowsGame {
                             message.getFrom().getFirstName(), (int) (length * 2.5 - (attempts - 1)), answer));
             history.append("\n")
                     .append(String.format("Вот столько вы потратили времени: %1$s", getSpentTime()));
-            Services.handler().sendMessage(chatId, history.toString());
-            Services.db().incBNCWins(message.getFrom().getId(), length);
+            Services.handler.sendMessage(chatId, history.toString());
+            Services.db.incBNCWins(message.getFrom().getId(), length);
             endGame();
             return;
 
@@ -127,7 +127,7 @@ public class BullsAndCowsGame {
                     String.format("%1$s: %2$dБ %3$dК, попыток: %4$d\n",
                             number, results[0], results[1], attempts));
             checkedNumbers.add(number);
-            Services.db().saveBncGame(chatId, this);
+            Services.db.saveBncGame(chatId, this);
         } else { // lose
             gameOver();
         }
@@ -171,12 +171,12 @@ public class BullsAndCowsGame {
                     .setText("Вы уже голосовали!")
                     .setShowAlert(true)
                     .setCallbackQueryId(query.getId())
-                    .call(Services.handler());
+                    .call(Services.handler);
             return;
         }
 
         voted++;
-        var user = Methods.getChatMember(chatId, query.getFrom().getId()).call(Services.handler());
+        var user = Methods.getChatMember(chatId, query.getFrom().getId()).call(Services.handler);
         if (voted == 5 || user.getUser().getId().equals(creator.getId()) || user.getStatus().equals("creator") || user.getStatus().equals("administrator")) {
             gameOver();
         }
@@ -190,7 +190,7 @@ public class BullsAndCowsGame {
                 .setMessageId(query.getMessage().getMessageId())
                 .setReplyMarkup(getEndgameMarkup())
                 .setParseMode(ParseMode.HTML)
-                .call(Services.handler());
+                .call(Services.handler);
     }
 
     private void gameMessage(long chatId, String text) {
@@ -198,7 +198,7 @@ public class BullsAndCowsGame {
     }
 
     private void gameMessage(SendMessageMethod sm) {
-        messagesToDelete.add(Services.handler().sendMessage(sm).getMessageId());
+        messagesToDelete.add(Services.handler.sendMessage(sm).getMessageId());
     }
 
     private static InlineKeyboardMarkup getEndgameMarkup() {
@@ -213,10 +213,10 @@ public class BullsAndCowsGame {
 
     private void endGame() {
         for (int messageId : messagesToDelete) {
-            Methods.deleteMessage(chatId, messageId).call(Services.handler());
+            Methods.deleteMessage(chatId, messageId).call(Services.handler);
         }
-        Services.db().deleteBncGame(chatId);
-        Services.handler().getBullsAndCowsGames().remove(chatId);
+        Services.db.deleteBncGame(chatId);
+        Services.handler.getBullsAndCowsGames().remove(chatId);
     }
 
     private void gameOver() {
@@ -224,7 +224,7 @@ public class BullsAndCowsGame {
                 String.format("Вы проиграли! Ответ: %1$s\n\n", answer));
         history.append("\n")
                 .append(String.format("Вот столько вы потратили времени: %1$s", getSpentTime()));
-        Services.handler().sendMessage(chatId, history.toString());
+        Services.handler.sendMessage(chatId, history.toString());
         endGame();
     }
 

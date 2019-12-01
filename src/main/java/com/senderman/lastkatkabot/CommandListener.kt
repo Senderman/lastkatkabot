@@ -173,7 +173,7 @@ internal class CommandListener constructor(
             handler.sendMessage(message.chatId, "Неверный формат!")
             return
         }
-        Methods.deleteMessage(message.chatId, message.messageId).call(Services.handler())
+        Methods.deleteMessage(message.chatId, message.messageId).call(Services.handler)
     }
 
     @Command(name = "/getrow", desc = "Показать сообщение с рассчетом юзеров")

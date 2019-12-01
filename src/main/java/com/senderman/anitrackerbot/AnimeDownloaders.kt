@@ -33,7 +33,7 @@ internal object AnimeDownloaders {
         if (anidubCookies != null) {
             conn.cookies(anidubCookies)
         } else {
-            val account = Services.config().anidata!!.split(":")
+            val account = Services.botConfig.anidata.split(":")
             val username = account[0]
             val password = account[1]
             conn.data("login_name", username, "login_password", password, "login", "submit")
