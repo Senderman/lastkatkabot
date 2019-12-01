@@ -147,7 +147,7 @@ public class UsercommandsHandler {
             text = "Пользователь " + user.getLink() + " предлагает вам руку, сердце и шавуху. Вы согласны?";
 
         } else {
-            if (!message.isUserMessage())
+            if (message.isUserMessage())
                 return;
 
             try {
