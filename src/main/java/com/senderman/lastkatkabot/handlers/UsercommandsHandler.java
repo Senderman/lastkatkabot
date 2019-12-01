@@ -125,15 +125,15 @@ public class UsercommandsHandler {
     }
 
     public void marryme(Message message) {
-        int marryById = message.getText().length() - message.getText().replace(" ", "").length();
-        if (message.getFrom().getId().equals(message.getReplyToMessage().getFrom().getId()) || message.getReplyToMessage().getFrom().getBot() || marryById < 1 || message.isUserMessage())
+        boolean marryById = message.getText().length() - message.getText().replace(" ", "").length() == 1
+        if (message.getFrom().getId().equals(message.getReplyToMessage().getFrom().getId()) || message.getReplyToMessage().getFrom().getBot() || marryById || message.isUserMessage())
             return;
         
         var chatId = message.getChatId();
         var userId = message.getFrom().getId();
         var text = "";
         var toLoverId = 0;
-        if (marryById > 0){
+        if (marryById){
             try {toLoverId = Integer.parseInt(message.getText().split(" ")[1]);} 
             catch (NumberFormatException e){
                 handler.sendMessage(chatId, "Неверный формат!");
@@ -174,7 +174,7 @@ public class UsercommandsHandler {
                 .setChatId(chatId)
                 .setText(text)
                 .setReplyMarkup(markup);
-        if(marryById < 1){
+        if(!marryById){
             sm.setReplyToMessageId(message.getReplyToMessage().getMessageId());
         }
         handler.sendMessage(sm);
