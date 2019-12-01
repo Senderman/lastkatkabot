@@ -131,7 +131,7 @@ public class UsercommandsHandler {
         
         var chatId = message.getChatId();
         var userId = message.getFrom().getId();
-        var text = ""
+        var text = "";
         if (countBackspaces > 0){
             try {int toLoverId = Integer.parseInt(message.getText().split(" ")[1]);} 
             catch (NumberFormatException e){
