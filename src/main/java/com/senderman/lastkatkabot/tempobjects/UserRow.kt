@@ -34,9 +34,9 @@ class UserRow(message: Message) {
         if (checkedUsers.contains(user.id)) return
         checkedUsers.add(user.id)
         messageText += if (checkedUsers.size % divider == 0)
-            checkedUsers.size.toString() + ". ${user.link} - $name!\n"
+            checkedUsers.size.toString() + ". ${user.getLink()} - $name!\n"
         else
-            checkedUsers.size.toString() + ". ${user.link} - не $name\n"
+            checkedUsers.size.toString() + ". ${user.getLink()} - не $name\n"
         updateMessage()
     }
 

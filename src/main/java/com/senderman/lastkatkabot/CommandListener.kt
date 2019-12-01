@@ -10,7 +10,7 @@ import com.senderman.lastkatkabot.tempobjects.Duel
 import com.senderman.lastkatkabot.tempobjects.UserRow
 import org.telegram.telegrambots.meta.api.objects.Message
 
-class CommandListener internal constructor(
+internal class CommandListener constructor(
         private val handler: LastkatkaBotHandler,
         private val adminCommands: AdminHandler,
         private val tournamentHandler: TournamentHandler
