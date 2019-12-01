@@ -7,6 +7,8 @@ import com.senderman.lastkatkabot.LastkatkaBot;
 import com.senderman.lastkatkabot.LastkatkaBotHandler;
 import com.senderman.lastkatkabot.Services;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.Set;
 
@@ -201,10 +203,24 @@ public class CallbackHandler {
         Methods.deleteMessage(query.getMessage().getChatId(), query.getMessage().getMessageId()).call(handler);
     }
 
+    private boolean isFor(Message message, User user) {
+        if (!message.hasEntities())
+            return false;
+
+        for (var entity : message.getEntities()) {
+            if (!entity.getType().equals("text_mention"))
+                continue;
+
+            if (entity.getUser().getId().equals(user.getId()))
+                return true;
+        }
+        return false;
+    }
+
     public void accept_marriage(CallbackQuery query) {
         var userId = query.getFrom().getId();
         var message = query.getMessage();
-        if (!message.getReplyToMessage().getFrom().getId().equals(userId)) {
+        if (!isFor(message, query.getFrom()) || !message.isReply() || !message.getReplyToMessage().getFrom().getId().equals(userId)) {
             Methods.answerCallbackQuery()
                     .setShowAlert(true)
                     .setText("Куда лезете? Это не вам!")
@@ -244,7 +260,7 @@ public class CallbackHandler {
     public void deny_marriage(CallbackQuery query) {
         var userId = query.getFrom().getId();
         var message = query.getMessage();
-        if (!message.getReplyToMessage().getFrom().getId().equals(userId)) {
+        if (!isFor(message, query.getFrom()) || !message.isReply() || !message.getReplyToMessage().getFrom().getId().equals(userId)) {
             Methods.answerCallbackQuery()
                     .setShowAlert(true)
                     .setText("Куда лезете? Это не вам!")
