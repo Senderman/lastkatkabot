@@ -125,15 +125,15 @@ public class UsercommandsHandler {
     }
 
     public void marryme(Message message) {
-        int countBackspaces = message.getText().length() - message.getText().replace(" ", "").length();
-        if (!message.isReply() || message.getFrom().getId().equals(message.getReplyToMessage().getFrom().getId()) || message.getReplyToMessage().getFrom().getBot() || countBackspaces < 1 || message.isUserMessage())
+        int marryById = message.getText().length() - message.getText().replace(" ", "").length();
+        if (!message.isReply() || message.getFrom().getId().equals(message.getReplyToMessage().getFrom().getId()) || message.getReplyToMessage().getFrom().getBot() || marryById < 1 || message.isUserMessage())
             return;
         
         var chatId = message.getChatId();
         var userId = message.getFrom().getId();
         var text = "";
         var toLoverId = 0;
-        if (countBackspaces > 0){
+        if (marryById > 0){
             try {toLoverId = Integer.parseInt(message.getText().split(" ")[1]);} 
             catch (NumberFormatException e){
                 handler.sendMessage(chatId, "Неверный формат!");
