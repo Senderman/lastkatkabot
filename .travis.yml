@@ -7,7 +7,7 @@ cache:
   directories:
   - "$HOME/.m2"
   - "$HOME/.gradle"
-script: "./gradlew shadowJar"
+script: "./gradlew test"
 deploy:
   provider: heroku
   api_key:
