@@ -143,7 +143,7 @@ public class UsercommandsHandler {
             var toUser = new TgUser(Methods.getChatMember(chatId, toLoverId).call(handler).getUser());
             text = toUser.getLink() + ", пользователь " + user.getLink() + " предлагает вам руку, сердце и шавуху. Вы согласны?";
         }
-        else if (message.getReply()){
+        else if (message.isReply()){
             var loverId = Services.db().getLover(userId);
             toLoverId = message.getReplyToMessage().getFrom().getId();
             var user = new TgUser(Methods.getChatMember(chatId, userId).call(handler).getUser());
@@ -173,8 +173,10 @@ public class UsercommandsHandler {
         var sm = Methods.sendMessage()
                 .setChatId(chatId)
                 .setText(text)
-                .setReplyToMessageId(message.getReplyToMessage().getMessageId())
                 .setReplyMarkup(markup);
+        if(marryById < 1){
+            sm.setReplyToMessageId(message.getReplyToMessage().getMessageId());
+        }
         handler.sendMessage(sm);
     }
 
