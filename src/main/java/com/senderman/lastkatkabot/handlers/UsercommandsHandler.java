@@ -125,21 +125,44 @@ public class UsercommandsHandler {
     }
 
     public void marryme(Message message) {
-        if (!message.isReply() || message.getFrom().getId().equals(message.getReplyToMessage().getFrom().getId()) || message.getReplyToMessage().getFrom().getBot())
+        boolean marryById = message.getText().length() - message.getText().replace(" ", "").length() == 1;
+        if (message.getFrom().getId().equals(message.getReplyToMessage().getFrom().getId()) || message.getReplyToMessage().getFrom().getBot() || message.isUserMessage())
             return;
-
+        
         var chatId = message.getChatId();
         var userId = message.getFrom().getId();
+        var text = "";
+        var toLoverId = 0;
+        if (marryById){
+            try {toLoverId = Integer.parseInt(message.getText().split(" ")[1]);} 
+            catch (NumberFormatException e){
+                handler.sendMessage(chatId, "Неверный формат!");
+                return;
+            }
+            var user = new TgUser(Methods.getChatMember(chatId, userId).call(handler).getUser());
+            var toUser = new TgUser(Methods.getChatMember(chatId, toLoverId).call(handler).getUser());
+            text = toUser.getLink() + ", пользователь " + user.getLink() + " предлагает вам руку, сердце и шавуху. Вы согласны?";
+        }
+        else {
+            if (!message.isReply()){
+                return;
+            }
+            var loverId = Services.db().getLover(userId);
+            toLoverId = message.getReplyToMessage().getFrom().getId();
+            var user = new TgUser(Methods.getChatMember(chatId, userId).call(handler).getUser());
+            text = "Пользователь " + user.getLink() + " предлагает вам руку, сердце и шавуху. Вы согласны?";
+       
+        }   
+        if (Services.db().getLover(toLoverId) != 0){
+            handler.sendMessage(chatId, "У этого пользователя уже есть своя вторая половинка!");
+            return;
+        }
         var loverId = Services.db().getLover(userId);
         if (loverId != 0) {
             handler.sendMessage(chatId, "Всмысле? Вы что, хотите изменить своей второй половинке?!");
             return;
         }
-
-        if (Services.db().getLover(message.getReplyToMessage().getFrom().getId()) != 0) {
-            handler.sendMessage(chatId, "У этого пользователя уже есть своя вторая половинка!");
-            return;
-        }
+        
 
         var markup = new InlineKeyboardMarkup();
         markup.setKeyboard(List.of(List.of(
@@ -150,13 +173,13 @@ public class UsercommandsHandler {
                         .setText("Отказаться")
                         .setCallbackData(LastkatkaBot.CALLBACK_DENY_MARRIAGE)
         )));
-        var user = new TgUser(Methods.getChatMember(chatId, userId).call(handler).getUser());
-        var text = "Пользователь " + user.getLink() + " предлагает вам руку, сердце и шавуху. Вы согласны?";
         var sm = Methods.sendMessage()
                 .setChatId(chatId)
                 .setText(text)
-                .setReplyToMessageId(message.getReplyToMessage().getMessageId())
                 .setReplyMarkup(markup);
+        if(!marryById){
+            sm.setReplyToMessageId(message.getReplyToMessage().getMessageId());
+        }
         handler.sendMessage(sm);
     }
 
