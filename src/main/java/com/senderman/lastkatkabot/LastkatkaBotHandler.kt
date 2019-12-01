@@ -96,13 +96,13 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         val chatId = message.chatId
 
         // migrate cats if needed
-        if (message.migrateFromChatId != null && allowedChats.contains(message.migrateFromChatId)) {
+        if (message.migrateFromChatId != null && message.migrateFromChatId in allowedChats) {
             migrateChat(message.migrateFromChatId, chatId)
             sendMessage(message.migrateFromChatId, "Id чата обновлен!")
         }
 
         // do not respond in not allowed chats
-        if (!allowedChats.contains(chatId) && !message.isUserMessage)
+        if (chatId !in allowedChats && !message.isUserMessage)
             return null
 
         if (message.leftChatMember != null && message.leftChatMember.userName != botUsername && message.chatId != Services.botConfig.tourgroup) {
@@ -116,7 +116,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
 
         // update current userrow in chat if exists
         if (!message.isUserMessage) {
-            userRows[chatId]?.addUser(message)
+            userRows[chatId]?.addUser(message.from)
         }
 
         if (!message.hasText()) return null
@@ -140,11 +140,11 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         val command = text.split(Regex("\\s+"), 2)[0]
                 .toLowerCase(Locale.ENGLISH)
                 .replace("@$botUsername", "")
-        if (command.contains("@")) return null
+        if ("@" in command) return null
 
         // find method by name and invoke it
         try {
-            if (!commands.contains(command)) return null
+            if (command !in commands) return null
             val method = commands.getValue(command)
             val annotation = method.getAnnotation(Command::class.java)
             if (message.from.id != Services.botConfig.mainAdmin && annotation.forMainAdmin) {
@@ -276,15 +276,15 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
             }
 
             sendMessage(chatId, "Чата нет в списке разрешенных. Дождитесь решения разработчика")
-
-            val row1 = listOf(InlineKeyboardButton()
-                    .setText("Добавить")
-                    .setCallbackData(LastkatkaBot.CALLBACK_ALLOW_CHAT + chatId))
-            val row2 = listOf(InlineKeyboardButton()
-                    .setText("Отклонить")
-                    .setCallbackData(LastkatkaBot.CALLBACK_DONT_ALLOW_CHAT + chatId))
             val markup = InlineKeyboardMarkup()
-            markup.keyboard = listOf(row1, row2)
+            markup.keyboard = listOf(listOf(
+                    InlineKeyboardButton()
+                            .setText("Добавить")
+                            .setCallbackData(LastkatkaBot.CALLBACK_ALLOW_CHAT + chatId),
+                    InlineKeyboardButton()
+                            .setText("Отклонить")
+                            .setCallbackData(LastkatkaBot.CALLBACK_DONT_ALLOW_CHAT + chatId)))
+
             val inviter = TgUser(message.from.id, message.from.firstName)
             sendMessage(Methods.sendMessage(
                     Services.botConfig.mainAdmin.toLong(), "Добавить чат ${message.chat.title} $chatId в список разрешенных? - ${inviter.getLink()}")
