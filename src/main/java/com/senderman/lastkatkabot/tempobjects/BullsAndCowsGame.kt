@@ -86,7 +86,7 @@ class BullsAndCowsGame(message: Message) {
         }
 
         attempts--
-        history.append("${message.from.firstName} - $number: ${bulls}Б ${cows}К")
+        history.append("${message.from.firstName} - $number: ${bulls}Б ${cows}К\n")
 
         if (attempts <= 0) {
             gameOver()
