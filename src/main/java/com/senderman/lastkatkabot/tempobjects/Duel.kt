@@ -54,14 +54,14 @@ class Duel(message: Message) {
                 |"${player1.name} vs ${player2.name}
                 |"Противники разошлись в разные стороны, развернулись лицом друг к другу, и $winnerName выстрелил первым!"
                 |"$loserName лежит на земле, истекая кровью!
-                """.trimMargin()
+                """.trimIndent()
 
         if (ThreadLocalRandom.current().nextInt(100) < 20) {
             duelResult += """
                    |Но, умирая, $loserName успевает выстрелить в голову $winnerName!
                    | $winnerName падает замертво!
                    |💀 <b>Дуэль окончилась ничьей!</b>
-                   """.trimMargin()
+                   """.trimIndent()
             Services.db.incTotalDuels(winner.id)
             Services.db.incTotalDuels(loser.id)
         } else {
