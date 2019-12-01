@@ -126,7 +126,7 @@ public class UsercommandsHandler {
 
     public void marryme(Message message) {
         boolean marryById = message.getText().length() - message.getText().replace(" ", "").length() == 1;
-        if (message.getFrom().getId().equals(message.getReplyToMessage().getFrom().getId()) || message.getReplyToMessage().getFrom().getBot() || marryById || message.isUserMessage())
+        if (message.getFrom().getId().equals(message.getReplyToMessage().getFrom().getId()) || message.getReplyToMessage().getFrom().getBot() || message.isUserMessage())
             return;
         
         var chatId = message.getChatId();
