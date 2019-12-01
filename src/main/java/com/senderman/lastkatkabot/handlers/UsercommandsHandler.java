@@ -126,7 +126,7 @@ public class UsercommandsHandler {
 
     public void marryme(Message message) {
         int countBackspaces = message.getText().length() - message.getText().replace(" ", "").length();
-        if (!message.isReply() || message.getFrom().getId().equals(message.getReplyToMessage().getFrom().getId()) || message.getReplyToMessage().getFrom().getBot() || countBackspaces < 1)
+        if (!message.isReply() || message.getFrom().getId().equals(message.getReplyToMessage().getFrom().getId()) || message.getReplyToMessage().getFrom().getBot() || countBackspaces < 1 || message.getChat().getType() == 'private')
             return;
         
         var chatId = message.getChatId();
@@ -139,15 +139,6 @@ public class UsercommandsHandler {
                 handler.sendMessage(chatId, "Неверный формат!");
                 return;
             }
-            if (Services.db().getLover(toLoverId) != 0){
-                handler.sendMessage(chatId, "У этого пользователя уже есть своя вторая половинка!");
-                return;
-            }
-            var loverId = Services.db().getLover(userId);
-            if (loverId != 0) {
-                handler.sendMessage(chatId, "Всмысле? Вы что, хотите изменить своей второй половинке?!");
-                return;
-            }
             var user = new TgUser(Methods.getChatMember(chatId, userId).call(handler).getUser());
             var toUser = new TgUser(Methods.getChatMember(chatId, toLoverId).call(handler).getUser());
             text = toUser.getLink() + ", пользователь " + user.getLink() + " предлагает вам руку, сердце и шавуху. Вы согласны?";
@@ -155,19 +146,19 @@ public class UsercommandsHandler {
         else{
             var loverId = Services.db().getLover(userId);
             toLoverId = message.getReplyToMessage().getFrom().getId();
-            if (loverId != 0) {
-                handler.sendMessage(chatId, "Всмысле? Вы что, хотите изменить своей второй половинке?!");
-                return;
-            }
-            if (Services.db().getLover(message.getReplyToMessage().getFrom().getId()) != 0) {
-                handler.sendMessage(chatId, "У этого пользователя уже есть своя вторая половинка!");
-                return;
-            }
             var user = new TgUser(Methods.getChatMember(chatId, userId).call(handler).getUser());
             text = "Пользователь " + user.getLink() + " предлагает вам руку, сердце и шавуху. Вы согласны?";
        
         }   
-       
+        if (Services.db().getLover(toLoverId) != 0){
+            handler.sendMessage(chatId, "У этого пользователя уже есть своя вторая половинка!");
+            return;
+        }
+        var loverId = Services.db().getLover(userId);
+        if (loverId != 0) {
+            handler.sendMessage(chatId, "Всмысле? Вы что, хотите изменить своей второй половинке?!");
+            return;
+        }
         
 
         var markup = new InlineKeyboardMarkup();
