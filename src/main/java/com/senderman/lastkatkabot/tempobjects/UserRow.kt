@@ -24,9 +24,9 @@ class UserRow(message: Message) {
         divider = lines[2].toInt()
         checkedUsers = HashSet()
         messageText = "<b>$title:</b>\n\n"
-        val resultMessage = Services.handler().sendMessage(message.chatId, messageText)
+        val resultMessage = Services.handler.sendMessage(message.chatId, messageText)
         messageId = resultMessage.messageId
-        Services.db().saveRow(chatId, this)
+        Services.db.saveRow(chatId, this)
     }
 
     fun addUser(message: Message) {
@@ -46,7 +46,7 @@ class UserRow(message: Message) {
                 .setMessageId(messageId)
                 .setText(messageText)
                 .setParseMode(ParseMode.HTML)
-                .call(Services.handler())
-        Services.db().saveRow(chatId, this)
+                .call(Services.handler)
+        Services.db.saveRow(chatId, this)
     }
 }

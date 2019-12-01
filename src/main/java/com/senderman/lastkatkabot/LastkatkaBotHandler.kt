@@ -43,26 +43,26 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
     val userRows: MutableMap<Long, UserRow>
 
     init {
-        val mainAdmin = Services.config().mainAdmin
+        val mainAdmin = Services.botConfig.mainAdmin
         sendMessage(mainAdmin.toLong(), "Initialization...")
 
         // settings
-        Services.setHandler(this)
-        Services.setDBService(MongoDBService())
-        Services.db().cleanup()
+        Services.handler = this
+        Services.db = MongoDBService()
+        Services.db.cleanup()
 
-        admins = Services.db().getTgUsersByType(UserType.ADMINS)
-        premiumUsers = Services.db().getTgUsersByType(UserType.PREMIUM)
-        blacklist = Services.db().getTgUsersByType(UserType.BLACKLIST)
-        allowedChats = Services.db().getAllowedChatsSet()
-        allowedChats.add(Services.config().lastvegan)
-        allowedChats.add(Services.config().tourgroup)
+        admins = Services.db.getTgUsersByType(UserType.ADMINS)
+        premiumUsers = Services.db.getTgUsersByType(UserType.PREMIUM)
+        blacklist = Services.db.getTgUsersByType(UserType.BLACKLIST)
+        allowedChats = Services.db.getAllowedChatsSet()
+        allowedChats.add(Services.botConfig.lastvegan)
+        allowedChats.add(Services.botConfig.tourgroup)
         commands = HashMap()
         adminHandler = AdminHandler(this)
         callbackHandler = CallbackHandler(this)
         tournamentHandler = TournamentHandler(this)
-        bullsAndCowsGames = Services.db().getBnCGames()
-        userRows = Services.db().getUserRows()
+        bullsAndCowsGames = Services.db.getBnCGames()
+        userRows = Services.db.getUserRows()
         duels = HashMap()
 
         // init command-method map
@@ -105,13 +105,13 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         if (!allowedChats.contains(chatId) && !message.isUserMessage)
             return null
 
-        if (message.leftChatMember != null && message.leftChatMember.userName != botUsername && message.chatId != Services.config().tourgroup) {
+        if (message.leftChatMember != null && message.leftChatMember.userName != botUsername && message.chatId != Services.botConfig.tourgroup) {
             Methods.sendDocument()
                     .setChatId(chatId)
-                    .setFile(Services.config().leavesticker!!)
+                    .setFile(Services.botConfig.leavesticker)
                     .setReplyToMessageId(message.messageId)
                     .call(this)
-            Services.db().removeUserFromChatDB(message.leftChatMember.id, chatId)
+            Services.db.removeUserFromChatDB(message.leftChatMember.id, chatId)
         }
 
         // update current userrow in chat if exists
@@ -122,7 +122,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         if (!message.hasText()) return null
 
         if (message.isGroupMessage || message.isSuperGroupMessage) // add user to DB
-            Services.db().addUserToChatDB(message)
+            Services.db.addUserToChatDB(message)
 
         val text = message.text
 
@@ -147,7 +147,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
             if (!commands.contains(command)) return null
             val method = commands.getValue(command)
             val annotation = method.getAnnotation(Command::class.java)
-            if (message.from.id != Services.config().mainAdmin && annotation.forMainAdmin) {
+            if (message.from.id != Services.botConfig.mainAdmin && annotation.forMainAdmin) {
                 return null
             } else if (annotation.forAllAdmins && !isFromAdmin(message)) {
                 return null
@@ -163,11 +163,11 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
     }
 
     override fun getBotUsername(): String {
-        return Services.config().username!!.split(" ")[Services.config().position]
+        return Services.botConfig.username.split(" ")[Services.botConfig.position]
     }
 
     override fun getBotToken(): String {
-        return Services.config().token!!.split(" ")[Services.config().position]
+        return Services.botConfig.token.split(" ")[Services.botConfig.position]
     }
 
     private fun processCallbackQuery(query: CallbackQuery) {
@@ -237,12 +237,12 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         val chatId = message.chatId
         val newMembers = message.newChatMembers
 
-        if (chatId == Services.config().tourgroup) {
+        if (chatId == Services.botConfig.tourgroup) {
             for (user in newMembers) {
                 // restrict any user who isn't in tournament
                 if (user.id !in tournamentHandler.membersIds) {
                     Methods.Administration.restrictChatMember()
-                            .setChatId(Services.config().tourgroup)
+                            .setChatId(Services.botConfig.tourgroup)
                             .setUserId(user.id)
                             .setCanSendMessages(false).call(this)
                 }
@@ -264,7 +264,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
             }
 
             Methods.sendDocument(chatId)
-                    .setFile(Services.config().higif!!)
+                    .setFile(Services.botConfig.higif)
                     .setReplyToMessageId(message.messageId)
                     .call(this)
 
@@ -287,7 +287,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
             markup.keyboard = listOf(row1, row2)
             val inviter = TgUser(message.from.id, message.from.firstName)
             sendMessage(Methods.sendMessage(
-                    Services.config().mainAdmin.toLong(), "Добавить чат ${message.chat.title} $chatId в список разрешенных? - ${inviter.getLink()}")
+                    Services.botConfig.mainAdmin.toLong(), "Добавить чат ${message.chat.title} $chatId в список разрешенных? - ${inviter.getLink()}")
                     .setReplyMarkup(markup))
         }
     }
@@ -327,7 +327,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
     private fun migrateChat(oldChatId: Long, newChatId: Long) {
         allowedChats.remove(oldChatId)
         allowedChats.add(newChatId)
-        Services.db().updateChatId(oldChatId, newChatId)
+        Services.db.updateChatId(oldChatId, newChatId)
     }
 
     fun sendMessage(chatId: Int, text: String): Message = sendMessage(chatId.toLong(), text)

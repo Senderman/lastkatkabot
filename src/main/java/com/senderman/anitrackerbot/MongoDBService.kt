@@ -6,7 +6,7 @@ import com.senderman.MongoClientKeeper
 import org.bson.Document
 import java.util.*
 
-class MongoDBService : DBService {
+internal class MongoDBService : DBService {
     private val client = MongoClientKeeper.client
     private val database = client.getDatabase("anime")
 

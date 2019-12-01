@@ -115,7 +115,7 @@ public class CallbackHandler {
 
         handler.getTournamentHandler().membersIds.add(memberId);
         Methods.Administration.restrictChatMember()
-                .setChatId(Services.config().getTourgroup())
+                .setChatId(Services.botConfig.getTourgroup())
                 .setUserId(memberId)
                 .setCanSendMessages(true)
                 .setCanSendMediaMessages(true)
@@ -126,7 +126,7 @@ public class CallbackHandler {
                 .setText("✅ Вам даны права на отправку сообщений в группе турнира!")
                 .setShowAlert(true)
                 .call(handler);
-        handler.sendMessage(Services.config().getTourgroup(), String.format("✅ %1$s получил доступ к игре!", query.getFrom().getFirstName()));
+        handler.sendMessage(Services.botConfig.getTourgroup(), String.format("✅ %1$s получил доступ к игре!", query.getFrom().getFirstName()));
     }
 
     public void addChat(CallbackQuery query) {
@@ -140,7 +140,7 @@ public class CallbackHandler {
                 .call(handler);
         var message = handler.sendMessage(chatId, "Разработчик принял данный чат. Бот готов к работе здесь!\n" +
                 "Для некоторых фичей бота требуются права админа на удаление и закреп сообщений.");
-        Services.db().addAllowedChat(chatId, message.getChat().getTitle());
+        Services.db.addAllowedChat(chatId, message.getChat().getTitle());
     }
 
     public void denyChat(CallbackQuery query) {
@@ -157,8 +157,8 @@ public class CallbackHandler {
 
     public void deleteChat(CallbackQuery query) {
         var chatId = Long.parseLong(query.getData().split(" ")[1]);
-        Services.db().removeAllowedChat(chatId);
-        Services.db().deleteBncGame(chatId);
+        Services.db.removeAllowedChat(chatId);
+        Services.db.deleteBncGame(chatId);
         handler.getAllowedChats().remove(chatId);
         Methods.answerCallbackQuery()
                 .setShowAlert(true)
@@ -190,7 +190,7 @@ public class CallbackHandler {
                 return;
         }
         var userId = Integer.parseInt(query.getData().split(" ")[1]);
-        Services.db().removeTGUser(userId, type);
+        Services.db.removeTGUser(userId, type);
         userIds.remove(userId);
         Methods.answerCallbackQuery()
                 .setShowAlert(true)
@@ -213,7 +213,7 @@ public class CallbackHandler {
             return;
         }
 
-        if (Services.db().getLover(userId) != 0) {
+        if (Services.db.getLover(userId) != 0) {
             Methods.answerCallbackQuery()
                     .setShowAlert(true)
                     .setText("У вас уже есть вторая половинка!")
@@ -234,7 +234,7 @@ public class CallbackHandler {
         var user = new TgUser(userId, query.getFrom().getFirstName());
         var coupleId = Integer.parseInt(query.getData().replaceAll(LastkatkaBot.CALLBACK_ACCEPT_MARRIAGE, ""));
         var couple = new TgUser(Methods.getChatMember(message.getChatId(), coupleId).call(handler).getUser());
-        Services.db().setLover(user.getId(), couple.getId());
+        Services.db.setLover(user.getId(), couple.getId());
         handler.sendMessage(couple.getId(), "Поздравляем! Теперь ваша вторая половинка - " + user.getLink());
         var format = "Внимание все! Сегодня великий день свадьбы %s и %s! Так давайте же поздравим их и съедим шавуху в часть такого праздника!";
         var text = String.format(format, user.getLink(), couple.getLink());

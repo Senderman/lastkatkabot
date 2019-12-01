@@ -55,12 +55,12 @@ public class AdminHandler {
         var name = message.getReplyToMessage().getFrom().getFirstName();
         var user = new TgUser(id, name);
         list.add(id);
-        Services.db().addTgUser(id, type);
+        Services.db.addTgUser(id, type);
         handler.sendMessage(message.getChatId(), String.format(format, user.getName()));
     }
 
     public void listUsers(Message message, DBService.UserType type) {
-        var users = Services.db().getTgUsersByType(type);
+        var users = Services.db.getTgUsersByType(type);
         var messageToSend = Methods.sendMessage().setChatId(message.getChatId());
 
         boolean allAdminsAccess = false;
@@ -84,7 +84,7 @@ public class AdminHandler {
                 return;
         }
 
-        var showButtons = allAdminsAccess || message.getChatId().equals((long) Services.config().getMainAdmin());
+        var showButtons = allAdminsAccess || message.getChatId().equals((long) Services.botConfig.getMainAdmin());
 
         if (!showButtons || !message.isUserMessage()) {
             var userlist = new StringBuilder(title);
@@ -95,7 +95,7 @@ public class AdminHandler {
                     var user = new TgUser(id, name);
                     userlist.append(user.getLink()).append("\n");
                 } catch (Exception e) {
-                    Services.db().removeTGUser(id, type);
+                    Services.db.removeTGUser(id, type);
                     dropList.append("Юзер с id ").append(id).append(" удален из бд!\n");
                 }
             }
@@ -132,7 +132,7 @@ public class AdminHandler {
             return;
 
         var neko = new TgUser(message.getReplyToMessage().getFrom().getId(), message.getReplyToMessage().getFrom().getFirstName());
-        Services.db().removeTGUser(neko.getId(), DBService.UserType.BLACKLIST);
+        Services.db.removeTGUser(neko.getId(), DBService.UserType.BLACKLIST);
         handler.getBlacklist().remove(message.getReplyToMessage().getFrom().getId());
         handler.sendMessage(message.getChatId(),
                 String.format("\uD83D\uDE38 %1$s - хорошая киса!", neko.getLink()));
@@ -149,7 +149,7 @@ public class AdminHandler {
             update.append("* ").append(params[i]).append("\n");
         }
         var tempChatSet = new HashSet<>(handler.getAllowedChats());
-        tempChatSet.remove(Services.config().getTourgroup());
+        tempChatSet.remove(Services.botConfig.getTourgroup());
         for (long chat : tempChatSet) {
             handler.sendMessage(chat, update.toString());
         }
@@ -162,7 +162,7 @@ public class AdminHandler {
         }
         var markup = new InlineKeyboardMarkup();
         ArrayList<List<InlineKeyboardButton>> rows = new ArrayList<>();
-        var chats = Services.db().getAllowedChatsMap();
+        var chats = Services.db.getAllowedChatsMap();
         List<InlineKeyboardButton> row = new ArrayList<>();
         for (long chatId : chats.keySet()) {
             row.add(new InlineKeyboardButton()
@@ -185,16 +185,16 @@ public class AdminHandler {
     }
 
     public void cleanChats(Message message) {
-        var chats = Services.db().getAllowedChatsMap();
+        var chats = Services.db.getAllowedChatsMap();
         for (long chatId : chats.keySet()) {
             try {
                 var chatMsg = handler.execute(new SendMessage(chatId, "Сервисное сообщение, оно будет удалено через пару секунд"));
                 var title = chatMsg.getChat().getTitle();
                 Methods.deleteMessage(chatId, chatMsg.getMessageId()).call(handler);
-                Services.db().updateTitle(chatId, title);
+                Services.db.updateTitle(chatId, title);
             } catch (TelegramApiException e) {
-                Services.db().removeAllowedChat(chatId);
-                Services.db().cleanup();
+                Services.db.removeAllowedChat(chatId);
+                Services.db.cleanup();
                 handler.sendMessage(message.getFrom().getId(), "Чат \"" + chats.get(chatId) + "\" удален из списка!");
                 handler.getAllowedChats().remove(chatId);
             }
@@ -206,7 +206,7 @@ public class AdminHandler {
         handler.sendMessage(message.getChatId(), "Рассылка запущена. На время рассылки бот будет недоступен");
         var text = message.getText();
         text = "\uD83D\uDCE3 <b>Объявление</b>\n\n" + text.split("\\s+", 2)[1];
-        var usersIds = Services.db().getAllUsersIds();
+        var usersIds = Services.db.getAllUsersIds();
         var counter = 0;
         for (var userId : usersIds) {
             try {
@@ -221,6 +221,6 @@ public class AdminHandler {
     }
 
     public void setupHelp(Message message) {
-        handler.sendMessage(message.getChatId(), Services.config().getSetupHelp());
+        handler.sendMessage(message.getChatId(), Services.botConfig.getSetupHelp());
     }
 }

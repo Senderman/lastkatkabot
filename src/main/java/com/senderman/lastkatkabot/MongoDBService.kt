@@ -15,7 +15,7 @@ import java.util.stream.Collectors
 import kotlin.collections.HashMap
 import kotlin.collections.LinkedHashMap
 
-class MongoDBService : DBService {
+internal class MongoDBService : DBService {
     private val timeZone = TimeZone.getTimeZone("Europe/Moscow")
     private val client = MongoClientKeeper.client
     private val lastkatkaDB = client.getDatabase("lastkatka")

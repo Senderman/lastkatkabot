@@ -4,16 +4,16 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 class BotConfig {
     @JsonProperty
-    var token: String? = null
+    lateinit var token: String
 
     @JsonProperty
-    var username: String? = null
+    lateinit var username: String
 
     @JsonProperty
-    var help: String? = null
+    lateinit var help: String
 
     @JsonProperty
-    var anidata: String? = null
+    lateinit var anidata: String
 
     @JsonProperty
     var position = 0

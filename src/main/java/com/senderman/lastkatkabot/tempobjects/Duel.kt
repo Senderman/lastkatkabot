@@ -23,7 +23,7 @@ class Duel(message: Message) {
                 .setChatId(chatId)
                 .setText("\uD83C\uDFAF Набор на дуэль! Жмите кнопку ниже\nДжойнулись:\n${player1.name}")
                 .setReplyMarkup(getDuelReplyMarkup())
-        messageId = Services.handler().sendMessage(sm).messageId
+        messageId = Services.handler.sendMessage(sm).messageId
         duelId = "$chatId $messageId"
     }
 
@@ -60,12 +60,12 @@ class Duel(message: Message) {
                     .append("\"Но, умирая, $loserName успевает выстрелить в голову $winnerName!\n")
                     .append("$winnerName падает замертво!\n")
                     .append("💀 <b>Дуэль окончилась ничьей!</b>")
-            Services.db().incTotalDuels(winner.id)
-            Services.db().incTotalDuels(loser.id)
+            Services.db.incTotalDuels(winner.id)
+            Services.db.incTotalDuels(loser.id)
         } else {
             duelResult.append("\uD83D\uDC51 <b>$winnerName выиграл дуэль!</b>")
-            Services.db().incDuelWins(winner.id)
-            Services.db().incTotalDuels(loser.id)
+            Services.db.incDuelWins(winner.id)
+            Services.db.incTotalDuels(loser.id)
         }
 
         Methods.editMessageText()
@@ -73,8 +73,8 @@ class Duel(message: Message) {
                 .setMessageId(messageId)
                 .setText(duelResult.toString())
                 .setParseMode(ParseMode.HTML)
-                .call(Services.handler())
-        Services.handler().duels.remove(duelId)
+                .call(Services.handler)
+        Services.handler.duels.remove(duelId)
     }
 
     companion object {
@@ -83,7 +83,7 @@ class Duel(message: Message) {
                     .setText(text)
                     .setCallbackQueryId(query.id)
                     .setShowAlert(showAsAlert)
-                    .call(Services.handler())
+                    .call(Services.handler)
         }
 
         private fun getDuelReplyMarkup(): InlineKeyboardMarkup {
