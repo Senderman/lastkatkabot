@@ -126,7 +126,7 @@ public class UsercommandsHandler {
 
     public void marryme(Message message) {
         int countBackspaces = message.getText().length() - message.getText().replace(" ", "").length();
-        if (!message.isReply() || message.getFrom().getId().equals(message.getReplyToMessage().getFrom().getId()) || message.getReplyToMessage().getFrom().getBot() || countBackspaces < 1 || message.getChat().getType() == 'private')
+        if (!message.isReply() || message.getFrom().getId().equals(message.getReplyToMessage().getFrom().getId()) || message.getReplyToMessage().getFrom().getBot() || countBackspaces < 1 || message.getChat().getType() == "private")
             return;
         
         var chatId = message.getChatId();
