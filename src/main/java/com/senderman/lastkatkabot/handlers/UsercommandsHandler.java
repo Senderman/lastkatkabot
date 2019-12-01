@@ -153,7 +153,7 @@ public class UsercommandsHandler {
         }
         else{
             var loverId = Services.db().getLover(userId);
-            int toLoverId = message.getReplyToMessage().getFrom().getId(););
+            int toLoverId = message.getReplyToMessage().getFrom().getId();
             if (loverId != 0) {
                 handler.sendMessage(chatId, "Всмысле? Вы что, хотите изменить своей второй половинке?!");
                 return;
