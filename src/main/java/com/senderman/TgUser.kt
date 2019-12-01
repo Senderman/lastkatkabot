@@ -6,8 +6,6 @@ open class TgUser {
 
     val id: Int
     val name: String
-    val link: String
-        get() = String.format("<a href=\"tg://user?id=$id\">$name</a>", id, name)
 
     constructor(id: Int, name: String) {
         this.id = id
@@ -18,6 +16,8 @@ open class TgUser {
         this.id = user.id
         this.name = getSafeName(user.firstName)
     }
+
+    fun getLink() = "<a href=\"tg://user?id=$id\">$name</a>"
 
     private fun getSafeName(name: String): String {
         return name
