@@ -126,7 +126,7 @@ public class UsercommandsHandler {
 
     public void marryme(Message message) {
         int marryById = message.getText().length() - message.getText().replace(" ", "").length();
-        if (!message.isReply() || message.getFrom().getId().equals(message.getReplyToMessage().getFrom().getId()) || message.getReplyToMessage().getFrom().getBot() || marryById < 1 || message.isUserMessage())
+        if (message.getFrom().getId().equals(message.getReplyToMessage().getFrom().getId()) || message.getReplyToMessage().getFrom().getBot() || marryById < 1 || message.isUserMessage())
             return;
         
         var chatId = message.getChatId();
@@ -143,7 +143,7 @@ public class UsercommandsHandler {
             var toUser = new TgUser(Methods.getChatMember(chatId, toLoverId).call(handler).getUser());
             text = toUser.getLink() + ", пользователь " + user.getLink() + " предлагает вам руку, сердце и шавуху. Вы согласны?";
         }
-        else{
+        else if (message.getReply()){
             var loverId = Services.db().getLover(userId);
             toLoverId = message.getReplyToMessage().getFrom().getId();
             var user = new TgUser(Methods.getChatMember(chatId, userId).call(handler).getUser());
