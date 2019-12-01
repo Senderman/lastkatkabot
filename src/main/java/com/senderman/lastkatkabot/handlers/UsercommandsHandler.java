@@ -131,7 +131,7 @@ public class UsercommandsHandler {
         
         var chatId = message.getChatId();
         var userId = message.getFrom().getId();
-        
+        var text = ""
         if (countBackspaces > 0){
             try {int toLoverId = Integer.parseInt(message.getText().split(" ")[1]);} 
             catch (NumberFormatException e){
@@ -149,7 +149,7 @@ public class UsercommandsHandler {
             }
             var user = new TgUser(Methods.getChatMember(chatId, userId).call(handler).getUser());
             var toUser = new TgUser(Methods.getChatMember(chatId, toLoverId).call(handler).getUser());
-            var text = toUser.getLink() + ", пользователь " + user.getLink() + " предлагает вам руку, сердце и шавуху. Вы согласны?";
+            text = toUser.getLink() + ", пользователь " + user.getLink() + " предлагает вам руку, сердце и шавуху. Вы согласны?";
         }
         else{
             var loverId = Services.db().getLover(userId);
@@ -163,7 +163,7 @@ public class UsercommandsHandler {
                 return;
             }
             var user = new TgUser(Methods.getChatMember(chatId, userId).call(handler).getUser());
-            var text = "Пользователь " + user.getLink() + " предлагает вам руку, сердце и шавуху. Вы согласны?";
+            text = "Пользователь " + user.getLink() + " предлагает вам руку, сердце и шавуху. Вы согласны?";
        
         }   
        
