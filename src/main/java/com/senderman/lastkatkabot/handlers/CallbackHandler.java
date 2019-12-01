@@ -208,6 +208,7 @@ public class CallbackHandler {
             return false;
 
         for (var entity : message.getEntities()) {
+            Services.handler.sendMessage(message.getChatId(), entity.toString());
             if (!entity.getType().equals("text_mention"))
                 continue;
 
