@@ -79,21 +79,19 @@ class BullsAndCowsGame(message: Message) {
             if (antiRuinEnabled) return
         }
 
-        val result = calculate(number)
+        val (bulls, cows) = calculate(number)
         if (number in checkedNumbers) {
-            gameMessage(chatId, "$number - уже проверяли! ${result.bulls}Б ${result.cows}К")
+            gameMessage(chatId, "$number - уже проверяли! ${bulls}Б ${cows}К")
             return
         }
 
         attempts--
-
-        history.append(String.format("%1\$s - %2\$s: %3\$dБ %4\$dК\n",
-                message.from.firstName, number, result.bulls, result.cows))
+        history.append("${message.from.firstName} - $number: ${bulls}Б ${cows}К")
 
         if (attempts <= 0) {
             gameOver()
         } else {
-            gameMessage(chatId, "$number ${result.bulls}Б ${result.cows}К, попыток: $attempts\n")
+            gameMessage(chatId, "$number ${bulls}Б ${cows}К, попыток: $attempts\n")
             checkedNumbers.add(number)
             Services.db.saveBncGame(chatId, this)
         }
