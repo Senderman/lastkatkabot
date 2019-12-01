@@ -15,7 +15,7 @@ import java.util.Set;
 
 public class TournamentHandler {
     public boolean isEnabled = false;
-    public Set<Integer> membersIds;
+    final public Set<Integer> membersIds;
     Set<String> members;
     private Set<String> teams;
     private boolean isTeamMode;

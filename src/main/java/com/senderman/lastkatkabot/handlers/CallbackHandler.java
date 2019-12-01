@@ -203,24 +203,24 @@ public class CallbackHandler {
         Methods.deleteMessage(query.getMessage().getChatId(), query.getMessage().getMessageId()).call(handler);
     }
 
-    private boolean isFor(Message message, User user) {
+    private boolean notFor(Message message, User user) {
         if (!message.hasEntities())
-            return false;
+            return true;
 
         for (var entity : message.getEntities()) {
             if (!entity.getType().equals("text_mention"))
                 continue;
 
             if (entity.getUser().getId().equals(user.getId()))
-                return true;
+                return false;
         }
-        return false;
+        return true;
     }
 
     public void accept_marriage(CallbackQuery query) {
         var userId = query.getFrom().getId();
         var message = query.getMessage();
-        if (!isFor(message, query.getFrom()) || !message.isReply() || !message.getReplyToMessage().getFrom().getId().equals(userId)) {
+        if (notFor(message, query.getFrom()) || !message.isReply() || !message.getReplyToMessage().getFrom().getId().equals(userId)) {
             Methods.answerCallbackQuery()
                     .setShowAlert(true)
                     .setText("Куда лезете? Это не вам!")
@@ -260,7 +260,7 @@ public class CallbackHandler {
     public void deny_marriage(CallbackQuery query) {
         var userId = query.getFrom().getId();
         var message = query.getMessage();
-        if (!isFor(message, query.getFrom()) || !message.isReply() || !message.getReplyToMessage().getFrom().getId().equals(userId)) {
+        if (notFor(message, query.getFrom()) || !message.isReply() || !message.getReplyToMessage().getFrom().getId().equals(userId)) {
             Methods.answerCallbackQuery()
                     .setShowAlert(true)
                     .setText("Куда лезете? Это не вам!")

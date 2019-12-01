@@ -3,8 +3,8 @@ package com.senderman.lastkatkabot.tempobjects
 import com.annimon.tgbotsmodule.api.methods.Methods
 import com.senderman.TgUser
 import com.senderman.lastkatkabot.Services
-import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.objects.Message
+import org.telegram.telegrambots.meta.api.objects.User
 import java.util.*
 
 class UserRow(message: Message) {
@@ -29,23 +29,17 @@ class UserRow(message: Message) {
         Services.db.saveRow(chatId, this)
     }
 
-    fun addUser(message: Message) {
-        val user = TgUser(message.from)
-        if (checkedUsers.contains(user.id)) return
+    fun addUser(newUser: User) {
+        if (newUser.id in checkedUsers) return
+        val user = TgUser(newUser)
         checkedUsers.add(user.id)
-        messageText += if (checkedUsers.size % divider == 0)
-            checkedUsers.size.toString() + ". ${user.getLink()} - $name!\n"
-        else
-            checkedUsers.size.toString() + ". ${user.getLink()} - не $name\n"
-        updateMessage()
-    }
-
-    private fun updateMessage() {
+        val pref = if (checkedUsers.size % divider == 0) "" else "не"
+        messageText += "${checkedUsers.size}. ${user.getLink()} - $pref $name\n"
         Methods.editMessageText()
                 .setChatId(chatId)
                 .setMessageId(messageId)
                 .setText(messageText)
-                .setParseMode(ParseMode.HTML)
+                .enableHtml()
                 .call(Services.handler)
         Services.db.saveRow(chatId, this)
     }

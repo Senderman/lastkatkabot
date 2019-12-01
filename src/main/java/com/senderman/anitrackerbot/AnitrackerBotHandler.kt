@@ -28,7 +28,7 @@ class AnitrackerBotHandler internal constructor(private val config: BotConfig) :
         val command = text.split(" ".toRegex(), 2)[0]
                 .toLowerCase(Locale.ENGLISH)
                 .replace("@$botUsername", "")
-        if (command.contains("@")) return null
+        if ("@" in command) return null
 
 
         when (command) {

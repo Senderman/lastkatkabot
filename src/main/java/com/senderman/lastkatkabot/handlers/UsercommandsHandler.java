@@ -57,7 +57,7 @@ public class UsercommandsHandler {
         handler.sendMessage(sm);
     }
 
-    public void pressF(Message message) { // /f
+    public void pressF(Message message) {
         if (message.isUserMessage())
             return;
 

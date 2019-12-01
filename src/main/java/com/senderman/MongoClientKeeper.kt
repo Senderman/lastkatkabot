@@ -1,8 +1,8 @@
 package com.senderman
 
+import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
 
 object MongoClientKeeper {
-    @JvmStatic
-    val client = MongoClients.create(System.getenv("database"))
+    val client: MongoClient = MongoClients.create(System.getenv("database"))
 }

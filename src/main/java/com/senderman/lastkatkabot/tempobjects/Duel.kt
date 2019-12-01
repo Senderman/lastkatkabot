@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadLocalRandom
 class Duel(message: Message) {
     private val chatId: Long = message.chatId
     private val player1: TgUser = TgUser(message.from)
-    private var player2: TgUser? = null
+    private lateinit var player2: TgUser
     private val messageId: Int
     val duelId: String
 
@@ -29,7 +29,7 @@ class Duel(message: Message) {
 
 
     fun join(query: CallbackQuery) {
-        if (player2 != null) {
+        if (this::player2.isInitialized) {
             answerCallbackQuery(query, "\uD83D\uDEAB Дуэлянтов уже набрали, увы", true)
             return
         }
@@ -44,26 +44,28 @@ class Duel(message: Message) {
 
     private fun start() {
         val randomInt = ThreadLocalRandom.current().nextInt(100)
-        val winner = if (randomInt < 50) player1 else player2!!
-        val loser = if (randomInt < 50) player2!! else player1
+        val winner = if (randomInt < 50) player1 else player2
+        val loser = if (randomInt < 50) player2 else player1
         val winnerName = winner.name
         val loserName = loser.name
 
-        val duelResult = StringBuilder()
-                .append("<b>Дуэль</b>\n")
-                .append("${player1.name} vs ${player2!!.name}\n")
-                .append("Противники разошлись в разные стороны, развернулись лицом друг к другу, и $winnerName выстрелил первым!\n")
-                .append("$loserName лежит на земле, истекая кровью!\n\n")
+        var duelResult = """
+                |<b>Дуэль</b>
+                |"${player1.name} vs ${player2.name}
+                |"Противники разошлись в разные стороны, развернулись лицом друг к другу, и $winnerName выстрелил первым!"
+                |"$loserName лежит на земле, истекая кровью!
+                """.trimMargin()
 
         if (ThreadLocalRandom.current().nextInt(100) < 20) {
-            duelResult
-                    .append("\"Но, умирая, $loserName успевает выстрелить в голову $winnerName!\n")
-                    .append("$winnerName падает замертво!\n")
-                    .append("💀 <b>Дуэль окончилась ничьей!</b>")
+            duelResult += """
+                   |Но, умирая, $loserName успевает выстрелить в голову $winnerName!
+                   | $winnerName падает замертво!
+                   |💀 <b>Дуэль окончилась ничьей!</b>
+                   """.trimMargin()
             Services.db.incTotalDuels(winner.id)
             Services.db.incTotalDuels(loser.id)
         } else {
-            duelResult.append("\uD83D\uDC51 <b>$winnerName выиграл дуэль!</b>")
+            duelResult += "\uD83D\uDC51 <b>$winnerName выиграл дуэль!</b>"
             Services.db.incDuelWins(winner.id)
             Services.db.incTotalDuels(loser.id)
         }
@@ -71,7 +73,7 @@ class Duel(message: Message) {
         Methods.editMessageText()
                 .setChatId(chatId)
                 .setMessageId(messageId)
-                .setText(duelResult.toString())
+                .setText(duelResult)
                 .setParseMode(ParseMode.HTML)
                 .call(Services.handler)
         Services.handler.duels.remove(duelId)
