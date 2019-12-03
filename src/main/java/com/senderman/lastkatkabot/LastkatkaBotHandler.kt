@@ -174,10 +174,10 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         val data = query.data
         when {
             data.startsWith(LastkatkaBot.CALLBACK_CAKE_OK) ->
-                callbackHandler.cake(query, CallbackHandler.CAKE_ACTIONS.CAKE_OK)
+                callbackHandler.cake(query, CallbackHandler.CakeAcion.CAKE_OK)
 
             data.startsWith(LastkatkaBot.CALLBACK_CAKE_NOT) ->
-                callbackHandler.cake(query, CallbackHandler.CAKE_ACTIONS.CAKE_NOT)
+                callbackHandler.cake(query, CallbackHandler.CakeAcion.CAKE_NOT)
 
             data.startsWith(LastkatkaBot.CALLBACK_ALLOW_CHAT) ->
                 callbackHandler.addChat(query)
@@ -186,7 +186,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
                 callbackHandler.denyChat(query)
 
             data.startsWith(LastkatkaBot.CALLBACK_ACCEPT_MARRIAGE) ->
-                callbackHandler.accept_marriage(query)
+                callbackHandler.acceptMarriage(query)
 
             data.startsWith(LastkatkaBot.CALLBACK_DELETE_CHAT) -> {
 
@@ -226,7 +226,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
                     return
                 }
                 LastkatkaBot.CALLBACK_DENY_MARRIAGE ->
-                    callbackHandler.deny_marriage(query)
+                    callbackHandler.denyMarriage(query)
 
                 LastkatkaBot.CALLBACK_VOTE_BNC -> bullsAndCowsGames[query.message.chatId]?.addVote(query)
             }
