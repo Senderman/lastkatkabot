@@ -157,8 +157,8 @@ public class UsercommandsHandler {
                 return;
             }
             var user = new TgUser(Methods.getChatMember(chatId, userId).call(handler).getUser());
-            var toUser = new TgUser(Methods.getChatMember(chatId, loverId).call(handler).getUser());
-            text = toUser.getLink() + ", пользователь " + user.getLink() + " предлагает вам руку, сердце и шавуху. Вы согласны?";
+            var lover = new TgUser(Methods.getChatMember(chatId, loverId).call(handler).getUser());
+            text = lover.getLink() + ", пользователь " + user.getLink() + " предлагает вам руку, сердце и шавуху. Вы согласны?";
         }
 
         if (Services.db.getLover(loverId) != 0) {
@@ -170,10 +170,10 @@ public class UsercommandsHandler {
         markup.setKeyboard(List.of(List.of(
                 new InlineKeyboardButton()
                         .setText("Принять")
-                        .setCallbackData(LastkatkaBot.CALLBACK_ACCEPT_MARRIAGE + userId),
+                        .setCallbackData(LastkatkaBot.CALLBACK_ACCEPT_MARRIAGE + userId + " " + loverId),
                 new InlineKeyboardButton()
                         .setText("Отказаться")
-                        .setCallbackData(LastkatkaBot.CALLBACK_DENY_MARRIAGE)
+                        .setCallbackData(LastkatkaBot.CALLBACK_DENY_MARRIAGE + userId + " " + loverId)
         )));
         var sm = Methods.sendMessage()
                 .setChatId(chatId)
