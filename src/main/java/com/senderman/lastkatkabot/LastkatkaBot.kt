@@ -28,7 +28,7 @@ class LastkatkaBot : BotModule {
         const val CALLBACK_DELETE_NEKO = "deleteuser_neko"
         const val CALLBACK_DELETE_PREM = "deleteuser_prem"
         const val CALLBACK_VOTE_BNC = "vote_bnc"
-        const val CALLBACK_ACCEPT_MARRIAGE = "accept_marriage"
-        const val CALLBACK_DENY_MARRIAGE = "deny_marriage"
+        const val CALLBACK_ACCEPT_MARRIAGE = "acc_marr "
+        const val CALLBACK_DENY_MARRIAGE = "deny_marr "
     }
 }
