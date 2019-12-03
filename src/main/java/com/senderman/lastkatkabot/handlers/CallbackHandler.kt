@@ -9,51 +9,48 @@ import com.senderman.lastkatkabot.Services
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.User
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 
 class CallbackHandler(private val handler: LastkatkaBotHandler) {
-    fun payRespects(query: CallbackQuery) {
-        if (query.message.text.contains(query.from.firstName)) {
-            Methods.answerCallbackQuery()
-                    .setCallbackQueryId(query.id)
-                    .setText("You've already payed respects! (or you've tried to pay respects to yourself)")
-                    .setShowAlert(true)
-                    .call(handler)
-            return
-        }
+
+    private fun answerQuery(id: String, text: String, showAlert: Boolean = true) {
         Methods.answerCallbackQuery()
-                .setCallbackQueryId(query.id)
-                .setText("You've payed respects")
-                .setShowAlert(true)
-                .call(handler)
-        Methods.editMessageText()
-                .setChatId(query.message.chatId)
-                .setMessageId(query.message.messageId)
-                .setReplyMarkup(UsercommandsHandler.getMarkupForPayingRespects())
-                .setText(query.message.text + "\n" + query.from.firstName + " has payed respects")
+                .setCallbackQueryId(id)
+                .setText(text)
+                .setShowAlert(showAlert)
                 .call(handler)
     }
 
-    fun cake(query: CallbackQuery, actions: CAKE_ACTIONS) {
+    private fun editText(query: CallbackQuery, text: String, markup: InlineKeyboardMarkup? = null) {
+        editText(query.message.chatId, query.message.messageId, text, markup)
+    }
+
+    private fun editText(chatId: Long, messageId: Int, text: String, markup: InlineKeyboardMarkup? = null) {
+        Methods.editMessageText()
+                .setChatId(chatId)
+                .setMessageId(messageId)
+                .setText(text)
+                .setReplyMarkup(markup)
+                .call(handler)
+    }
+
+    fun payRespects(query: CallbackQuery) {
+        if (query.message.text.contains(query.from.firstName)) {
+            answerQuery(query.id, "You've already payed respects! (or you've tried to pay respects to yourself)")
+            return
+        }
+        answerQuery(query.id, "You've payed respects")
+        editText(query, "${query.message.text}\n${query.from.firstName} has payed respects", UsercommandsHandler.getMarkupForPayingRespects())
+    }
+
+    fun cake(query: CallbackQuery, actions: CakeAcion) {
         if (query.from.id != query.message.replyToMessage.from.id) {
-            Methods.answerCallbackQuery()
-                    .setCallbackQueryId(query.id)
-                    .setText("Этот тортик не вам!")
-                    .setShowAlert(true)
-                    .call(handler)
+            answerQuery(query.id, "Этот тортик не вам!")
             return
         }
         if (query.message.date + 2400 < System.currentTimeMillis() / 1000) {
-            Methods.answerCallbackQuery()
-                    .setCallbackQueryId(query.id)
-                    .setText("Тортик испортился!")
-                    .setShowAlert(true)
-                    .call(handler)
-            Methods.editMessageText()
-                    .setChatId(query.message.chatId)
-                    .setText("\uD83E\uDD22 Тортик попытались взять, но он испортился!")
-                    .setMessageId(query.message.messageId)
-                    .setReplyMarkup(null)
-                    .call(handler)
+            answerQuery(query.id, "Тортик испортился!")
+            editText(query, "\uD83E\uDD22 Тортик попытались взять, но он испортился!")
             return
         }
         val acq = Methods.answerCallbackQuery()
@@ -62,7 +59,7 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
                 .setChatId(query.message.chatId)
                 .setMessageId(query.message.messageId)
                 .setReplyMarkup(null)
-        if (actions == CAKE_ACTIONS.CAKE_OK) {
+        if (actions == CakeAcion.CAKE_OK) {
             acq.text = "n p u я m н o r o  a n n e m u m a"
             emt.setText("\uD83C\uDF82 " + query.from.firstName + " принял тортик"
                     + query.data.replace(LastkatkaBot.CALLBACK_CAKE_OK, ""))
@@ -78,27 +75,15 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
     fun registerInTournament(query: CallbackQuery) {
         val memberId = query.from.id
         if (!handler.tournamentHandler.isEnabled) {
-            Methods.answerCallbackQuery()
-                    .setCallbackQueryId(query.id)
-                    .setText("⚠️ На данный момент нет открытых раундов!")
-                    .setShowAlert(true)
-                    .call(handler)
+            answerQuery(query.id, "⚠️ На данный момент нет открытых раундов!")
             return
         }
-        if (handler.tournamentHandler.membersIds.contains(memberId)) {
-            Methods.answerCallbackQuery()
-                    .setCallbackQueryId(query.id)
-                    .setText("⚠️ Вы уже получили разрешение на отправку сообщений!")
-                    .setShowAlert(true)
-                    .call(handler)
+        if (memberId in handler.tournamentHandler.membersIds) {
+            answerQuery(query.id, "⚠️ Вы уже получили разрешение на отправку сообщений!")
             return
         }
-        if (!handler.tournamentHandler.members.contains(query.from.userName)) {
-            Methods.answerCallbackQuery()
-                    .setCallbackQueryId(query.id)
-                    .setText("\uD83D\uDEAB Вы не являетесь участником текущего раунда!")
-                    .setShowAlert(true)
-                    .call(handler)
+        if (query.from.userName !in handler.tournamentHandler.members) {
+            answerQuery(query.id, "\uD83D\uDEAB Вы не являетесь участником текущего раунда!")
             return
         }
         handler.tournamentHandler.membersIds.add(memberId)
@@ -109,23 +94,14 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
                 .setCanSendMediaMessages(true)
                 .setCanSendOtherMessages(true)
                 .call(handler)
-        Methods.answerCallbackQuery()
-                .setCallbackQueryId(query.id)
-                .setText("✅ Вам даны права на отправку сообщений в группе турнира!")
-                .setShowAlert(true)
-                .call(handler)
-        handler.sendMessage(Services.botConfig.tourgroup, String.format("✅ %1\$s получил доступ к игре!", query.from.firstName))
+        answerQuery(query.id, "✅ Вам даны права на отправку сообщений в группе турнира!")
+        handler.sendMessage(Services.botConfig.tourgroup, "✅ ${query.from.firstName} получил доступ к игре!")
     }
 
     fun addChat(query: CallbackQuery) {
         val chatId = query.data.replace(LastkatkaBot.CALLBACK_ALLOW_CHAT, "").toLong()
         handler.allowedChats.add(chatId)
-        Methods.editMessageText()
-                .setChatId(query.message.chatId)
-                .setText("✅ Чат добавлен в разрешенные!")
-                .setMessageId(query.message.messageId)
-                .setReplyMarkup(null)
-                .call(handler)
+        editText(query, "✅ Чат добавлен в разрешенные!")
         val message = handler.sendMessage(chatId, "Разработчик принял данный чат. Бот готов к работе здесь!\n" +
                 "Для некоторых фичей бота требуются права админа на удаление и закреп сообщений.")
         Services.db.addAllowedChat(chatId, message.chat.title)
@@ -133,26 +109,17 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
 
     fun denyChat(query: CallbackQuery) {
         val chatId = query.data.replace(LastkatkaBot.CALLBACK_DONT_ALLOW_CHAT, "").toLong()
-        Methods.editMessageText()
-                .setChatId(query.message.chatId)
-                .setMessageId(query.message.messageId)
-                .setText("\uD83D\uDEAB Чат отклонен!")
-                .setReplyMarkup(null)
-                .call(handler)
+        editText(query, "\uD83D\uDEAB Чат отклонен!")
         handler.sendMessage(chatId, "Разработчик отклонил данный чат. Всем пока!")
         Methods.leaveChat(chatId).call(handler)
     }
 
     fun deleteChat(query: CallbackQuery) {
-        val chatId = query.data.split(" ").toTypedArray()[1].toLong()
+        val chatId = query.data.split(" ")[1].toLong()
         Services.db.removeAllowedChat(chatId)
         Services.db.deleteBncGame(chatId)
         handler.allowedChats.remove(chatId)
-        Methods.answerCallbackQuery()
-                .setShowAlert(true)
-                .setText("Чат удален!")
-                .setCallbackQueryId(query.id)
-                .call(handler)
+        answerQuery(query.id, "Чат удален!")
         handler.sendMessage(chatId, "Разработчик решил удалить бота из данного чата. Всем пока!")
         Methods.leaveChat(chatId).call(handler)
         Methods.deleteMessage(query.message.chatId, query.message.messageId).call(handler)
@@ -176,51 +143,34 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
             }
             else -> return
         }
-        val userId = query.data.split(" ").toTypedArray()[1].toInt()
+        val userId = query.data.split(" ")[1].toInt()
         Services.db.removeTGUser(userId, type)
         userIds.remove(userId)
-        Methods.answerCallbackQuery()
-                .setShowAlert(true)
-                .setText("Пользователь удален из списка")
-                .setCallbackQueryId(query.id)
-                .call(handler)
+        answerQuery(query.id, "Пользователь удален из списка")
         handler.sendMessage(userId, "Разработчик удалил вас из $listName бота!")
         Methods.deleteMessage(query.message.chatId, query.message.messageId).call(handler)
     }
 
-    private fun notFor(message: Message, user: User): Boolean {
-        if (!message.hasEntities()) return true
+    private fun notFor(message: Message, user: User): Boolean = false/*{
+        if (!message.hasEntities()) return false
         for (entity in message.entities) {
-            if (entity.type != "text_mention") continue
-            if (entity.user.id == user.id) return false
+            if (entity?.user?.id == user.id) return false
         }
         return true
-    }
+    }*/
 
-    fun accept_marriage(query: CallbackQuery) {
+    fun acceptMarriage(query: CallbackQuery) {
         val userId = query.from.id
         val message = query.message
         if (notFor(message, query.from) || !message.isReply || message.replyToMessage.from.id != userId) {
-            Methods.answerCallbackQuery()
-                    .setShowAlert(true)
-                    .setText("Куда лезете? Это не вам!")
-                    .setCallbackQueryId(query.id)
-                    .call(handler)
+            answerQuery(query.id, "Куда лезете? Это не вам!")
             return
         }
         if (Services.db.getLover(userId) != 0) {
-            Methods.answerCallbackQuery()
-                    .setShowAlert(true)
-                    .setText("У вас уже есть вторая половинка!")
-                    .setCallbackQueryId(query.id)
-                    .call(handler)
+            answerQuery(query.id, "У вас уже есть вторая половинка!")
             return
         }
-        Methods.answerCallbackQuery()
-                .setShowAlert(true)
-                .setText("Поздравляем! Теперь у вас есть вторая половинка")
-                .setCallbackQueryId(query.id)
-                .call(handler)
+        answerQuery(query.id, "Поздравляем! Теперь у вас есть вторая половинка")
         Methods.deleteMessage(message.chatId, message.messageId).call(handler)
         // user - acceptor, couple - inviter
         val user = TgUser(userId, query.from.firstName)
@@ -233,40 +183,21 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
         handler.sendMessage(message.chatId, text)
     }
 
-    fun deny_marriage(query: CallbackQuery) {
+    fun denyMarriage(query: CallbackQuery) {
         val userId = query.from.id
         val message = query.message
         if (notFor(message, query.from) || !message.isReply || message.replyToMessage.from.id != userId) {
-            Methods.answerCallbackQuery()
-                    .setShowAlert(true)
-                    .setText("Куда лезете? Это не вам!")
-                    .setCallbackQueryId(query.id)
-                    .call(handler)
+            answerQuery(query.id, "Куда лезете? Это не вам!")
             return
         }
-        Methods.answerCallbackQuery()
-                .setShowAlert(false)
-                .setText("Такое упускаете...")
-                .setCallbackQueryId(query.id)
-                .call(handler)
-        Methods.editMessageText()
-                .setChatId(message.chatId)
-                .setText("Пользователь " + query.from.firstName + " отказался от брака :(")
-                .setReplyMarkup(null)
-                .setMessageId(message.messageId)
-                .call(handler)
+        answerQuery(query.id, "Такое упускаете...")
+        editText(query, "Пользователь ${query.from.firstName} отказался от брака :(")
     }
 
-    fun closeMenu(query: CallbackQuery) {
-        Methods.editMessageText()
-                .setChatId(query.message.chatId)
-                .setMessageId(query.message.messageId)
-                .setText("Меню закрыто")
-                .setReplyMarkup(null)
-                .call(handler)
-    }
+    fun closeMenu(query: CallbackQuery) = editText(query, "Меню закрыто")
 
-    enum class CAKE_ACTIONS {
+
+    enum class CakeAcion {
         CAKE_OK, CAKE_NOT
     }
 

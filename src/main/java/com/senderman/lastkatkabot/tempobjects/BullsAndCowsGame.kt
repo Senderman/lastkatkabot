@@ -102,10 +102,9 @@ class BullsAndCowsGame(message: Message) {
         val info = """
             Длина числа: $length
             Попыток осталось: $attempts
-            История: $history
             Создатель игры: ${creator.getLink()}
             Время игры: ${getSpentTime()}
-        """.trimIndent()
+        """.trimIndent() + "\n\nИстория\n: $history"
         gameMessage(chatId, info)
     }
 
