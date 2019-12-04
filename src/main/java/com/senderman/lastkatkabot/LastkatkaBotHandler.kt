@@ -188,6 +188,9 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
             data.startsWith(LastkatkaBot.CALLBACK_ACCEPT_MARRIAGE) ->
                 callbackHandler.acceptMarriage(query)
 
+            data.startsWith(LastkatkaBot.CALLBACK_DENY_MARRIAGE) ->
+                callbackHandler.denyMarriage(query)
+
             data.startsWith(LastkatkaBot.CALLBACK_DELETE_CHAT) -> {
 
                 callbackHandler.deleteChat(query)
@@ -225,8 +228,6 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
                     duel.join(query)
                     return
                 }
-                LastkatkaBot.CALLBACK_DENY_MARRIAGE ->
-                    callbackHandler.denyMarriage(query)
 
                 LastkatkaBot.CALLBACK_VOTE_BNC -> bullsAndCowsGames[query.message.chatId]?.addVote(query)
             }

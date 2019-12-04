@@ -173,7 +173,10 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
         val coupleId = query.data.split(" ")[1].toInt()
         val couple = TgUser(Methods.getChatMember(message.chatId, coupleId).call(handler).user)
         Services.db.setLover(user.id, couple.id)
-        handler.sendMessage(couple.id, "Поздравляем! Теперь ваша вторая половинка - " + user.getLink())
+        try {
+            handler.sendMessage(couple.id, "Поздравляем! Теперь ваша вторая половинка - " + user.getLink())
+        } catch (e: Exception) {
+        }
         val format = "Внимание все! Сегодня великий день свадьбы %s и %s! Так давайте же поздравим их и съедим шавуху в часть такого праздника!"
         val text = String.format(format, user.getLink(), couple.getLink())
         handler.sendMessage(message.chatId, text)
