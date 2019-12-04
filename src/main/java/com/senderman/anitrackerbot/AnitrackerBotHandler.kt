@@ -115,7 +115,7 @@ class AnitrackerBotHandler internal constructor(private val config: BotConfig) :
                 val userIds = Services.db.getUsersIds()
                 val textList = StringBuilder("Список пользователей:\n\n")
                 for (id in userIds) {
-                    val user = Methods.getChatMember(userId.toLong(), userId).call(this).user
+                    val user = Methods.getChatMember(id.toLong(), id).call(this).user
                     val tgUser = TgUser(id, user.firstName)
                     textList.append("${tgUser.getLink()}\n")
                 }
