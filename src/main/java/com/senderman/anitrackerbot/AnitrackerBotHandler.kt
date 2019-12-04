@@ -2,6 +2,7 @@ package com.senderman.anitrackerbot
 
 import com.annimon.tgbotsmodule.BotHandler
 import com.annimon.tgbotsmodule.api.methods.Methods
+import com.senderman.TgUser
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
 import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.objects.Update
@@ -108,6 +109,17 @@ class AnitrackerBotHandler internal constructor(private val config: BotConfig) :
                     sendMessage(chatId, "Ошибка!")
                 }
                 return null
+            }
+
+            "/users" -> {
+                val userIds = Services.db.getUsersIds()
+                val textList = StringBuilder("Список пользователей:\n\n")
+                for (id in userIds) {
+                    val user = Methods.getChatMember(userId.toLong(), userId).call(this).user
+                    val tgUser = TgUser(id, user.firstName)
+                    textList.append("${tgUser.getLink()}\n")
+                }
+                sendMessage(chatId, textList.toString())
             }
         }
 
