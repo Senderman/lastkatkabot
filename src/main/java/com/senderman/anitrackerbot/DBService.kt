@@ -9,4 +9,5 @@ interface DBService {
     fun idExists(id: Int, userId: Int): Boolean
     fun urlExists(url: String, userId: Int): Boolean
     fun getAllAnimes(userId: Int): Map<Int, String>
+    fun getUsersIds(): List<Int>
 }

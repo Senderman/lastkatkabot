@@ -5,6 +5,7 @@ import com.mongodb.client.model.Filters.eq
 import com.senderman.MongoClientKeeper
 import org.bson.Document
 import java.util.*
+import kotlin.collections.ArrayList
 
 internal class MongoDBService : DBService {
     private val client = MongoClientKeeper.client
@@ -48,5 +49,13 @@ internal class MongoDBService : DBService {
             result[doc.getInteger("id")] = doc.getString("url")
         }
         return result
+    }
+
+    override fun getUsersIds(): List<Int> {
+        val result = ArrayList<Int>()
+        for (userId in database.listCollectionNames()) {
+            result.add(userId.toInt())
+        }
+        return result;
     }
 }
