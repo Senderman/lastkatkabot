@@ -190,7 +190,7 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
         """.trimIndent()
         if (loverId != 0) {
             text += "\n❤️ Вторая половинка: " +
-                    TgUser(Methods.getChatMember(loverId.toLong(), loverId).call(handler).user).link
+                    TgUser(Methods.getChatMember(loverId.toLong(), loverId).call(handler).user).name
         }
         handler.sendMessage(message.chatId, text)
     }
