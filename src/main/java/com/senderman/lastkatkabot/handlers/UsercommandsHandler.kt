@@ -378,7 +378,7 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
         }
         val pair = "${user1.name} ❤ ${user2.name}"
         Services.db.setPair(chatId, pair)
-        handler.sendMessage(chatId, String.format(loveStrings[loveStrings.size - 1], user1.link, user2.link))
+        handler.sendMessage(chatId, java.lang.String.format(loveStrings[loveStrings.size - 1], user1.link, user2.link))
     }
 
     @Throws(Exception::class)
