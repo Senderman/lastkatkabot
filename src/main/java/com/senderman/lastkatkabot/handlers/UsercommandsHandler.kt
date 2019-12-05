@@ -180,7 +180,7 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
         val (_, duelWins, totalDuels, bnc, loverId) = stats
         val winRate = if (totalDuels == 0) 0 else 100 * duelWins / totalDuels
         var text = """
-            \uD83D\uDCCA Статистика ${user.name}:\n\n
+            📊 Статистика ${user.name}:\n\n
             Дуэлей выиграно: $duelWins
             Всего дуэлей: $totalDuels
             Винрейт: $winRate
@@ -191,7 +191,6 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
             text += "\n❤️ Вторая половинка: " +
                     TgUser(Methods.getChatMember(loverId.toLong(), loverId).call(handler).user).link
         }
-        handler.sendMessage(message.chatId, "test")
         handler.sendMessage(message.chatId, text)
     }
 
