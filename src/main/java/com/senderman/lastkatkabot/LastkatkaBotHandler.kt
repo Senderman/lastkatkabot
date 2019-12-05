@@ -288,7 +288,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
 
             val inviter = TgUser(message.from.id, message.from.firstName)
             sendMessage(Methods.sendMessage(
-                    Services.botConfig.mainAdmin.toLong(), "Добавить чат ${message.chat.title} $chatId в список разрешенных? - ${inviter.getLink()}")
+                    Services.botConfig.mainAdmin.toLong(), "Добавить чат ${message.chat.title} $chatId в список разрешенных? - ${inviter.link}")
                     .setReplyMarkup(markup))
         }
     }

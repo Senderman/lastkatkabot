@@ -7,6 +7,7 @@ import com.senderman.MongoClientKeeper
 import com.senderman.lastkatkabot.DBService.UserType
 import com.senderman.lastkatkabot.tempobjects.BullsAndCowsGame
 import com.senderman.lastkatkabot.tempobjects.UserRow
+import com.senderman.lastkatkabot.tempobjects.UserStats
 import org.bson.Document
 import org.telegram.telegrambots.meta.api.objects.Message
 import java.text.SimpleDateFormat
@@ -71,18 +72,13 @@ internal class MongoDBService : DBService {
         userstats.updateOne(eq("id", id), updateDoc)
     }
 
-    override fun getStats(id: Int): Map<String, Int> {
+    override fun getStats(id: Int): UserStats {
         val doc = userstats.getUser(id)
         val total = doc.getInteger("total")
         val wins = doc.getInteger("wins")
         val bncwins = doc.getInteger("bnc")
         val lover = doc.getInteger("lover") ?: 0
-        val stats = HashMap<String, Int>()
-        stats["total"] = total
-        stats["wins"] = wins
-        stats["bnc"] = bncwins
-        stats["lover"] = lover
-        return stats
+        return UserStats(id, wins, total, bncwins, lover)
     }
 
     override fun getTop(): Map<Int, Int> {
@@ -179,7 +175,7 @@ internal class MongoDBService : DBService {
         getChatMembersCollection(chatId).deleteOne(eq("id", userId))
     }
 
-    override fun getChatMemebersIds(chatId: Long): List<Int> {
+    override fun getChatMemebersIds(chatId: Long): MutableList<Int> {
         val chat = getChatMembersCollection(chatId)
         val members = ArrayList<Int>()
         for (doc in chat.find()) {

@@ -1,7 +1,9 @@
 package com.senderman.lastkatkabot
 
+import com.senderman.lastkatkabot.tempobjects.BnCPlayer
 import com.senderman.lastkatkabot.tempobjects.BullsAndCowsGame
 import com.senderman.lastkatkabot.tempobjects.UserRow
+import com.senderman.lastkatkabot.tempobjects.UserStats
 import org.bson.Document
 import org.telegram.telegrambots.meta.api.objects.Message
 
@@ -15,7 +17,7 @@ interface DBService {
     fun incTotalDuels(id: Int)
     fun incDuelWins(id: Int)
     fun incBNCWins(id: Int, points: Int)
-    fun getStats(id: Int): Map<String, Int>
+    fun getStats(id: Int): UserStats
     // return map of <id, score> sorted by descending order
     fun getTop(): Map<Int, Int>
 
@@ -34,7 +36,7 @@ interface DBService {
     fun getAllUsersIds(): Set<Int>
     fun addUserToChatDB(message: Message)
     fun removeUserFromChatDB(userId: Int, chatId: Long)
-    fun getChatMemebersIds(chatId: Long): List<Int>
+    fun getChatMemebersIds(chatId: Long): MutableList<Int>
     fun removeOldUsers(chatId: Long, date: Int)
 
 
