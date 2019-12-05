@@ -191,7 +191,8 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
             text += "\n❤️ Вторая половинка: " +
                     TgUser(Methods.getChatMember(loverId.toLong(), loverId).call(handler).user).link
         }
-        handler.sendMessage(message.chatId.toInt(), text)
+        handler.sendMessage(message.chatId, "test")
+        handler.sendMessage(message.chatId, text)
     }
 
     fun pinList(message: Message) {
