@@ -189,8 +189,9 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
             🐮 Баллов за быки и коровы: $bnc
         """.trimIndent()
         if (loverId != 0) {
-            text += "\n❤️ Вторая половинка: " +
-                    TgUser(Methods.getChatMember(loverId.toLong(), loverId).call(handler).user).name
+            val lover = TgUser(Methods.getChatMember(loverId.toLong(), loverId).call(handler).user)
+            text += "\n❤️ Вторая половинка: "
+            text += if (message.isUserMessage) lover.link else lover.name
         }
         handler.sendMessage(message.chatId, text)
     }
