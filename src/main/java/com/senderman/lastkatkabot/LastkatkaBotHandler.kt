@@ -44,7 +44,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
 
     init {
         val mainAdmin = Services.botConfig.mainAdmin
-        sendMessage(mainAdmin.toLong(), "Initialization...")
+        sendMessage(mainAdmin, "Initialization...")
 
         // settings
         Services.handler = this
