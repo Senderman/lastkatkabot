@@ -117,7 +117,7 @@ class AnitrackerBotHandler internal constructor(private val config: BotConfig) :
                 for (id in userIds) {
                     val user = Methods.getChatMember(id.toLong(), id).call(this).user
                     val tgUser = TgUser(id, user.firstName)
-                    textList.append("${tgUser.getLink()}\n")
+                    textList.append("${tgUser.link}\n")
                 }
                 sendMessage(chatId, textList.toString())
             }

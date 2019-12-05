@@ -34,10 +34,10 @@ internal class CommandListener constructor(
     fun stats(message: Message) = usercommands.stats(message)
 
     @Command(name = "/pinlist", desc = "ответьте этим на сообщение со списком игроков в верфульфа чтобы запинить его")
-    fun pinlist(message: Message) = usercommands.pinlist(message)
+    fun pinlist(message: Message) = usercommands.pinList(message)
 
     @Command(name = "/getinfo", desc = "(reply) инфа о сообщении в формате JSON")
-    fun getinfo(message: Message) = usercommands.getinfo(message)
+    fun getinfo(message: Message) = usercommands.getInfo(message)
 
     @Command(name = "/weather", desc = "погода. Если не указать город, то покажет погоду в последнем введенном вами городе")
     fun weather(message: Message) = usercommands.weather(message)

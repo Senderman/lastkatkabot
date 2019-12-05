@@ -34,7 +34,7 @@ class UserRow(message: Message) {
         val user = TgUser(newUser)
         checkedUsers.add(user.id)
         val pref = if (checkedUsers.size % divider == 0) "" else "не"
-        messageText += "${checkedUsers.size}. ${user.getLink()} - $pref $name\n"
+        messageText += "${checkedUsers.size}. ${user.link} - $pref $name\n"
         Methods.editMessageText()
                 .setChatId(chatId)
                 .setMessageId(messageId)

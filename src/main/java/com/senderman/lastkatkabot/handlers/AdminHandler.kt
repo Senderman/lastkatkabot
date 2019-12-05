@@ -77,7 +77,7 @@ class AdminHandler(private val handler: LastkatkaBotHandler) {
                 try {
                     val name = Methods.getChatMember(id.toLong(), id).call(handler).user.firstName
                     val user = TgUser(id, name)
-                    userlist.append(user.getLink()).append("\n")
+                    userlist.append(user.link).append("\n")
                 } catch (e: Exception) {
                     Services.db.removeTGUser(id, type)
                     dropList.append("Юзер с id $id удален из бд!\n")
@@ -117,7 +117,7 @@ class AdminHandler(private val handler: LastkatkaBotHandler) {
         val neko = TgUser(message.replyToMessage.from.id, message.replyToMessage.from.firstName)
         Services.db.removeTGUser(neko.id, UserType.BLACKLIST)
         handler.blacklist.remove(message.replyToMessage.from.id)
-        handler.sendMessage(message.chatId, "\uD83D\uDE38 ${neko.getLink()} - хорошая киса!")
+        handler.sendMessage(message.chatId, "\uD83D\uDE38 ${neko.link} - хорошая киса!")
     }
 
     fun update(message: Message) {

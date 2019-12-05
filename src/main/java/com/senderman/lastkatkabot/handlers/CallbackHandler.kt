@@ -38,7 +38,11 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
             return
         }
         answerQuery(query, "You've payed respects")
-        editText(query, "${query.message.text}\n${query.from.firstName} has payed respects", UsercommandsHandler.getMarkupForPayingRespects())
+        editText(
+                query,
+                "${query.message.text}\n${query.from.firstName} has payed respects",
+                UsercommandsHandler.markupForPayingRespects
+        )
     }
 
     fun cake(query: CallbackQuery, action: CakeAcion) {
@@ -173,12 +177,9 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
         val coupleId = query.data.split(" ")[1].toInt()
         val couple = TgUser(Methods.getChatMember(message.chatId, coupleId).call(handler).user)
         Services.db.setLover(user.id, couple.id)
-        try {
-            handler.sendMessage(couple.id, "Поздравляем! Теперь ваша вторая половинка - " + user.getLink())
-        } catch (e: Exception) {
-        }
+        handler.sendMessage(couple.id, "Поздравляем! Теперь ваша вторая половинка - " + user.link)
         val format = "Внимание все! Сегодня великий день свадьбы %s и %s! Так давайте же поздравим их и съедим шавуху в часть такого праздника!"
-        val text = String.format(format, user.getLink(), couple.getLink())
+        val text = String.format(format, user.link, couple.link)
         handler.sendMessage(message.chatId, text)
     }
 
