@@ -104,7 +104,7 @@ class BullsAndCowsGame(message: Message) {
             Попыток осталось: $attempts
             Создатель игры: ${creator.link}
             Время игры: ${getSpentTime()}
-        """.trimIndent() + "\n\nИстория\n: $history"
+        """.trimIndent() + "\n\nИстория:\n $history"
         gameMessage(chatId, info)
     }
 
