@@ -180,10 +180,11 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
         val (_, duelWins, totalDuels, bnc, loverId) = stats
         val winRate = if (totalDuels == 0) 0 else 100 * duelWins / totalDuels
         var text = """
-            📊 Статистика ${user.name}:\n\n
+            📊 Статистика ${user.name}:
+
             Дуэлей выиграно: $duelWins
             Всего дуэлей: $totalDuels
-            Винрейт: $winRate
+            Винрейт: $winRate%
             
             🐮 Баллов за быки и коровы: $bnc
         """.trimIndent()
@@ -380,7 +381,7 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
     }
 
     @Throws(Exception::class)
-    private fun getUserForPair(chatId: Long, userIds: MutableList<Int>, first: TgUser): TgUser{
+    private fun getUserForPair(chatId: Long, userIds: MutableList<Int>, first: TgUser): TgUser {
         val loverId = Services.db.getLover(first.id)
         return if (loverId in userIds) {
             TgUser(Methods.getChatMember(chatId, loverId).call(handler).user)
