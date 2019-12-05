@@ -314,7 +314,7 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
             val annotation = method.getAnnotation(Command::class.java)
             if (!annotation.showInHelp) continue
 
-            val helpLine = "${annotation.name} - ${annotation.desc}"
+            val helpLine = "${annotation.name} - ${annotation.desc}\n"
             if (noobId == Services.botConfig.mainAdmin && annotation.forMainAdmin)
                 mainAdminHelp.append(helpLine)
             else if (handler.isFromAdmin(message) && annotation.forAllAdmins)
