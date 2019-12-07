@@ -248,11 +248,11 @@ internal class MongoDBService : DBService {
         }
     }
 
-    override fun addAllowedChat(chatId: Long, title: String) {
+    override fun addChat(chatId: Long, title: String) {
         chats.insertOne(Document("chatId", chatId).append("title", title))
     }
 
-    override fun getAllowedChatsMap(): Map<Long, String> {
+    override fun getChatTitleMap(): Map<Long, String> {
         val chats = HashMap<Long, String>()
         for (doc in this.chats.find()) {
             chats[doc.getLong("chatId")] = doc.getString("title")
@@ -260,7 +260,7 @@ internal class MongoDBService : DBService {
         return chats
     }
 
-    override fun getAllowedChatsSet(): MutableSet<Long> {
+    override fun getChatIdsSet(): MutableSet<Long> {
         val allowedChats = HashSet<Long>()
         for (doc in chats.find()) {
             allowedChats.add(doc.getLong("chatId"))
@@ -278,7 +278,7 @@ internal class MongoDBService : DBService {
         chats.updateOne(eq("chatId", chatId), Document("\$set", commit))
     }
 
-    override fun removeAllowedChat(chatId: Long) {
+    override fun removeChat(chatId: Long) {
         chats.deleteOne(eq("chatId", chatId))
         getChatMembersCollection(chatId).drop()
     }

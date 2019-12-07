@@ -155,9 +155,6 @@ internal class CommandListener constructor(
     @Command(name = "/announce", desc = "рассылка сообщения всем в личку", forMainAdmin = true)
     fun announce(message: Message) = adminCommands.announce(message)
 
-    @Command(name = "/chats", desc = "управление чатами", forMainAdmin = true)
-    fun chats(message: Message) = adminCommands.chats(message)
-
     @Command(name = "/cc", desc = "очистка списка чатов от мусора и обновление названий", forMainAdmin = true)
     fun cleanChats(message: Message) = adminCommands.cleanChats(message)
 

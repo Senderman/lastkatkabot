@@ -100,33 +100,6 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
         handler.sendMessage(Services.botConfig.tourgroup, "✅ ${query.from.firstName} получил доступ к игре!")
     }
 
-    fun addChat(query: CallbackQuery) {
-        val chatId = query.data.replace(LastkatkaBot.CALLBACK_ALLOW_CHAT, "").toLong()
-        handler.allowedChats.add(chatId)
-        editText(query, "✅ Чат добавлен в разрешенные!")
-        val message = handler.sendMessage(chatId, "Разработчик принял данный чат. Бот готов к работе здесь!\n" +
-                "Для некоторых фичей бота требуются права админа на удаление и закреп сообщений.")
-        Services.db.addAllowedChat(chatId, message.chat.title)
-    }
-
-    fun denyChat(query: CallbackQuery) {
-        val chatId = query.data.replace(LastkatkaBot.CALLBACK_DONT_ALLOW_CHAT, "").toLong()
-        editText(query, "\uD83D\uDEAB Чат отклонен!")
-        handler.sendMessage(chatId, "Разработчик отклонил данный чат. Всем пока!")
-        Methods.leaveChat(chatId).call(handler)
-    }
-
-    fun deleteChat(query: CallbackQuery) {
-        val chatId = query.data.split(" ")[1].toLong()
-        Services.db.removeAllowedChat(chatId)
-        Services.db.deleteBncGame(chatId)
-        handler.allowedChats.remove(chatId)
-        answerQuery(query, "Чат удален!")
-        handler.sendMessage(chatId, "Разработчик решил удалить бота из данного чата. Всем пока!")
-        Methods.leaveChat(chatId).call(handler)
-        Methods.deleteMessage(query.message.chatId, query.message.messageId).call(handler)
-    }
-
     fun deleteUser(query: CallbackQuery, type: UserType?) {
         val userIds: MutableSet<Int>
         val listName: String
