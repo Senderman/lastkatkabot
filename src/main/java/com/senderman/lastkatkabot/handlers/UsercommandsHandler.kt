@@ -357,10 +357,13 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
         // generate 2 different random users
         val user1: TgUser
         val user2: TgUser
+        val isTrueLove: Boolean
         try {
             user1 = getUserForPair(chatId, userIds)
             userIds.remove(user1.id)
-            user2 = getUserForPair(chatId, userIds, user1)
+            val lover = getSecondUserForPair(chatId, userIds, user1)
+            user2 = lover.user
+            isTrueLove = lover.isTrueLover
         } catch (e: Exception) {
             handler.sendMessage(chatId, "Недостаточно пользователей для создания пары! Подождите, пока кто-то еще напишет в чат!")
             return
@@ -369,24 +372,26 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
         val loveArray = Services.botConfig.loveStrings
         val loveStrings = loveArray[ThreadLocalRandom.current().nextInt(loveArray.size)].trim().split("\n")
         try {
-            for (i in 0 until loveStrings.size - 1) {
+            for (i in 0 until loveStrings.lastIndex) {
                 handler.sendMessage(chatId, loveStrings[i])
                 Thread.sleep(1500)
             }
         } catch (e: InterruptedException) {
             BotLogger.error("PAIR", "Ошибка таймера")
         }
-        val pair = "${user1.name} ❤ ${user2.name}"
+        val pair = if (isTrueLove) "${user1.name} ❤ ${user2.name}" else "${user1.name} 💖 $user2.name"
         Services.db.setPair(chatId, pair)
-        handler.sendMessage(chatId, java.lang.String.format(loveStrings[loveStrings.size - 1], user1.link, user2.link))
+        handler.sendMessage(chatId, java.lang.String.format(loveStrings.last(), user1.link, user2.link))
     }
 
+    data class Lover(val user: TgUser, val isTrueLover: Boolean)
+
     @Throws(Exception::class)
-    private fun getUserForPair(chatId: Long, userIds: MutableList<Int>, first: TgUser): TgUser {
+    private fun getSecondUserForPair(chatId: Long, userIds: MutableList<Int>, first: TgUser): Lover {
         val loverId = Services.db.getLover(first.id)
         return if (loverId in userIds) {
-            TgUser(Methods.getChatMember(chatId, loverId).call(handler).user)
-        } else getUserForPair(chatId, userIds)
+            Lover(TgUser(Methods.getChatMember(chatId, loverId).call(handler).user), true)
+        } else Lover(getUserForPair(chatId, userIds), false)
     }
 
     @Throws(Exception::class)
