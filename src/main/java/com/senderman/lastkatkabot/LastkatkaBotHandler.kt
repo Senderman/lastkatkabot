@@ -48,7 +48,6 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         // settings
         Services.handler = this
         Services.db = MongoDBService()
-        Services.db.cleanup()
 
         admins = Services.db.getTgUsersByType(UserType.ADMINS)
         premiumUsers = Services.db.getTgUsersByType(UserType.PREMIUM)

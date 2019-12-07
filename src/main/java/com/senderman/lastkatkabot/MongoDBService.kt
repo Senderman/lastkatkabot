@@ -285,8 +285,13 @@ internal class MongoDBService : DBService {
 
     override fun cleanup() {
         for (chat in chatMembersDB.listCollectionNames()) {
-            if (chats.find(eq("chatId", chat.toLong())).first() == null)
+            if (
+                    chats.find(eq("chatId", chat.toLong())).first() == null
+                    || getChatMembersCollection(chat.toLong()).countDocuments() < 2
+            ) {
                 getChatMembersCollection(chat.toLong()).drop()
+                chats.deleteOne(eq("chatId", chat.toLong()))
+            }
         }
     }
 
