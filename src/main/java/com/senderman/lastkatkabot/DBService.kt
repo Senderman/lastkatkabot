@@ -1,6 +1,5 @@
 package com.senderman.lastkatkabot
 
-import com.senderman.lastkatkabot.tempobjects.BnCPlayer
 import com.senderman.lastkatkabot.tempobjects.BullsAndCowsGame
 import com.senderman.lastkatkabot.tempobjects.UserRow
 import com.senderman.lastkatkabot.tempobjects.UserStats
@@ -51,12 +50,12 @@ interface DBService {
     fun setTournamentMessage(messageId: Int)
 
 
-    fun addAllowedChat(chatId: Long, title: String)
-    fun getAllowedChatsMap(): Map<Long, String>
-    fun getAllowedChatsSet(): MutableSet<Long>
+    fun addChat(chatId: Long, title: String)
+    fun getChatTitleMap(): Map<Long, String>
+    fun getChatIdsSet(): MutableSet<Long>
     fun updateChatId(oldChatId: Long, newChatId: Long)
     fun updateTitle(chatId: Long, title: String)
-    fun removeAllowedChat(chatId: Long)
+    fun removeChat(chatId: Long)
     fun cleanup()
 
 

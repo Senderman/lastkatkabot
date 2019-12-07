@@ -4,7 +4,6 @@ import com.annimon.tgbotsmodule.BotHandler
 import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.api.methods.send.SendMessageMethod
 import com.senderman.Command
-import com.senderman.TgUser
 import com.senderman.lastkatkabot.DBService.UserType
 import com.senderman.lastkatkabot.handlers.AdminHandler
 import com.senderman.lastkatkabot.handlers.CallbackHandler
@@ -17,8 +16,6 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException
 import java.awt.*
 import java.io.File
@@ -35,7 +32,6 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
     val admins: MutableSet<Int>
     val blacklist: MutableSet<Int>
     val premiumUsers: MutableSet<Int>
-    val allowedChats: MutableSet<Long>
     val bullsAndCowsGames: MutableMap<Long, BullsAndCowsGame>
     val duels: MutableMap<String, Duel>
     val commands: MutableMap<String, Method>
@@ -44,7 +40,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
 
     init {
         val mainAdmin = Services.botConfig.mainAdmin
-        sendMessage(mainAdmin, "Initialization...")
+        sendMessage(mainAdmin, "Инициализация...")
 
         // settings
         Services.handler = this
@@ -54,9 +50,6 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         admins = Services.db.getTgUsersByType(UserType.ADMINS)
         premiumUsers = Services.db.getTgUsersByType(UserType.PREMIUM)
         blacklist = Services.db.getTgUsersByType(UserType.BLACKLIST)
-        allowedChats = Services.db.getAllowedChatsSet()
-        allowedChats.add(Services.botConfig.lastvegan)
-        allowedChats.add(Services.botConfig.tourgroup)
         commands = HashMap()
         adminHandler = AdminHandler(this)
         callbackHandler = CallbackHandler(this)
@@ -64,6 +57,8 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         bullsAndCowsGames = Services.db.getBnCGames()
         userRows = Services.db.getUserRows()
         duels = HashMap()
+        sendMessage(mainAdmin, "Очистка бд от мусора...")
+        adminHandler.cleanChats()
 
         // init command-method map
         commandListener = CommandListener(this, adminHandler, tournamentHandler)
@@ -96,14 +91,10 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         val chatId = message.chatId
 
         // migrate cats if needed
-        if (message.migrateFromChatId != null && message.migrateFromChatId in allowedChats) {
+        if (message.migrateFromChatId != null) {
             migrateChat(message.migrateFromChatId, chatId)
             sendMessage(message.migrateFromChatId, "Id чата обновлен!")
         }
-
-        // do not respond in not allowed chats
-        if (chatId !in allowedChats && !message.isUserMessage)
-            return null
 
         if (message.leftChatMember != null && message.leftChatMember.userName != botUsername && message.chatId != Services.botConfig.tourgroup) {
             Methods.sendDocument()
@@ -179,23 +170,11 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
             data.startsWith(LastkatkaBot.CALLBACK_CAKE_NOT) ->
                 callbackHandler.cake(query, CallbackHandler.CakeAcion.CAKE_NOT)
 
-            data.startsWith(LastkatkaBot.CALLBACK_ALLOW_CHAT) ->
-                callbackHandler.addChat(query)
-
-            data.startsWith(LastkatkaBot.CALLBACK_DONT_ALLOW_CHAT) ->
-                callbackHandler.denyChat(query)
-
             data.startsWith(LastkatkaBot.CALLBACK_ACCEPT_MARRIAGE) ->
                 callbackHandler.acceptMarriage(query)
 
             data.startsWith(LastkatkaBot.CALLBACK_DENY_MARRIAGE) ->
                 callbackHandler.denyMarriage(query)
-
-            data.startsWith(LastkatkaBot.CALLBACK_DELETE_CHAT) -> {
-
-                callbackHandler.deleteChat(query)
-                adminHandler.chats(query.message)
-            }
 
             data.startsWith("deleteuser_") -> {
                 val type: UserType = when (query.data.split(" ")[0]) {
@@ -238,7 +217,10 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         val chatId = message.chatId
         val newMembers = message.newChatMembers
 
-        if (chatId == Services.botConfig.tourgroup) {
+        if (newMembers[0].userName == botUsername) {
+            sendMessage(chatId,
+                    "Всем привет! Для полноценного использования всех моих фичей дайте мне права на пин и удаление сообщений, пожалуйста!")
+        } else if (chatId == Services.botConfig.tourgroup) {
             for (user in newMembers) {
                 // restrict any user who isn't in tournament
                 if (user.id !in tournamentHandler.membersIds) {
@@ -263,33 +245,10 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
                 } catch (ignored: IOException) {
                 }
             }
-
             Methods.sendDocument(chatId)
                     .setFile(Services.botConfig.higif)
                     .setReplyToMessageId(message.messageId)
                     .call(this)
-
-        } else if (newMembers[0].userName == botUsername) {
-            // Say hello to new group if chat is allowed
-            if (chatId in allowedChats) {
-                sendMessage(chatId, "Этот чат находится в списке разрешенных. Бот готов к работе здесь")
-                return
-            }
-
-            sendMessage(chatId, "Чата нет в списке разрешенных. Дождитесь решения разработчика")
-            val markup = InlineKeyboardMarkup()
-            markup.keyboard = listOf(listOf(
-                    InlineKeyboardButton()
-                            .setText("Добавить")
-                            .setCallbackData(LastkatkaBot.CALLBACK_ALLOW_CHAT + chatId),
-                    InlineKeyboardButton()
-                            .setText("Отклонить")
-                            .setCallbackData(LastkatkaBot.CALLBACK_DONT_ALLOW_CHAT + chatId)))
-
-            val inviter = TgUser(message.from.id, message.from.firstName)
-            sendMessage(Methods.sendMessage(
-                    Services.botConfig.mainAdmin.toLong(), "Добавить чат ${message.chat.title} $chatId в список разрешенных? - ${inviter.link}")
-                    .setReplyMarkup(markup))
         }
     }
 
@@ -325,11 +284,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         return result
     }
 
-    private fun migrateChat(oldChatId: Long, newChatId: Long) {
-        allowedChats.remove(oldChatId)
-        allowedChats.add(newChatId)
-        Services.db.updateChatId(oldChatId, newChatId)
-    }
+    private fun migrateChat(oldChatId: Long, newChatId: Long) = Services.db.updateChatId(oldChatId, newChatId)
 
     fun sendMessage(chatId: Int, text: String): Message = sendMessage(chatId.toLong(), text)
 

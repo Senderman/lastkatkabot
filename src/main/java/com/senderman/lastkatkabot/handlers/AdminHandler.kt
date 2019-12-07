@@ -130,44 +130,15 @@ class AdminHandler(private val handler: LastkatkaBotHandler) {
         for (i in 1 until params.size) {
             update.append("* ${params[i]}\n")
         }
-        val tempChatSet = HashSet(handler.allowedChats)
-        tempChatSet.remove(Services.botConfig.tourgroup)
-        for (chat in tempChatSet) {
+        val chats = Services.db.getChatIdsSet()
+        chats.remove(Services.botConfig.tourgroup)
+        for (chat in chats) {
             handler.sendMessage(chat, update.toString())
         }
     }
 
-    fun chats(message: Message) {
-        if (!message.isUserMessage) {
-            handler.sendMessage(message.chatId, "Команду можно использовать только в лс бота!")
-            return
-        }
-        val markup = InlineKeyboardMarkup()
-        val rows = ArrayList<List<InlineKeyboardButton>>()
-        val chats = Services.db.getAllowedChatsMap()
-        var row: MutableList<InlineKeyboardButton> = ArrayList()
-        for (chatId in chats.keys) {
-            row.add(InlineKeyboardButton()
-                    .setText(chats[chatId])
-                    .setCallbackData(LastkatkaBot.CALLBACK_DELETE_CHAT + " " + chatId))
-            if (row.size == 2) {
-                rows.add(row)
-                row = ArrayList()
-            }
-        }
-        if (row.size == 1) {
-            rows.add(row)
-        }
-        rows.add(listOf(InlineKeyboardButton()
-                .setText("Закрыть меню")
-                .setCallbackData(LastkatkaBot.CALLBACK_CLOSE_MENU)))
-        markup.keyboard = rows
-        handler.sendMessage(Methods.sendMessage(message.chatId, "Для удаления чата нажите на него")
-                .setReplyMarkup(markup))
-    }
-
-    fun cleanChats(message: Message) {
-        val chats = Services.db.getAllowedChatsMap()
+    fun cleanChats(message: Message? = null) {
+        val chats = Services.db.getChatTitleMap()
         for (chatId in chats.keys) {
             try {
                 val chatMsg = handler.execute(SendMessage(chatId, "Сервисное сообщение, оно будет удалено через пару секунд"))
@@ -175,13 +146,12 @@ class AdminHandler(private val handler: LastkatkaBotHandler) {
                 Methods.deleteMessage(chatId, chatMsg.messageId).call(handler)
                 Services.db.updateTitle(chatId, title)
             } catch (e: TelegramApiException) {
-                Services.db.removeAllowedChat(chatId)
+                Services.db.removeChat(chatId)
                 Services.db.cleanup()
-                handler.sendMessage(message.from.id, "Чат \"${chats[chatId]}\" удален из списка!")
-                handler.allowedChats.remove(chatId)
+                handler.sendMessage(Services.botConfig.mainAdmin, "Чат \"${chats[chatId]}\" удален из списка!")
             }
         }
-        handler.sendMessage(message.from.id, "Чаты обновлены!")
+        handler.sendMessage(Services.botConfig.mainAdmin, "Чаты обновлены!")
     }
 
     fun announce(message: Message) {
