@@ -17,7 +17,10 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException
-import java.awt.*
+import java.awt.BasicStroke
+import java.awt.Color
+import java.awt.Font
+import java.awt.RenderingHints
 import java.io.File
 import java.io.IOException
 import java.lang.reflect.Method
@@ -106,9 +109,8 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         }
 
         // update current userrow in chat if exists
-        if (!message.isUserMessage) {
+        if (!message.isUserMessage)
             userRows[chatId]?.addUser(message.from)
-        }
 
         if (!message.hasText()) return null
 
@@ -233,42 +235,44 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         } else if (!newMembers[0].bot) {
             // say hi
             val membername = newMembers[0].firstName
-            if (membername.length <= 8) {
-                try {
-                    val sticker = getHelloSticker(membername)
-                    Methods.sendDocument(chatId)
-                            .setFile(sticker)
-                            .setReplyToMessageId(message.messageId)
-                            .call(this) // send senko
-                    sticker.delete()
-                    return
-                } catch (ignored: IOException) {
-                }
+            try {
+                val sticker = getHelloSticker(membername)
+                Methods.sendDocument(chatId)
+                        .setFile(sticker)
+                        .setReplyToMessageId(message.messageId)
+                        .call(this) // send sticker
+                sticker.delete()
+                return
+            } catch (e: IOException) {
+                Methods.sendDocument(chatId)
+                        .setFile(Services.botConfig.higif)
+                        .setReplyToMessageId(message.messageId)
+                        .call(this)
             }
-            Methods.sendDocument(chatId)
-                    .setFile(Services.botConfig.higif)
-                    .setReplyToMessageId(message.messageId)
-                    .call(this)
         }
     }
 
     @Throws(IOException::class)
     private fun getHelloSticker(name: String): File {
-        val image = ImageIO.read(File("res/senko.png"))
-        val g = image.graphics as Graphics2D
+        val img = ImageIO.read(File("res/menhera.png"))
+        val g = img.createGraphics()
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
         g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY)
-        val font = Font(Font.SANS_SERIF, Font.BOLD, 40)
-        val frc = g.fontRenderContext
-        val nameOutline = font.createGlyphVector(frc, "$name!").getOutline(315f, 170f)
-        g.color = Color.BLACK
-        g.stroke = BasicStroke(2.5f)
-        g.draw(nameOutline)
-        g.color = Color.WHITE
-        g.fill(nameOutline)
+        val font = Font(Font.SANS_SERIF, Font.BOLD, 45)
+        val text = font.createGlyphVector(g.fontRenderContext, "${name}!")
+        val imageWidth = img.width
+        val textWidth = text.outline.bounds.width
+        if (imageWidth < textWidth) throw Exception()
+        val x = (imageWidth - textWidth) / 2
+        val textOutline = text.getOutline(x.toFloat(), 480f)
+        g.color = Color.black
+        g.stroke = BasicStroke(3.5f)
+        g.draw(textOutline)
+        g.color = Color.white
+        g.fill(textOutline)
         g.dispose()
-        val out = File("senko.webp")
-        ImageIO.write(image, "webp", out)
+        val out = File("sticker.webp")
+        ImageIO.write(img, "webp", out)
         return out
     }
 
