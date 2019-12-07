@@ -367,7 +367,7 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
         }
         // get a random text and set up a pair
         val loveArray = Services.botConfig.loveStrings
-        val loveStrings = loveArray[ThreadLocalRandom.current().nextInt(loveArray.size)].split("\n")
+        val loveStrings = loveArray[ThreadLocalRandom.current().nextInt(loveArray.size)].trim().split("\n")
         try {
             for (i in 0 until loveStrings.size - 1) {
                 handler.sendMessage(chatId, loveStrings[i])
