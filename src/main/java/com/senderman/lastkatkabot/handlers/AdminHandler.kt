@@ -148,6 +148,7 @@ class AdminHandler(private val handler: LastkatkaBotHandler) {
             } catch (e: TelegramApiException) {
                 Services.db.removeChat(chatId)
                 Services.db.cleanup()
+                Methods.leaveChat(chatId).call(handler)
                 handler.sendMessage(Services.botConfig.mainAdmin, "Чат \"${chats[chatId]}\" удален из списка!")
             }
         }
