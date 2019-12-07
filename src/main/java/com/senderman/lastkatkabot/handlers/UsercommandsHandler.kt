@@ -379,7 +379,7 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
         } catch (e: InterruptedException) {
             BotLogger.error("PAIR", "Ошибка таймера")
         }
-        val pair = if (isTrueLove) "${user1.name} ❤ ${user2.name}" else "${user1.name} 💖 $user2.name"
+        val pair = if (isTrueLove) "${user1.name} \uD83D\uDC96 ${user2.name}" else "${user1.name} ❤ $user2.name"
         Services.db.setPair(chatId, pair)
         handler.sendMessage(chatId, java.lang.String.format(loveStrings.last(), user1.link, user2.link))
     }
