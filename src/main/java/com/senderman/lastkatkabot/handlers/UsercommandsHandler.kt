@@ -213,9 +213,9 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
                 "(})" to "\n$1",
                 "(=)" to " $1 "
         )
-        val text = StringBuilder(message.replyToMessage.toString())
-        for ((old, new) in replacements) text.replace(old.toRegex(), new)
-        handler.sendMessage(message.chatId, text.toString())
+        var text = message.replyToMessage.toString()
+        for ((old, new) in replacements) text = text.replace(old.toRegex(), new)
+        handler.sendMessage(message.chatId, text)
     }
 
     fun weather(message: Message) {

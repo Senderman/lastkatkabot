@@ -51,10 +51,11 @@ class Duel(message: Message) {
 
         var duelResult = """
                 <b>Дуэль</b>
-                "${player1.name} vs ${player2.name}
-                "Противники разошлись в разные стороны, развернулись лицом друг к другу, и $winnerName выстрелил первым!"
-                "$loserName лежит на земле, истекая кровью!
-                """.trimIndent()
+                ${player1.name} vs ${player2.name}
+                
+                Противники разошлись в разные стороны, развернулись лицом друг к другу, и $winnerName выстрелил первым!"
+                $loserName лежит на земле, истекая кровью!
+                """.trimIndent() + "\n"
 
         if (ThreadLocalRandom.current().nextInt(100) < 20) {
             duelResult += """
