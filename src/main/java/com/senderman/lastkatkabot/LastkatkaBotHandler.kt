@@ -253,7 +253,9 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
 
     @Throws(IOException::class)
     private fun getHelloSticker(name: String): File {
-        val img = ImageIO.read(File("res/menhera.png"))
+        val orig = javaClass.getResourceAsStream("/menhera.png")
+        val img = ImageIO.read(orig)
+        orig.close()
         val g = img.createGraphics()
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
         g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY)
