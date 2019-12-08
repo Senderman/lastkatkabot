@@ -3,4 +3,3 @@ modules:
   #- com.senderman.stankinsheetbot.StankinSheetBot
   - com.senderman.lastkatkabot.LastkatkaBot
   - com.senderman.anitrackerbot.AnitrackerBot
-  - com.senderman.futurewars.FutureWarsBot
