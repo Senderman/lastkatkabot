@@ -40,7 +40,8 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
     val commands: MutableMap<String, Method>
     val tournamentHandler: TournamentHandler
     val userRows: MutableMap<Long, UserRow>
-    var feedbackUserId = 0
+    var feedbackChatId = 0L
+    var feedbackMessageId = 0
 
     init {
         val mainAdmin = Services.botConfig.mainAdmin
@@ -126,14 +127,17 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         }
 
         // for answering feedbacks
-        if (message.chatId == Services.botConfig.mainAdmin.toLong() && feedbackUserId != 0) {
+        if (message.chatId == Services.botConfig.mainAdmin.toLong() && feedbackChatId != 0L) {
             val answer = """
                 🔔 <b>Ответ разработчика</b>
                 
                 $text
             """.trimIndent()
-            sendMessage(feedbackUserId, answer)
-            feedbackUserId = 0
+            sendMessage(Methods.sendMessage()
+                    .setChatId(feedbackChatId)
+                    .setText(answer)
+                    .setReplyToMessageId(feedbackMessageId))
+            feedbackChatId = 0L
             sendMessage(chatId, "✅ Ответ отправлен!")
             return null
         }

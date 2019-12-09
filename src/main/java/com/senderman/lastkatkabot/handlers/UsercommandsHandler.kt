@@ -275,9 +275,10 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
         val user = TgUser(message.from)
         val markup = InlineKeyboardMarkup()
         markup.keyboard = listOf(listOf(
-                InlineKeyboardButton()
-                        .setText("Ответить")
-                        .setCallbackData(LastkatkaBot.CALLBACK_ANSWER_FEEDBACK + user.id)
+                InlineKeyboardButton().apply {
+                    text = "Ответить"
+                    callbackData = "${LastkatkaBot.CALLBACK_ANSWER_FEEDBACK}${message.chatId} ${message.messageId}"
+                }
         ))
 
         val bugreport = ("⚠️ <b>Фидбек</b>\n\n" +
