@@ -156,7 +156,7 @@ internal class CommandListener constructor(
     fun announce(message: Message) = adminCommands.announce(message)
 
     @Command(name = "/cc", desc = "очистка списка чатов от мусора и обновление названий", forMainAdmin = true)
-    fun cleanChats(message: Message) = adminCommands.cleanChats(message)
+    fun cleanChats(message: Message) = adminCommands.cleanChats()
 
     @Command(name = "/row", desc = "Рассчет юзеров, например няшек.\nСинтаксис: 1 строка - /row Список няшек\n" +
             "2 строка - няшка\n" +

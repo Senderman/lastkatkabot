@@ -12,7 +12,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 import org.telegram.telegrambots.meta.logging.BotLogger
-import java.util.*
+import java.util.concurrent.Callable
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 class AdminHandler(private val handler: LastkatkaBotHandler) {
     fun addUser(message: Message, type: UserType) {
@@ -137,22 +139,45 @@ class AdminHandler(private val handler: LastkatkaBotHandler) {
         }
     }
 
-    fun cleanChats(message: Message? = null) {
+    fun cleanChats() {
+        handler.sendMessage(Services.botConfig.mainAdmin, "Очистка чатов...")
         val chats = Services.db.getChatTitleMap()
-        for (chatId in chats.keys) {
-            try {
-                val chatMsg = handler.execute(SendMessage(chatId, "Сервисное сообщение, оно будет удалено через пару секунд"))
-                val title = chatMsg.chat.title
-                Methods.deleteMessage(chatId, chatMsg.messageId).call(handler)
-                Services.db.updateTitle(chatId, title)
-            } catch (e: TelegramApiException) {
-                Services.db.removeChat(chatId)
-                Methods.leaveChat(chatId).call(handler)
-                handler.sendMessage(Services.botConfig.mainAdmin, "Чат \"${chats[chatId]}\" удален из списка!")
-            }
-        }
+        val cpus = Runtime.getRuntime().availableProcessors()
+        val executor = Executors.newFixedThreadPool(cpus)
+        executor.invokeAll(splitCleanupTasks(cpus, chats))
+        executor.shutdown()
+        executor.awaitTermination(5, TimeUnit.MINUTES)
         Services.db.cleanup()
         handler.sendMessage(Services.botConfig.mainAdmin, "Чаты обновлены!")
+    }
+
+    private fun splitCleanupTasks(workers: Int, chats: Map<Long, String>): List<Callable<Unit>> {
+        val partSize = chats.size / workers
+        val list = ArrayList<Callable<Unit>>()
+        for (i in 0 until workers - 1) {
+            list.add(cleanupTask(i * partSize, (i + 1) * partSize, chats))
+        }
+        list.add(cleanupTask((workers - 1) * partSize, chats.size, chats))
+        return list
+    }
+
+    private fun cleanupTask(start: Int, bound: Int, chats: Map<Long, String>): Callable<Unit> {
+        return Callable {
+            val keys = chats.keys.toList()
+            for (i in start until bound) {
+                val chatId = keys[i]
+                try {
+                    val chatMsg = handler.execute(SendMessage(chatId, "Сервисное сообщение, оно будет удалено через пару секунд"))
+                    val title = chatMsg.chat.title
+                    Methods.deleteMessage(chatId, chatMsg.messageId).call(handler)
+                    Services.db.updateTitle(chatId, title)
+                } catch (e: TelegramApiException) {
+                    Services.db.removeChat(chatId)
+                    Methods.leaveChat(chatId).call(handler)
+                    handler.sendMessage(Services.botConfig.mainAdmin, "Чат \"${chats[chatId]}\" удален из списка!")
+                }
+            }
+        }
     }
 
     fun announce(message: Message) {
