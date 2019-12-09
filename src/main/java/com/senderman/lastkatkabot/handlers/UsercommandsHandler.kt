@@ -396,32 +396,28 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
 
     @Throws(Exception::class)
     private fun getUserForPair(chatId: Long, userIds: MutableList<Int>): TgUser {
-        if (userIds.size < 3) throw Exception("Not enough users")
         var member: ChatMember?
-        do {
+        while (userIds.size > 2) {
             val random = ThreadLocalRandom.current().nextInt(userIds.size)
             val userId = userIds[random]
             member = Methods.getChatMember(chatId, userId).call(handler)
-            // delete not-found-user
-            if (member == null) {
-                Services.db.removeUserFromChatDB(userId, chatId)
-                userIds.remove(userId)
-                if (userIds.size < 3) {
-                    throw Exception("Not enough users")
-                }
-            }
-        } while (member == null || member.user.firstName.isBlank())
-        return TgUser(member.user)
+            if (member != null && !member.user.firstName.isBlank())
+                return TgUser(member.user)
+            Services.db.removeUserFromChatDB(userId, chatId)
+            userIds.remove(userId)
+        }
+        throw Exception("Not enough users")
     }
 
     fun lastpairs(message: Message) {
         if (message.isUserMessage) return
         val chatId = message.chatId
         val history = Services.db.getPairsHistory(chatId)
-        if (history == null)
-            handler.sendMessage(chatId, "В этом чате еще никогда не запускали команду /pair!")
-        else
-            handler.sendMessage(chatId, "<b>Последние 10 пар:</b>\n\n$history")
+        handler.sendMessage(chatId,
+                history?.let {
+                    "<b>Последние 10 пар:</b>\n\n$it"
+                } ?: "В этом чате еще никогда не запускали команду /pair!"
+        )
     }
 
     private fun isFromWwBot(message: Message): Boolean {

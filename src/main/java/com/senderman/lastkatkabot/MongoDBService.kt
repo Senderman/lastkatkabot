@@ -281,6 +281,7 @@ internal class MongoDBService : DBService {
     override fun removeChat(chatId: Long) {
         chats.deleteOne(eq("chatId", chatId))
         getChatMembersCollection(chatId).drop()
+        bncgames.deleteOne(eq("chatId", chatId))
     }
 
     override fun cleanup() {
