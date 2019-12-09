@@ -283,7 +283,7 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
 
         val bugreport = ("⚠️ <b>Фидбек</b>\n\n" +
                 "От: ${user.link}\n\n" +
-                message.text.replace("/feedback ", ""))
+                message.text.replace("/feedback\\s+".toRegex(), ""))
         handler.sendMessage(Methods.sendMessage()
                 .setChatId(Services.botConfig.mainAdmin.toLong())
                 .setText(bugreport)
