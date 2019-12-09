@@ -42,7 +42,7 @@ internal class CommandListener constructor(
     @Command(name = "/weather", desc = "погода. Если не указать город, то покажет погоду в последнем введенном вами городе")
     fun weather(message: Message) = usercommands.weather(message)
 
-    @Command(name = "/feedback", desc = "написать разрабу. Что написать, пишите через пробел")
+    @Command(name = "/feedback", desc = "написать разрабу. Что написать, пишите через пробел. Или просто реплайните")
     fun feedback(message: Message) = usercommands.feedback(message)
 
     @Command(name = "/top", desc = "топ игроков в Быки и Коровы")
