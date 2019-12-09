@@ -291,8 +291,7 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
         handler.sendMessage(Methods.sendMessage()
                 .setChatId(message.chatId)
                 .setText("✅ Отправлено разрабу бота!")
-                .setReplyToMessageId(message.messageId)
-                .setReplyMarkup(markup))
+                .setReplyToMessageId(message.messageId))
     }
 
     fun bncTop(message: Message) {
