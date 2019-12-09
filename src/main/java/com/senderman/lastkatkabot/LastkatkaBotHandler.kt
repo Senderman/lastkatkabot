@@ -134,6 +134,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
             """.trimIndent()
             sendMessage(feedbackUserId, answer)
             feedbackUserId = 0
+            sendMessage(chatId, "✅ Ответ отправлен!")
             return null
         }
 
@@ -189,6 +190,9 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
 
             data.startsWith(LastkatkaBot.CALLBACK_DENY_MARRIAGE) ->
                 callbackHandler.denyMarriage(query)
+
+            data.startsWith(LastkatkaBot.CALLBACK_ANSWER_FEEDBACK) ->
+                callbackHandler.answerFeedback(query)
 
             data.startsWith("deleteuser_") -> {
                 val type: UserType = when (query.data.split(" ")[0]) {
