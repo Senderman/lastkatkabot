@@ -142,7 +142,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         /* bot should only trigger on general commands (like /command) or on commands for this bot (/command@mybot),
          * and NOT on commands for another bots (like /command@notmybot)
          */
-        val command = text.split(Regex("\\s+"), 2)[0]
+        val command = text.split("\\s+".toRegex(), 2)[0]
                 .toLowerCase(Locale.ENGLISH)
                 .replace("@$botUsername", "")
         if ("@" in command) return null

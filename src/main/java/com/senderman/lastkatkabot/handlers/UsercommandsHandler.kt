@@ -273,16 +273,21 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
 
     fun feedback(message: Message) {
         val user = TgUser(message.from)
-        val bugreport = ("⚠️ <b>Фидбек</b>\n\n" +
-                "От: ${user.link}\n\n" +
-                message.text.replace("/feedback ", ""))
-        handler.sendMessage(Services.botConfig.mainAdmin, bugreport)
         val markup = InlineKeyboardMarkup()
         markup.keyboard = listOf(listOf(
                 InlineKeyboardButton()
                         .setText("Ответить")
                         .setCallbackData(LastkatkaBot.CALLBACK_ANSWER_FEEDBACK + user.id)
         ))
+
+        val bugreport = ("⚠️ <b>Фидбек</b>\n\n" +
+                "От: ${user.link}\n\n" +
+                message.text.replace("/feedback ", ""))
+        handler.sendMessage(Methods.sendMessage()
+                .setChatId(Services.botConfig.mainAdmin.toLong())
+                .setText(bugreport)
+                .setReplyMarkup(markup))
+
         handler.sendMessage(Methods.sendMessage()
                 .setChatId(message.chatId)
                 .setText("✅ Отправлено разрабу бота!")
