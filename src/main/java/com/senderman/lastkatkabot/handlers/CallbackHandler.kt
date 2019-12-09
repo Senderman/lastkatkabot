@@ -126,6 +126,12 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
         Methods.deleteMessage(query.message.chatId, query.message.messageId).call(handler)
     }
 
+    fun answerCallback(query: CallbackQuery) {
+        val userId = query.data.split(" ")[1].toInt()
+        Services.handler.feedbackUserId = userId
+        handler.sendMessage(Services.botConfig.mainAdmin, "Введите ответ")
+    }
+
     private fun notFor(query: CallbackQuery): Boolean {
         val userId = query.from.id
         val loverId = query.data.split(" ")[2].toInt()
