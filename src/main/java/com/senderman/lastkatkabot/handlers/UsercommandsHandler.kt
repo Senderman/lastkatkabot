@@ -288,6 +288,13 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
                 .setChatId(Services.botConfig.mainAdmin.toLong())
                 .setText(bugreport)
                 .setReplyMarkup(markup))
+        if (message.isReply) {
+            Methods.forwardMessage(
+                    Services.botConfig.mainAdmin.toLong(),
+                    message.replyToMessage.chatId,
+                    message.replyToMessage.messageId
+            ).call(handler)
+        }
 
         handler.sendMessage(Methods.sendMessage()
                 .setChatId(message.chatId)
