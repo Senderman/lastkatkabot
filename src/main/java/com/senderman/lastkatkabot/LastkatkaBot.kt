@@ -27,5 +27,6 @@ class LastkatkaBot : BotModule {
         const val CALLBACK_VOTE_BNC = "vote_bnc"
         const val CALLBACK_ACCEPT_MARRIAGE = "acc_marr "
         const val CALLBACK_DENY_MARRIAGE = "deny_marr "
+        const val CALLBACK_ANSWER_FEEDBACK = "answ_feedback "
     }
 }

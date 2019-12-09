@@ -277,10 +277,17 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
                 "От: ${user.link}\n\n" +
                 message.text.replace("/feedback ", ""))
         handler.sendMessage(Services.botConfig.mainAdmin, bugreport)
+        val markup = InlineKeyboardMarkup()
+        markup.keyboard = listOf(listOf(
+                InlineKeyboardButton()
+                        .setText("Ответить")
+                        .setCallbackData(LastkatkaBot.CALLBACK_ANSWER_FEEDBACK + user.id)
+        ))
         handler.sendMessage(Methods.sendMessage()
                 .setChatId(message.chatId)
                 .setText("✅ Отправлено разрабу бота!")
-                .setReplyToMessageId(message.messageId))
+                .setReplyToMessageId(message.messageId)
+                .setReplyMarkup(markup))
     }
 
     fun bncTop(message: Message) {

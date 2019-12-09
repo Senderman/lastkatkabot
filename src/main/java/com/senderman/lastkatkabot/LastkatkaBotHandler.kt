@@ -40,6 +40,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
     val commands: MutableMap<String, Method>
     val tournamentHandler: TournamentHandler
     val userRows: MutableMap<Long, UserRow>
+    var feedbackUserId = 0
 
     init {
         val mainAdmin = Services.botConfig.mainAdmin
@@ -121,6 +122,18 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         // for bulls and cows
         if (text.matches(Regex("\\d{4,10}")) && !isInBlacklist(message)) {
             bullsAndCowsGames[chatId]?.check(message)
+            return null
+        }
+
+        // for answering feedbacks
+        if (message.chatId == Services.botConfig.mainAdmin.toLong() && feedbackUserId != 0) {
+            val answer = """
+                🔔 <b>Ответ разработчика</b>
+                
+                $text
+            """.trimIndent()
+            sendMessage(feedbackUserId, answer)
+            feedbackUserId = 0
             return null
         }
 
