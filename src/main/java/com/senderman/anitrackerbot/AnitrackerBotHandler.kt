@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod
 import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.objects.Update
 import java.util.*
+import kotlin.collections.HashSet
 
 class AnitrackerBotHandler internal constructor(private val config: BotConfig) : BotHandler() {
 
@@ -113,13 +114,13 @@ class AnitrackerBotHandler internal constructor(private val config: BotConfig) :
 
             "/users" -> {
                 val userIds = Services.db.getUsersIds()
-                val textList = StringBuilder("Список пользователей:\n\n")
+                val userLinks = HashSet<String>()
+                val textList = "Список пользователей:\n\n"
                 for (id in userIds) {
                     val user = Methods.getChatMember(id.toLong(), id).call(this).user
-                    val tgUser = TgUser(id, user.firstName)
-                    textList.append("${tgUser.link}\n")
+                    userLinks.add(TgUser(id, user.firstName).link)
                 }
-                sendMessage(chatId, textList.toString())
+                sendMessage(chatId, textList + userLinks.joinToString(", "))
             }
         }
 

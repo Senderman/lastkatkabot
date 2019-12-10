@@ -397,7 +397,7 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
         }
         // get a random text and set up a pair
         val loveArray = Services.botConfig.loveStrings
-        val loveStrings = loveArray[ThreadLocalRandom.current().nextInt(loveArray.size)].trim().split("\n")
+        val loveStrings = loveArray.random().trim().split("\n")
         try {
             for (i in 0 until loveStrings.lastIndex) {
                 handler.sendMessage(chatId, loveStrings[i])
@@ -425,8 +425,7 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
     private fun getUserForPair(chatId: Long, userIds: MutableList<Int>): TgUser {
         var member: ChatMember?
         while (userIds.size > 2) {
-            val random = ThreadLocalRandom.current().nextInt(userIds.size)
-            val userId = userIds[random]
+            val userId = userIds.random()
             member = Methods.getChatMember(chatId, userId).call(handler)
             if (member != null && !member.user.firstName.isBlank())
                 return TgUser(member.user)
