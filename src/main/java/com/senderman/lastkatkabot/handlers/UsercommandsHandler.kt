@@ -344,13 +344,13 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
             val helpLine = "${annotation.name} - ${annotation.desc}\n"
             if (noobId == Services.botConfig.mainAdmin && annotation.forMainAdmin)
                 mainAdminHelp.append(helpLine)
-            else if (handler.isAdmin(message) && annotation.forAllAdmins)
+            else if (handler.isFromAdmin(message) && annotation.forAllAdmins)
                 adminHelp.append(helpLine)
             else
                 help.append(helpLine)
             // TODO add help for premium users when needed
         }
-        if (handler.isAdmin(message)) help.append("\n").append(adminHelp)
+        if (handler.isFromAdmin(message)) help.append("\n").append(adminHelp)
         if (noobId == Services.botConfig.mainAdmin) help.append("\n").append(mainAdminHelp)
         // attempt to send help to PM
         try {
