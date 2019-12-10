@@ -28,7 +28,7 @@ class AdminHandler(private val handler: LastkatkaBotHandler) {
                 format = "✅ %1\$s теперь мой хозяин!"
             }
             UserType.BLACKLIST -> {
-                if (handler.isAdmin(message.replyToMessage) || handler.isPremiumUser(message.replyToMessage)) {
+                if (handler.isFromAdmin(message.replyToMessage) || handler.isPremiumUser(message.replyToMessage)) {
                     handler.sendMessage(message.chatId, "Мы таких в плохие киси не берем!")
                     return
                 }
