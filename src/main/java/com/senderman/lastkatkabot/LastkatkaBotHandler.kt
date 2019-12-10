@@ -152,23 +152,20 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
                 .replace("@$botUsername", "")
         if ("@" in command) return null
 
-        // find method by name and invoke it
+        // find method by name and invoke it (with access check)
         try {
             if (command !in commands) return null
             val method = commands.getValue(command)
-            val annotation = method.getAnnotation(Command::class.java)
-            if (message.from.id != Services.botConfig.mainAdmin && annotation.forMainAdmin) {
-                return null
-            } else if (annotation.forAllAdmins && !isFromAdmin(message)) {
-                return null
-            } else if (annotation.forPremium && !isPremiumUser(message)) {
-                return null
-            } else if (isInBlacklist(message)) return null
-            method.invoke(commandListener, message)
+            val access = method.getAnnotation(Command::class.java)
+            if (
+                    access.forMainAdmin && message.from.id != Services.botConfig.mainAdmin ||
+                    access.forAllAdmins && !isAdmin(message) ||
+                    access.forPremium && !isPremiumUser(message)
+            ) return null
+            if (isInBlacklist(message) && message.from.id != Services.botConfig.mainAdmin) return null
         } catch (e: Exception) {
-            return null
+            sendMessage(chatId, "Ошибка обработки сообщения") // this should never happen
         }
-
         return null
     }
 
@@ -301,7 +298,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         return out
     }
 
-    fun isFromAdmin(message: Message): Boolean = message.from.id in admins
+    fun isAdmin(message: Message): Boolean = message.from.id in admins
 
     fun isPremiumUser(message: Message): Boolean = message.from.id in premiumUsers
 
