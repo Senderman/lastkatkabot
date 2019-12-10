@@ -274,7 +274,7 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
     fun feedback(message: Message) {
         val report = message
                 .text.trim()
-                .replace("/feedback(:?@${handler.botUsername})?\\s+".toRegex(), "")
+                .replace("/feedback(:?@${handler.botUsername})?\\s*".toRegex(), "")
         if (report.isBlank() && !message.isReply) return
 
         val user = TgUser(message.from)
