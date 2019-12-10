@@ -198,6 +198,9 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
             data.startsWith(LastkatkaBot.CALLBACK_ANSWER_FEEDBACK) ->
                 callbackHandler.answerFeedback(query)
 
+            data.startsWith(LastkatkaBot.CALLBACK_BLOCK_USER) ->
+                callbackHandler.blockUser(query)
+
             data.startsWith("deleteuser_") -> {
                 val type: UserType = when (query.data.split(" ")[0]) {
                     LastkatkaBot.CALLBACK_DELETE_ADMIN -> UserType.ADMINS

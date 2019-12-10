@@ -126,6 +126,15 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
         Methods.deleteMessage(query.message.chatId, query.message.messageId).call(handler)
     }
 
+    fun blockUser(query: CallbackQuery) {
+        val userId = query.data.split(" ")[1].toInt()
+        handler.blacklist.add(userId)
+        Services.db.addTgUser(userId, UserType.BLACKLIST)
+        answerQuery(query, "Пользователь заблокирован!", false)
+        Methods.deleteMessage(query.message.chatId, query.message.messageId)
+        handler.sendMessage(userId, "\uD83D\uDE3E Разработчик добавил вас в черный список бота!")
+    }
+
     fun answerFeedback(query: CallbackQuery) {
         val params = query.data.split(" ")
         Services.handler.feedbackChatId = params[1].toLong()
