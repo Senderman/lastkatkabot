@@ -272,18 +272,24 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
     }
 
     fun feedback(message: Message) {
+        val report = message.text.replace("/feedback\\s+".toRegex(), "")
+        if (report.isBlank() && !message.isReply) return
+
         val user = TgUser(message.from)
         val markup = InlineKeyboardMarkup()
         markup.keyboard = listOf(listOf(
                 InlineKeyboardButton().apply {
                     text = "Ответить"
                     callbackData = "${LastkatkaBot.CALLBACK_ANSWER_FEEDBACK}${message.chatId} ${message.messageId}"
+                },
+                InlineKeyboardButton().apply {
+                    text = "Заблокировать"
+                    callbackData = "${LastkatkaBot.CALLBACK_BLOCK_USER} ${message.from.id}"
                 }
         ))
 
         val bugreport = ("⚠️ <b>Фидбек</b>\n\n" +
-                "От: ${user.link}\n\n" +
-                message.text.replace("/feedback\\s+".toRegex(), ""))
+                "От: ${user.link}\n\n$report")
         handler.sendMessage(Methods.sendMessage()
                 .setChatId(Services.botConfig.mainAdmin.toLong())
                 .setText(bugreport)

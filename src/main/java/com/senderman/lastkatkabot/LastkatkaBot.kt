@@ -17,8 +17,8 @@ class LastkatkaBot : BotModule {
     companion object {
         const val CALLBACK_REGISTER_IN_TOURNAMENT = "register_in_tournament"
         const val CALLBACK_PAY_RESPECTS = "pay_respects"
-        const val CALLBACK_CAKE_OK = "cake ok"
-        const val CALLBACK_CAKE_NOT = "cake not"
+        const val CALLBACK_CAKE_OK = "cake_ok"
+        const val CALLBACK_CAKE_NOT = "cake_not"
         const val CALLBACK_JOIN_DUEL = "join_duel"
         const val CALLBACK_CLOSE_MENU = "close_menu"
         const val CALLBACK_DELETE_ADMIN = "deleteuser_admin"
@@ -28,5 +28,6 @@ class LastkatkaBot : BotModule {
         const val CALLBACK_ACCEPT_MARRIAGE = "acc_marr "
         const val CALLBACK_DENY_MARRIAGE = "deny_marr "
         const val CALLBACK_ANSWER_FEEDBACK = "answ_feedback "
+        const val CALLBACK_BLOCK_USER = "block_user"
     }
 }
