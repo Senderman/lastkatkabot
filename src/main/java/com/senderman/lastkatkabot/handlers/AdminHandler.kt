@@ -168,9 +168,8 @@ class AdminHandler(private val handler: LastkatkaBotHandler) {
             for (i in start until bound) {
                 val chatId = keys[i]
                 try {
-                    val chatMsg = handler.execute(SendMessage(chatId, "Сервисное сообщение, оно будет удалено через пару секунд"))
-                    val title = chatMsg.chat.title
-                    Methods.deleteMessage(chatId, chatMsg.messageId).call(handler)
+                    val chat = Methods.getChat(chatId).call(handler)
+                    val title = chat.title
                     Services.db.updateTitle(chatId, title)
                 } catch (e: TelegramApiException) {
                     Services.db.removeChat(chatId)
