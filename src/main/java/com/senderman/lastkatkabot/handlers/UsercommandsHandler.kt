@@ -427,7 +427,7 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
         while (userIds.size > 2) {
             val userId = userIds.random()
             member = Methods.getChatMember(chatId, userId).call(handler)
-            if (member != null && !member.user.firstName.isBlank())
+            if (member != null)
                 return TgUser(member.user)
             Services.db.removeUserFromChatDB(userId, chatId)
             userIds.remove(userId)
