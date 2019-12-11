@@ -128,6 +128,10 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
 
     fun blockUser(query: CallbackQuery) {
         val userId = query.data.split(" ")[1].toInt()
+        if (userId in handler.admins) {
+            answerQuery(query, "Но это же админ!")
+            return
+        }
         handler.blacklist.add(userId)
         Services.db.addTgUser(userId, UserType.BLACKLIST)
         answerQuery(query, "Пользователь заблокирован!", false)

@@ -71,6 +71,7 @@ class AdminHandler(private val handler: LastkatkaBotHandler) {
             }
 
         }
+        // show buttons only if user can change the list or if it is main admin's PM
         val showButtons = allAdminsAccess || message.chatId == Services.botConfig.mainAdmin.toLong()
         if (!showButtons || !message.isUserMessage) {
             val userlist = StringBuilder(title)
