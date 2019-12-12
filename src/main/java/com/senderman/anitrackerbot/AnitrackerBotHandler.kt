@@ -31,7 +31,7 @@ class AnitrackerBotHandler internal constructor(private val config: BotConfig) :
                 .toLowerCase(Locale.ENGLISH)
                 .replace("@$botUsername", "")
         if ("@" in command) return null
-        val params = text.split("\\s+".toRegex(), 2)[1]
+        val params = text.split("\\s+".toRegex(), 2)
 
 
         when (command) {
@@ -44,7 +44,7 @@ class AnitrackerBotHandler internal constructor(private val config: BotConfig) :
 
             "/del" -> {
                 return try {
-                    val id = params.toInt()
+                    val id = params[1].toInt()
                     if (!Services.db.idExists(id, userId)) {
                         sendMessage(chatId, "Id не существует!")
                     } else {
@@ -62,7 +62,7 @@ class AnitrackerBotHandler internal constructor(private val config: BotConfig) :
 
             "/dl" -> {
                 try {
-                    val id = params.toInt()
+                    val id = params[1].toInt()
                     if (!Services.db.idExists(id, userId)) {
                         sendMessage(chatId, "Id не существует!")
                         return null
@@ -91,7 +91,7 @@ class AnitrackerBotHandler internal constructor(private val config: BotConfig) :
 
             "/get" -> {
 
-                val downloader = getAnimeDownloader(params)
+                val downloader = getAnimeDownloader(params[1])
                 if (downloader == null) {
                     sendMessage(chatId, "Отсюда аниме скачивать я еще не умею!")
                     return null
@@ -99,7 +99,7 @@ class AnitrackerBotHandler internal constructor(private val config: BotConfig) :
 
                 sendMessage(chatId, "Скачиваем торрент...")
                 try {
-                    val file = downloader.download(params)
+                    val file = downloader.download(params[1])
                     Methods.sendDocument(chatId)
                             .setFile(file)
                             .call(this)
