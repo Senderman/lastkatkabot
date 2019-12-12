@@ -251,12 +251,12 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
         // parse weather
         val table = weatherPage.selectFirst("div.card_size_big")
         val title = weatherPage.selectFirst("h1.header-title__title").text()
-        val temperature = table.selectFirst("div.fact__temp").selectFirst("span.temp__value").text()
-        val feelsLike = table.selectFirst("div.fact__feels-like").selectFirst("div.term__value").text()
-        val feelings = table.selectFirst("div.fact__feelings").selectFirst("div.link__condition").text()
-        val wind = table.selectFirst("div.fact__wind-speed").selectFirst("div.term__value").text()
-        val humidity = table.selectFirst("div.fact__humidity").selectFirst("div.term__value").text()
-        val pressure = table.selectFirst("div.fact__pressure").selectFirst("div.term__value").text()
+        val temperature = table.selectFirst("div.fact__temp span.temp__value").text()
+        val feelsLike = table.selectFirst("div.fact__feels-like div.term__value").text()
+        val feelings = table.selectFirst("div.fact__feelings div.link__condition").text()
+        val wind = table.selectFirst("div.fact__wind-speed div.term__value").text()
+        val humidity = table.selectFirst("div.fact__humidity div.term__value").text()
+        val pressure = table.selectFirst("div.fact__pressure div.term__value").text()
         val forecast = """
             <b>$title</b>
             
