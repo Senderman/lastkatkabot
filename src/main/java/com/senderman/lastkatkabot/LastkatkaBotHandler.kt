@@ -243,6 +243,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         val newMembers = message.newChatMembers
 
         if (newMembers[0].userName == botUsername) {
+            Services.db.addChat(message.chatId, message.chat.title)
             sendMessage(chatId,
                     "Всем привет! Для полноценного использования всех моих фичей дайте мне права на пин и удаление сообщений, пожалуйста!")
         } else if (chatId == Services.botConfig.tourgroup) {
