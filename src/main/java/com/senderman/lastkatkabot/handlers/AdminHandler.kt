@@ -144,6 +144,31 @@ class AdminHandler(private val handler: LastkatkaBotHandler) {
         }
     }
 
+    fun transferStats(message: Message) {
+        val chatId = message.chatId
+        val params = message.text.split("\\s+".toRegex())
+        if (params.size != 3) {
+            handler.sendMessage(chatId, "Неверное кол-во аргументов!")
+            return
+        }
+        val fromId: Int
+        val toId: Int
+        try {
+            fromId = params[1].toInt()
+            toId = params[2].toInt()
+        } catch (e: NumberFormatException) {
+            handler.sendMessage(chatId, "Неверный формат!")
+            return
+        }
+        handler.sendMessage(chatId, "Переносим данные...")
+        Services.db.transferStats(fromId, toId)
+        handler.sendMessage(chatId, "Данные успешно перенесены!")
+        handler.sendMessage(fromId,
+                "⚠️ Ваши данные были перенесены на <a href=\"tg://user?id=$toId\">этот</a> аккаунт!")
+        handler.sendMessage(toId,
+                "⚠️ Ваши статы были перенесены с <a href=\"tg://user?id=$fromId\">этого</a> аккаунта!")
+    }
+
     fun cleanChats() {
         handler.sendMessage(Services.botConfig.mainAdmin, "Очистка чатов...")
         val chats = Services.db.getChatTitleMap()

@@ -98,6 +98,9 @@ internal class CommandListener constructor(
     @Command(name = "/nekos", desc = "посмотреть чс бота. В лс работает как управление чс", forAllAdmins = true)
     fun nekos(message: Message) = adminCommands.listUsers(message, DBService.UserType.BLACKLIST)
 
+    @Command(name = "/transfer", desc = "перенос стат юзера. /transfer fromId toId", forMainAdmin = true)
+    fun transfer(message: Message) = adminCommands.transferStats(message)
+
     @Command(name = "/critical", desc = "очистка незакончившихся дуэлей", forAllAdmins = true)
     fun critical(message: Message) {
         handler.duels.clear()
