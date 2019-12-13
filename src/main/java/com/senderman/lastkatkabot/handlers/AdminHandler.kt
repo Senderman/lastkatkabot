@@ -95,9 +95,11 @@ class AdminHandler(private val handler: LastkatkaBotHandler) {
             for (id in users) {
                 val name = Methods.getChatMember(id.toLong(), id).call(handler).user.firstName
                 val user = TgUser(id, name)
-                row.add(InlineKeyboardButton()
-                        .setText(user.name)
-                        .setCallbackData(callback + " " + user.id))
+                row.add(InlineKeyboardButton().apply {
+                    text = user.name
+                    callbackData = "$callback ${user.id}"
+                }
+                )
                 if (row.size == 2) {
                     rows.add(row)
                     row = ArrayList()
@@ -106,9 +108,11 @@ class AdminHandler(private val handler: LastkatkaBotHandler) {
             if (row.size == 1) {
                 rows.add(row)
             }
-            rows.add(listOf(InlineKeyboardButton()
-                    .setText("Закрыть меню")
-                    .setCallbackData(LastkatkaBot.CALLBACK_CLOSE_MENU)))
+            rows.add(listOf(InlineKeyboardButton().apply {
+                text = "Закрыть меню"
+                callbackData = LastkatkaBot.CALLBACK_CLOSE_MENU
+            }
+            ))
             markup.keyboard = rows
             messageToSend.setText(title + "Для удаления пользователя нажмите на него").replyMarkup = markup
         }
@@ -143,9 +147,9 @@ class AdminHandler(private val handler: LastkatkaBotHandler) {
     fun cleanChats() {
         handler.sendMessage(Services.botConfig.mainAdmin, "Очистка чатов...")
         val chats = Services.db.getChatTitleMap()
-        val cpus = Runtime.getRuntime().availableProcessors()
-        val executor = Executors.newFixedThreadPool(cpus)
-        executor.invokeAll(splitCleanupTasks(cpus, chats))
+        val cores = Runtime.getRuntime().availableProcessors()
+        val executor = Executors.newFixedThreadPool(cores)
+        executor.invokeAll(splitCleanupTasks(cores, chats))
         executor.shutdown()
         executor.awaitTermination(5, TimeUnit.MINUTES)
         Services.db.cleanup()

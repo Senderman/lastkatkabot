@@ -56,14 +56,17 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
         if (message.isUserMessage) return
         val markup = InlineKeyboardMarkup()
         markup.keyboard = listOf(listOf(
-                InlineKeyboardButton()
-                        .setText("Принять")
-                        .setCallbackData(LastkatkaBot.CALLBACK_CAKE_OK + message.text
-                                .replace("/cake", "")),
-                InlineKeyboardButton()
-                        .setText("Отказаться")
-                        .setCallbackData(LastkatkaBot.CALLBACK_CAKE_NOT + message.text
-                                .replace("/cake", ""))))
+                InlineKeyboardButton().apply {
+                    text = "Принять"
+                    callbackData = LastkatkaBot.CALLBACK_CAKE_OK + message.text
+                            .replace("/cake", "")
+                },
+                InlineKeyboardButton().apply {
+                    text = "Отказаться"
+                    callbackData = LastkatkaBot.CALLBACK_CAKE_NOT + message.text
+                            .replace("/cake", "")
+                }
+        ))
 
         Methods.deleteMessage(message.chatId, message.messageId).call(handler)
         val presenter = TgUser(message.from)
@@ -137,12 +140,15 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
         }
         val markup = InlineKeyboardMarkup()
         markup.keyboard = listOf(listOf(
-                InlineKeyboardButton()
-                        .setText("Принять")
-                        .setCallbackData(LastkatkaBot.CALLBACK_ACCEPT_MARRIAGE + "$userId $loverId"),
-                InlineKeyboardButton()
-                        .setText("Отказаться")
-                        .setCallbackData(LastkatkaBot.CALLBACK_DENY_MARRIAGE + "$userId $loverId")
+                InlineKeyboardButton().apply {
+                    this.text = "Принять"
+                    callbackData = LastkatkaBot.CALLBACK_ACCEPT_MARRIAGE + "$userId $loverId"
+
+                },
+                InlineKeyboardButton().apply {
+                    this.text = "Отказаться"
+                    callbackData = LastkatkaBot.CALLBACK_DENY_MARRIAGE + "$userId $loverId"
+                }
         ))
         val sm = Methods.sendMessage()
                 .setChatId(chatId)
