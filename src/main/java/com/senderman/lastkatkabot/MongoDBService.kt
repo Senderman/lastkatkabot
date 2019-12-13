@@ -327,7 +327,7 @@ internal class MongoDBService : DBService {
         dateFormat.timeZone = timeZone
         val date = Calendar.getInstance(timeZone).time
         val today = dateFormat.format(date)
-        if ("date" !in doc || doc.getInteger("date").toLong() < today.toLong()) return false
+        if ("date" !in doc || doc.getLong("date") < today.toLong()) return false
         val hoursFormat = SimpleDateFormat("HH")
         hoursFormat.timeZone = timeZone
         var hours = hoursFormat.format(date).toInt()
