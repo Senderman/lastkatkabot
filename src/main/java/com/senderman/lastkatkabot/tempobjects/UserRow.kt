@@ -22,6 +22,7 @@ class UserRow(message: Message) {
         val title = lines[0].split(" ".toRegex(), 2)[1]
         name = lines[1]
         divider = lines[2].toInt()
+        if (divider <= 0) throw Exception("Неположительное число")
         checkedUsers = HashSet()
         messageText = "<b>$title:</b>\n\n"
         val resultMessage = Services.handler.sendMessage(message.chatId, messageText)
