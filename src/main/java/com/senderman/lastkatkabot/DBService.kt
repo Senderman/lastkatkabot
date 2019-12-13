@@ -20,6 +20,8 @@ interface DBService {
     // return map of <id, score> sorted by descending order
     fun getTop(): Map<Int, Int>
 
+    fun transferStats(fromId: Int, toId: Int)
+
     fun setUserCity(id: Int, city: String)
     fun getUserCity(id: Int): String?
     fun setLover(userId: Int, loverId: Int)

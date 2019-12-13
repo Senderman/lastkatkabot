@@ -93,6 +93,22 @@ internal class MongoDBService : DBService {
         return top
     }
 
+    override fun transferStats(fromId: Int, toId: Int) {
+        val orig = userstats.getUser(fromId)
+        val total = orig.getInteger("total")
+        val wins = orig.getInteger("wins")
+        val bnc = orig.getInteger("bnc")
+        val commit = Document("total", total)
+                .append("wins", wins)
+                .append("bnc", bnc)
+        userstats.getUser(toId)
+        userstats.updateOne(
+                eq("id", toId),
+                Document("\$inc", commit)
+        )
+        userstats.deleteOne(eq("id", fromId))
+    }
+
     override fun setUserCity(id: Int, city: String) {
         userstats.getUser(id)
         userstats.updateOne(eq("id", id), Document("\$set", Document("city", city)))
@@ -294,6 +310,12 @@ internal class MongoDBService : DBService {
                 chats.deleteOne(eq("chatId", chat.toLong()))
             }
         }
+        userstats.deleteMany(
+                and(
+                        eq("total", 0),
+                        eq("bnc", 0)
+                )
+        )
     }
 
     override fun setPair(chatId: Long, pair: String) {
