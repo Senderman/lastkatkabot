@@ -271,7 +271,7 @@ internal class MongoDBService : DBService {
     override fun getChatTitleMap(): Map<Long, String> {
         val chats = HashMap<Long, String>()
         for (doc in this.chats.find()) {
-            chats[doc.getLong("chatId")] = doc.getString("title")
+            chats[doc.getLong("chatId")] = doc.getString("title") ?: "No title"
         }
         return chats
     }
