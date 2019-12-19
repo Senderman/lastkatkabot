@@ -1,43 +1,40 @@
 package com.senderman.lastkatkabot
 
 import com.annimon.tgbotsmodule.api.methods.Methods
-import com.senderman.Command
+import com.senderman.AbstractExecutorKeeper
 import com.senderman.lastkatkabot.handlers.AdminHandler
-import com.senderman.lastkatkabot.handlers.TournamentHandler
 import com.senderman.lastkatkabot.handlers.UsercommandsHandler
 import com.senderman.lastkatkabot.tempobjects.BullsAndCowsGame
 import com.senderman.lastkatkabot.tempobjects.Duel
 import com.senderman.lastkatkabot.tempobjects.UserRow
+import com.senderman.lastkatkabot.usercommands.*
 import org.telegram.telegrambots.meta.api.objects.Message
 
-internal class CommandListener constructor(
+internal class ExecutorKeeper constructor(
         private val handler: LastkatkaBotHandler,
-        private val adminCommands: AdminHandler,
-        private val tournamentHandler: TournamentHandler
-) {
+        private val adminCommands: AdminHandler
+) : AbstractExecutorKeeper() {
 
     private val usercommands = UsercommandsHandler(handler)
 
-    @Command(name = "/action", desc = "сделать действие. Действие указывать чере пробел, можно реплаем")
-    fun action(message: Message) = usercommands.action(message)
+    init {
+        registerCommands()
+    }
 
-    @Command(name = "/f", desc = "(reply) press f to pay respects. А можно вот так: /f штаны за 40 хривень")
-    fun pressF(message: Message) = usercommands.pressF(message)
-
-    @Command(name = "/cake", desc = "(reply) подарить тортик. Можно указать начинку, напр. /cake с вишней")
-    fun cake(message: Message) = usercommands.cake(message)
-
-    @Command(name = "/dice", desc = "бросить кубик. Можно указать диапазон, напр. /dice -5 9")
-    fun dice(message: Message) = usercommands.dice(message)
+    override fun registerCommands() {
+        register(Action(handler))
+        register(PayRespects(handler))
+        register(Cake(handler))
+        register(Help(handler, commandExecutors))
+        register(Getinfo(handler))
+        register(BncHelp(handler))
+    }
 
     @Command(name = "/stats", desc = "статистика. Реплаем можно узнать статистику реплайнутого")
     fun stats(message: Message) = usercommands.stats(message)
 
     @Command(name = "/pinlist", desc = "ответьте этим на сообщение со списком игроков в верфульфа чтобы запинить его")
     fun pinlist(message: Message) = usercommands.pinList(message)
-
-    @Command(name = "/getinfo", desc = "(reply) инфа о сообщении в формате JSON")
-    fun getinfo(message: Message) = usercommands.getInfo(message)
 
     @Command(name = "/weather", desc = "погода. Если не указать город, то покажет погоду в последнем введенном вами городе")
     fun weather(message: Message) = usercommands.weather(message)
@@ -47,9 +44,6 @@ internal class CommandListener constructor(
 
     @Command(name = "/top", desc = "топ игроков в Быки и Коровы")
     fun bncTop(message: Message) = usercommands.bncTop(message)
-
-    @Command(name = "/help", desc = "помощь", showInHelp = false)
-    fun help(message: Message) = usercommands.help(message)
 
     @Command(name = "/pair", desc = "пара дня")
     fun pair(message: Message) = usercommands.pair(message)
@@ -70,9 +64,6 @@ internal class CommandListener constructor(
         val duel = Duel(message)
         handler.duels[duel.duelId] = duel
     }
-
-    @Command(name = "/bnchelp", desc = "помощь по игре Быки и Коровы")
-    fun bncHelp(message: Message) = usercommands.bncHelp(message)
 
     @Command(name = "/bncinfo", desc = "информация о текущей игре")
     fun bncInfo(message: Message) {
@@ -115,36 +106,6 @@ internal class CommandListener constructor(
 
     @Command(name = "/setuphelp", desc = "инфо о команде /setup", forAllAdmins = true)
     fun setupHelp(message: Message) = adminCommands.setupHelp(message)
-
-    @Command(name = "/score", desc = "name1 score1 name2 score2 - сообщить счет", forAllAdmins = true)
-    fun score(message: Message) {
-        if (!tournamentHandler.isEnabled) return
-        tournamentHandler.score(message)
-    }
-
-    @Command(name = "/win", desc = "winner score loser score типСледующегоРаунда - завершить турнир (если текущий раунд - финал, используйте тип раунда over)", forAllAdmins = true)
-    fun win(message: Message) {
-        if (!tournamentHandler.isEnabled) return
-        tournamentHandler.win(message)
-    }
-
-    @Command(name = "/rt", desc = "отменить турнир", forAllAdmins = true)
-    fun resetTournament(message: Message) {
-        if (!tournamentHandler.isEnabled) return
-        tournamentHandler.resetTournament()
-    }
-
-    @Command(name = "/setup", desc = "настроить турнир", showInHelp = false, forAllAdmins = true)
-    fun setup(message: Message) = tournamentHandler.setup(message)
-
-    @Command(name = "/go", desc = "подтвердить данные", showInHelp = false, forAllAdmins = true)
-    fun go(message: Message) = tournamentHandler.startTournament()
-
-    @Command(name = "/ct", desc = "отменить введеные данные", showInHelp = false, forAllAdmins = true)
-    fun ct(message: Message) = tournamentHandler.cancelSetup()
-
-    @Command(name = "/tourmessage", desc = "(reply) главное сообщение турнира", forAllAdmins = true)
-    fun tourMessage(message: Message) = tournamentHandler.tourmessage(message)
 
     @Command(name = "/owner", desc = "(reply) добавить админа бота", forMainAdmin = true)
     fun owner(message: Message) = adminCommands.addUser(message, DBService.UserType.ADMINS)
