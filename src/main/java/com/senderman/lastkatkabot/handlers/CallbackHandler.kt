@@ -6,6 +6,7 @@ import com.senderman.lastkatkabot.DBService.UserType
 import com.senderman.lastkatkabot.LastkatkaBot
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services
+import com.senderman.lastkatkabot.usercommands.PayRespects
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 
@@ -41,7 +42,7 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
         editText(
                 query,
                 "${query.message.text}\n${query.from.firstName} has payed respects",
-                UsercommandsHandler.markupForPayingRespects
+                PayRespects.markupForPayingRespects
         )
     }
 
@@ -74,7 +75,8 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
         emt.call(handler)
     }
 
-    fun registerInTournament(query: CallbackQuery) {
+    // TODO implement
+    /*fun registerInTournament(query: CallbackQuery) {
         val memberId = query.from.id
         if (!handler.tournamentHandler.isEnabled) {
             answerQuery(query, "⚠️ На данный момент нет открытых раундов!")
@@ -98,7 +100,7 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
                 .call(handler)
         answerQuery(query, "✅ Вам даны права на отправку сообщений в группе турнира!")
         handler.sendMessage(Services.botConfig.tourgroup, "✅ ${query.from.firstName} получил доступ к игре!")
-    }
+    }*/
 
     fun deleteUser(query: CallbackQuery, type: UserType?) {
         val userIds: MutableSet<Int>

@@ -2,7 +2,7 @@ package com.senderman.lastkatkabot
 
 import com.annimon.tgbotsmodule.api.methods.Methods
 import com.senderman.AbstractExecutorKeeper
-import com.senderman.lastkatkabot.handlers.AdminHandler
+import com.senderman.lastkatkabot.admincommands.*
 import com.senderman.lastkatkabot.handlers.UsercommandsHandler
 import com.senderman.lastkatkabot.tempobjects.BullsAndCowsGame
 import com.senderman.lastkatkabot.tempobjects.Duel
@@ -10,10 +10,7 @@ import com.senderman.lastkatkabot.tempobjects.UserRow
 import com.senderman.lastkatkabot.usercommands.*
 import org.telegram.telegrambots.meta.api.objects.Message
 
-internal class ExecutorKeeper constructor(
-        private val handler: LastkatkaBotHandler,
-        private val adminCommands: AdminHandler
-) : AbstractExecutorKeeper() {
+internal class ExecutorKeeper constructor(private val handler: LastkatkaBotHandler) : AbstractExecutorKeeper() {
 
     private val usercommands = UsercommandsHandler(handler)
 
@@ -29,12 +26,20 @@ internal class ExecutorKeeper constructor(
         register(Getinfo(handler))
         register(BncHelp(handler))
 
-		register(GoodNeko(handler))
+        // admin commands
+        register(GoodNeko(handler))
         register(TransferStats(handler))
         register(Update(handler))
         register(CleanChats(handler))
         register(Announce(handler))
         register(SetupHelp(handler))
+        register(Owners(handler))
+        register(Prem(handler))
+        register(Nekos(handler))
+        register(Critical(handler))
+        register(BadNeko(handler))
+        register(AddPremium(handler))
+        register(Owner(handler))
     }
 
     @Command(name = "/stats", desc = "статистика. Реплаем можно узнать статистику реплайнутого")
@@ -92,12 +97,6 @@ internal class ExecutorKeeper constructor(
 
     @Command(name = "/nekos", desc = "посмотреть чс бота. В лс работает как управление чс", forAllAdmins = true)
     fun nekos(message: Message) = adminCommands.listUsers(message, DBService.UserType.BLACKLIST)
-
-    @Command(name = "/critical", desc = "очистка незакончившихся дуэлей", forAllAdmins = true)
-    fun critical(message: Message) {
-        handler.duels.clear()
-        handler.sendMessage(message.chatId, "✅ Все неначатые дуэли были очищены!")
-    }
 
     @Command(name = "/owners", desc = "управление/просмотр админами бота. Управление доступно только главному админу в лс", forAllAdmins = true)
     fun owners(message: Message) = adminCommands.listUsers(message, DBService.UserType.ADMINS)

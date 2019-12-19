@@ -1,12 +1,14 @@
-package com.senderman.lastkatkabot.usercommands
+package com.senderman.lastkatkabot.admincommands
 
-import com.annimon.tgbotsmodule.api.methods.Methods
 import com.senderman.CommandExecutor
 import com.senderman.lastkatkabot.LastkatkaBotHandler
+import com.senderman.lastkatkabot.Services
 import org.telegram.telegrambots.meta.api.objects.Message
 
 class TransferStats constructor(private val handler: LastkatkaBotHandler) : CommandExecutor {
 
+    override val forMainAdmin: Boolean
+        get() = true
     override val command: String
         get() = "/transfer"
     override val desc: String
