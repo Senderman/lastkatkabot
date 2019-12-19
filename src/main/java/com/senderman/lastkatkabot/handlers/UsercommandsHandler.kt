@@ -1,7 +1,6 @@
 package com.senderman.lastkatkabot.handlers
 
 import com.annimon.tgbotsmodule.api.methods.Methods
-import com.senderman.Command
 import com.senderman.TgUser
 import com.senderman.lastkatkabot.LastkatkaBot
 import com.senderman.lastkatkabot.LastkatkaBotHandler
@@ -9,100 +8,17 @@ import com.senderman.lastkatkabot.Services
 import com.senderman.lastkatkabot.tempobjects.BnCPlayer
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.telegram.telegrambots.meta.api.methods.ParseMode
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.ChatMember
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 import org.telegram.telegrambots.meta.logging.BotLogger
 import java.io.IOException
 import java.net.URL
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-import java.util.concurrent.ThreadLocalRandom
 
 class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
-    fun action(message: Message) {
-        Methods.deleteMessage(message.chatId, message.messageId).call(handler)
-        if (message.text.split("\\s+".toRegex()).size == 1) return
-
-        val action = message.text.split("\\s+".toRegex(), 2)[1]
-        val sm = Methods.sendMessage(message.chatId, message.from.firstName + " " + action)
-        if (message.isReply) sm.replyToMessageId = message.replyToMessage.messageId
-        handler.sendMessage(sm)
-    }
-
-    fun pressF(message: Message) {
-        if (message.isUserMessage) return
-        if (message.isReply && message.from.firstName == message.replyToMessage.from.firstName) return
-
-        val `object` = if (message.text.split(" ").size > 1)
-            message.text.split(" ".toRegex(), 2)[1]
-        else
-            message.replyToMessage.from.firstName
-
-        Methods.deleteMessage(message.chatId, message.messageId).call(handler)
-        val text = "\uD83D\uDD6F Press F to pay respects to $`object`" +
-                "\n${message.from.firstName} has payed respects"
-        handler.sendMessage(Methods.sendMessage()
-                .setChatId(message.chatId)
-                .setText(text)
-                .setReplyMarkup(markupForPayingRespects))
-    }
-
-    fun cake(message: Message) {
-        if (message.isUserMessage) return
-        val markup = InlineKeyboardMarkup()
-        markup.keyboard = listOf(listOf(
-                InlineKeyboardButton().apply {
-                    text = "Принять"
-                    callbackData = LastkatkaBot.CALLBACK_CAKE_OK + message.text
-                            .replace("/cake", "")
-                },
-                InlineKeyboardButton().apply {
-                    text = "Отказаться"
-                    callbackData = LastkatkaBot.CALLBACK_CAKE_NOT + message.text
-                            .replace("/cake", "")
-                }
-        ))
-
-        Methods.deleteMessage(message.chatId, message.messageId).call(handler)
-        val presenter = TgUser(message.from)
-        val luckyOne = TgUser(message.replyToMessage.from)
-        handler.sendMessage(Methods.sendMessage()
-                .setChatId(message.chatId)
-                .setText("\uD83C\uDF82 ${luckyOne.name} пользователь ${presenter.name} подарил вам тортик " +
-                        message.text.replace("/cake", ""))
-                .setReplyToMessageId(message.replyToMessage.messageId)
-                .setReplyMarkup(markup))
-    }
-
-    fun dice(message: Message) {
-        val random: Int
-        val args = message.text.split("\\s+".toRegex(), 3)
-        random = when (args.size) {
-            3 -> {
-                try {
-                    val min = args[1].toInt()
-                    val max = args[2].toInt()
-                    ThreadLocalRandom.current().nextInt(min, max + 1)
-                } catch (nfe: NumberFormatException) {
-                    ThreadLocalRandom.current().nextInt(1, 7)
-                }
-            }
-            2 -> {
-                val max = args[1].toInt()
-                ThreadLocalRandom.current().nextInt(1, max + 1)
-            }
-            else -> ThreadLocalRandom.current().nextInt(1, 7)
-        }
-        handler.sendMessage(Methods.sendMessage()
-                .setChatId(message.chatId)
-                .setText("\uD83C\uDFB2 Кубик брошен. Результат: $random")
-                .setReplyToMessageId(message.messageId))
-    }
 
     fun marryme(message: Message) {
         val marryById = message.text.trim().matches(Regex("/marryme\\s+\\d+"))
@@ -207,21 +123,6 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
         Methods.Administration.pinChatMessage(message.chatId, message.replyToMessage.messageId)
                 .setNotificationEnabled(false).call(handler)
         Methods.deleteMessage(message.chatId, message.messageId).call(handler)
-    }
-
-    fun getInfo(message: Message) {
-        if (!message.isReply) return
-
-        val replacements = mapOf(
-                "[ ,]*\\w+='?null'?" to "",
-                "(\\w*[iI]d=)(-?\\d+)" to "$1<code>$2</code>",
-                "([{,])" to "$1\n",
-                "(})" to "\n$1",
-                "(=)" to " $1 "
-        )
-        var text = message.replyToMessage.toString()
-        for ((old, new) in replacements) text = text.replace(old.toRegex(), new)
-        handler.sendMessage(message.chatId, text)
     }
 
     fun weather(message: Message) {
@@ -332,47 +233,6 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
         handler.sendMessage(chatId, text.toString())
     }
 
-    fun bncHelp(message: Message) {
-        val sendPhoto = Methods.sendPhoto()
-                .setChatId(message.chatId)
-                .setFile(Services.botConfig.bncphoto)
-        if (message.isReply) sendPhoto.replyToMessageId = message.replyToMessage.messageId else sendPhoto.replyToMessageId = message.messageId
-        sendPhoto.call(handler)
-    }
-
-    fun help(message: Message) {
-        val help = StringBuilder("Привет! Это очень полезный бот для проекта @lastkatka, который многое что умеет! Основные команды:\n\n")
-        val adminHelp = StringBuilder("<b>Информация для админов бота</b>\n\n")
-        val mainAdminHelp = StringBuilder("<b>Информация для главного админа бота</b>\n\n")
-        val noobId = message.from.id
-        for (method in handler.commands.values) {
-            val annotation = method.getAnnotation(Command::class.java)
-            if (!annotation.showInHelp) continue
-
-            val helpLine = "${annotation.name} - ${annotation.desc}\n"
-            if (noobId == Services.botConfig.mainAdmin && annotation.forMainAdmin)
-                mainAdminHelp.append(helpLine)
-            else if (handler.isFromAdmin(message) && annotation.forAllAdmins)
-                adminHelp.append(helpLine)
-            else
-                help.append(helpLine)
-            // TODO add help for premium users when needed
-        }
-        if (handler.isFromAdmin(message)) help.append("\n").append(adminHelp)
-        if (noobId == Services.botConfig.mainAdmin) help.append("\n").append(mainAdminHelp)
-        // attempt to send help to PM
-        try {
-            handler.execute(SendMessage(message.from.id.toLong(), help.toString())
-                    .setParseMode(ParseMode.HTML))
-        } catch (e: TelegramApiException) {
-            handler.sendMessage(Methods.sendMessage(message.chatId, "Пожалуйста, начните диалог со мной в лс")
-                    .setReplyToMessageId(message.messageId))
-            return
-        }
-        if (!message.isUserMessage) handler.sendMessage(Methods.sendMessage(message.chatId, "✅ Помощь была отправлена вам в лс")
-                .setReplyToMessageId(message.messageId))
-    }
-
     fun pair(message: Message) {
         if (message.isUserMessage) return
 
@@ -455,19 +315,6 @@ class UsercommandsHandler(private val handler: LastkatkaBotHandler) {
     private fun isFromWwBot(message: Message): Boolean {
         return message.replyToMessage.from.userName in Services.botConfig.wwBots &&
                 message.replyToMessage.text.startsWith("#players")
-    }
-
-    companion object {
-        val markupForPayingRespects: InlineKeyboardMarkup
-            get() {
-                val markup = InlineKeyboardMarkup()
-                markup.keyboard = listOf(listOf(
-                        InlineKeyboardButton()
-                                .setText("F")
-                                .setCallbackData(LastkatkaBot.CALLBACK_PAY_RESPECTS)
-                ))
-                return markup
-            }
     }
 
 }

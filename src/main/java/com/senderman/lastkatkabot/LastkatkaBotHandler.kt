@@ -3,11 +3,10 @@ package com.senderman.lastkatkabot
 import com.annimon.tgbotsmodule.BotHandler
 import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.api.methods.send.SendMessageMethod
-import com.senderman.Command
+import com.senderman.AbstractExecutorKeeper
 import com.senderman.lastkatkabot.DBService.UserType
 import com.senderman.lastkatkabot.handlers.AdminHandler
 import com.senderman.lastkatkabot.handlers.CallbackHandler
-import com.senderman.lastkatkabot.handlers.TournamentHandler
 import com.senderman.lastkatkabot.tempobjects.BullsAndCowsGame
 import com.senderman.lastkatkabot.tempobjects.Duel
 import com.senderman.lastkatkabot.tempobjects.UserRow
@@ -23,13 +22,12 @@ import java.awt.Font
 import java.awt.RenderingHints
 import java.io.File
 import java.io.IOException
-import java.lang.reflect.Method
 import java.util.*
 import javax.imageio.ImageIO
 import kotlin.collections.HashMap
 
 class LastkatkaBotHandler internal constructor() : BotHandler() {
-    private val commandListener: CommandListener
+    private val handlersSearcher: AbstractExecutorKeeper
     private val adminHandler: AdminHandler
     private val callbackHandler: CallbackHandler
     val admins: MutableSet<Int>
@@ -37,8 +35,6 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
     val premiumUsers: MutableSet<Int>
     val bullsAndCowsGames: MutableMap<Long, BullsAndCowsGame>
     val duels: MutableMap<String, Duel>
-    val commands: MutableMap<String, Method>
-    val tournamentHandler: TournamentHandler
     val userRows: MutableMap<Long, UserRow>
     var feedbackChatId = 0L
     var feedbackMessageId = 0
@@ -54,23 +50,14 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         admins = Services.db.getTgUsersByType(UserType.ADMINS)
         premiumUsers = Services.db.getTgUsersByType(UserType.PREMIUM)
         blacklist = Services.db.getTgUsersByType(UserType.BLACKLIST)
-        commands = HashMap()
         adminHandler = AdminHandler(this)
         callbackHandler = CallbackHandler(this)
-        tournamentHandler = TournamentHandler(this)
         bullsAndCowsGames = Services.db.getBnCGames()
         userRows = Services.db.getUserRows()
         duels = HashMap()
+        handlersSearcher = ExecutorKeeper(this, adminHandler)
         sendMessage(mainAdmin, "Очистка бд от мусора...")
         adminHandler.cleanChats()
-
-        // init command-method map
-        commandListener = CommandListener(this, adminHandler, tournamentHandler)
-        val annotationClass = Command::class.java
-        for (m in commandListener.javaClass.declaredMethods) {
-            if (m.isAnnotationPresent(annotationClass))
-                commands[m.getAnnotation(annotationClass).name] = m
-        }
         sendMessage(mainAdmin, "Бот готов к работе!")
     }
 
@@ -152,21 +139,13 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
                 .replace("@$botUsername", "")
         if ("@" in command) return null
 
-        // find method by name and invoke it
-        try {
-            if (command !in commands) return null
-            val method = commands.getValue(command)
-            val annotation = method.getAnnotation(Command::class.java)
-            if (message.from.id != Services.botConfig.mainAdmin && annotation.forMainAdmin) {
-                return null
-            } else if (annotation.forAllAdmins && !isFromAdmin(message)) {
-                return null
-            } else if (annotation.forPremium && !isPremiumUser(message)) {
-                return null
-            } else if (isInBlacklist(message)) return null
-            method.invoke(commandListener, message)
-        } catch (e: Exception) {
-            return null
+
+        handlersSearcher.findExecutor(command)?.let { executor ->
+            if (message.from.id != Services.botConfig.mainAdmin && executor.forMainAdmin) return null
+            else if (executor.forAllAdmins && !isFromAdmin(message)) return null
+            else if (executor.forPremium && !isPremiumUser(message)) return null
+            else if (isInBlacklist(message)) return null
+            executor.execute(message)
         }
 
         return null
@@ -249,12 +228,12 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         } else if (chatId == Services.botConfig.tourgroup) {
             for (user in newMembers) {
                 // restrict any user who isn't in tournament
-                if (user.id !in tournamentHandler.membersIds) {
+                /*if (user.id !in tournamentHandler.membersIds) {
                     Methods.Administration.restrictChatMember()
                             .setChatId(Services.botConfig.tourgroup)
                             .setUserId(user.id)
                             .setCanSendMessages(false).call(this)
-                }
+                }*/ //TODO implement
             }
         } else if (!newMembers[0].bot) {
             // say hi
