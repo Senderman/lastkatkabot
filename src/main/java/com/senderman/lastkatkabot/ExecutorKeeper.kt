@@ -28,6 +28,13 @@ internal class ExecutorKeeper constructor(
         register(Help(handler, commandExecutors))
         register(Getinfo(handler))
         register(BncHelp(handler))
+
+		register(GoodNeko(handler))
+        register(TransferStats(handler))
+        register(Update(handler))
+        register(CleanChats(handler))
+        register(Announce(handler))
+        register(SetupHelp(handler))
     }
 
     @Command(name = "/stats", desc = "статистика. Реплаем можно узнать статистику реплайнутого")
@@ -83,14 +90,8 @@ internal class ExecutorKeeper constructor(
     @Command(name = "/badneko", desc = "(reply) добавить юзера в чс бота", forAllAdmins = true)
     fun badneko(message: Message) = adminCommands.addUser(message, DBService.UserType.BLACKLIST)
 
-    @Command(name = "/goodneko", desc = "(reply) убрать юзера из чс бота", forAllAdmins = true)
-    fun goodneko(message: Message) = adminCommands.goodneko(message)
-
     @Command(name = "/nekos", desc = "посмотреть чс бота. В лс работает как управление чс", forAllAdmins = true)
     fun nekos(message: Message) = adminCommands.listUsers(message, DBService.UserType.BLACKLIST)
-
-    @Command(name = "/transfer", desc = "перенос стат юзера. /transfer fromId toId", forMainAdmin = true)
-    fun transfer(message: Message) = adminCommands.transferStats(message)
 
     @Command(name = "/critical", desc = "очистка незакончившихся дуэлей", forAllAdmins = true)
     fun critical(message: Message) {
@@ -104,23 +105,11 @@ internal class ExecutorKeeper constructor(
     @Command(name = "/prem", desc = "управление/просмотр премиум-пользователями. Управление доступно только главному админу в лс", forAllAdmins = true)
     fun prem(message: Message) = adminCommands.listUsers(message, DBService.UserType.PREMIUM)
 
-    @Command(name = "/setuphelp", desc = "инфо о команде /setup", forAllAdmins = true)
-    fun setupHelp(message: Message) = adminCommands.setupHelp(message)
-
     @Command(name = "/owner", desc = "(reply) добавить админа бота", forMainAdmin = true)
     fun owner(message: Message) = adminCommands.addUser(message, DBService.UserType.ADMINS)
 
     @Command(name = "/addpremium", desc = "(reply) добавить премиум-пользователя", forMainAdmin = true)
     fun addPremium(message: Message) = adminCommands.addUser(message, DBService.UserType.PREMIUM)
-
-    @Command(name = "/update", desc = "рассылка информации по обновлениям в чаты. Обновления писать построчно", forMainAdmin = true)
-    fun update(message: Message) = adminCommands.update(message)
-
-    @Command(name = "/announce", desc = "рассылка сообщения всем в личку", forMainAdmin = true)
-    fun announce(message: Message) = adminCommands.announce(message)
-
-    @Command(name = "/cc", desc = "очистка списка чатов от мусора и обновление названий", forMainAdmin = true)
-    fun cleanChats(message: Message) = adminCommands.cleanChats()
 
     @Command(name = "/row", desc = "Рассчет юзеров, например няшек.\nСинтаксис: 1 строка - /row Список няшек\n" +
             "2 строка - няшка\n" +
