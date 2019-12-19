@@ -1,16 +1,34 @@
-package com.senderman.lastkatkabot.usercommands
+package com.senderman.lastkatkabot.admincommands
 
 import com.annimon.tgbotsmodule.api.methods.Methods
 import com.senderman.CommandExecutor
 import com.senderman.lastkatkabot.LastkatkaBotHandler
+import com.senderman.lastkatkabot.Services
 import org.telegram.telegrambots.meta.api.objects.Message
+import java.util.concurrent.Callable
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 class CleanChats constructor(private val handler: LastkatkaBotHandler) : CommandExecutor {
 
+    override val forMainAdmin: Boolean
+        get() = true
     override val command: String
         get() = "/cc"
     override val desc: String
         get() = "очистка списка чатов от мусора и обновление названий"
+
+    override fun execute(message: Message) {
+        handler.sendMessage(Services.botConfig.mainAdmin, "Очистка чатов...")
+        val chats = Services.db.getChatTitleMap()
+        val cores = Runtime.getRuntime().availableProcessors()
+        val executor = Executors.newFixedThreadPool(cores)
+        executor.invokeAll(splitCleanupTasks(cores, chats))
+        executor.shutdown()
+        executor.awaitTermination(5, TimeUnit.MINUTES)
+        Services.db.cleanup()
+        handler.sendMessage(Services.botConfig.mainAdmin, "Чаты обновлены!")
+    }
 
     private fun splitCleanupTasks(workers: Int, chats: Map<Long, String>): List<Callable<Unit>> {
         val partSize = chats.size / workers
@@ -38,18 +56,6 @@ class CleanChats constructor(private val handler: LastkatkaBotHandler) : Command
                 }
             }
         }
-    }
-
-    override fun execute(message: Message) {
-        handler.sendMessage(Services.botConfig.mainAdmin, "Очистка чатов...")
-        val chats = Services.db.getChatTitleMap()
-        val cores = Runtime.getRuntime().availableProcessors()
-        val executor = Executors.newFixedThreadPool(cores)
-        executor.invokeAll(splitCleanupTasks(cores, chats))
-        executor.shutdown()
-        executor.awaitTermination(5, TimeUnit.MINUTES)
-        Services.db.cleanup()
-        handler.sendMessage(Services.botConfig.mainAdmin, "Чаты обновлены!")
     }
 }
 
