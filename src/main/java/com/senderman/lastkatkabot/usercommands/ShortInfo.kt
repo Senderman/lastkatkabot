@@ -16,20 +16,20 @@ class ShortInfo constructor(val handler: LastkatkaBotHandler) : CommandExecutor 
         var info = """
             ==== Информация ====
             
-            💬 ID чата: $chatId
-            🙍‍♂️ Ваш ID: $userId
+            💬 ID чата: <code>$chatId</code>
+            🙍‍♂️ Ваш ID: <code>$userId</code>
         """.trimIndent()
         message.replyToMessage?.let { reply ->
             val replyMessageId = reply.messageId
             val replyUserId = reply.from.id
             info += """
                 
-                ✉️ ID reply: $replyMessageId
-                🙍‍♂ ID юзера из reply: $replyUserId
+                ✉️ ID reply: <code>$replyMessageId</code>
+                🙍‍♂ ID юзера из reply: <code>$replyUserId</code>
             """.trimIndent()
 
             if (reply.chat.isChannelChat) {
-                info += "\n\uD83D\uDCE2 ID канала: ${reply.chatId}"
+                info += "\n\uD83D\uDCE2 ID канала: <code>${reply.chatId}</code>"
             }
         }
 
