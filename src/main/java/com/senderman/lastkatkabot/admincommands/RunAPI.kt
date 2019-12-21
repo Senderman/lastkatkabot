@@ -45,13 +45,11 @@ class RunAPI constructor(val handler: LastkatkaBotHandler) : CommandExecutor {
         var response = try {
             makeRequest(request)
         } catch (e: IOException) {
-            e.printStackTrace()
-            handler.sendMessage(chatId, "Ошибка запроса")
-            return
+            "Ошибка запроса"
         }
 
         response = LastkatkaBot.formatJSON(response)
-        handler.sendMessage(chatId, "Response:\n\n$response")
+        handler.sendMessage(chatId, "Ответ сервера:\n\n$response")
     }
 
     private fun makeRequest(request: String): String {

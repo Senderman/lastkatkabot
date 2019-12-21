@@ -30,6 +30,7 @@ internal class ExecutorKeeper constructor(handler: LastkatkaBotHandler) : Abstra
         register(DuelStart(handler))
         register(Row(handler))
         register(GetRow(handler))
+        register(ShortInfo(handler))
 
         // admin commands
         register(GoodNeko(handler))
