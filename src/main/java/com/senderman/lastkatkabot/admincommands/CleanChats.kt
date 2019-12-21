@@ -52,7 +52,7 @@ class CleanChats : CommandExecutor {
                     try {
                         val msg = Methods.sendMessage(chatId,
                                 "Сервисное сообщение, оно будет удалено через секунду").call(Services.handler)
-                        Methods.deleteMessage(chatId, msg.messageId)
+                        Methods.deleteMessage(chatId, msg.messageId).call(Services.handler)
                         val title = msg.chat.title
                         Services.db.updateTitle(chatId, title)
                     } catch (e: Exception) {

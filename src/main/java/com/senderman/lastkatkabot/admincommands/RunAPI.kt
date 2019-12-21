@@ -41,12 +41,14 @@ class RunAPI constructor(val handler: LastkatkaBotHandler) : CommandExecutor {
             handler.sendMessage(chatId, "Неверное значение: ${e.message}")
             return
         }
+
         var response = try {
             makeRequest(request)
         } catch (e: IOException) {
             handler.sendMessage(chatId, "Ошибка запроса")
             return
         }
+
         response = LastkatkaBot.formatJSON(response)
         handler.sendMessage(chatId, "Response:\n\n$response")
     }

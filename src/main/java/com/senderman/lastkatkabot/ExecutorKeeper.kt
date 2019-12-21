@@ -13,7 +13,7 @@ internal class ExecutorKeeper constructor(handler: LastkatkaBotHandler) : Abstra
         register(PayRespects(handler))
         register(Cake(handler))
         register(Help(handler, commandExecutors))
-        register(Getinfo(handler))
+        register(GetInfo(handler))
         register(BNCHelp(handler))
         register(Pair(handler))
         register(LastPairs(handler))
