@@ -45,6 +45,7 @@ class RunAPI constructor(val handler: LastkatkaBotHandler) : CommandExecutor {
         var response = try {
             makeRequest(request)
         } catch (e: IOException) {
+            e.printStackTrace()
             handler.sendMessage(chatId, "Ошибка запроса")
             return
         }
@@ -63,7 +64,7 @@ class RunAPI constructor(val handler: LastkatkaBotHandler) : CommandExecutor {
             baos.write(buffer, 0, length)
         }
         input.close()
-        return baos.toString()
+        return baos.toString(Charsets.UTF_8)
     }
 
     private fun buildRequest(method: String, keyValues: List<String>): String {
