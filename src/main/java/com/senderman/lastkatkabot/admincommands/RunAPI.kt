@@ -64,7 +64,7 @@ class RunAPI constructor(val handler: LastkatkaBotHandler) : CommandExecutor {
             baos.write(buffer, 0, length)
         }
         input.close()
-        return baos.toString(Charsets.UTF_8)
+        return baos.toString()
     }
 
     private fun buildRequest(method: String, keyValues: List<String>): String {
