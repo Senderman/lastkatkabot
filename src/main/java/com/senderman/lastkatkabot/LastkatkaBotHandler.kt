@@ -5,9 +5,10 @@ import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.api.methods.send.SendMessageMethod
 import com.senderman.AbstractExecutorKeeper
 import com.senderman.lastkatkabot.DBService.UserType
-import com.senderman.lastkatkabot.handlers.AdminHandler
+import com.senderman.lastkatkabot.admincommands.CleanChats
+import com.senderman.lastkatkabot.admincommands.UserLister
 import com.senderman.lastkatkabot.handlers.CallbackHandler
-import com.senderman.lastkatkabot.tempobjects.BullsAndCowsGame
+import com.senderman.lastkatkabot.bnc.BullsAndCowsGame
 import com.senderman.lastkatkabot.tempobjects.Duel
 import com.senderman.lastkatkabot.tempobjects.UserRow
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
@@ -28,7 +29,6 @@ import kotlin.collections.HashMap
 
 class LastkatkaBotHandler internal constructor() : BotHandler() {
     private val handlersSearcher: AbstractExecutorKeeper
-    private val adminHandler: AdminHandler
     private val callbackHandler: CallbackHandler
     val admins: MutableSet<Int>
     val blacklist: MutableSet<Int>
@@ -50,14 +50,13 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         admins = Services.db.getTgUsersByType(UserType.ADMINS)
         premiumUsers = Services.db.getTgUsersByType(UserType.PREMIUM)
         blacklist = Services.db.getTgUsersByType(UserType.BLACKLIST)
-        adminHandler = AdminHandler(this)
         callbackHandler = CallbackHandler(this)
         bullsAndCowsGames = Services.db.getBnCGames()
         userRows = Services.db.getUserRows()
         duels = HashMap()
-        handlersSearcher = ExecutorKeeper(this, adminHandler)
+        handlersSearcher = ExecutorKeeper(this)
         sendMessage(mainAdmin, "Очистка бд от мусора...")
-        adminHandler.cleanChats()
+        CleanChats.cleanChats()
         sendMessage(mainAdmin, "Бот готов к работе!")
     }
 
@@ -188,12 +187,13 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
                     else -> return
                 }
                 callbackHandler.deleteUser(query, type)
-                adminHandler.listUsers(query.message, type)
+                UserLister.listUsers(this, query.message, type)
             }
 
             else -> when (data) {
-                LastkatkaBot.CALLBACK_REGISTER_IN_TOURNAMENT ->
-                    callbackHandler.registerInTournament(query)
+                // TODO Implement
+                /*LastkatkaBot.CALLBACK_REGISTER_IN_TOURNAMENT ->
+                    callbackHandler.registerInTournament(query)*/
 
                 LastkatkaBot.CALLBACK_PAY_RESPECTS ->
                     callbackHandler.payRespects(query)
@@ -225,17 +225,17 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
             Services.db.addChat(message.chatId, message.chat.title)
             sendMessage(chatId,
                     "Всем привет! Для полноценного использования всех моих фичей дайте мне права на пин и удаление сообщений, пожалуйста!")
-        } else if (chatId == Services.botConfig.tourgroup) {
+        } /*else if (chatId == Services.botConfig.tourgroup) {
             for (user in newMembers) {
                 // restrict any user who isn't in tournament
-                /*if (user.id !in tournamentHandler.membersIds) {
+                if (user.id !in tournamentHandler.membersIds) {
                     Methods.Administration.restrictChatMember()
                             .setChatId(Services.botConfig.tourgroup)
                             .setUserId(user.id)
                             .setCanSendMessages(false).call(this)
-                }*/ //TODO implement
+                } //TODO implement
             }
-        } else if (!newMembers[0].bot) {
+        } */ else if (!newMembers[0].bot) {
             // say hi
             val membername = newMembers[0].firstName
             try {

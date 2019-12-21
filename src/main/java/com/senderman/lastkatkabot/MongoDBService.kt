@@ -5,7 +5,7 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters.*
 import com.senderman.MongoClientKeeper
 import com.senderman.lastkatkabot.DBService.UserType
-import com.senderman.lastkatkabot.tempobjects.BullsAndCowsGame
+import com.senderman.lastkatkabot.bnc.BullsAndCowsGame
 import com.senderman.lastkatkabot.tempobjects.UserRow
 import com.senderman.lastkatkabot.tempobjects.UserStats
 import org.bson.Document
