@@ -1,4 +1,4 @@
-package com.senderman.lastkatkabot.tempobjects
+package com.senderman.lastkatkabot.bnc
 
 import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.api.methods.send.SendMessageMethod

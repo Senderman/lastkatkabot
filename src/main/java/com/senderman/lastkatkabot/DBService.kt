@@ -1,6 +1,6 @@
 package com.senderman.lastkatkabot
 
-import com.senderman.lastkatkabot.tempobjects.BullsAndCowsGame
+import com.senderman.lastkatkabot.bnc.BullsAndCowsGame
 import com.senderman.lastkatkabot.tempobjects.UserRow
 import com.senderman.lastkatkabot.tempobjects.UserStats
 import org.bson.Document
