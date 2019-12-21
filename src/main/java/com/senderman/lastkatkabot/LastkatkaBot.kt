@@ -4,6 +4,7 @@ import com.annimon.tgbotsmodule.BotHandler
 import com.annimon.tgbotsmodule.BotModule
 import com.annimon.tgbotsmodule.beans.Config
 import com.annimon.tgbotsmodule.services.YamlConfigLoaderService
+import org.apache.commons.lang3.StringEscapeUtils
 
 class LastkatkaBot : BotModule {
     override fun botHandler(config: Config): BotHandler {
@@ -42,7 +43,7 @@ class LastkatkaBot : BotModule {
             for((old, new) in replacements){
                 result = result.replace(old.toRegex(), new)
             }
-            return result
+            return StringEscapeUtils.unescapeJava(result)
         }
     }
 }
