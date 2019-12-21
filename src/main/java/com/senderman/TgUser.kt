@@ -22,8 +22,8 @@ open class TgUser {
     private fun getSafeName(name: String): String {
         if (name.trim().isBlank()) return "Без имени"
         return name
-                .replace("<", "&lt;")
-                .replace(">", "&gt;")
-                .replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace("&", "&amp;")
     }
 }

@@ -20,9 +20,9 @@ class Duel(message: Message) {
 
     init {
         val sm = Methods.sendMessage()
-                .setChatId(chatId)
-                .setText("\uD83C\uDFAF Набор на дуэль! Жмите кнопку ниже\nДжойнулись:\n${player1.name}")
-                .setReplyMarkup(getDuelReplyMarkup())
+            .setChatId(chatId)
+            .setText("\uD83C\uDFAF Набор на дуэль! Жмите кнопку ниже\nДжойнулись:\n${player1.name}")
+            .setReplyMarkup(getDuelReplyMarkup())
         messageId = Services.handler.sendMessage(sm).messageId
         duelId = "$chatId $messageId"
     }
@@ -34,7 +34,11 @@ class Duel(message: Message) {
             return
         }
         if (query.from.id == player1.id) {
-            answerCallbackQuery(query, "\uD83D\uDC7A Я думаю, что тебе стоит сходить к психологу! Ты вызываешь на дуэль самого себя", true)
+            answerCallbackQuery(
+                query,
+                "\uD83D\uDC7A Я думаю, что тебе стоит сходить к психологу! Ты вызываешь на дуэль самого себя",
+                true
+            )
             return
         }
         player2 = TgUser(query.from.id, query.from.firstName)
@@ -72,28 +76,32 @@ class Duel(message: Message) {
         }
 
         Methods.editMessageText()
-                .setChatId(chatId)
-                .setMessageId(messageId)
-                .setText(duelResult)
-                .setParseMode(ParseMode.HTML)
-                .call(Services.handler)
+            .setChatId(chatId)
+            .setMessageId(messageId)
+            .setText(duelResult)
+            .setParseMode(ParseMode.HTML)
+            .call(Services.handler)
         Services.handler.duels.remove(duelId)
     }
 
     companion object {
         fun answerCallbackQuery(query: CallbackQuery, text: String?, showAsAlert: Boolean) {
             Methods.answerCallbackQuery()
-                    .setText(text)
-                    .setCallbackQueryId(query.id)
-                    .setShowAlert(showAsAlert)
-                    .call(Services.handler)
+                .setText(text)
+                .setCallbackQueryId(query.id)
+                .setShowAlert(showAsAlert)
+                .call(Services.handler)
         }
 
         private fun getDuelReplyMarkup(): InlineKeyboardMarkup {
             val markup = InlineKeyboardMarkup()
-            markup.keyboard = listOf(listOf(InlineKeyboardButton()
-                    .setText("Присоединиться")
-                    .setCallbackData(LastkatkaBot.CALLBACK_JOIN_DUEL)))
+            markup.keyboard = listOf(
+                listOf(
+                    InlineKeyboardButton()
+                        .setText("Присоединиться")
+                        .setCallbackData(LastkatkaBot.CALLBACK_JOIN_DUEL)
+                )
+            )
             return markup
         }
     }

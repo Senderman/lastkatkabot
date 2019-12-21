@@ -19,26 +19,30 @@ class Cake constructor(val handler: LastkatkaBotHandler) : CommandExecutor {
         if (message.isUserMessage) return
         val markup = InlineKeyboardMarkup()
         markup.keyboard = listOf(listOf(
-                InlineKeyboardButton().apply {
-                    text = "Принять"
-                    callbackData = LastkatkaBot.CALLBACK_CAKE_OK + message.text
-                            .replace("/cake", "")
-                },
-                InlineKeyboardButton().apply {
-                    text = "Отказаться"
-                    callbackData = LastkatkaBot.CALLBACK_CAKE_NOT + message.text
-                            .replace("/cake", "")
-                }
+            InlineKeyboardButton().apply {
+                text = "Принять"
+                callbackData = LastkatkaBot.CALLBACK_CAKE_OK + message.text
+                    .replace("/cake", "")
+            },
+            InlineKeyboardButton().apply {
+                text = "Отказаться"
+                callbackData = LastkatkaBot.CALLBACK_CAKE_NOT + message.text
+                    .replace("/cake", "")
+            }
         ))
 
         Methods.deleteMessage(message.chatId, message.messageId).call(handler)
         val presenter = TgUser(message.from)
         val luckyOne = TgUser(message.replyToMessage.from)
-        handler.sendMessage(Methods.sendMessage()
+        handler.sendMessage(
+            Methods.sendMessage()
                 .setChatId(message.chatId)
-                .setText("\uD83C\uDF82 ${luckyOne.name} пользователь ${presenter.name} подарил вам тортик " +
-                        message.text.replace("/cake", ""))
+                .setText(
+                    "\uD83C\uDF82 ${luckyOne.name} пользователь ${presenter.name} подарил вам тортик " +
+                            message.text.replace("/cake", "")
+                )
                 .setReplyToMessageId(message.replyToMessage.messageId)
-                .setReplyMarkup(markup))
+                .setReplyMarkup(markup)
+        )
     }
 }

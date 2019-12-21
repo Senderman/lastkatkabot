@@ -16,7 +16,9 @@ class GetRow constructor(val handler: LastkatkaBotHandler) : CommandExecutor {
         if (message.chatId !in handler.userRows)
             handler.sendMessage(message.chatId, "У вас пока еще нет списка!")
         else
-            handler.sendMessage(Methods.sendMessage(message.chatId, "Вот!")
-                    .setReplyToMessageId(handler.userRows[message.chatId]?.messageId))
+            handler.sendMessage(
+                Methods.sendMessage(message.chatId, "Вот!")
+                    .setReplyToMessageId(handler.userRows[message.chatId]?.messageId)
+            )
     }
 }

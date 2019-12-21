@@ -49,14 +49,16 @@ class BullsAndCowsGame(message: Message) {
         answer = generateRandom()
         startTime = System.currentTimeMillis()
         Services.db.saveBncGame(chatId, this)
-        gameMessage(chatId, """
+        gameMessage(
+            chatId, """
                 Число загадано! 
                 Отправляйте в чат ваши варианты, они должны состоять только из неповторяющихся чисел! 
                 Правила игры - /bnchelp. 
                 Вкл/выкл режима антируина (когда все цифры известны) - /bncruin 
                 Просмотр хода игры - /bncinfo 
                 Остановить игру (голосование) - /bncstop)
-                """.trimIndent())
+                """.trimIndent()
+        )
     }
 
     fun check(message: Message) {
@@ -120,22 +122,28 @@ class BullsAndCowsGame(message: Message) {
             gameOver()
             return
         }
-        gameMessage(Methods.sendMessage()
+        gameMessage(
+            Methods.sendMessage()
                 .setChatId(chatId)
-                .setText(String.format("<b>Голосование за завершение игры</b>\n" +
-                        "Осталось %1\$d голосов для завершения. Голос админа чата или создателя игры сразу заканчивает игру",
-                        5 - voted))
+                .setText(
+                    String.format(
+                        "<b>Голосование за завершение игры</b>\n" +
+                                "Осталось %1\$d голосов для завершения. Голос админа чата или создателя игры сразу заканчивает игру",
+                        5 - voted
+                    )
+                )
                 .setReplyMarkup(getEndgameMarkup())
-                .setParseMode(ParseMode.HTML))
+                .setParseMode(ParseMode.HTML)
+        )
     }
 
     fun addVote(query: CallbackQuery) {
         if (query.from.id in votedUsers) {
             Methods.answerCallbackQuery()
-                    .setText("Вы уже голосовали!")
-                    .setShowAlert(true)
-                    .setCallbackQueryId(query.id)
-                    .call(Services.handler)
+                .setText("Вы уже голосовали!")
+                .setShowAlert(true)
+                .setCallbackQueryId(query.id)
+                .call(Services.handler)
             return
         }
         voted++
@@ -145,14 +153,18 @@ class BullsAndCowsGame(message: Message) {
         }
         votedUsers.add(query.from.id)
         Methods.editMessageText()
-                .setText(String.format("<b>Голосование за завершение игры</b>\n" +
-                        "Осталось %1\$d голосов для завершения. Голос админа чата или создателя игры сразу заканчивает игру",
-                        5 - voted))
-                .setChatId(chatId)
-                .setMessageId(query.message.messageId)
-                .setReplyMarkup(getEndgameMarkup())
-                .enableHtml()
-                .call(Services.handler)
+            .setText(
+                String.format(
+                    "<b>Голосование за завершение игры</b>\n" +
+                            "Осталось %1\$d голосов для завершения. Голос админа чата или создателя игры сразу заканчивает игру",
+                    5 - voted
+                )
+            )
+            .setChatId(chatId)
+            .setMessageId(query.message.messageId)
+            .setReplyMarkup(getEndgameMarkup())
+            .enableHtml()
+            .call(Services.handler)
     }
 
     private fun ruined(number: String): Boolean {
@@ -176,8 +188,12 @@ class BullsAndCowsGame(message: Message) {
     }
 
     private fun win(message: Message) {
-        history.insert(0, String.format("%1\$s выиграл за %2\$d попыток! %3\$s - правильный ответ!\n\n",
-                message.from.firstName, (length * 2.5 - (attempts - 1)).toInt(), answer))
+        history.insert(
+            0, String.format(
+                "%1\$s выиграл за %2\$d попыток! %3\$s - правильный ответ!\n\n",
+                message.from.firstName, (length * 2.5 - (attempts - 1)).toInt(), answer
+            )
+        )
         history.append("\nВот столько вы потратили времени: ${getSpentTime()}")
         Services.handler.sendMessage(chatId, history.toString())
         Services.db.incBNCWins(message.from.id, length)
@@ -269,10 +285,13 @@ class BullsAndCowsGame(message: Message) {
     companion object {
         private fun getEndgameMarkup(): InlineKeyboardMarkup {
             val markup = InlineKeyboardMarkup()
-            val rows = listOf(listOf(
+            val rows = listOf(
+                listOf(
                     InlineKeyboardButton()
-                            .setText("Голосовать")
-                            .setCallbackData(LastkatkaBot.CALLBACK_VOTE_BNC)))
+                        .setText("Голосовать")
+                        .setCallbackData(LastkatkaBot.CALLBACK_VOTE_BNC)
+                )
+            )
             markup.keyboard = rows
             return markup
         }

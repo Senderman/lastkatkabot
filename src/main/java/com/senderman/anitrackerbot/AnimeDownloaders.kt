@@ -47,11 +47,11 @@ internal object AnimeDownloaders {
         var torrentLink = torrentDiv.selectFirst("a").attr("href")
         torrentLink = "https://tr.anidub.com$torrentLink"
         val torrent = Jsoup.connect(torrentLink)
-                .method(Connection.Method.GET)
-                .cookies(anidubCookies)
-                .ignoreContentType(true)
-                .execute()
-                .bodyStream()
+            .method(Connection.Method.GET)
+            .cookies(anidubCookies)
+            .ignoreContentType(true)
+            .execute()
+            .bodyStream()
         return downloadFile(torrent)
     }
 

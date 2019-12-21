@@ -26,21 +26,25 @@ class PayRespects constructor(val handler: LastkatkaBotHandler) : CommandExecuto
         Methods.deleteMessage(message.chatId, message.messageId).call(handler)
         val text = "\uD83D\uDD6F Press F to pay respects to $`object`" +
                 "\n${message.from.firstName} has payed respects"
-        handler.sendMessage(Methods.sendMessage()
+        handler.sendMessage(
+            Methods.sendMessage()
                 .setChatId(message.chatId)
                 .setText(text)
-                .setReplyMarkup(markupForPayingRespects))
+                .setReplyMarkup(markupForPayingRespects)
+        )
     }
 
     companion object {
         val markupForPayingRespects: InlineKeyboardMarkup
             get() {
                 val markup = InlineKeyboardMarkup()
-                markup.keyboard = listOf(listOf(
+                markup.keyboard = listOf(
+                    listOf(
                         InlineKeyboardButton()
-                                .setText("F")
-                                .setCallbackData(LastkatkaBot.CALLBACK_PAY_RESPECTS)
-                ))
+                            .setText("F")
+                            .setCallbackData(LastkatkaBot.CALLBACK_PAY_RESPECTS)
+                    )
+                )
                 return markup
             }
     }

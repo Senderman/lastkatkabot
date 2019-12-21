@@ -1,6 +1,5 @@
 package com.senderman.lastkatkabot.admincommands
 
-import com.annimon.tgbotsmodule.api.methods.Methods
 import com.senderman.CommandExecutor
 import com.senderman.TgUser
 import com.senderman.lastkatkabot.DBService

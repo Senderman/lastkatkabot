@@ -31,16 +31,16 @@ class LastkatkaBot : BotModule {
         const val CALLBACK_ANSWER_FEEDBACK = "answ_feedback "
         const val CALLBACK_BLOCK_USER = "block_user"
 
-        fun formatJSON(json:String):String{
+        fun formatJSON(json: String): String {
             val replacements = mapOf(
-                    "[ ,]*\\w+='?null'?" to "",
-                    "(\\w*[iI]d=)(-?\\d+)" to "$1<code>$2</code>",
-                    "([{,])" to "$1\n",
-                    "(})" to "\n$1",
-                    "(=)" to " $1 "
+                "[ ,]*\\w+='?null'?" to "",
+                "(\\w*[iI]d=)(-?\\d+)" to "$1<code>$2</code>",
+                "([{,])" to "$1\n",
+                "(})" to "\n$1",
+                "(=)" to " $1 "
             )
             var result = json
-            for((old, new) in replacements){
+            for ((old, new) in replacements) {
                 result = result.replace(old.toRegex(), new)
             }
             return StringEscapeUtils.unescapeJava(result)

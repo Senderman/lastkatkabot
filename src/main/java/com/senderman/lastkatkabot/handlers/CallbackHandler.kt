@@ -14,10 +14,10 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
 
     private fun answerQuery(query: CallbackQuery, text: String, showAlert: Boolean = true) {
         Methods.answerCallbackQuery()
-                .setCallbackQueryId(query.id)
-                .setText(text)
-                .setShowAlert(showAlert)
-                .call(handler)
+            .setCallbackQueryId(query.id)
+            .setText(text)
+            .setShowAlert(showAlert)
+            .call(handler)
     }
 
     private fun editText(query: CallbackQuery, text: String, markup: InlineKeyboardMarkup? = null) {
@@ -26,11 +26,11 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
 
     private fun editText(chatId: Long, messageId: Int, text: String, markup: InlineKeyboardMarkup? = null) {
         Methods.editMessageText()
-                .setChatId(chatId)
-                .setMessageId(messageId)
-                .setText(text)
-                .setReplyMarkup(markup)
-                .call(handler)
+            .setChatId(chatId)
+            .setMessageId(messageId)
+            .setText(text)
+            .setReplyMarkup(markup)
+            .call(handler)
     }
 
     fun payRespects(query: CallbackQuery) {
@@ -40,9 +40,9 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
         }
         answerQuery(query, "You've payed respects")
         editText(
-                query,
-                "${query.message.text}\n${query.from.firstName} has payed respects",
-                PayRespects.markupForPayingRespects
+            query,
+            "${query.message.text}\n${query.from.firstName} has payed respects",
+            PayRespects.markupForPayingRespects
         )
     }
 
@@ -57,19 +57,23 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
             return
         }
         val emt = Methods.editMessageText()
-                .setChatId(query.message.chatId)
-                .setMessageId(query.message.messageId)
-                .setReplyMarkup(null)
+            .setChatId(query.message.chatId)
+            .setMessageId(query.message.messageId)
+            .setReplyMarkup(null)
         when (action) {
             CakeAcion.CAKE_OK -> {
-                emt.setText("\uD83C\uDF82 ${query.from.firstName} принял тортик"
-                        + query.data.replace(LastkatkaBot.CALLBACK_CAKE_OK, ""))
+                emt.setText(
+                    "\uD83C\uDF82 ${query.from.firstName} принял тортик"
+                            + query.data.replace(LastkatkaBot.CALLBACK_CAKE_OK, "")
+                )
             }
 
             CakeAcion.CAKE_NOT -> {
                 answerQuery(query, "Ну и ладно", false)
-                emt.setText("\uD83D\uDEAB \uD83C\uDF82 ${query.from.firstName} отказался от тортика"
-                        + query.data.replace(LastkatkaBot.CALLBACK_CAKE_NOT, ""))
+                emt.setText(
+                    "\uD83D\uDEAB \uD83C\uDF82 ${query.from.firstName} отказался от тортика"
+                            + query.data.replace(LastkatkaBot.CALLBACK_CAKE_NOT, "")
+                )
             }
         }
         emt.call(handler)
@@ -174,7 +178,8 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
         val couple = TgUser(Methods.getChatMember(message.chatId, coupleId).call(handler).user)
         Services.db.setLover(user.id, couple.id)
         handler.sendMessage(couple.id, "Поздравляем! Теперь ваша вторая половинка - " + user.link)
-        val format = "Внимание все! Сегодня великий день свадьбы %s и %s! Так давайте же поздравим их и съедим шавуху в часть такого праздника!"
+        val format =
+            "Внимание все! Сегодня великий день свадьбы %s и %s! Так давайте же поздравим их и съедим шавуху в часть такого праздника!"
         val text = String.format(format, user.link, couple.link)
         handler.sendMessage(message.chatId, text)
     }

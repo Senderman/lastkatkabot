@@ -16,7 +16,7 @@ class PinList constructor(val handler: LastkatkaBotHandler) : CommandExecutor {
     override fun execute(message: Message) {
         if (!isFromWwBot(message)) return
         Methods.Administration.pinChatMessage(message.chatId, message.replyToMessage.messageId)
-                .setNotificationEnabled(false).call(handler)
+            .setNotificationEnabled(false).call(handler)
         Methods.deleteMessage(message.chatId, message.messageId).call(handler)
     }
 

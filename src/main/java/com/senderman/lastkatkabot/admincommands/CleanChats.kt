@@ -50,15 +50,20 @@ class CleanChats : CommandExecutor {
                 for (i in start until bound) {
                     val chatId = keys[i]
                     try {
-                        val msg = Methods.sendMessage(chatId,
-                                "Сервисное сообщение, оно будет удалено через секунду").call(Services.handler)
+                        val msg = Methods.sendMessage(
+                            chatId,
+                            "Сервисное сообщение, оно будет удалено через секунду"
+                        ).call(Services.handler)
                         Methods.deleteMessage(chatId, msg.messageId).call(Services.handler)
                         val title = msg.chat.title
                         Services.db.updateTitle(chatId, title)
                     } catch (e: Exception) {
                         Services.db.removeChat(chatId)
                         Methods.leaveChat(chatId).call(Services.handler)
-                        Services.handler.sendMessage(Services.botConfig.mainAdmin, "Чат \"${chats[chatId]}\" удален из списка!")
+                        Services.handler.sendMessage(
+                            Services.botConfig.mainAdmin,
+                            "Чат \"${chats[chatId]}\" удален из списка!"
+                        )
                     }
                 }
             }

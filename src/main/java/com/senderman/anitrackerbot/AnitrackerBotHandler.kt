@@ -28,8 +28,8 @@ class AnitrackerBotHandler internal constructor(private val config: BotConfig) :
         val text = message.text
 
         val command = text.split(" ".toRegex(), 2)[0]
-                .toLowerCase(Locale.ENGLISH)
-                .replace("@$botUsername", "")
+            .toLowerCase(Locale.ENGLISH)
+            .replace("@$botUsername", "")
         if ("@" in command) return null
         val params = text.split("\\s+".toRegex(), 2)
 
@@ -79,9 +79,9 @@ class AnitrackerBotHandler internal constructor(private val config: BotConfig) :
                     sendMessage(chatId, "Скачиваем торрент...")
                     val file = downloader.download(url)
                     Methods.sendDocument(chatId)
-                            .setFile(file)
-                            .setCaption(title)
-                            .call(this)
+                        .setFile(file)
+                        .setCaption(title)
+                        .call(this)
                     file.delete()
                 } catch (e: Exception) {
                     sendMessage(chatId, "Ошибка!")
@@ -101,8 +101,8 @@ class AnitrackerBotHandler internal constructor(private val config: BotConfig) :
                 try {
                     val file = downloader.download(params[1])
                     Methods.sendDocument(chatId)
-                            .setFile(file)
-                            .call(this)
+                        .setFile(file)
+                        .call(this)
                     file.delete()
                 } catch (e: Exception) {
                     sendMessage(chatId, "Ошибка!")
@@ -153,9 +153,9 @@ class AnitrackerBotHandler internal constructor(private val config: BotConfig) :
 
     private fun sendMessage(chatId: Long, text: String?, enablePreview: Boolean = true) {
         val sm = Methods.sendMessage()
-                .setChatId(chatId)
-                .setText(text!!)
-                .setParseMode(ParseMode.HTML)
+            .setChatId(chatId)
+            .setText(text!!)
+            .setParseMode(ParseMode.HTML)
         if (!enablePreview) sm.disableWebPagePreview()
         sm.call(this)
     }
@@ -192,8 +192,8 @@ class AnitrackerBotHandler internal constructor(private val config: BotConfig) :
             val parser = getAnimeParser(url) ?: break
             try {
                 text.append(parseAnimeData(parser.parse(url), false))
-                        .append("<b>URL:</b> ").append(url).append("\n")
-                        .append("<b>Id:</b> ").append(animeId).append("\n\n")
+                    .append("<b>URL:</b> ").append(url).append("\n")
+                    .append("<b>Id:</b> ").append(animeId).append("\n\n")
             } catch (ignored: Exception) {
             }
         }

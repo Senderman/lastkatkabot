@@ -11,7 +11,7 @@ import org.telegram.telegrambots.meta.logging.BotLogger
 class Announce constructor(private val handler: LastkatkaBotHandler) : CommandExecutor {
 
     override val forMainAdmin: Boolean
-        get() =  true
+        get() = true
     override val command: String
         get() = "/announce"
     override val desc: String

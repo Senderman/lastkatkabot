@@ -33,10 +33,14 @@ class TransferStats constructor(private val handler: LastkatkaBotHandler) : Comm
         handler.sendMessage(chatId, "Переносим данные...")
         Services.db.transferStats(fromId, toId)
         handler.sendMessage(chatId, "Данные успешно перенесены!")
-        handler.sendMessage(fromId,
-                "⚠️ Ваши данные были перенесены на <a href=\"tg://user?id=$toId\">этот</a> аккаунт!")
-        handler.sendMessage(toId,
-                "⚠️ Ваши статы были перенесены с <a href=\"tg://user?id=$fromId\">этого</a> аккаунта!")
+        handler.sendMessage(
+            fromId,
+            "⚠️ Ваши данные были перенесены на <a href=\"tg://user?id=$toId\">этот</a> аккаунт!"
+        )
+        handler.sendMessage(
+            toId,
+            "⚠️ Ваши статы были перенесены с <a href=\"tg://user?id=$fromId\">этого</a> аккаунта!"
+        )
     }
 }
 

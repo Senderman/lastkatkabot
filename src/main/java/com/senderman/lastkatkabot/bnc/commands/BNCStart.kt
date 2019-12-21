@@ -5,7 +5,7 @@ import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.bnc.BullsAndCowsGame
 import org.telegram.telegrambots.meta.api.objects.Message
 
-class BNCStart constructor(val handler:LastkatkaBotHandler): CommandExecutor {
+class BNCStart constructor(val handler: LastkatkaBotHandler) : CommandExecutor {
     override val command: String
         get() = "/bnc"
     override val desc: String

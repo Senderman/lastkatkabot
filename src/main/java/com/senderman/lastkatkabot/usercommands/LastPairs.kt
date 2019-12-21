@@ -16,9 +16,9 @@ class LastPairs constructor(val handler: LastkatkaBotHandler) : CommandExecutor 
         val chatId = message.chatId
         val history = Services.db.getPairsHistory(chatId)
         handler.sendMessage(chatId,
-                history?.let {
-                    "<b>Последние 10 пар:</b>\n\n$it"
-                } ?: "В этом чате еще никогда не запускали команду /pair!"
+            history?.let {
+                "<b>Последние 10 пар:</b>\n\n$it"
+            } ?: "В этом чате еще никогда не запускали команду /pair!"
         )
     }
 }

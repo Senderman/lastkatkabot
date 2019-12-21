@@ -16,8 +16,10 @@ class Stats constructor(val handler: LastkatkaBotHandler) : CommandExecutor {
     override fun execute(message: Message) {
         val player = if (!message.isReply) message.from else message.replyToMessage.from
         if (player.bot) {
-            handler.sendMessage(message.chatId, "Но это же просто бот, имитация человека! " +
-                    "Разве может бот написать симфонию, иметь статистику, играть в BnC, любить?")
+            handler.sendMessage(
+                message.chatId, "Но это же просто бот, имитация человека! " +
+                        "Разве может бот написать симфонию, иметь статистику, играть в BnC, любить?"
+            )
             return
         }
         val user = TgUser(player)
