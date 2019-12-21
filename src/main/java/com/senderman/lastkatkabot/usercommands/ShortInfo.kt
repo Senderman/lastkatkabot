@@ -28,8 +28,9 @@ class ShortInfo constructor(val handler: LastkatkaBotHandler) : CommandExecutor 
                 🙍‍♂ ID юзера из reply: <code>$replyUserId</code>
             """.trimIndent()
 
-            if (reply.chat.isChannelChat) {
-                info += "\n\uD83D\uDCE2 ID канала: <code>${reply.chatId}</code>"
+            reply.forwardFromChat?.let {
+                if (it.isChannelChat)
+                    info += "\n\uD83D\uDCE2 ID канала: <code>${reply.forwardFromChat.id}</code>"
             }
         }
 
