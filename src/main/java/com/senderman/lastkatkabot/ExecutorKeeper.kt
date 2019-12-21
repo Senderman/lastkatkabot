@@ -46,6 +46,7 @@ internal class ExecutorKeeper constructor(handler: LastkatkaBotHandler) : Abstra
         register(AddPremium(handler))
         register(Owner(handler))
         register(Stats(handler))
+        register(RunAPI(handler))
     }
 
 }

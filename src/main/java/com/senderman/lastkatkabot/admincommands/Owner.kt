@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.Message
 
 class Owner constructor(val handler: LastkatkaBotHandler): CommandExecutor {
 
-    override val forAllAdmins: Boolean
+    override val forMainAdmin: Boolean
         get() = true
     override val desc: String
         get() ="(reply) добавить админа бота"

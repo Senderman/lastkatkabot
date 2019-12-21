@@ -11,6 +11,8 @@ class Update constructor(private val handler: LastkatkaBotHandler) : CommandExec
         get() = "/update"
     override val desc: String
         get() = "рассылка информации по обновлениям в чаты. Обновления писать построчно"
+    override val forMainAdmin: Boolean
+        get() = true
 
     override fun execute(message: Message) {
         val params = message.text.split("\n")
