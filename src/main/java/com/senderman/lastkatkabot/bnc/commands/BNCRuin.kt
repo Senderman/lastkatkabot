@@ -4,7 +4,7 @@ import com.senderman.CommandExecutor
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import org.telegram.telegrambots.meta.api.objects.Message
 
-class BNCRuin constructor(val handler:LastkatkaBotHandler) : CommandExecutor {
+class BNCRuin constructor(val handler: LastkatkaBotHandler) : CommandExecutor {
     override val command: String
         get() = "/bncruin"
     override val desc: String

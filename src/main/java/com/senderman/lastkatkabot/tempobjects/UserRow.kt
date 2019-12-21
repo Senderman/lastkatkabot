@@ -37,11 +37,11 @@ class UserRow(message: Message) {
         val pref = if (checkedUsers.size % divider == 0) "" else "не"
         messageText += "${checkedUsers.size}. ${user.link} - $pref $name\n"
         Methods.editMessageText()
-                .setChatId(chatId)
-                .setMessageId(messageId)
-                .setText(messageText)
-                .enableHtml()
-                .call(Services.handler)
+            .setChatId(chatId)
+            .setMessageId(messageId)
+            .setText(messageText)
+            .enableHtml()
+            .call(Services.handler)
         Services.db.saveRow(chatId, this)
     }
 }

@@ -7,8 +7,8 @@ import com.senderman.AbstractExecutorKeeper
 import com.senderman.lastkatkabot.DBService.UserType
 import com.senderman.lastkatkabot.admincommands.CleanChats
 import com.senderman.lastkatkabot.admincommands.UserLister
-import com.senderman.lastkatkabot.handlers.CallbackHandler
 import com.senderman.lastkatkabot.bnc.BullsAndCowsGame
+import com.senderman.lastkatkabot.handlers.CallbackHandler
 import com.senderman.lastkatkabot.tempobjects.Duel
 import com.senderman.lastkatkabot.tempobjects.UserRow
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
@@ -88,10 +88,10 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
 
         if (message.leftChatMember != null && message.leftChatMember.userName != botUsername && message.chatId != Services.botConfig.tourgroup) {
             Methods.sendDocument()
-                    .setChatId(chatId)
-                    .setFile(Services.botConfig.leavesticker)
-                    .setReplyToMessageId(message.messageId)
-                    .call(this)
+                .setChatId(chatId)
+                .setFile(Services.botConfig.leavesticker)
+                .setReplyToMessageId(message.messageId)
+                .call(this)
             Services.db.removeUserFromChatDB(message.leftChatMember.id, chatId)
         }
 
@@ -119,10 +119,12 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
                 
                 $text
             """.trimIndent()
-            sendMessage(Methods.sendMessage()
+            sendMessage(
+                Methods.sendMessage()
                     .setChatId(feedbackChatId)
                     .setText(answer)
-                    .setReplyToMessageId(feedbackMessageId))
+                    .setReplyToMessageId(feedbackMessageId)
+            )
             feedbackChatId = 0L
             sendMessage(chatId, "✅ Ответ отправлен!")
             return null
@@ -134,16 +136,18 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
          * and NOT on commands for another bots (like /command@notmybot)
          */
         val command = text.split("\\s+".toRegex(), 2)[0]
-                .toLowerCase(Locale.ENGLISH)
-                .replace("@$botUsername", "")
+            .toLowerCase(Locale.ENGLISH)
+            .replace("@$botUsername", "")
         if ("@" in command) return null
 
 
         handlersSearcher.findExecutor(command)?.let { executor ->
-            if (message.from.id != Services.botConfig.mainAdmin && executor.forMainAdmin) return null
-            else if (executor.forAllAdmins && !isFromAdmin(message)) return null
-            else if (executor.forPremium && !isPremiumUser(message)) return null
-            else if (isInBlacklist(message)) return null
+            when {
+                message.from.id != Services.botConfig.mainAdmin && executor.forMainAdmin -> return null
+                executor.forAllAdmins && !isFromAdmin(message) -> return null
+                executor.forPremium && !isPremiumUser(message) -> return null
+                isInBlacklist(message) -> return null
+            }
             executor.execute(message)
         }
 
@@ -223,8 +227,10 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
 
         if (newMembers[0].userName == botUsername) {
             Services.db.addChat(message.chatId, message.chat.title)
-            sendMessage(chatId,
-                    "Всем привет! Для полноценного использования всех моих фичей дайте мне права на пин и удаление сообщений, пожалуйста!")
+            sendMessage(
+                chatId,
+                "Всем привет! Для полноценного использования всех моих фичей дайте мне права на пин и удаление сообщений, пожалуйста!"
+            )
         } /*else if (chatId == Services.botConfig.tourgroup) {
             for (user in newMembers) {
                 // restrict any user who isn't in tournament
@@ -241,16 +247,16 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
             try {
                 val sticker = getHelloSticker(membername)
                 Methods.sendDocument(chatId)
-                        .setFile(sticker)
-                        .setReplyToMessageId(message.messageId)
-                        .call(this) // send sticker
+                    .setFile(sticker)
+                    .setReplyToMessageId(message.messageId)
+                    .call(this) // send sticker
                 sticker.delete()
                 return
             } catch (e: IOException) {
                 Methods.sendDocument(chatId)
-                        .setFile(Services.botConfig.higif)
-                        .setReplyToMessageId(message.messageId)
-                        .call(this)
+                    .setFile(Services.botConfig.higif)
+                    .setReplyToMessageId(message.messageId)
+                    .call(this)
             }
         }
     }
@@ -303,10 +309,10 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
 
     fun sendMessage(sm: SendMessageMethod): Message {
         val sendMessage = SendMessage(sm.chatId, sm.text)
-                .enableHtml(true)
-                .disableWebPagePreview()
-                .setReplyMarkup(sm.replyMarkup)
-                .setReplyToMessageId(sm.replyToMessageId)
+            .enableHtml(true)
+            .disableWebPagePreview()
+            .setReplyMarkup(sm.replyMarkup)
+            .setReplyToMessageId(sm.replyToMessageId)
         return try {
             execute(sendMessage)
         } catch (e: TelegramApiRequestException) {

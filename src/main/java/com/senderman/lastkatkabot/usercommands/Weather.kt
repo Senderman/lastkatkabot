@@ -28,7 +28,14 @@ class Weather constructor(val handler: LastkatkaBotHandler) : CommandExecutor {
             }
         } else { // find a city
             try {
-                val searchPage = Jsoup.parse(URL("https://yandex.ru/pogoda/search?request=" + URLEncoder.encode(city, StandardCharsets.UTF_8)), 10000)
+                val searchPage = Jsoup.parse(
+                    URL(
+                        "https://yandex.ru/pogoda/search?request=" + URLEncoder.encode(
+                            city,
+                            StandardCharsets.UTF_8
+                        )
+                    ), 10000
+                )
                 val table = searchPage.selectFirst("div.grid")
                 val searchResult = table.selectFirst("li.place-list__item")
                 city = searchResult.selectFirst("a").attr("href")

@@ -10,9 +10,9 @@ import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
 
-class MarryMe constructor(val handler: LastkatkaBotHandler): CommandExecutor {
+class MarryMe constructor(val handler: LastkatkaBotHandler) : CommandExecutor {
     override val command: String
-        get() ="/marryme"
+        get() = "/marryme"
     override val desc: String
         get() = "(reply) пожениться на ком-нибудь"
 
@@ -29,7 +29,8 @@ class MarryMe constructor(val handler: LastkatkaBotHandler): CommandExecutor {
 
         if (!marryById) {
             if (!message.isReply
-                    || message.from.id == message.replyToMessage.from.id || message.replyToMessage.from.bot) return
+                || message.from.id == message.replyToMessage.from.id || message.replyToMessage.from.bot
+            ) return
             loverId = message.replyToMessage.from.id
             val user = TgUser(Methods.getChatMember(chatId, userId).call(handler).user)
             text = "Пользователь " + user.link + " предлагает вам руку, сердце и шавуху. Вы согласны?"
@@ -52,20 +53,20 @@ class MarryMe constructor(val handler: LastkatkaBotHandler): CommandExecutor {
         }
         val markup = InlineKeyboardMarkup()
         markup.keyboard = listOf(listOf(
-                InlineKeyboardButton().apply {
-                    this.text = "Принять"
-                    callbackData = LastkatkaBot.CALLBACK_ACCEPT_MARRIAGE + "$userId $loverId"
+            InlineKeyboardButton().apply {
+                this.text = "Принять"
+                callbackData = LastkatkaBot.CALLBACK_ACCEPT_MARRIAGE + "$userId $loverId"
 
-                },
-                InlineKeyboardButton().apply {
-                    this.text = "Отказаться"
-                    callbackData = LastkatkaBot.CALLBACK_DENY_MARRIAGE + "$userId $loverId"
-                }
+            },
+            InlineKeyboardButton().apply {
+                this.text = "Отказаться"
+                callbackData = LastkatkaBot.CALLBACK_DENY_MARRIAGE + "$userId $loverId"
+            }
         ))
         val sm = Methods.sendMessage()
-                .setChatId(chatId)
-                .setText(text)
-                .setReplyMarkup(markup)
+            .setChatId(chatId)
+            .setText(text)
+            .setReplyMarkup(markup)
         if (!marryById) {
             sm.replyToMessageId = message.replyToMessage.messageId
         }

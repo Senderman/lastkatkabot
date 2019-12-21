@@ -31,9 +31,11 @@ class Dice constructor(val handler: LastkatkaBotHandler) : CommandExecutor {
             }
             else -> ThreadLocalRandom.current().nextInt(1, 7)
         }
-        handler.sendMessage(Methods.sendMessage()
+        handler.sendMessage(
+            Methods.sendMessage()
                 .setChatId(message.chatId)
                 .setText("\uD83C\uDFB2 Кубик брошен. Результат: $random")
-                .setReplyToMessageId(message.messageId))
+                .setReplyToMessageId(message.messageId)
+        )
     }
 }

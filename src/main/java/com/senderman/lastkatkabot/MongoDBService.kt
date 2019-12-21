@@ -48,9 +48,9 @@ internal class MongoDBService : DBService {
 
     override fun initStats(id: Int): Document {
         val doc = Document("id", id)
-                .append("total", 0)
-                .append("wins", 0)
-                .append("bnc", 0)
+            .append("total", 0)
+            .append("wins", 0)
+            .append("bnc", 0)
         userstats.insertOne(doc)
         return doc
     }
@@ -83,9 +83,9 @@ internal class MongoDBService : DBService {
 
     override fun getTop(): Map<Int, Int> {
         val bnsPlayers = userstats
-                .find(exists("bnc", true))
-                .sort(Document("bnc", -1))
-                .limit(10)
+            .find(exists("bnc", true))
+            .sort(Document("bnc", -1))
+            .limit(10)
         val top = LinkedHashMap<Int, Int>()
         for (doc in bnsPlayers) {
             top[doc.getInteger("id")] = doc.getInteger("bnc")
@@ -99,12 +99,12 @@ internal class MongoDBService : DBService {
         val wins = orig.getInteger("wins")
         val bnc = orig.getInteger("bnc")
         val commit = Document("total", total)
-                .append("wins", wins)
-                .append("bnc", bnc)
+            .append("wins", wins)
+            .append("bnc", bnc)
         userstats.getUser(toId)
         userstats.updateOne(
-                eq("id", toId),
-                Document("\$inc", commit)
+            eq("id", toId),
+            Document("\$inc", commit)
         )
         userstats.deleteOne(eq("id", fromId))
     }
@@ -122,10 +122,18 @@ internal class MongoDBService : DBService {
         with(userstats) {
             getUser(userId)
             getUser(loverId)
-            updateOne(eq("id", userId), Document("\$set",
-                    Document("lover", loverId)))
-            updateOne(eq("id", loverId), Document("\$set",
-                    Document("lover", userId)))
+            updateOne(
+                eq("id", userId), Document(
+                    "\$set",
+                    Document("lover", loverId)
+                )
+            )
+            updateOne(
+                eq("id", loverId), Document(
+                    "\$set",
+                    Document("lover", userId)
+                )
+            )
         }
     }
 
@@ -136,8 +144,8 @@ internal class MongoDBService : DBService {
             val doc = getUser(userId)
             val lover = doc.getInteger("lover") ?: return
             updateMany(
-                    or(eq("id", lover), eq("id", userId)),
-                    Document("\$unset", Document("lover", 0))
+                or(eq("id", lover), eq("id", userId)),
+                Document("\$unset", Document("lover", 0))
             )
         }
     }
@@ -220,8 +228,10 @@ internal class MongoDBService : DBService {
         val gameAsJson = gson.toJson(game)
         val commit = Document("game", gameAsJson)
         if (gameSaved) {
-            bncgames.updateOne(eq("chatId", chatId),
-                    Document("\$set", commit))
+            bncgames.updateOne(
+                eq("chatId", chatId),
+                Document("\$set", commit)
+            )
         } else {
             bncgames.insertOne(commit.append("chatId", chatId))
         }
@@ -234,8 +244,10 @@ internal class MongoDBService : DBService {
     override fun saveRow(chatId: Long, row: UserRow) {
         val gson = Gson()
         val rowAsJson = gson.toJson(row)
-        chats.updateOne(eq("chatId", chatId),
-                Document("\$set", Document("row", rowAsJson)))
+        chats.updateOne(
+            eq("chatId", chatId),
+            Document("\$set", Document("row", rowAsJson))
+        )
     }
 
     override fun getUserRows(): MutableMap<Long, UserRow> {
@@ -259,8 +271,10 @@ internal class MongoDBService : DBService {
             if (doc == null)
                 insertOne(Document("messageId", messageId))
             else
-                updateOne(exists("messageId", true),
-                        Document("\$set", Document("messageId", messageId)))
+                updateOne(
+                    exists("messageId", true),
+                    Document("\$set", Document("messageId", messageId))
+                )
         }
     }
 
@@ -285,8 +299,10 @@ internal class MongoDBService : DBService {
     }
 
     override fun updateChatId(oldChatId: Long, newChatId: Long) {
-        chats.updateOne(eq("chatId", oldChatId),
-                Document("\$set", Document("chatId", newChatId)))
+        chats.updateOne(
+            eq("chatId", oldChatId),
+            Document("\$set", Document("chatId", newChatId))
+        )
     }
 
     override fun updateTitle(chatId: Long, title: String) {
@@ -303,18 +319,18 @@ internal class MongoDBService : DBService {
     override fun cleanup() {
         for (chat in chatMembersDB.listCollectionNames()) {
             if (
-                    chats.find(eq("chatId", chat.toLong())).first() == null
-                    || getChatMembersCollection(chat.toLong()).countDocuments() < 2
+                chats.find(eq("chatId", chat.toLong())).first() == null
+                || getChatMembersCollection(chat.toLong()).countDocuments() < 2
             ) {
                 getChatMembersCollection(chat.toLong()).drop()
                 chats.deleteOne(eq("chatId", chat.toLong()))
             }
         }
         userstats.deleteMany(
-                and(
-                        eq("total", 0),
-                        eq("bnc", 0)
-                )
+            and(
+                eq("total", 0),
+                eq("bnc", 0)
+            )
         )
     }
 
@@ -323,9 +339,9 @@ internal class MongoDBService : DBService {
         history = if (history == null) pair
         else pair + "\n" +
                 java.lang.String(history)
-                        .lines()
-                        .limit(9)
-                        .collect(Collectors.joining("\n"))
+                    .lines()
+                    .limit(9)
+                    .collect(Collectors.joining("\n"))
 
         val date = Calendar.getInstance(timeZone).time
         val dateFormat = SimpleDateFormat("yyyyMMdd")
@@ -336,7 +352,7 @@ internal class MongoDBService : DBService {
         var hours = hoursFormat.format(date).toInt()
         hours = if (hours in 0..11) 0 else 12
         commit.append("date", dateFormat.format(date).toLong())
-                .append("hours", hours)
+            .append("hours", hours)
         if (chats.find(eq("chatId", chatId)).first() == null) {
             commit.append("chatId", chatId)
             chats.insertOne(commit)

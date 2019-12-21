@@ -14,9 +14,10 @@ class BNCHelp constructor(val handler: LastkatkaBotHandler) : CommandExecutor {
 
     override fun execute(message: Message) {
         val sendPhoto = Methods.sendPhoto()
-                .setChatId(message.chatId)
-                .setFile(Services.botConfig.bncphoto)
-        if (message.isReply) sendPhoto.replyToMessageId = message.replyToMessage.messageId else sendPhoto.replyToMessageId = message.messageId
+            .setChatId(message.chatId)
+            .setFile(Services.botConfig.bncphoto)
+        if (message.isReply) sendPhoto.replyToMessageId =
+            message.replyToMessage.messageId else sendPhoto.replyToMessageId = message.messageId
         sendPhoto.call(handler)
     }
 }

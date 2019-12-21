@@ -10,8 +10,9 @@ import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
 class Help constructor(
-        private val handler: LastkatkaBotHandler,
-        private val commands: Map<String, CommandExecutor>) : CommandExecutor {
+    private val handler: LastkatkaBotHandler,
+    private val commands: Map<String, CommandExecutor>
+) : CommandExecutor {
 
     override val command: String
         get() = "/help"
@@ -21,7 +22,8 @@ class Help constructor(
         get() = false
 
     override fun execute(message: Message) {
-        val help = StringBuilder("Привет! Это очень полезный бот для проекта @lastkatka, который многое что умеет! Основные команды:\n\n")
+        val help =
+            StringBuilder("Привет! Это очень полезный бот для проекта @lastkatka, который многое что умеет! Основные команды:\n\n")
         val adminHelp = StringBuilder("<b>Информация для админов бота</b>\n\n")
         val mainAdminHelp = StringBuilder("<b>Информация для главного админа бота</b>\n\n")
         val noobId = message.from.id
@@ -40,15 +42,21 @@ class Help constructor(
         if (noobId == Services.botConfig.mainAdmin) help.append("\n").append(mainAdminHelp)
         // attempt to send help to PM
         try {
-            handler.execute(SendMessage(message.from.id.toLong(), help.toString())
-                    .setParseMode(ParseMode.HTML))
+            handler.execute(
+                SendMessage(message.from.id.toLong(), help.toString())
+                    .setParseMode(ParseMode.HTML)
+            )
         } catch (e: TelegramApiException) {
-            handler.sendMessage(Methods.sendMessage(message.chatId, "Пожалуйста, начните диалог со мной в лс")
-                    .setReplyToMessageId(message.messageId))
+            handler.sendMessage(
+                Methods.sendMessage(message.chatId, "Пожалуйста, начните диалог со мной в лс")
+                    .setReplyToMessageId(message.messageId)
+            )
             return
         }
-        if (!message.isUserMessage) handler.sendMessage(Methods.sendMessage(message.chatId, "✅ Помощь была отправлена вам в лс")
-                .setReplyToMessageId(message.messageId))
+        if (!message.isUserMessage) handler.sendMessage(
+            Methods.sendMessage(message.chatId, "✅ Помощь была отправлена вам в лс")
+                .setReplyToMessageId(message.messageId)
+        )
     }
 
 }

@@ -43,7 +43,10 @@ class Pair constructor(val handler: LastkatkaBotHandler) : CommandExecutor {
             user2 = lover.user
             isTrueLove = lover.isTrueLover
         } catch (e: Exception) {
-            handler.sendMessage(chatId, "Недостаточно пользователей для создания пары! Подождите, пока кто-то еще напишет в чат!")
+            handler.sendMessage(
+                chatId,
+                "Недостаточно пользователей для создания пары! Подождите, пока кто-то еще напишет в чат!"
+            )
             return
         }
         // get a random text and set up a pair
