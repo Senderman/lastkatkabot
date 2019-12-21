@@ -5,7 +5,7 @@ import com.senderman.lastkatkabot.LastkatkaBot
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import org.telegram.telegrambots.meta.api.objects.Message
 
-class Getinfo constructor(val handler: LastkatkaBotHandler) : CommandExecutor {
+class GetInfo constructor(val handler: LastkatkaBotHandler) : CommandExecutor {
     override val command: String
         get() = "/getinfo"
     override val desc: String
