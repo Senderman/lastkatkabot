@@ -8,6 +8,7 @@ import com.senderman.lastkatkabot.usercommands.*
 internal class ExecutorKeeper constructor(handler: LastkatkaBotHandler) : AbstractExecutorKeeper() {
 
     init {
+        // user commands
         register(Action(handler))
         register(PayRespects(handler))
         register(Cake(handler))

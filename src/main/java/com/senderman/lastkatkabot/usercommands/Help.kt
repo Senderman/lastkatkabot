@@ -27,7 +27,7 @@ class Help constructor(
         val noobId = message.from.id
 
         for ((cmd, executor) in commands) {
-            val helpLine = "$cmd - ${executor.desc}"
+            val helpLine = "$cmd - ${executor.desc}\n"
             if (noobId == Services.botConfig.mainAdmin && executor.forMainAdmin)
                 mainAdminHelp.append(helpLine)
             else if (handler.isFromAdmin(message) && executor.forAllAdmins)
