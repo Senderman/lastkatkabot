@@ -6,7 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.Message
 
 class Critical constructor(val handler: LastkatkaBotHandler) : CommandExecutor {
 
-    override val forMainAdmin: Boolean
+    override val forAllAdmins: Boolean
         get() = true
     override val desc: String
         get() = "очистка ОЗУ бота от мусора типа незакрытых дуэлей, etc"

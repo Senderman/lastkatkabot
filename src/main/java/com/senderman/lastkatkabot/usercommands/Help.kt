@@ -27,13 +27,13 @@ class Help constructor(
         val noobId = message.from.id
 
         for ((cmd, executor) in commands) {
-            val helpLine = "$cmd - ${executor.desc}\n"
+            val helpLine = "$cmd - ${executor.desc}"
             if (noobId == Services.botConfig.mainAdmin && executor.forMainAdmin)
-                mainAdminHelp.append(helpLine)
+                mainAdminHelp.appendln(helpLine)
             else if (handler.isFromAdmin(message) && executor.forAllAdmins)
-                adminHelp.append(helpLine)
+                adminHelp.appendln(helpLine)
             else
-                help.append(helpLine)
+                help.appendln(helpLine)
             // TODO add help for premium users when needed
         }
         if (handler.isFromAdmin(message)) help.append("\n").append(adminHelp)
