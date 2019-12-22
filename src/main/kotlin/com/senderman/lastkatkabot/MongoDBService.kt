@@ -3,7 +3,7 @@ package com.senderman.lastkatkabot
 import com.google.gson.Gson
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters.*
-import com.senderman.MongoClientKeeper
+import com.senderman.neblib.MongoClientKeeper
 import com.senderman.lastkatkabot.DBService.UserType
 import com.senderman.lastkatkabot.bnc.BullsAndCowsGame
 import com.senderman.lastkatkabot.tempobjects.UserRow

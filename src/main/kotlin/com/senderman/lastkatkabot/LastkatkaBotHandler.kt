@@ -3,7 +3,6 @@ package com.senderman.lastkatkabot
 import com.annimon.tgbotsmodule.BotHandler
 import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.api.methods.send.SendMessageMethod
-import com.senderman.AbstractExecutorKeeper
 import com.senderman.lastkatkabot.DBService.UserType
 import com.senderman.lastkatkabot.admincommands.CleanChats
 import com.senderman.lastkatkabot.admincommands.UserLister
@@ -11,6 +10,7 @@ import com.senderman.lastkatkabot.bnc.BullsAndCowsGame
 import com.senderman.lastkatkabot.handlers.CallbackHandler
 import com.senderman.lastkatkabot.tempobjects.Duel
 import com.senderman.lastkatkabot.tempobjects.UserRow
+import com.senderman.neblib.AbstractExecutorKeeper
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery
@@ -155,11 +155,11 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
     }
 
     override fun getBotUsername(): String {
-        return Services.botConfig.username.split(" ")[Services.botConfig.position]
+        return Services.botConfig.login.split(" ".toRegex(), 2)[0]
     }
 
     override fun getBotToken(): String {
-        return Services.botConfig.token.split(" ")[Services.botConfig.position]
+        return Services.botConfig.login.split(" ".toRegex(), 2)[1]
     }
 
     private fun processCallbackQuery(query: CallbackQuery) {

@@ -1,9 +1,9 @@
 package com.senderman.lastkatkabot.usercommands
 
 import com.annimon.tgbotsmodule.api.methods.Methods
-import com.senderman.CommandExecutor
 import com.senderman.lastkatkabot.LastkatkaBot
 import com.senderman.lastkatkabot.LastkatkaBotHandler
+import com.senderman.neblib.CommandExecutor
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton

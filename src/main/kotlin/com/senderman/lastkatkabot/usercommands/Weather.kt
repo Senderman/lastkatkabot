@@ -1,8 +1,8 @@
 package com.senderman.lastkatkabot.usercommands
 
-import com.senderman.CommandExecutor
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services
+import com.senderman.neblib.CommandExecutor
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.telegram.telegrambots.meta.api.objects.Message
@@ -11,7 +11,7 @@ import java.net.URL
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
-class Weather (private val handler: LastkatkaBotHandler) : CommandExecutor {
+class Weather(private val handler: LastkatkaBotHandler) : CommandExecutor {
     override val command: String
         get() = "/weather"
     override val desc: String
@@ -19,7 +19,7 @@ class Weather (private val handler: LastkatkaBotHandler) : CommandExecutor {
 
     override fun execute(message: Message) {
         val chatId = message.chatId
-        var city: String? = message.text.trim().replace("/weather(:?@${handler.botUsername})?*\\s*".toRegex(), "")
+        var city: String? = message.text.trim().replace("/weather(:?@${handler.botUsername})?\\s*".toRegex(), "")
         if (city!!.isBlank()) { // city is not specified
             city = Services.db.getUserCity(message.from.id)
             if (city == null) {

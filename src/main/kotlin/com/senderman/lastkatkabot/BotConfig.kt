@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 class BotConfig {
     @JsonProperty(required = true)
-    lateinit var token: String
-
-    @JsonProperty(required = true)
-    lateinit var username: String
+    lateinit var login: String
 
     @JsonProperty
     var position = 0

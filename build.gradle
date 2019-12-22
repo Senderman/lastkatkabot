@@ -11,11 +11,14 @@ mainClassName = 'com.annimon.tgbotsmodule.Runner'
 
 sourceCompatibility = 13
 
-repositories {
-    mavenCentral()
+allprojects {
+    repositories {
+        maven { url "https://jitpack.io" }
+        mavenCentral()
+    }
 }
 
-test{
+test {
     useJUnitPlatform()
 }
 
@@ -27,6 +30,7 @@ dependencies {
     implementation 'org.sejda.webp-imageio:webp-imageio-sejda:0.1.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.apache.commons:commons-lang3:3.0"
+    implementation "com.github.Senderman:neb-lib:master-SNAPSHOT"
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
@@ -40,6 +44,6 @@ compileKotlin {
     kotlinOptions.jvmTarget = "11"
 }
 
-compileTestKotlin{
+compileTestKotlin {
     kotlinOptions.jvmTarget = "11"
 }

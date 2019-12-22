@@ -1,7 +1,7 @@
 package com.senderman.lastkatkabot.admincommands
 
 import com.annimon.tgbotsmodule.api.methods.Methods
-import com.senderman.TgUser
+import com.senderman.neblib.TgUser
 import com.senderman.lastkatkabot.DBService
 import com.senderman.lastkatkabot.LastkatkaBot
 import com.senderman.lastkatkabot.LastkatkaBotHandler

@@ -2,7 +2,7 @@ package com.senderman.lastkatkabot.bnc
 
 import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.api.methods.send.SendMessageMethod
-import com.senderman.TgUser
+import com.senderman.neblib.TgUser
 import com.senderman.lastkatkabot.LastkatkaBot
 import com.senderman.lastkatkabot.Services
 import org.telegram.telegrambots.meta.api.methods.ParseMode

@@ -1,4 +1,0 @@
-log-level: ERROR
-modules:
-  - com.senderman.lastkatkabot.LastkatkaBot
-  - com.senderman.anitrackerbot.AnitrackerBot

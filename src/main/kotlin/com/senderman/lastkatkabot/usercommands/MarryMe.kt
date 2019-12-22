@@ -1,8 +1,8 @@
 package com.senderman.lastkatkabot.usercommands
 
 import com.annimon.tgbotsmodule.api.methods.Methods
-import com.senderman.CommandExecutor
-import com.senderman.TgUser
+import com.senderman.neblib.CommandExecutor
+import com.senderman.neblib.TgUser
 import com.senderman.lastkatkabot.LastkatkaBot
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services

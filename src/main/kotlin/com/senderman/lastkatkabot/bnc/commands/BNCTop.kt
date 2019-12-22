@@ -1,7 +1,7 @@
 package com.senderman.lastkatkabot.bnc.commands
 
 import com.annimon.tgbotsmodule.api.methods.Methods
-import com.senderman.CommandExecutor
+import com.senderman.neblib.CommandExecutor
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services
 import com.senderman.lastkatkabot.bnc.BNCPlayer

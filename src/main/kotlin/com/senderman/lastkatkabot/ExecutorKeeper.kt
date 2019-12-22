@@ -1,11 +1,11 @@
 package com.senderman.lastkatkabot
 
-import com.senderman.AbstractExecutorKeeper
 import com.senderman.lastkatkabot.admincommands.*
 import com.senderman.lastkatkabot.bnc.commands.*
 import com.senderman.lastkatkabot.usercommands.*
+import com.senderman.neblib.AbstractExecutorKeeper
 
-internal class ExecutorKeeper constructor(handler: LastkatkaBotHandler) : AbstractExecutorKeeper() {
+internal class ExecutorKeeper (handler: LastkatkaBotHandler) : AbstractExecutorKeeper() {
 
     init {
         // user commands
