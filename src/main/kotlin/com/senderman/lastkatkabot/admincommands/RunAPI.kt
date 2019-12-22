@@ -8,6 +8,7 @@ import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.net.URL
 import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 class RunAPI (private val handler: LastkatkaBotHandler) : CommandExecutor {
     override val command: String
@@ -74,7 +75,7 @@ class RunAPI (private val handler: LastkatkaBotHandler) : CommandExecutor {
             val kv = keyValue.split("=".toRegex(), 2)
             val key = kv[0]
             val value = kv[1]
-            sb.append(key).append("=").append(URLEncoder.encode(value, Charsets.UTF_8))
+            sb.append(key).append("=").append(URLEncoder.encode(value, "UTF-8"))
             sb.append("&")
         }
         // remove trailing "&" or "?"
