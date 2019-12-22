@@ -1,6 +1,6 @@
 package com.senderman.lastkatkabot.admincommands
 
-import com.senderman.TgUser
+import com.senderman.neblib.TgUser
 import com.senderman.lastkatkabot.DBService
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services

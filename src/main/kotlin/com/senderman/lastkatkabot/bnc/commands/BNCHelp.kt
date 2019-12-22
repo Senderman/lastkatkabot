@@ -1,9 +1,9 @@
 package com.senderman.lastkatkabot.bnc.commands
 
 import com.annimon.tgbotsmodule.api.methods.Methods
-import com.senderman.CommandExecutor
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services
+import com.senderman.neblib.CommandExecutor
 import org.telegram.telegrambots.meta.api.objects.Message
 
 class BNCHelp (private val handler: LastkatkaBotHandler) : CommandExecutor {

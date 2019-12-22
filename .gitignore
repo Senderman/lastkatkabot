@@ -5,5 +5,3 @@ out
 gen
 cert
 *.iml
-start-bot.sh
-/src/main/kotlin/com/senderman/anitrackerbot/ParserTester.kt

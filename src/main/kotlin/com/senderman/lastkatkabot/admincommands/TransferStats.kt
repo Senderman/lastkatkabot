@@ -1,6 +1,6 @@
 package com.senderman.lastkatkabot.admincommands
 
-import com.senderman.CommandExecutor
+import com.senderman.neblib.CommandExecutor
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services
 import org.telegram.telegrambots.meta.api.objects.Message

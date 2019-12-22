@@ -1,6 +1,6 @@
 package com.senderman.lastkatkabot.bnc.commands
 
-import com.senderman.CommandExecutor
+import com.senderman.neblib.CommandExecutor
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.bnc.BullsAndCowsGame
 import org.telegram.telegrambots.meta.api.objects.Message
