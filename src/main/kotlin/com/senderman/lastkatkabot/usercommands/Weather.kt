@@ -9,7 +9,6 @@ import org.telegram.telegrambots.meta.api.objects.Message
 import java.io.IOException
 import java.net.URL
 import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 class Weather(private val handler: LastkatkaBotHandler) : CommandExecutor {
     override val command: String
@@ -32,7 +31,7 @@ class Weather(private val handler: LastkatkaBotHandler) : CommandExecutor {
                     URL(
                         "https://yandex.ru/pogoda/search?request=" + URLEncoder.encode(
                             city,
-                            StandardCharsets.UTF_8
+                            "UTF-8"
                         )
                     ), 10000
                 )

@@ -337,11 +337,7 @@ internal class MongoDBService : DBService {
     override fun setPair(chatId: Long, pair: String) {
         var history = getPairsHistory(chatId)
         history = if (history == null) pair
-        else pair + "\n" +
-                java.lang.String(history)
-                    .lines()
-                    .limit(9)
-                    .collect(Collectors.joining("\n"))
+        else pair + "\n" + history.lines().joinToString(separator = "\n", limit = 9, truncated = "")
 
         val date = Calendar.getInstance(timeZone).time
         val dateFormat = SimpleDateFormat("yyyyMMdd")
