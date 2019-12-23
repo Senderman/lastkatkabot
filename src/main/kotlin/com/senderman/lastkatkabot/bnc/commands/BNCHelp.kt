@@ -6,7 +6,7 @@ import com.senderman.lastkatkabot.Services
 import com.senderman.neblib.CommandExecutor
 import org.telegram.telegrambots.meta.api.objects.Message
 
-class BNCHelp (private val handler: LastkatkaBotHandler) : CommandExecutor {
+class BNCHelp(private val handler: LastkatkaBotHandler) : CommandExecutor {
     override val command: String
         get() = "/bnchelp"
     override val desc: String

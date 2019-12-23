@@ -7,9 +7,6 @@ class BotConfig {
     lateinit var login: String
 
     @JsonProperty
-    var position = 0
-
-    @JsonProperty
     var mainAdmin = 0
 
     @JsonProperty

@@ -1,14 +1,14 @@
 package com.senderman.lastkatkabot.admincommands
 
-import com.senderman.neblib.CommandExecutor
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services
+import com.senderman.neblib.CommandExecutor
 import org.telegram.telegrambots.meta.api.objects.Message
 
-class SetupHelp (private val handler: LastkatkaBotHandler) : CommandExecutor {
+class SetupHelp(private val handler: LastkatkaBotHandler) : CommandExecutor {
 
     override val forAllAdmins: Boolean
-        get() = true;
+        get() = true
     override val command: String
         get() = "/setuphelp"
     override val desc: String

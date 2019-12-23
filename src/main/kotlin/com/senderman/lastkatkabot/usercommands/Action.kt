@@ -5,7 +5,7 @@ import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.neblib.CommandExecutor
 import org.telegram.telegrambots.meta.api.objects.Message
 
-class Action (private val handler: LastkatkaBotHandler) : CommandExecutor {
+class Action(private val handler: LastkatkaBotHandler) : CommandExecutor {
 
     override val command: String
         get() = "/action"

@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
 
-class PayRespects (private val handler: LastkatkaBotHandler) : CommandExecutor {
+class PayRespects(private val handler: LastkatkaBotHandler) : CommandExecutor {
     override val command: String
         get() = "/f"
     override val desc: String

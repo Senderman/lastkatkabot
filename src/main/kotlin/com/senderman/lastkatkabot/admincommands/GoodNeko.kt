@@ -1,13 +1,13 @@
 package com.senderman.lastkatkabot.admincommands
 
-import com.senderman.neblib.CommandExecutor
-import com.senderman.neblib.TgUser
 import com.senderman.lastkatkabot.DBService
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services
+import com.senderman.neblib.CommandExecutor
+import com.senderman.neblib.TgUser
 import org.telegram.telegrambots.meta.api.objects.Message
 
-class GoodNeko (private val handler: LastkatkaBotHandler) : CommandExecutor {
+class GoodNeko(private val handler: LastkatkaBotHandler) : CommandExecutor {
 
     override val forAllAdmins: Boolean
         get() = true

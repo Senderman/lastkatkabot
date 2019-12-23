@@ -1,16 +1,15 @@
 package com.senderman.lastkatkabot.admincommands
 
-import com.senderman.neblib.CommandExecutor
 import com.senderman.lastkatkabot.LastkatkaBot
 import com.senderman.lastkatkabot.LastkatkaBotHandler
+import com.senderman.neblib.CommandExecutor
 import org.telegram.telegrambots.meta.api.objects.Message
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.net.URL
 import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
-class RunAPI (private val handler: LastkatkaBotHandler) : CommandExecutor {
+class RunAPI(private val handler: LastkatkaBotHandler) : CommandExecutor {
     override val command: String
         get() = "/api"
     override val desc: String

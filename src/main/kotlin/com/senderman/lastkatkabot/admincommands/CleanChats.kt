@@ -1,8 +1,8 @@
 package com.senderman.lastkatkabot.admincommands
 
 import com.annimon.tgbotsmodule.api.methods.Methods
-import com.senderman.neblib.CommandExecutor
 import com.senderman.lastkatkabot.Services
+import com.senderman.neblib.CommandExecutor
 import org.telegram.telegrambots.meta.api.objects.Message
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors

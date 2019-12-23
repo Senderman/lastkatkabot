@@ -1,13 +1,13 @@
 package com.senderman.lastkatkabot.usercommands
 
 import com.annimon.tgbotsmodule.api.methods.Methods
-import com.senderman.neblib.CommandExecutor
-import com.senderman.neblib.TgUser
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services
+import com.senderman.neblib.CommandExecutor
+import com.senderman.neblib.TgUser
 import org.telegram.telegrambots.meta.api.objects.Message
 
-class Stats (private val handler: LastkatkaBotHandler) : CommandExecutor {
+class Stats(private val handler: LastkatkaBotHandler) : CommandExecutor {
     override val command: String
         get() = "/stats"
     override val desc: String

@@ -5,11 +5,12 @@ import com.senderman.lastkatkabot.bnc.commands.*
 import com.senderman.lastkatkabot.usercommands.*
 import com.senderman.neblib.AbstractExecutorKeeper
 
-internal class ExecutorKeeper (handler: LastkatkaBotHandler) : AbstractExecutorKeeper() {
+internal class ExecutorKeeper(handler: LastkatkaBotHandler) : AbstractExecutorKeeper() {
 
     init {
         // user commands
         register(Action(handler))
+        register(Dice(handler))
         register(PayRespects(handler))
         register(Cake(handler))
         register(Help(handler, commandExecutors))

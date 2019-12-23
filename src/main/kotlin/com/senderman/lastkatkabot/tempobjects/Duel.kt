@@ -1,9 +1,9 @@
 package com.senderman.lastkatkabot.tempobjects
 
 import com.annimon.tgbotsmodule.api.methods.Methods
-import com.senderman.neblib.TgUser
 import com.senderman.lastkatkabot.LastkatkaBot
 import com.senderman.lastkatkabot.Services
+import com.senderman.neblib.TgUser
 import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery
 import org.telegram.telegrambots.meta.api.objects.Message

@@ -1,12 +1,12 @@
 package com.senderman.lastkatkabot.usercommands
 
 import com.annimon.tgbotsmodule.api.methods.Methods
-import com.senderman.neblib.CommandExecutor
 import com.senderman.lastkatkabot.LastkatkaBotHandler
+import com.senderman.neblib.CommandExecutor
 import org.telegram.telegrambots.meta.api.objects.Message
 import java.util.concurrent.ThreadLocalRandom
 
-class Dice (private val handler: LastkatkaBotHandler) : CommandExecutor {
+class Dice(private val handler: LastkatkaBotHandler) : CommandExecutor {
     override val command: String
         get() = "/dice"
     override val desc: String

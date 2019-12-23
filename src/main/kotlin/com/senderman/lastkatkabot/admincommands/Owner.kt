@@ -1,11 +1,11 @@
 package com.senderman.lastkatkabot.admincommands
 
-import com.senderman.neblib.CommandExecutor
 import com.senderman.lastkatkabot.DBService
 import com.senderman.lastkatkabot.LastkatkaBotHandler
+import com.senderman.neblib.CommandExecutor
 import org.telegram.telegrambots.meta.api.objects.Message
 
-class Owner (private val handler: LastkatkaBotHandler) : CommandExecutor {
+class Owner(private val handler: LastkatkaBotHandler) : CommandExecutor {
 
     override val forMainAdmin: Boolean
         get() = true

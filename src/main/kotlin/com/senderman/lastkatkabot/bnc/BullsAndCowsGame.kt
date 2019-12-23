@@ -2,9 +2,9 @@ package com.senderman.lastkatkabot.bnc
 
 import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.api.methods.send.SendMessageMethod
-import com.senderman.neblib.TgUser
 import com.senderman.lastkatkabot.LastkatkaBot
 import com.senderman.lastkatkabot.Services
+import com.senderman.neblib.TgUser
 import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery
 import org.telegram.telegrambots.meta.api.objects.Message
@@ -25,6 +25,7 @@ class BullsAndCowsGame(message: Message) {
     private var attempts: Int
     private var voted: Int
     private var antiRuinEnabled: Boolean
+    private var antiRuinNeedToBeChecked: Boolean
     private val creator: TgUser
 
     init {
@@ -40,6 +41,7 @@ class BullsAndCowsGame(message: Message) {
         attempts = (this.length * 2.5).toInt()
         voted = 0
         antiRuinEnabled = false
+        antiRuinNeedToBeChecked = false
         history = StringBuilder()
         messagesToDelete = HashSet()
         votedUsers = HashSet()
@@ -82,6 +84,8 @@ class BullsAndCowsGame(message: Message) {
         }
 
         val (bulls, cows) = calculate(number)
+        if (bulls + cows == length)
+            antiRuinNeedToBeChecked = true
         if (number in checkedNumbers) {
             gameMessage(chatId, "$number - уже проверяли! ${bulls}Б ${cows}К")
             return
@@ -106,7 +110,7 @@ class BullsAndCowsGame(message: Message) {
             Попыток осталось: $attempts
             Создатель игры: ${creator.link}
             Время игры: ${getSpentTime()}
-        """.trimIndent() + "\n\nИстория:\n $history"
+        """.trimIndent() + "\n\nИстория:\n $history".trimIndent()
         gameMessage(chatId, info)
     }
 
@@ -169,6 +173,9 @@ class BullsAndCowsGame(message: Message) {
 
     private fun ruined(number: String): Boolean {
         if (!antiRuinEnabled)
+            return false
+
+        if (!antiRuinNeedToBeChecked)
             return false
 
         for (i in 0 until length) {

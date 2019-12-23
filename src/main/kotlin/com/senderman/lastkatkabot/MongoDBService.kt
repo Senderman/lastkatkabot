@@ -3,16 +3,15 @@ package com.senderman.lastkatkabot
 import com.google.gson.Gson
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters.*
-import com.senderman.neblib.MongoClientKeeper
 import com.senderman.lastkatkabot.DBService.UserType
 import com.senderman.lastkatkabot.bnc.BullsAndCowsGame
 import com.senderman.lastkatkabot.tempobjects.UserRow
 import com.senderman.lastkatkabot.tempobjects.UserStats
+import com.senderman.neblib.MongoClientKeeper
 import org.bson.Document
 import org.telegram.telegrambots.meta.api.objects.Message
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.stream.Collectors
 import kotlin.collections.HashMap
 import kotlin.collections.LinkedHashMap
 

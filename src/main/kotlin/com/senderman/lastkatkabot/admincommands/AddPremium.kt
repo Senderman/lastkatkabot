@@ -1,8 +1,8 @@
 package com.senderman.lastkatkabot.admincommands
 
-import com.senderman.neblib.CommandExecutor
 import com.senderman.lastkatkabot.DBService
 import com.senderman.lastkatkabot.LastkatkaBotHandler
+import com.senderman.neblib.CommandExecutor
 import org.telegram.telegrambots.meta.api.objects.Message
 
 class AddPremium(private val handler: LastkatkaBotHandler) : CommandExecutor {
