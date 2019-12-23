@@ -1,10 +1,7 @@
 package com.senderman.lastkatkabot.admincommands
 
 import com.annimon.tgbotsmodule.api.methods.Methods
-import com.senderman.lastkatkabot.DBService
-import com.senderman.lastkatkabot.LastkatkaBot
-import com.senderman.lastkatkabot.LastkatkaBotHandler
-import com.senderman.lastkatkabot.Services
+import com.senderman.lastkatkabot.*
 import com.senderman.neblib.TgUser
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
@@ -23,16 +20,16 @@ class UserLister {
             when (type) {
                 DBService.UserType.ADMINS -> {
                     title = "\uD83D\uDE0E <b>Админы бота:</b>\n"
-                    callback = LastkatkaBot.CALLBACK_DELETE_ADMIN
+                    callback = Callbacks.CALLBACK_DELETE_ADMIN
                 }
                 DBService.UserType.BLACKLIST -> {
                     allAdminsAccess = true
                     title = "\uD83D\uDE3E <b>Список плохих кис:</b>\n"
-                    callback = LastkatkaBot.CALLBACK_DELETE_NEKO
+                    callback = Callbacks.CALLBACK_DELETE_NEKO
                 }
                 DBService.UserType.PREMIUM -> {
                     title = "\uD83D\uDC51 <b>Список премиум-пользователей:</b>\n"
-                    callback = LastkatkaBot.CALLBACK_DELETE_PREM
+                    callback = Callbacks.CALLBACK_DELETE_PREM
                 }
 
             }
@@ -75,7 +72,7 @@ class UserLister {
                 }
                 rows.add(listOf(InlineKeyboardButton().apply {
                     text = "Закрыть меню"
-                    callbackData = LastkatkaBot.CALLBACK_CLOSE_MENU
+                    callbackData = Callbacks.CALLBACK_CLOSE_MENU
                 }
                 ))
                 markup.keyboard = rows

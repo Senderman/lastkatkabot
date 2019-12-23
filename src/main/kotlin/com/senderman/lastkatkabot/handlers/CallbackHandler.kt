@@ -1,8 +1,8 @@
 package com.senderman.lastkatkabot.handlers
 
 import com.annimon.tgbotsmodule.api.methods.Methods
+import com.senderman.lastkatkabot.Callbacks
 import com.senderman.lastkatkabot.DBService.UserType
-import com.senderman.lastkatkabot.LastkatkaBot
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services
 import com.senderman.lastkatkabot.usercommands.PayRespects
@@ -64,7 +64,7 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
             CakeAcion.CAKE_OK -> {
                 emt.setText(
                     "\uD83C\uDF82 ${query.from.firstName} принял тортик"
-                            + query.data.replace(LastkatkaBot.CALLBACK_CAKE_OK, "")
+                            + query.data.replace(Callbacks.CALLBACK_CAKE_OK, "")
                 )
             }
 
@@ -72,7 +72,7 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
                 answerQuery(query, "Ну и ладно", false)
                 emt.setText(
                     "\uD83D\uDEAB \uD83C\uDF82 ${query.from.firstName} отказался от тортика"
-                            + query.data.replace(LastkatkaBot.CALLBACK_CAKE_NOT, "")
+                            + query.data.replace(Callbacks.CALLBACK_CAKE_NOT, "")
                 )
             }
         }

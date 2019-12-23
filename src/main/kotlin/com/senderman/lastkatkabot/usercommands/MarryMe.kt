@@ -1,7 +1,7 @@
 package com.senderman.lastkatkabot.usercommands
 
 import com.annimon.tgbotsmodule.api.methods.Methods
-import com.senderman.lastkatkabot.LastkatkaBot
+import com.senderman.lastkatkabot.Callbacks
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services
 import com.senderman.neblib.CommandExecutor
@@ -55,12 +55,12 @@ class MarryMe(private val handler: LastkatkaBotHandler) : CommandExecutor {
         markup.keyboard = listOf(listOf(
             InlineKeyboardButton().apply {
                 this.text = "Принять"
-                callbackData = LastkatkaBot.CALLBACK_ACCEPT_MARRIAGE + "$userId $loverId"
+                callbackData = Callbacks.CALLBACK_ACCEPT_MARRIAGE + "$userId $loverId"
 
             },
             InlineKeyboardButton().apply {
                 this.text = "Отказаться"
-                callbackData = LastkatkaBot.CALLBACK_DENY_MARRIAGE + "$userId $loverId"
+                callbackData = Callbacks.CALLBACK_DENY_MARRIAGE + "$userId $loverId"
             }
         ))
         val sm = Methods.sendMessage()

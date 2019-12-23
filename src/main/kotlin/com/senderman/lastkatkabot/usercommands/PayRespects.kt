@@ -1,7 +1,7 @@
 package com.senderman.lastkatkabot.usercommands
 
 import com.annimon.tgbotsmodule.api.methods.Methods
-import com.senderman.lastkatkabot.LastkatkaBot
+import com.senderman.lastkatkabot.Callbacks
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.neblib.CommandExecutor
 import org.telegram.telegrambots.meta.api.objects.Message
@@ -42,7 +42,7 @@ class PayRespects(private val handler: LastkatkaBotHandler) : CommandExecutor {
                     listOf(
                         InlineKeyboardButton()
                             .setText("F")
-                            .setCallbackData(LastkatkaBot.CALLBACK_PAY_RESPECTS)
+                            .setCallbackData(Callbacks.CALLBACK_PAY_RESPECTS)
                     )
                 )
                 return markup

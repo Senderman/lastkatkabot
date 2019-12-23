@@ -2,6 +2,7 @@ package com.senderman.lastkatkabot.bnc
 
 import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.api.methods.send.SendMessageMethod
+import com.senderman.lastkatkabot.Callbacks
 import com.senderman.lastkatkabot.LastkatkaBot
 import com.senderman.lastkatkabot.Services
 import com.senderman.neblib.TgUser
@@ -287,20 +288,19 @@ class BullsAndCowsGame(message: Message) {
         return Result(bulls, cows)
     }
 
-    data class Result(var bulls: Int, var cows: Int)
-
-    companion object {
-        private fun getEndgameMarkup(): InlineKeyboardMarkup {
-            val markup = InlineKeyboardMarkup()
-            val rows = listOf(
-                listOf(
-                    InlineKeyboardButton()
-                        .setText("Голосовать")
-                        .setCallbackData(LastkatkaBot.CALLBACK_VOTE_BNC)
-                )
+    private fun getEndgameMarkup(): InlineKeyboardMarkup {
+        val markup = InlineKeyboardMarkup()
+        val rows = listOf(
+            listOf(
+                InlineKeyboardButton().apply {
+                    text = "Голосовать"
+                    callbackData = Callbacks.CALLBACK_VOTE_BNC
+                }
             )
-            markup.keyboard = rows
-            return markup
-        }
+        )
+        markup.keyboard = rows
+        return markup
     }
+
+    data class Result(var bulls: Int, var cows: Int)
 }
