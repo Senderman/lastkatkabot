@@ -1,13 +1,13 @@
 package com.senderman.lastkatkabot.usercommands
 
 import com.annimon.tgbotsmodule.api.methods.Methods
-import com.senderman.neblib.CommandExecutor
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services
 import com.senderman.lastkatkabot.tempobjects.UserRow
+import com.senderman.neblib.CommandExecutor
 import org.telegram.telegrambots.meta.api.objects.Message
 
-class Row (private val handler: LastkatkaBotHandler) : CommandExecutor {
+class Row(private val handler: LastkatkaBotHandler) : CommandExecutor {
     override val command: String
         get() = "/row"
     override val desc: String

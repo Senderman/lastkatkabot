@@ -9,7 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
 
-class Cake (private val handler: LastkatkaBotHandler) : CommandExecutor {
+class Cake(private val handler: LastkatkaBotHandler) : CommandExecutor {
     override val command: String
         get() = "/cake"
     override val desc: String

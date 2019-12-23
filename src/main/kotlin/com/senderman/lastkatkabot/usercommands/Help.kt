@@ -9,7 +9,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
-class Help (
+class Help(
     private val handler: LastkatkaBotHandler,
     private val commands: Map<String, CommandExecutor>
 ) : CommandExecutor {

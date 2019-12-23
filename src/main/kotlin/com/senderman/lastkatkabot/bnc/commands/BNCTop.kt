@@ -1,13 +1,13 @@
 package com.senderman.lastkatkabot.bnc.commands
 
 import com.annimon.tgbotsmodule.api.methods.Methods
-import com.senderman.neblib.CommandExecutor
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services
 import com.senderman.lastkatkabot.bnc.BNCPlayer
+import com.senderman.neblib.CommandExecutor
 import org.telegram.telegrambots.meta.api.objects.Message
 
-class BNCTop (private val handler: LastkatkaBotHandler) : CommandExecutor {
+class BNCTop(private val handler: LastkatkaBotHandler) : CommandExecutor {
     override val command: String
         get() = "/top"
     override val desc: String

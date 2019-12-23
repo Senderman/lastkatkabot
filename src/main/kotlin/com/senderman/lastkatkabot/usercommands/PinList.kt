@@ -1,12 +1,12 @@
 package com.senderman.lastkatkabot.usercommands
 
 import com.annimon.tgbotsmodule.api.methods.Methods
-import com.senderman.neblib.CommandExecutor
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services
+import com.senderman.neblib.CommandExecutor
 import org.telegram.telegrambots.meta.api.objects.Message
 
-class PinList (private val handler: LastkatkaBotHandler) : CommandExecutor {
+class PinList(private val handler: LastkatkaBotHandler) : CommandExecutor {
 
     override val command: String
         get() = "/pinlist"
