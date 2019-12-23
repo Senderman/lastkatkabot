@@ -1,7 +1,7 @@
 package com.senderman.lastkatkabot.usercommands
 
 import com.annimon.tgbotsmodule.api.methods.Methods
-import com.senderman.lastkatkabot.LastkatkaBot
+import com.senderman.lastkatkabot.Callbacks
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.neblib.CommandExecutor
 import com.senderman.neblib.TgUser
@@ -21,12 +21,12 @@ class Cake(private val handler: LastkatkaBotHandler) : CommandExecutor {
         markup.keyboard = listOf(listOf(
             InlineKeyboardButton().apply {
                 text = "Принять"
-                callbackData = LastkatkaBot.CALLBACK_CAKE_OK + message.text
+                callbackData = Callbacks.CALLBACK_CAKE_OK + message.text
                     .replace("/cake", "")
             },
             InlineKeyboardButton().apply {
                 text = "Отказаться"
-                callbackData = LastkatkaBot.CALLBACK_CAKE_NOT + message.text
+                callbackData = Callbacks.CALLBACK_CAKE_NOT + message.text
                     .replace("/cake", "")
             }
         ))

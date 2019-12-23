@@ -165,29 +165,29 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
     private fun processCallbackQuery(query: CallbackQuery) {
         val data = query.data
         when {
-            data.startsWith(LastkatkaBot.CALLBACK_CAKE_OK) ->
+            data.startsWith(Callbacks.CALLBACK_CAKE_OK) ->
                 callbackHandler.cake(query, CallbackHandler.CakeAcion.CAKE_OK)
 
-            data.startsWith(LastkatkaBot.CALLBACK_CAKE_NOT) ->
+            data.startsWith(Callbacks.CALLBACK_CAKE_NOT) ->
                 callbackHandler.cake(query, CallbackHandler.CakeAcion.CAKE_NOT)
 
-            data.startsWith(LastkatkaBot.CALLBACK_ACCEPT_MARRIAGE) ->
+            data.startsWith(Callbacks.CALLBACK_ACCEPT_MARRIAGE) ->
                 callbackHandler.acceptMarriage(query)
 
-            data.startsWith(LastkatkaBot.CALLBACK_DENY_MARRIAGE) ->
+            data.startsWith(Callbacks.CALLBACK_DENY_MARRIAGE) ->
                 callbackHandler.denyMarriage(query)
 
-            data.startsWith(LastkatkaBot.CALLBACK_ANSWER_FEEDBACK) ->
+            data.startsWith(Callbacks.CALLBACK_ANSWER_FEEDBACK) ->
                 callbackHandler.answerFeedback(query)
 
-            data.startsWith(LastkatkaBot.CALLBACK_BLOCK_USER) ->
+            data.startsWith(Callbacks.CALLBACK_BLOCK_USER) ->
                 callbackHandler.blockUser(query)
 
             data.startsWith("deleteuser_") -> {
                 val type: UserType = when (query.data.split(" ")[0]) {
-                    LastkatkaBot.CALLBACK_DELETE_ADMIN -> UserType.ADMINS
-                    LastkatkaBot.CALLBACK_DELETE_NEKO -> UserType.BLACKLIST
-                    LastkatkaBot.CALLBACK_DELETE_PREM -> UserType.PREMIUM
+                    Callbacks.CALLBACK_DELETE_ADMIN -> UserType.ADMINS
+                    Callbacks.CALLBACK_DELETE_NEKO -> UserType.BLACKLIST
+                    Callbacks.CALLBACK_DELETE_PREM -> UserType.PREMIUM
                     else -> return
                 }
                 callbackHandler.deleteUser(query, type)
@@ -196,16 +196,16 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
 
             else -> when (data) {
                 // TODO Implement
-                /*LastkatkaBot.CALLBACK_REGISTER_IN_TOURNAMENT ->
+                /*Callbacks.CALLBACK_REGISTER_IN_TOURNAMENT ->
                     callbackHandler.registerInTournament(query)*/
 
-                LastkatkaBot.CALLBACK_PAY_RESPECTS ->
+                Callbacks.CALLBACK_PAY_RESPECTS ->
                     callbackHandler.payRespects(query)
 
-                LastkatkaBot.CALLBACK_CLOSE_MENU ->
+                Callbacks.CALLBACK_CLOSE_MENU ->
                     callbackHandler.closeMenu(query)
 
-                LastkatkaBot.CALLBACK_JOIN_DUEL -> {
+                Callbacks.CALLBACK_JOIN_DUEL -> {
                     val message = query.message
                     val duel = duels[message.chatId.toString() + " " + message.messageId]
                     if (duel == null) {
@@ -216,7 +216,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
                     return
                 }
 
-                LastkatkaBot.CALLBACK_VOTE_BNC -> bullsAndCowsGames[query.message.chatId]?.addVote(query)
+                Callbacks.CALLBACK_VOTE_BNC -> bullsAndCowsGames[query.message.chatId]?.addVote(query)
             }
         }
     }
