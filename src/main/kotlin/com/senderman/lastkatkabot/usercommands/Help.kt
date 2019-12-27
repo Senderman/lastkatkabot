@@ -29,6 +29,9 @@ class Help(
         val noobId = message.from.id
 
         for ((cmd, executor) in commands) {
+            if (!executor.showInHelp)
+                continue
+
             val helpLine = "$cmd - ${executor.desc}"
             if (noobId == Services.botConfig.mainAdmin && executor.forMainAdmin)
                 mainAdminHelp.appendln(helpLine)
