@@ -19,19 +19,21 @@ class Announce(private val handler: LastkatkaBotHandler) : CommandExecutor {
 
 
     override fun execute(message: Message) {
-        handler.sendMessage(message.chatId, "Рассылка запущена. На время рассылки бот будет недоступен")
+        handler.sendMessage(message.chatId, "✅ Рассылка запущена!")
         var text = message.text
         text = "\uD83D\uDCE3 <b>Объявление</b>\n\n" + text.split("\\s+".toRegex(), 2)[1]
         val usersIds = Services.db.getAllUsersIds()
         var counter = 0
-        for (userId in usersIds) {
-            try {
-                handler.execute(SendMessage(userId.toLong(), text).enableHtml(true))
-                counter++
-            } catch (e: TelegramApiException) {
-                BotLogger.error("ANNOUNCE", e.toString())
+        Thread {
+            for (userId in usersIds) {
+                try {
+                    handler.execute(SendMessage(userId.toLong(), text).enableHtml(true))
+                    counter++
+                } catch (e: TelegramApiException) {
+                    BotLogger.error("ANNOUNCE", e.toString())
+                }
             }
-        }
+        }.start()
         handler.sendMessage(message.chatId, "Объявление получили $counter/${usersIds.size} человек")
     }
 }
