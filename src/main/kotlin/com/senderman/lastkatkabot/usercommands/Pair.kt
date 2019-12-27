@@ -65,7 +65,6 @@ class Pair(private val handler: LastkatkaBotHandler) : CommandExecutor {
         handler.sendMessage(chatId, java.lang.String.format(loveStrings.last(), user1.link, user2.link))
     }
 
-    @Throws(Exception::class)
     private fun getSecondUserForPair(chatId: Long, userIds: MutableList<Int>, first: TgUser): Lover {
         val loverId = Services.db.getLover(first.id)
         return if (loverId in userIds) {
@@ -73,7 +72,9 @@ class Pair(private val handler: LastkatkaBotHandler) : CommandExecutor {
         } else Lover(getUserForPair(chatId, userIds), false)
     }
 
-    @Throws(Exception::class)
+    /**
+     * @throws Exception if amount of valid users less than 2
+     */
     private fun getUserForPair(chatId: Long, userIds: MutableList<Int>): TgUser {
         while (userIds.size > 2) {
             val userId = userIds.random()

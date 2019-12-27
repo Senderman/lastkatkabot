@@ -65,6 +65,10 @@ class RunAPI(private val handler: LastkatkaBotHandler) : CommandExecutor {
         return baos.toString()
     }
 
+    /**
+     * @throws Exception with message="key=value" if the kay-value pair in invalid
+     * @return String which could be used as GET request
+     */
     private fun buildRequest(method: String, keyValues: List<String>): String {
         val sb = StringBuilder("https://api.telegram.org/bot")
         sb.append(handler.botToken).append("/").append(method).append("?")

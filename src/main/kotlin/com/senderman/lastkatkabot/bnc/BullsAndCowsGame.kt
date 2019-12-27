@@ -3,12 +3,12 @@ package com.senderman.lastkatkabot.bnc
 import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.api.methods.send.SendMessageMethod
 import com.senderman.lastkatkabot.Callbacks
-import com.senderman.lastkatkabot.LastkatkaBot
 import com.senderman.lastkatkabot.Services
 import com.senderman.neblib.TgUser
 import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery
 import org.telegram.telegrambots.meta.api.objects.Message
+import org.telegram.telegrambots.meta.api.objects.User
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
 import java.util.*
@@ -70,7 +70,7 @@ class BullsAndCowsGame(message: Message) {
 
         messagesToDelete.add(message.messageId)
         if (number == answer) {
-            win(message)
+            win(message.from)
             return
         }
 
@@ -131,13 +131,9 @@ class BullsAndCowsGame(message: Message) {
             Methods.sendMessage()
                 .setChatId(chatId)
                 .setText(
-                    String.format(
-                        "<b>Голосование за завершение игры</b>\n" +
-                                "Осталось %1\$d голосов для завершения. Голос админа чата или создателя игры сразу заканчивает игру",
-                        5 - voted
-                    )
+                    String.format(voteText, 5 - voted)
                 )
-                .setReplyMarkup(getEndgameMarkup())
+                .setReplyMarkup(endgameMarkup)
                 .setParseMode(ParseMode.HTML)
         )
     }
@@ -159,15 +155,11 @@ class BullsAndCowsGame(message: Message) {
         votedUsers.add(query.from.id)
         Methods.editMessageText()
             .setText(
-                String.format(
-                    "<b>Голосование за завершение игры</b>\n" +
-                            "Осталось %1\$d голосов для завершения. Голос админа чата или создателя игры сразу заканчивает игру",
-                    5 - voted
-                )
+                String.format(voteText, 5 - voted)
             )
             .setChatId(chatId)
             .setMessageId(query.message.messageId)
-            .setReplyMarkup(getEndgameMarkup())
+            .setReplyMarkup(endgameMarkup)
             .enableHtml()
             .call(Services.handler)
     }
@@ -195,27 +187,27 @@ class BullsAndCowsGame(message: Message) {
         messagesToDelete.add(Services.handler.sendMessage(sm).messageId)
     }
 
-    private fun win(message: Message) {
+    private fun win(winner: User) {
         history.insert(
             0, String.format(
                 "%1\$s выиграл за %2\$d попыток! %3\$s - правильный ответ!\n\n",
-                message.from.firstName, (length * 2.5 - (attempts - 1)).toInt(), answer
+                winner.firstName, (length * 2.5 - (attempts - 1)).toInt(), answer
             )
         )
         history.append("\nВот столько вы потратили времени: ${getSpentTime()}")
         Services.handler.sendMessage(chatId, history.toString())
-        Services.db.incBNCWins(message.from.id, length)
-        endGame()
+        Services.db.incBNCWins(winner.id, length)
+        removeGame()
     }
 
     private fun gameOver() {
         history.insert(0, String.format("Вы проиграли! Ответ: %1\$s\n\n", answer))
         history.append("\nВот столько вы потратили времени: ${getSpentTime()}")
         Services.handler.sendMessage(chatId, history.toString())
-        endGame()
+        removeGame()
     }
 
-    private fun endGame() {
+    private fun removeGame() {
         for (messageId in messagesToDelete) {
             Methods.deleteMessage(chatId, messageId).call(Services.handler)
         }
@@ -234,6 +226,9 @@ class BullsAndCowsGame(message: Message) {
         return String.format("%02d:%02d:%02d", hours, mins, sec)
     }
 
+    /**
+     * @return String which contains unique digits with length=this.length
+     */
     private fun generateRandom(): String {
         val random = IntArray(length)
         for (i in 0 until length) {
@@ -258,7 +253,11 @@ class BullsAndCowsGame(message: Message) {
         return false
     }
 
-    // same as before but for an array under generating
+    /**
+     * @param array: Array of int sequence which in under generaion
+     * @param genIndex: index of the last generated digit
+     * @return true if all digits from index 0 to getIndex are unique
+     */
     private fun hasRepeatingDigits(array: IntArray, genIndex: Int): Boolean {
         for (i in 0..genIndex) {
             for (j in i + 1..genIndex) {
@@ -288,19 +287,25 @@ class BullsAndCowsGame(message: Message) {
         return Result(bulls, cows)
     }
 
-    private fun getEndgameMarkup(): InlineKeyboardMarkup {
-        val markup = InlineKeyboardMarkup()
-        val rows = listOf(
-            listOf(
-                InlineKeyboardButton().apply {
-                    text = "Голосовать"
-                    callbackData = Callbacks.CALLBACK_VOTE_BNC
-                }
+    private val endgameMarkup: InlineKeyboardMarkup
+        get() {
+            val markup = InlineKeyboardMarkup()
+            val rows = listOf(
+                listOf(
+                    InlineKeyboardButton().apply {
+                        text = "Голосовать"
+                        callbackData = Callbacks.CALLBACK_VOTE_BNC
+                    }
+                )
             )
-        )
-        markup.keyboard = rows
-        return markup
-    }
+            markup.keyboard = rows
+            return markup
+        }
+
+    private val voteText = """
+        <b>Голосование за завершение игры</b>
+        Осталось %1${'$'}d голосов для завершения. Голос админа чата или создателя игры сразу заканчивает игру
+    """.trimIndent()
 
     data class Result(var bulls: Int, var cows: Int)
 }
