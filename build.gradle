@@ -30,7 +30,7 @@ dependencies {
     implementation 'org.sejda.webp-imageio:webp-imageio-sejda:0.1.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.apache.commons:commons-lang3:3.0"
-    implementation "com.github.Senderman:neb-lib:master-SNAPSHOT"
+    implementation "com.github.Senderman:neb-lib:e718dfc"
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
