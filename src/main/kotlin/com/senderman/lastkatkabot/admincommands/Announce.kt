@@ -3,10 +3,15 @@ package com.senderman.lastkatkabot.admincommands
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services
 import com.senderman.neblib.CommandExecutor
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 import org.telegram.telegrambots.meta.logging.BotLogger
+import kotlin.concurrent.thread
 
 class Announce(private val handler: LastkatkaBotHandler) : CommandExecutor {
 
@@ -23,18 +28,18 @@ class Announce(private val handler: LastkatkaBotHandler) : CommandExecutor {
         var text = message.text
         text = "\uD83D\uDCE3 <b>Объявление</b>\n\n" + text.split("\\s+".toRegex(), 2)[1]
         val usersIds = Services.db.getAllUsersIds()
-        var counter = 0
-        Thread {
-            for (userId in usersIds) {
-                try {
-                    handler.execute(SendMessage(userId.toLong(), text).enableHtml(true))
-                    counter++
-                } catch (e: TelegramApiException) {
-                    BotLogger.error("ANNOUNCE", e.toString())
+        GlobalScope.launch {
+                var counter = 0
+                usersIds.forEach { userId ->
+                    try {
+                        handler.execute(SendMessage(userId.toLong(), text).enableHtml(true))
+                        counter++
+                    } catch (e: TelegramApiException) {
+                        BotLogger.error("ANNOUNCE", e.toString())
+                    }
                 }
-            }
-        }.start()
-        handler.sendMessage(message.chatId, "Объявление получили $counter/${usersIds.size} человек")
+                handler.sendMessage(message.chatId, "Объявление получили $counter/${usersIds.size} человек")
+        }
     }
 }
 
