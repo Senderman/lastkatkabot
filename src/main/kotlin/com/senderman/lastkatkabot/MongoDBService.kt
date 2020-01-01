@@ -2,6 +2,7 @@ package com.senderman.lastkatkabot
 
 import com.google.gson.Gson
 import com.mongodb.client.MongoCollection
+import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Filters.*
 import com.senderman.lastkatkabot.DBService.UserType
 import com.senderman.lastkatkabot.bnc.BullsAndCowsGame
@@ -81,14 +82,12 @@ internal class MongoDBService : DBService {
     }
 
     override fun getTop(): Map<Int, Int> {
-        val bnsPlayers = userstats
+        val bncPlayers = userstats
             .find(exists("bnc", true))
             .sort(Document("bnc", -1))
             .limit(10)
         val top = LinkedHashMap<Int, Int>()
-        for (doc in bnsPlayers) {
-            top[doc.getInteger("id")] = doc.getInteger("bnc")
-        }
+        bncPlayers.forEach { top[it.getInteger("id")] = it.getInteger("bnc") }
         return top
     }
 
@@ -162,22 +161,18 @@ internal class MongoDBService : DBService {
     override fun getTgUsersByType(type: UserType): MutableSet<Int> {
         val result = HashSet<Int>()
         val collection = getUsersCollection(type)
-        for (doc in collection.find()) {
-            result.add(doc.getInteger("id"))
-        }
+        collection.find().forEach { result.add(it.getInteger("id")) }
         return result
     }
 
     override fun getAllUsersIds(): Set<Int> {
         val userIds = HashSet<Int>()
-        for (collName in chatMembersDB.listCollectionNames()) {
-            for (doc in chatMembersDB.getCollection(collName).find()) {
-                userIds.add(doc.getInteger("id"))
+        chatMembersDB.listCollectionNames().forEach { name ->
+            chatMembersDB.getCollection(name).find().forEach {
+                userIds.add(it.getInteger("id"))
             }
         }
-        for (doc in userstats.find()) {
-            userIds.add(doc.getInteger("id"))
-        }
+        userstats.find().forEach { userIds.add(it.getInteger("id")) }
         return userIds
     }
 
@@ -201,9 +196,7 @@ internal class MongoDBService : DBService {
     override fun getChatMemebersIds(chatId: Long): MutableList<Int> {
         val chat = getChatMembersCollection(chatId)
         val members = ArrayList<Int>()
-        for (doc in chat.find()) {
-            members.add(doc.getInteger("id"))
-        }
+        chat.find().forEach { members.add(it.getInteger("id")) }
         return members
     }
 
@@ -214,9 +207,9 @@ internal class MongoDBService : DBService {
     override fun getBnCGames(): MutableMap<Long, BullsAndCowsGame> {
         val games = HashMap<Long, BullsAndCowsGame>()
         val gson = Gson()
-        for (doc in bncgames.find()) {
-            val game = gson.fromJson(doc.getString("game"), BullsAndCowsGame::class.java)
-            games[doc.getLong("chatId")] = game
+        bncgames.find().forEach {
+            val game = gson.fromJson(it.getString("game"), BullsAndCowsGame::class.java)
+            games[it.getLong("chatId")] = game
         }
         return games
     }
@@ -252,9 +245,9 @@ internal class MongoDBService : DBService {
     override fun getUserRows(): MutableMap<Long, UserRow> {
         val rows = HashMap<Long, UserRow>()
         val gson = Gson()
-        for (doc in chats.find(exists("row", true))) {
-            val row = gson.fromJson(doc.getString("row"), UserRow::class.java)
-            rows[doc.getLong("chatId")] = row
+        chats.find(exists("row", true)).forEach {
+            val row = gson.fromJson(it.getString("row"), UserRow::class.java)
+            rows[it.getLong("chatId")] = row
         }
         return rows
     }
@@ -282,18 +275,16 @@ internal class MongoDBService : DBService {
     }
 
     override fun getChatTitleMap(): Map<Long, String> {
-        val chats = HashMap<Long, String>()
-        for (doc in this.chats.find()) {
-            chats[doc.getLong("chatId")] = doc.getString("title") ?: "No title"
+        val result = HashMap<Long, String>()
+        chats.find().forEach {
+            result[it.getLong("chatId")] = it.getString("title") ?: "No title"
         }
-        return chats
+        return result
     }
 
     override fun getChatIdsSet(): MutableSet<Long> {
         val allowedChats = HashSet<Long>()
-        for (doc in chats.find()) {
-            allowedChats.add(doc.getLong("chatId"))
-        }
+        chats.find().forEach { allowedChats.add(it.getLong("chatId")) }
         return allowedChats
     }
 
@@ -316,19 +307,20 @@ internal class MongoDBService : DBService {
     }
 
     override fun cleanup() {
-        for (chat in chatMembersDB.listCollectionNames()) {
+        chatMembersDB.listCollectionNames().forEach { name ->
             if (
-                chats.find(eq("chatId", chat.toLong())).first() == null
-                || getChatMembersCollection(chat.toLong()).countDocuments() < 2
+                chats.find(eq("chatId", name.toLong())).first() == null
+                || getChatMembersCollection(name.toLong()).countDocuments() < 2
             ) {
-                getChatMembersCollection(chat.toLong()).drop()
-                chats.deleteOne(eq("chatId", chat.toLong()))
+                getChatMembersCollection(name.toLong()).drop()
+                chats.deleteOne(eq("chatId", name.toLong()))
             }
         }
         userstats.deleteMany(
             and(
                 eq("total", 0),
-                eq("bnc", 0)
+                eq("bnc", 0),
+                exists("city", false)
             )
         )
     }

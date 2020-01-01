@@ -6,7 +6,6 @@ import com.senderman.lastkatkabot.Services
 import com.senderman.neblib.CommandExecutor
 import com.senderman.neblib.TgUser
 import org.telegram.telegrambots.meta.api.objects.Message
-import org.telegram.telegrambots.meta.logging.BotLogger
 
 class Pair(private val handler: LastkatkaBotHandler) : CommandExecutor {
     override val command: String
@@ -52,13 +51,9 @@ class Pair(private val handler: LastkatkaBotHandler) : CommandExecutor {
         // get a random text and set up a pair
         val loveArray = Services.botConfig.loveStrings
         val loveStrings = loveArray.random().trim().split("\n")
-        try {
-            for (i in 0 until loveStrings.lastIndex) {
-                handler.sendMessage(chatId, loveStrings[i])
-                Thread.sleep(1500)
-            }
-        } catch (e: InterruptedException) {
-            BotLogger.error("PAIR", "Ошибка таймера")
+        for (i in 0 until loveStrings.lastIndex) {
+            handler.sendMessage(chatId, loveStrings[i])
+            Thread.sleep(1500)
         }
         val pair = if (isTrueLove) "${user1.name} \uD83D\uDC96 ${user2.name}" else "${user1.name} ❤ ${user2.name}"
         Services.db.setPair(chatId, pair)
