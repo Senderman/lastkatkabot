@@ -28,7 +28,7 @@ class Update(private val handler: LastkatkaBotHandler) : CommandExecutor {
         val chats = Services.db.getChatIdsSet()
         chats.remove(Services.botConfig.tourgroup)
         for (chat in chats) {
-            Methods.sendMessage(chat, update.toString()).call(handler)
+            Methods.sendMessage(chat, update.toString()).enableHtml().call(handler)
         }
     }
 }
