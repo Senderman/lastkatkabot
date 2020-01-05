@@ -2,7 +2,7 @@ package com.senderman.lastkatkabot
 
 import com.google.gson.Gson
 import com.mongodb.client.MongoCollection
-import com.mongodb.client.model.Filters
+import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.Filters.*
 import com.senderman.lastkatkabot.DBService.UserType
 import com.senderman.lastkatkabot.bnc.BullsAndCowsGame
@@ -19,7 +19,9 @@ import kotlin.collections.LinkedHashMap
 internal class MongoDBService : DBService {
     private val timeZone = TimeZone.getTimeZone("Europe/Moscow")
     private val client = MongoClientKeeper.client
-    private val lastkatkaDB = client.getDatabase("lastkatka")
+    private val lastkatkaDB: MongoDatabase = client.getDatabase("lastkatka")
+    private val rouletteDB: MongoDatabase = client.getDatabase("roulette")
+    private val rouletteUsers = rouletteDB.getCollection("users")
     private val chatMembersDB = client.getDatabase("chatmembers")
     private val admins = lastkatkaDB.getCollection("admins")
     private val premiumUsers = lastkatkaDB.getCollection("premium")
@@ -78,7 +80,9 @@ internal class MongoDBService : DBService {
         val wins = doc.getInteger("wins")
         val bncwins = doc.getInteger("bnc")
         val lover = doc.getInteger("lover") ?: 0
-        return UserStats(id, wins, total, bncwins, lover)
+        val rouletteUser = rouletteUsers.find(eq("userId", id)).first()
+        val coins = if (rouletteUser == null) 5000 else rouletteUser.getInteger("coins")
+        return UserStats(id, wins, total, bncwins, lover, coins)
     }
 
     override fun getTop(): Map<Int, Int> {
