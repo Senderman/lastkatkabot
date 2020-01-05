@@ -24,7 +24,7 @@ class Stats(private val handler: LastkatkaBotHandler) : CommandExecutor {
         }
         val user = TgUser(player)
         val stats = Services.db.getStats(player.id)
-        val (_, duelWins, totalDuels, bnc, loverId) = stats
+        val (_, duelWins, totalDuels, bnc, loverId, coins) = stats
         val winRate = if (totalDuels == 0) 0 else 100 * duelWins / totalDuels
         var text = """
             📊 Статистика ${user.name}:
@@ -33,6 +33,7 @@ class Stats(private val handler: LastkatkaBotHandler) : CommandExecutor {
             Всего дуэлей: $totalDuels
             Винрейт: $winRate%
             
+            💰 Деньги: $coins
             🐮 Баллов за быки и коровы: $bnc
         """.trimIndent()
         if (loverId != 0) {

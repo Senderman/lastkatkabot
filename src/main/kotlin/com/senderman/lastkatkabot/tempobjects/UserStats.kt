@@ -5,5 +5,6 @@ data class UserStats(
     val duelWins: Int,
     val totalDuels: Int,
     val bnc: Int,
-    val loverId: Int = 0
+    val loverId: Int = 0,
+    val coins: Int
 )
