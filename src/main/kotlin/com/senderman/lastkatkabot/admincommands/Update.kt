@@ -1,5 +1,6 @@
 package com.senderman.lastkatkabot.admincommands
 
+import com.annimon.tgbotsmodule.api.methods.Methods
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services
 import com.senderman.neblib.CommandExecutor
@@ -27,7 +28,7 @@ class Update(private val handler: LastkatkaBotHandler) : CommandExecutor {
         val chats = Services.db.getChatIdsSet()
         chats.remove(Services.botConfig.tourgroup)
         for (chat in chats) {
-            handler.sendMessage(chat, update.toString())
+            Methods.sendMessage(chat, update.toString()).call(handler)
         }
     }
 }
