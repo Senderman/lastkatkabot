@@ -6,6 +6,7 @@ import com.senderman.lastkatkabot.Services
 import com.senderman.lastkatkabot.bnc.BNCPlayer
 import com.senderman.neblib.CommandExecutor
 import org.telegram.telegrambots.meta.api.objects.Message
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
 class BNCTop(private val handler: LastkatkaBotHandler) : CommandExecutor {
     override val command: String
@@ -19,8 +20,12 @@ class BNCTop(private val handler: LastkatkaBotHandler) : CommandExecutor {
         val text = StringBuilder("<b>Топ-10 задротов в bnc:</b>\n\n")
         var counter = 1
         for ((playerId, score) in top) {
-            val member = Methods.getChatMember(playerId.toLong(), playerId).call(handler)
-            val player = BNCPlayer(playerId, member.user.firstName, score)
+            val name = try {
+                Methods.getChatMember(playerId.toLong(), playerId).call(handler).user.firstName
+            } catch (e:TelegramApiException){
+                "Без имени"
+            }
+            val player = BNCPlayer(playerId, name, score)
             text.append(counter).append(": ")
             if (message.isUserMessage) text.append(player.link) else text.append(player.name)
             text.append(" (${player.score})\n")
