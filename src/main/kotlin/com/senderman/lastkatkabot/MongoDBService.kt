@@ -21,31 +21,27 @@ internal class MongoDBService : DBService {
     private val client = MongoClientKeeper.client
     private val lastkatkaDB: MongoDatabase = client.getDatabase("lastkatka")
     private val rouletteDB: MongoDatabase = client.getDatabase("roulette")
-    private val rouletteUsers = rouletteDB.getCollection("users")
-    private val chatMembersDB = client.getDatabase("chatmembers")
-    private val admins = lastkatkaDB.getCollection("admins")
-    private val premiumUsers = lastkatkaDB.getCollection("premium")
-    private val blacklist = lastkatkaDB.getCollection("blacklist")
-    private val userstats = lastkatkaDB.getCollection("userstats")
-    private val settings = lastkatkaDB.getCollection("settings")
-    private val bncgames = lastkatkaDB.getCollection("bncgames")
-    private val chats = lastkatkaDB.getCollection("chats")
+    private val chatMembersDB: MongoDatabase = client.getDatabase("chatmembers")
+    private val rouletteUsers = rouletteDB["users"]
+    private val admins = lastkatkaDB["admins"]
+    private val premiumUsers = lastkatkaDB["premium"]
+    private val blacklist = lastkatkaDB["blacklist"]
+    private val userstats = lastkatkaDB["userstats"]
+    private val settings = lastkatkaDB["settings"]
+    private val bncgames = lastkatkaDB["bncgames"]
+    private val chats = lastkatkaDB["chats"]
+
+    private operator fun MongoDatabase.get(s: String): MongoCollection<Document> = getCollection(s)
 
 
-    private fun MongoCollection<Document>.getUser(id: Int): Document {
-        return find(eq("id", id)).first() ?: initStats(id)
-    }
+    private fun MongoCollection<Document>.getUser(id: Int) = find(eq("id", id)).first() ?: initStats(id)
 
-    private fun getChatMembersCollection(chatId: Long): MongoCollection<Document> {
-        return chatMembersDB.getCollection(chatId.toString())
-    }
+    private fun getChatMembersCollection(chatId: Long) = chatMembersDB[chatId.toString()]
 
-    private fun getUsersCollection(type: UserType): MongoCollection<Document> {
-        return when (type) {
-            UserType.ADMINS -> admins
-            UserType.BLACKLIST -> blacklist
-            else -> premiumUsers
-        }
+    private fun getUsersCollection(type: UserType): MongoCollection<Document> = when (type) {
+        UserType.ADMINS -> admins
+        UserType.BLACKLIST -> blacklist
+        else -> premiumUsers
     }
 
     override fun initStats(id: Int): Document {
@@ -116,9 +112,7 @@ internal class MongoDBService : DBService {
         userstats.updateOne(eq("id", id), Document("\$set", Document("city", city)))
     }
 
-    override fun getUserCity(id: Int): String? {
-        return userstats.getUser(id).getString("city")
-    }
+    override fun getUserCity(id: Int): String? = userstats.getUser(id).getString("city")
 
     override fun setLover(userId: Int, loverId: Int) {
         with(userstats) {
