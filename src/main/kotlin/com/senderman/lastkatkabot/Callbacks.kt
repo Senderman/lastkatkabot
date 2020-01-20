@@ -1,7 +1,7 @@
 package com.senderman.lastkatkabot
 
 class Callbacks {
-    companion object{
+    companion object {
         const val CALLBACK_REGISTER_IN_TOURNAMENT = "register_in_tournament"
         const val CALLBACK_PAY_RESPECTS = "pay_respects"
         const val CALLBACK_CAKE_OK = "cake_ok"

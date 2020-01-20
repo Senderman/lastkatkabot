@@ -22,7 +22,7 @@ class BNCTop(private val handler: LastkatkaBotHandler) : CommandExecutor {
         for ((playerId, score) in top) {
             val name = try {
                 Methods.getChatMember(playerId.toLong(), playerId).call(handler).user.firstName
-            } catch (e:TelegramApiException){
+            } catch (e: TelegramApiException) {
                 "Без имени"
             }
             val player = BNCPlayer(playerId, name, score)

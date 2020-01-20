@@ -170,11 +170,15 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
             answerQuery(query, "У вас уже есть вторая половинка!")
             return
         }
+        val coupleId = query.data.split(" ")[1].toInt()
+        if (Services.db.getLover(coupleId) != 0) {
+            answerQuery(query, "Слишком поздно! У пользователя уже есть другой!")
+            return
+        }
         answerQuery(query, "Поздравляем! Теперь у вас есть вторая половинка")
         Methods.deleteMessage(message.chatId, message.messageId).call(handler)
         // user - acceptor, couple - inviter
         val user = TgUser(userId, query.from.firstName)
-        val coupleId = query.data.split(" ")[1].toInt()
         val couple = TgUser(Methods.getChatMember(message.chatId, coupleId).call(handler).user)
         Services.db.setLover(user.id, couple.id)
         handler.sendMessage(couple.id, "Поздравляем! Теперь ваша вторая половинка - " + user.link)
