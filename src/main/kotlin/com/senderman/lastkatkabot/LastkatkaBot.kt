@@ -34,7 +34,7 @@ class LastkatkaBot : BotModule {
     }
 }
 
-fun main(args: Array<String>){
+fun main(args: Array<String>) {
     val profile = if (args.isNotEmpty() && args[0].isNotEmpty()) args[0] else ""
     Runner.run(profile, listOf(LastkatkaBot()))
 }

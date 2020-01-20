@@ -1,7 +1,10 @@
 package com.senderman.lastkatkabot.admincommands
 
 import com.annimon.tgbotsmodule.api.methods.Methods
-import com.senderman.lastkatkabot.*
+import com.senderman.lastkatkabot.Callbacks
+import com.senderman.lastkatkabot.DBService
+import com.senderman.lastkatkabot.LastkatkaBotHandler
+import com.senderman.lastkatkabot.Services
 import com.senderman.neblib.TgUser
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
