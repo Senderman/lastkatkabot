@@ -16,6 +16,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException
 import java.awt.BasicStroke
 import java.awt.Color
@@ -23,6 +24,8 @@ import java.awt.Font
 import java.awt.RenderingHints
 import java.io.File
 import java.io.IOException
+import java.io.PrintWriter
+import java.io.StringWriter
 import java.util.*
 import javax.imageio.ImageIO
 import kotlin.collections.HashMap
@@ -148,7 +151,11 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
                 executor.forPremium && !isPremiumUser(message) -> return null
                 isInBlacklist(message) -> return null
             }
-            executor.execute(message)
+            try {
+                executor.execute(message)
+            } catch (e: Exception){
+                sendStackTrace(e, true)
+            }
         }
 
         return null
@@ -297,6 +304,20 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
             Methods.deleteMessage(message.chatId, message.messageId).call(this)
         }
         return result
+    }
+
+    private fun sendStackTrace(e: Exception, internal: Boolean){
+        val sw = StringWriter()
+        e.printStackTrace(PrintWriter(sw))
+        val type = if (internal) "внутреннее" else "внешнее"
+        sendMessage(
+            Services.botConfig.mainAdmin,
+            "❗️ Падение. Тип - $type\n\n$sw"
+        )
+    }
+
+    override fun handleTelegramApiException(ex: TelegramApiException) {
+        sendStackTrace(ex, false)
     }
 
     private fun migrateChat(oldChatId: Long, newChatId: Long) = Services.db.updateChatId(oldChatId, newChatId)
