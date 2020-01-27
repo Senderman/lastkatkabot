@@ -153,8 +153,8 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
             }
             try {
                 executor.execute(message)
-            } catch (e: Exception){
-                sendStackTrace(e, true)
+            } catch (e: Exception) {
+                sendStackTrace(e, "логика", "Команда - ${executor.command}, чат - ${message.chat.title}")
             }
         }
 
@@ -306,18 +306,17 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         return result
     }
 
-    private fun sendStackTrace(e: Exception, internal: Boolean){
+    private fun sendStackTrace(e: Exception, type: String, message: String = "") {
         val sw = StringWriter()
         e.printStackTrace(PrintWriter(sw))
-        val type = if (internal) "внутреннее" else "внешнее"
         sendMessage(
             Services.botConfig.mainAdmin,
-            "❗️ Падение. Тип - $type\n\n$sw"
+            "❗️ Падение. Тип - $type\n$message\n\n$sw"
         )
     }
 
     override fun handleTelegramApiException(ex: TelegramApiException) {
-        sendStackTrace(ex, false)
+        sendStackTrace(ex, "сеть")
     }
 
     private fun migrateChat(oldChatId: Long, newChatId: Long) = Services.db.updateChatId(oldChatId, newChatId)
@@ -337,9 +336,11 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         return try {
             execute(sendMessage)
         } catch (e: TelegramApiRequestException) {
-            migrateChat(sm.chatId.toLong(), e.parameters.migrateToChatId)
-            sm.setChatId(e.parameters.migrateToChatId)
-            return sm.call(this)
+            if (e.parameters != null && e.parameters.migrateToChatId != null){
+                migrateChat(sm.chatId.toLong(), e.parameters.migrateToChatId)
+                sm.setChatId(e.parameters.migrateToChatId)
+            }
+            sm.call(this)
         }
     }
 }

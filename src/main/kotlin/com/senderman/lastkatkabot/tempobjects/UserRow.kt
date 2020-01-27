@@ -5,6 +5,7 @@ import com.senderman.lastkatkabot.Services
 import com.senderman.neblib.TgUser
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.User
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 import java.util.*
 
 class UserRow(message: Message) {
@@ -36,12 +37,17 @@ class UserRow(message: Message) {
         checkedUsers.add(user.id)
         val pref = if (checkedUsers.size % divider == 0) "" else "не"
         messageText += "${checkedUsers.size}. ${user.link} - $pref $name\n"
-        Methods.editMessageText()
-            .setChatId(chatId)
-            .setMessageId(messageId)
-            .setText(messageText)
-            .enableHtml()
-            .call(Services.handler)
+        try {
+            Methods.editMessageText()
+                .setChatId(chatId)
+                .setMessageId(messageId)
+                .setText(messageText)
+                .enableHtml()
+                .call(Services.handler)
+        } catch (e: TelegramApiException) {
+            Services.handler.userRows.remove(chatId)
+            Services.db.deleteRow(chatId)
+        }
         Services.db.saveRow(chatId, this)
     }
 }
