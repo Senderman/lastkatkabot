@@ -6,6 +6,7 @@ import com.senderman.lastkatkabot.Services
 import com.senderman.neblib.CommandExecutor
 import com.senderman.neblib.TgUser
 import org.telegram.telegrambots.meta.api.objects.Message
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
 class Pair(private val handler: LastkatkaBotHandler) : CommandExecutor {
     override val command: String
@@ -29,7 +30,7 @@ class Pair(private val handler: LastkatkaBotHandler) : CommandExecutor {
 
         // remove users without activity for 2 weeks and get list of actual users
         Services.db.removeOldUsers(chatId, message.date - 1209600)
-        val userIds = Services.db.getChatMemebersIds(chatId)
+        val userIds = Services.db.getChatMembersIds(chatId)
 
         // generate 2 different random users
         val user1: TgUser
@@ -73,11 +74,14 @@ class Pair(private val handler: LastkatkaBotHandler) : CommandExecutor {
     private fun getUserForPair(chatId: Long, userIds: MutableList<Int>): TgUser {
         while (userIds.size > 2) {
             val userId = userIds.random()
-            Methods.getChatMember(chatId, userId).call(handler)?.let { member ->
+            try {
+                val member = Methods.getChatMember(chatId, userId).call(handler)
                 return TgUser(member.user)
+            } catch (e: TelegramApiException) {
+                Services.db.removeUserFromChatDB(userId, chatId)
+                userIds.remove(userId)
+                continue
             }
-            Services.db.removeUserFromChatDB(userId, chatId)
-            userIds.remove(userId)
         }
         throw Exception("Not enough users")
     }

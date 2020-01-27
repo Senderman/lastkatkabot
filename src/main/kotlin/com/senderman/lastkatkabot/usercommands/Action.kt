@@ -19,6 +19,9 @@ class Action(private val handler: LastkatkaBotHandler) : CommandExecutor {
         val action = message.text.split("\\s+".toRegex(), 2)[1]
         val sm = Methods.sendMessage(message.chatId, message.from.firstName + " " + action)
         if (message.isReply) sm.replyToMessageId = message.replyToMessage.messageId
-        handler.sendMessage(sm)
+        try {
+            handler.sendMessage(sm)
+        } catch (ignored: Exception) {
+        }
     }
 }

@@ -37,7 +37,7 @@ interface DBService {
     fun getAllUsersIds(): Set<Int>
     fun addUserToChatDB(message: Message)
     fun removeUserFromChatDB(userId: Int, chatId: Long)
-    fun getChatMemebersIds(chatId: Long): MutableList<Int>
+    fun getChatMembersIds(chatId: Long): MutableList<Int>
     fun removeOldUsers(chatId: Long, date: Int)
 
 
@@ -47,6 +47,7 @@ interface DBService {
 
     fun saveRow(chatId: Long, row: UserRow)
     fun getUserRows(): MutableMap<Long, UserRow>
+    fun deleteRow(chatId: Long)
 
     fun getTournamentMessageId(): Int
     fun setTournamentMessage(messageId: Int)

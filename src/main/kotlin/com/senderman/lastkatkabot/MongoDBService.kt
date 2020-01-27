@@ -191,7 +191,7 @@ internal class MongoDBService : DBService {
         getChatMembersCollection(chatId).deleteOne(eq("id", userId))
     }
 
-    override fun getChatMemebersIds(chatId: Long): MutableList<Int> {
+    override fun getChatMembersIds(chatId: Long): MutableList<Int> {
         val chat = getChatMembersCollection(chatId)
         val members = ArrayList<Int>()
         chat.find().forEach { members.add(it.getInteger("id")) }
@@ -248,6 +248,13 @@ internal class MongoDBService : DBService {
             rows[it.getLong("chatId")] = row
         }
         return rows
+    }
+
+    override fun deleteRow(chatId: Long) {
+        chats.updateOne(
+            eq("chatId", chatId),
+            Document("\$unset", Document("row", ""))
+        )
     }
 
     override fun getTournamentMessageId(): Int {
