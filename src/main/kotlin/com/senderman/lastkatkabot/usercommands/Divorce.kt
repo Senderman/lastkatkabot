@@ -5,6 +5,7 @@ import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services
 import com.senderman.neblib.CommandExecutor
 import com.senderman.neblib.TgUser
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Message
 
 class Divorce(private val handler: LastkatkaBotHandler) : CommandExecutor {
@@ -24,6 +25,11 @@ class Divorce(private val handler: LastkatkaBotHandler) : CommandExecutor {
         Services.db.divorce(userId)
         handler.sendMessage(chatId, "Вы расстались со своей половинкой! А ведь так все хорошо начиналось...")
         val user = TgUser(Methods.getChatMember(userId.toLong(), userId).call(handler).user)
-        handler.sendMessage(loverId, "Ваша половинка (${user.link}) покинула вас... Теперь вы одни...")
+        handler.execute(
+            SendMessage(
+                loverId.toLong(),
+                "Ваша половинка (${user.link}) покинула вас... Теперь вы одни..."
+            ).enableHtml(true)
+        )
     }
 }

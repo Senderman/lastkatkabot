@@ -315,6 +315,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         )
     }
 
+    // catch exceptions from call()
     override fun handleTelegramApiException(ex: TelegramApiException) {
         sendStackTrace(ex, "сеть")
     }
