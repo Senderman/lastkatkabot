@@ -16,7 +16,7 @@ class Cake(private val handler: LastkatkaBotHandler) : CommandExecutor {
         get() = "(reply) подарить тортик. Можно указать начинку, напр. /cake с вишней"
 
     override fun execute(message: Message) {
-        if (message.isUserMessage) return
+        if (!message.isReply || message.isUserMessage) return
         val markup = InlineKeyboardMarkup()
         markup.keyboard = listOf(listOf(
             InlineKeyboardButton().apply {

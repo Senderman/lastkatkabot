@@ -16,7 +16,8 @@ class PayRespects(private val handler: LastkatkaBotHandler) : CommandExecutor {
 
     override fun execute(message: Message) {
         if (message.isUserMessage) return
-        if (message.isReply && message.from.firstName == message.replyToMessage.from.firstName) return
+        if (!message.isReply) return
+        if (message.from.firstName == message.replyToMessage.from.firstName) return
 
         val `object` = if (message.text.split(" ").size > 1)
             message.text.split(" ".toRegex(), 2)[1]

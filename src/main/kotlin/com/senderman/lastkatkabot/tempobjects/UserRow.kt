@@ -1,8 +1,8 @@
 package com.senderman.lastkatkabot.tempobjects
 
-import com.annimon.tgbotsmodule.api.methods.Methods
 import com.senderman.lastkatkabot.Services
 import com.senderman.neblib.TgUser
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.User
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException
@@ -38,12 +38,13 @@ class UserRow(message: Message) {
         val pref = if (checkedUsers.size % divider == 0) "" else "не"
         messageText += "${checkedUsers.size}. ${user.link} - $pref $name\n"
         try {
-            Methods.editMessageText()
-                .setChatId(chatId)
-                .setMessageId(messageId)
-                .setText(messageText)
-                .enableHtml()
-                .call(Services.handler)
+            Services.handler.execute(
+                EditMessageText()
+                    .setChatId(chatId)
+                    .setMessageId(messageId)
+                    .setText(messageText)
+                    .enableHtml(false)
+            )
         } catch (e: TelegramApiRequestException) {
             Services.handler.userRows.remove(chatId)
             Services.db.deleteRow(chatId)

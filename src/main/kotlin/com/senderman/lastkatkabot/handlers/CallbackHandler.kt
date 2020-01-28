@@ -7,6 +7,7 @@ import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services
 import com.senderman.lastkatkabot.usercommands.PayRespects
 import com.senderman.neblib.TgUser
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 
@@ -181,7 +182,13 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
         val user = TgUser(userId, query.from.firstName)
         val couple = TgUser(Methods.getChatMember(message.chatId, coupleId).call(handler).user)
         Services.db.setLover(user.id, couple.id)
-        handler.sendMessage(couple.id, "Поздравляем! Теперь ваша вторая половинка - " + user.link)
+        handler.execute(
+            SendMessage(
+                couple.id.toLong(),
+                "Поздравляем! Теперь ваша вторая половинка - " + user.link
+            )
+                .enableHtml(true)
+        )
         val format =
             "Внимание все! Сегодня великий день свадьбы %s и %s! Так давайте же поздравим их и съедим шавуху в часть такого праздника!"
         val text = String.format(format, user.link, couple.link)

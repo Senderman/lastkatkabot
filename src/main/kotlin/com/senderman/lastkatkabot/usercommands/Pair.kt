@@ -1,10 +1,10 @@
 package com.senderman.lastkatkabot.usercommands
 
-import com.annimon.tgbotsmodule.api.methods.Methods
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services
 import com.senderman.neblib.CommandExecutor
 import com.senderman.neblib.TgUser
+import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChatMember
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
@@ -64,7 +64,11 @@ class Pair(private val handler: LastkatkaBotHandler) : CommandExecutor {
     private fun getSecondUserForPair(chatId: Long, userIds: MutableList<Int>, first: TgUser): Lover {
         val loverId = Services.db.getLover(first.id)
         return if (loverId in userIds) {
-            Lover(TgUser(Methods.getChatMember(chatId, loverId).call(handler).user), true)
+            try {
+                Lover(TgUser(handler.execute(GetChatMember().setChatId(chatId).setUserId(loverId)).user), true)
+            } catch (e: TelegramApiException) {
+                Lover(getUserForPair(chatId, userIds), false)
+            }
         } else Lover(getUserForPair(chatId, userIds), false)
     }
 
@@ -75,7 +79,7 @@ class Pair(private val handler: LastkatkaBotHandler) : CommandExecutor {
         while (userIds.size > 2) {
             val userId = userIds.random()
             try {
-                val member = Methods.getChatMember(chatId, userId).call(handler)
+                val member = handler.execute(GetChatMember().setChatId(chatId).setUserId(userId))
                 return TgUser(member.user)
             } catch (e: TelegramApiException) {
                 Services.db.removeUserFromChatDB(userId, chatId)
