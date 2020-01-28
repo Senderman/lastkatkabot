@@ -21,9 +21,8 @@ class PinList(private val handler: LastkatkaBotHandler) : CommandExecutor {
     }
 
     companion object {
-        private fun isFromWwBot(message: Message): Boolean {
-            return message.replyToMessage.from.userName in Services.botConfig.wwBots &&
-                    message.replyToMessage.text.startsWith("#players")
-        }
+        private fun isFromWwBot(message: Message): Boolean = message.isReply &&
+                message.replyToMessage.from.userName in Services.botConfig.wwBots &&
+                message.replyToMessage.text.startsWith("#players")
     }
 }
