@@ -14,6 +14,7 @@ class BNCStart(private val handler: LastkatkaBotHandler) : CommandExecutor {
     override fun execute(message: Message) {
         if (message.chatId !in handler.bullsAndCowsGames)
             handler.bullsAndCowsGames[message.chatId] = BullsAndCowsGame(message)
-        else handler.sendMessage(message.chatId, "В этом чате игра уже идет!")
+        else
+            handler.bullsAndCowsGames[message.chatId]?.gameMessage(message.chatId, "В этом чате игра уже идет!")
     }
 }

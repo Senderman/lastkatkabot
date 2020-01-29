@@ -309,9 +309,11 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
     private fun sendStackTrace(e: Exception, type: String, message: String = "") {
         val sw = StringWriter()
         e.printStackTrace(PrintWriter(sw))
-        sendMessage(
-            Services.botConfig.mainAdmin,
-            "❗️ Падение. Тип - $type\n$message\n\n$sw"
+        execute(
+            SendMessage(
+                Services.botConfig.mainAdmin.toLong(),
+                "❗️ Падение. Тип - $type\n$message\n\n$sw"
+            )
         )
     }
 
