@@ -179,7 +179,7 @@ class BullsAndCowsGame(message: Message) {
         return false
     }
 
-    private fun gameMessage(chatId: Long, text: String) {
+    fun gameMessage(chatId: Long, text: String) {
         gameMessage(Methods.sendMessage(chatId, text))
     }
 
