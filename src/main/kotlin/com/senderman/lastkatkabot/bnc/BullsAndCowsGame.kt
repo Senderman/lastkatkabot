@@ -209,7 +209,7 @@ class BullsAndCowsGame(message: Message) {
 
     private fun removeGame() {
         for (messageId in messagesToDelete) {
-            Methods.deleteMessage(chatId, messageId).call(Services.handler)
+            Services.handler.deleteMessage(chatId, messageId)
         }
         Services.db.deleteBncGame(chatId)
         Services.handler.bullsAndCowsGames.remove(chatId)

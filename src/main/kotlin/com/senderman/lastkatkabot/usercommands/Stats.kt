@@ -1,11 +1,12 @@
 package com.senderman.lastkatkabot.usercommands
 
-import com.annimon.tgbotsmodule.api.methods.Methods
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services
 import com.senderman.neblib.CommandExecutor
 import com.senderman.neblib.TgUser
+import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChatMember
 import org.telegram.telegrambots.meta.api.objects.Message
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
 class Stats(private val handler: LastkatkaBotHandler) : CommandExecutor {
     override val command: String
@@ -36,11 +37,22 @@ class Stats(private val handler: LastkatkaBotHandler) : CommandExecutor {
             💰 Деньги: $coins
             🐮 Баллов за быки и коровы: $bnc
         """.trimIndent()
+
         if (loverId != 0) {
-            val lover = TgUser(Methods.getChatMember(loverId.toLong(), loverId).call(handler).user)
+            val lover =
+                try {
+                    TgUser(handler.execute(GetChatMember().setChatId(loverId.toLong()).setUserId(loverId)).user)
+                } catch (e: TelegramApiException) {
+                    try {
+                        TgUser(handler.execute(GetChatMember().setChatId(message.chatId).setUserId(loverId)).user)
+                    } catch (e: TelegramApiException) {
+                        TgUser(loverId, "Без имени")
+                    }
+                }
             text += "\n❤️ Вторая половинка: "
             text += if (message.isUserMessage) lover.link else lover.name
         }
+
         handler.sendMessage(message.chatId, text)
     }
 }
