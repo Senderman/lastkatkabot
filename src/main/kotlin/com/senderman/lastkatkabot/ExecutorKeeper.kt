@@ -10,7 +10,6 @@ internal class ExecutorKeeper(handler: LastkatkaBotHandler) : AbstractExecutorKe
     init {
         // user commands
         register(Action(handler))
-        register(Dice(handler))
         register(PayRespects(handler))
         register(Cake(handler))
         register(Help(handler, commandExecutors))
