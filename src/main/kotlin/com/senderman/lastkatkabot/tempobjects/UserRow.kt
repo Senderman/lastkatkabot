@@ -43,7 +43,7 @@ class UserRow(message: Message) {
                     .setChatId(chatId)
                     .setMessageId(messageId)
                     .setText(messageText)
-                    .enableHtml(false)
+                    .enableHtml(true)
             )
         } catch (e: TelegramApiRequestException) {
             Services.handler.userRows.remove(chatId)

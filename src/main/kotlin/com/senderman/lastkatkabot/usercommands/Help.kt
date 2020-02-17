@@ -4,7 +4,6 @@ import com.annimon.tgbotsmodule.api.methods.Methods
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services
 import com.senderman.neblib.CommandExecutor
-import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
@@ -37,7 +36,7 @@ class Help(
                 mainAdminHelp.appendln(helpLine)
             else if (handler.isFromAdmin(message) && executor.forAllAdmins)
                 adminHelp.appendln(helpLine)
-            else
+            else if (!executor.forMainAdmin && !executor.forAllAdmins)
                 help.appendln(helpLine)
             // TODO add help for premium users when needed
         }
@@ -46,8 +45,7 @@ class Help(
         // attempt to send help to PM
         try {
             handler.execute(
-                SendMessage(message.from.id.toLong(), help.toString())
-                    .setParseMode(ParseMode.HTML)
+                SendMessage(message.from.id.toLong(), help.toString()).enableHtml(true)
             )
         } catch (e: TelegramApiException) {
             handler.sendMessage(
