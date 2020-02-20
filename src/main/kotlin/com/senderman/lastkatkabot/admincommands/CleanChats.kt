@@ -3,6 +3,8 @@ package com.senderman.lastkatkabot.admincommands
 import com.annimon.tgbotsmodule.api.methods.Methods
 import com.senderman.lastkatkabot.Services
 import com.senderman.neblib.CommandExecutor
+import org.telegram.telegrambots.meta.api.methods.ActionType
+import org.telegram.telegrambots.meta.api.methods.send.SendChatAction
 import org.telegram.telegrambots.meta.api.objects.Message
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors
@@ -27,16 +29,23 @@ class CleanChats : CommandExecutor {
             val chats = Services.db.getChatTitleMap()
             val cores = Runtime.getRuntime().availableProcessors()
             val executor = Executors.newFixedThreadPool(cores)
-            executor.invokeAll(splitCleanupTasks(cores, chats))
+            val futures = executor.invokeAll(splitCleanupTasks(cores, chats))
             executor.shutdown()
             executor.awaitTermination(5, TimeUnit.MINUTES)
             Services.db.cleanup()
-            Services.handler.sendMessage(Services.botConfig.mainAdmin, "Чаты обновлены!")
+            var totalChatsDeleted = 0
+            for (future in futures)
+                totalChatsDeleted += future.get()
+
+            Services.handler.sendMessage(
+                Services.botConfig.mainAdmin,
+                "Чаты обновлены! Удалено $totalChatsDeleted чатов"
+            )
         }
 
-        private fun splitCleanupTasks(workers: Int, chats: Map<Long, String>): List<Callable<Unit>> {
+        private fun splitCleanupTasks(workers: Int, chats: Map<Long, String>): List<Callable<Int>> {
             val partSize = chats.size / workers
-            val list = ArrayList<Callable<Unit>>()
+            val list = ArrayList<Callable<Int>>()
             for (i in 0 until workers - 1) {
                 list.add(cleanupTask(i * partSize, (i + 1) * partSize, chats))
             }
@@ -44,28 +53,24 @@ class CleanChats : CommandExecutor {
             return list
         }
 
-        private fun cleanupTask(start: Int, bound: Int, chats: Map<Long, String>): Callable<Unit> {
+        private fun cleanupTask(start: Int, bound: Int, chats: Map<Long, String>): Callable<Int> {
             return Callable {
+                var deletedChats = 0
                 val keys = chats.keys.toList()
                 for (i in start until bound) {
                     val chatId = keys[i]
                     try {
-                        val msg = Methods.sendMessage(
-                            chatId,
-                            "Сервисное сообщение, оно будет удалено через секунду"
-                        ).call(Services.handler)
-                        Methods.deleteMessage(chatId, msg.messageId).call(Services.handler)
-                        val title = msg.chat.title
-                        Services.db.updateTitle(chatId, title)
+                        val sendAction = SendChatAction()
+                            .setChatId(chatId)
+                            .setAction(ActionType.TYPING)
+                        Services.handler.execute(sendAction)
                     } catch (e: Exception) {
+                        deletedChats++
                         Services.db.removeChat(chatId)
                         Methods.leaveChat(chatId).call(Services.handler)
-                        Services.handler.sendMessage(
-                            Services.botConfig.mainAdmin,
-                            "Чат \"${chats[chatId]}\" удален из списка!"
-                        )
                     }
                 }
+                deletedChats
             }
         }
     }
