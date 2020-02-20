@@ -252,16 +252,16 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
             }
         } */ else if (!newMembers[0].bot) {
             // say hi
-            val membername = newMembers[0].firstName
+            val memberName = newMembers[0].firstName
             try {
-                val sticker = getHelloSticker(membername)
+                val sticker = getHelloSticker(memberName)
                 Methods.sendDocument(chatId)
                     .setFile(sticker)
                     .setReplyToMessageId(message.messageId)
                     .call(this) // send sticker
                 sticker.delete()
                 return
-            } catch (e: IOException) {
+            } catch (e: Exception) {
                 Methods.sendDocument(chatId)
                     .setFile(Services.botConfig.higif)
                     .setReplyToMessageId(message.messageId)
