@@ -12,6 +12,10 @@ interface DBService {
         ADMINS, PREMIUM, BLACKLIST
     }
 
+    enum class StatsFormat {
+        LOVER, CHILD
+    }
+
     fun initStats(id: Int): Document
     fun incTotalDuels(id: Int)
     fun incDuelWins(id: Int)

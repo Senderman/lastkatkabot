@@ -31,6 +31,7 @@ class AdoptChild(private val handler: LastkatkaBotHandler) : CommandExecutor {
         val child = TgUser(message.replyToMessage.from)
         val childId = child.id
         if (childId == motherId || childId == fatherId) return
+        
         val markup = InlineKeyboardMarkup()
         markup.keyboard = listOf(listOf(
             InlineKeyboardButton().apply {
@@ -48,8 +49,7 @@ class AdoptChild(private val handler: LastkatkaBotHandler) : CommandExecutor {
             Methods.sendMessage()
                 .setChatId(message.chatId)
                 .setText(
-                    //"${motherId}, ${father.link} предлагает вам усыновить ${child.link}!"
-                    "${mother.link}, ${father.link} предлагает вам усыновить ${child.link}!"
+                    "${mother.link}, ${father.link} предлагает вам усыновить ${child.link}! (ребенок навсегда останется у обоих)"
                 )
                 .setReplyToMessageId(message.replyToMessage.messageId)
                 .setReplyMarkup(markup)

@@ -1,5 +1,6 @@
 package com.senderman.lastkatkabot.usercommands
 
+import com.senderman.lastkatkabot.DBService
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services
 import com.senderman.neblib.CommandExecutor
@@ -38,36 +39,34 @@ class Stats(private val handler: LastkatkaBotHandler) : CommandExecutor {
             🐮 Баллов за быки и коровы: $bnc
         """.trimIndent()
 
-        if (loverId != 0) {
-            val lover =
-                try {
-                    TgUser(handler.execute(GetChatMember().setChatId(loverId.toLong()).setUserId(loverId)).user)
-                } catch (e: TelegramApiException) {
-                    try {
-                        TgUser(handler.execute(GetChatMember().setChatId(message.chatId).setUserId(loverId)).user)
-                    } catch (e: TelegramApiException) {
-                        TgUser(loverId, "Без имени")
-                    }
-                }
-            text += "\n❤️ Вторая половинка: "
-            text += if (message.isUserMessage) lover.link else lover.name
-        }
-
-        if (childId != 0) {
-            val child =
-                try {
-                    TgUser(handler.execute(GetChatMember().setChatId(childId.toLong()).setUserId(childId)).user)
-                } catch (e: TelegramApiException) {
-                    try {
-                        TgUser(handler.execute(GetChatMember().setChatId(message.chatId).setUserId(childId)).user)
-                    } catch (e: TelegramApiException) {
-                        TgUser(childId, "Без имени")
-                    }
-                }
-            text += "\n\uD83D\uDC76\uD83C\uDFFB️ Ребенок: "
-            text += if (message.isUserMessage) child.link else child.name
-        }
+        text += formatStats(message, loverId, DBService.StatsFormat.LOVER)
+        text += formatStats(message, childId, DBService.StatsFormat.CHILD)
 
         handler.sendMessage(message.chatId, text)
+    }
+
+    private fun formatStats(message: Message, userId: Int, type: DBService.StatsFormat): String {
+        var text = ""
+        val user =
+            try {
+                TgUser(handler.execute(GetChatMember().setChatId(userId.toLong()).setUserId(userId)).user)
+            } catch (e: TelegramApiException) {
+                try {
+                    TgUser(handler.execute(GetChatMember().setChatId(message.chatId).setUserId(userId)).user)
+                } catch (e: TelegramApiException) {
+                    TgUser(userId, "Без имени")
+                }
+            }
+        when (type) {
+            DBService.StatsFormat.CHILD -> {
+                text += "\n\uD83D\uDC76\uD83C\uDFFB️ Ребенок: "
+                text += if (message.isUserMessage) user.link else user.name
+            }
+            DBService.StatsFormat.LOVER -> {
+                text += "\n❤️ Вторая половинка: "
+                text += if (message.isUserMessage) user.link else user.name
+            }
+        }
+        return text
     }
 }
