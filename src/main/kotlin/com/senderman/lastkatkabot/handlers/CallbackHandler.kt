@@ -237,7 +237,7 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
             "Поздравляем! Теперь ваши родители - ${user.link} и его супруг(а) ${lover.link}!"
         )
         val text =
-            "Внимание все! Сегодня великий день усыновления ${user.link} ребенка ${child.link}! Так давайте же поздравим их и съедим шавуху в часть такого праздника!"
+            "Внимание все! Сегодня великий день усыновления ${user.link} и ${lover.link} ребенка ${child.link}! Так давайте же поздравим их и съедим шавуху в часть такого праздника!"
         handler.sendMessage(message.chatId, text)
     }
 
