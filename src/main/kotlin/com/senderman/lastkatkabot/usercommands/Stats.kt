@@ -1,6 +1,5 @@
 package com.senderman.lastkatkabot.usercommands
 
-import com.senderman.lastkatkabot.DBService
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services
 import com.senderman.neblib.CommandExecutor
@@ -39,13 +38,17 @@ class Stats(private val handler: LastkatkaBotHandler) : CommandExecutor {
             🐮 Баллов за быки и коровы: $bnc
         """.trimIndent()
 
-        text += formatStats(message, loverId, DBService.StatsFormat.LOVER)
-        text += formatStats(message, childId, DBService.StatsFormat.CHILD)
+        text += formatStats(message, loverId, StatsFormat.LOVER)
+        text += formatStats(message, childId, StatsFormat.CHILD)
 
         handler.sendMessage(message.chatId, text)
     }
 
-    private fun formatStats(message: Message, userId: Int, type: DBService.StatsFormat): String {
+    enum class StatsFormat {
+        LOVER, CHILD
+    }
+
+    private fun formatStats(message: Message, userId: Int, type: StatsFormat): String {
         var text = ""
         val user =
             try {
@@ -57,16 +60,15 @@ class Stats(private val handler: LastkatkaBotHandler) : CommandExecutor {
                     TgUser(userId, "Без имени")
                 }
             }
-        when (type) {
-            DBService.StatsFormat.CHILD -> {
-                text += "\n\uD83D\uDC76\uD83C\uDFFB️ Ребенок: "
-                text += if (message.isUserMessage) user.link else user.name
+        text += when (type) {
+            StatsFormat.CHILD -> {
+                "\n\uD83D\uDC76\uD83C\uDFFB️ Ребенок: "
             }
-            DBService.StatsFormat.LOVER -> {
-                text += "\n❤️ Вторая половинка: "
-                text += if (message.isUserMessage) user.link else user.name
+            StatsFormat.LOVER -> {
+                "\n❤️ Вторая половинка: "
             }
         }
+        text += if (message.isUserMessage) user.link else user.name
         return text
     }
 }

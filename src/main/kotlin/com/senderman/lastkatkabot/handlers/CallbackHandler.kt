@@ -227,20 +227,14 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
         val childId = query.data.split(" ")[1].toInt()
         answerQuery(query, "Поздравляем! Теперь у вас ребенок")
         Methods.deleteMessage(message.chatId, message.messageId).call(handler)
-        // user - accjeptor, couple - inviter
+        // user - acceptor, couple - inviter
         val user = TgUser(userId, query.from.firstName)
         val child = TgUser(Methods.getChatMember(message.chatId, childId).call(handler).user)
         val lover = TgUser(Methods.getChatMember(message.chatId, Services.db.getLover(userId)).call(handler).user)
         Services.db.setChild(user.id, lover.id, child.id)
-        handler.sendMessage(
-            Methods.sendMessage(
-                child.id.toLong(),
-                "Поздравляем! Теперь ваши родители - ${user.link} и его супруг(а)!"
-            )
-        )
-        val format =
+        handler.sendMessage(child.id.toLong(), "Поздравляем! Теперь ваши родители - ${user.link} и его супруг(а)!")
+        val text =
             "Внимание все! Сегодня великий день усыновления ${user.link} ребенка ${child.link}! Так давайте же поздравим их и съедим шавуху в часть такого праздника!"
-        val text = String.format(format, user.link, child.link)
         handler.sendMessage(message.chatId, text)
     }
 

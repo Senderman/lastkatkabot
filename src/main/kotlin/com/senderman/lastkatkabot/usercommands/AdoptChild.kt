@@ -45,14 +45,13 @@ class AdoptChild(private val handler: LastkatkaBotHandler) : CommandExecutor {
         ))
 
         //Methods.deleteMessage(message.chatId, message.messageId).call(handler)
-        handler.sendMessage(
-            Methods.sendMessage()
-                .setChatId(message.chatId)
-                .setText(
-                    "${mother.link}, ${father.link} предлагает вам усыновить ${child.link}! (ребенок навсегда останется у обоих)"
-                )
-                .setReplyToMessageId(message.replyToMessage.messageId)
-                .setReplyMarkup(markup)
-        )
+        val sm = Methods.sendMessage()
+            .setChatId(message.chatId)
+            .setText(
+                "${mother.link}, ${father.link} предлагает вам усыновить ${child.link}! (ребенок навсегда останется у обоих)"
+            )
+            .setReplyToMessageId(message.replyToMessage.messageId)
+            .setReplyMarkup(markup)
+        sm.call(handler)
     }
 }
