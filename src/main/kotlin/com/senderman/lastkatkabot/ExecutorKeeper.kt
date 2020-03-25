@@ -31,6 +31,7 @@ internal class ExecutorKeeper(handler: LastkatkaBotHandler) : AbstractExecutorKe
         register(Row(handler))
         register(GetRow(handler))
         register(ShortInfo(handler))
+        register(AdoptChild(handler))
 
         // admin commands
         register(GoodNeko(handler))
