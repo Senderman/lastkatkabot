@@ -16,5 +16,7 @@ class Callbacks {
         const val CALLBACK_DENY_MARRIAGE = "deny_marr "
         const val CALLBACK_ANSWER_FEEDBACK = "answ_feedback "
         const val CALLBACK_BLOCK_USER = "block_user"
+        const val CALLBACK_ADOPT_CHILD = "adopt"
+        const val CALLBACK_DECLINE_CHILD = "dec_adopt"
     }
 }

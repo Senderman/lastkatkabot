@@ -180,6 +180,12 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
             data.startsWith(Callbacks.CALLBACK_CAKE_NOT) ->
                 callbackHandler.cake(query, CallbackHandler.CakeAcion.CAKE_NOT)
 
+            data.startsWith(Callbacks.CALLBACK_ADOPT_CHILD) ->
+                callbackHandler.acceptChild(query)
+
+            data.startsWith(Callbacks.CALLBACK_DECLINE_CHILD) ->
+                callbackHandler.declineChild(query)
+
             data.startsWith(Callbacks.CALLBACK_ACCEPT_MARRIAGE) ->
                 callbackHandler.acceptMarriage(query)
 

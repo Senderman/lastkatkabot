@@ -25,7 +25,7 @@ class Stats(private val handler: LastkatkaBotHandler) : CommandExecutor {
         }
         val user = TgUser(player)
         val stats = Services.db.getStats(player.id)
-        val (_, duelWins, totalDuels, bnc, loverId, coins) = stats
+        val (_, duelWins, totalDuels, bnc, loverId, childId, coins) = stats
         val winRate = if (totalDuels == 0) 0 else 100 * duelWins / totalDuels
         var text = """
             📊 Статистика ${user.name}:
@@ -38,21 +38,37 @@ class Stats(private val handler: LastkatkaBotHandler) : CommandExecutor {
             🐮 Баллов за быки и коровы: $bnc
         """.trimIndent()
 
-        if (loverId != 0) {
-            val lover =
-                try {
-                    TgUser(handler.execute(GetChatMember().setChatId(loverId.toLong()).setUserId(loverId)).user)
-                } catch (e: TelegramApiException) {
-                    try {
-                        TgUser(handler.execute(GetChatMember().setChatId(message.chatId).setUserId(loverId)).user)
-                    } catch (e: TelegramApiException) {
-                        TgUser(loverId, "Без имени")
-                    }
-                }
-            text += "\n❤️ Вторая половинка: "
-            text += if (message.isUserMessage) lover.link else lover.name
-        }
+        text += formatStats(message, loverId, StatsFormat.LOVER)
+        text += formatStats(message, childId, StatsFormat.CHILD)
 
         handler.sendMessage(message.chatId, text)
+    }
+
+    enum class StatsFormat {
+        LOVER, CHILD
+    }
+
+    private fun formatStats(message: Message, userId: Int, type: StatsFormat): String {
+        var text = ""
+        val user =
+            try {
+                TgUser(handler.execute(GetChatMember().setChatId(userId.toLong()).setUserId(userId)).user)
+            } catch (e: TelegramApiException) {
+                try {
+                    TgUser(handler.execute(GetChatMember().setChatId(message.chatId).setUserId(userId)).user)
+                } catch (e: TelegramApiException) {
+                    TgUser(userId, "Без имени")
+                }
+            }
+        text += when (type) {
+            StatsFormat.CHILD -> {
+                "\n\uD83D\uDC76\uD83C\uDFFB️ Ребенок: "
+            }
+            StatsFormat.LOVER -> {
+                "\n❤️ Вторая половинка: "
+            }
+        }
+        text += if (message.isUserMessage) user.link else user.name
+        return text
     }
 }
