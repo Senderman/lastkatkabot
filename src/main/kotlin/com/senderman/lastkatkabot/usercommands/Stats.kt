@@ -25,7 +25,7 @@ class Stats(private val handler: LastkatkaBotHandler) : CommandExecutor {
         }
         val user = TgUser(player)
         val stats = Services.db.getStats(player.id)
-        val (_, duelWins, totalDuels, bnc, loverId, coins) = stats
+        val (_, duelWins, totalDuels, bnc, loverId, childId, coins) = stats
         val winRate = if (totalDuels == 0) 0 else 100 * duelWins / totalDuels
         var text = """
             📊 Статистика ${user.name}:
@@ -51,6 +51,21 @@ class Stats(private val handler: LastkatkaBotHandler) : CommandExecutor {
                 }
             text += "\n❤️ Вторая половинка: "
             text += if (message.isUserMessage) lover.link else lover.name
+        }
+
+        if (childId != 0) {
+            val child =
+                try {
+                    TgUser(handler.execute(GetChatMember().setChatId(childId.toLong()).setUserId(childId)).user)
+                } catch (e: TelegramApiException) {
+                    try {
+                        TgUser(handler.execute(GetChatMember().setChatId(message.chatId).setUserId(childId)).user)
+                    } catch (e: TelegramApiException) {
+                        TgUser(childId, "Без имени")
+                    }
+                }
+            text += "\n\uD83D\uDC76\uD83C\uDFFB️ Ребенок: "
+            text += if (message.isUserMessage) child.link else child.name
         }
 
         handler.sendMessage(message.chatId, text)

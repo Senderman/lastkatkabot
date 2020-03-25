@@ -3,8 +3,10 @@ package com.senderman.lastkatkabot.usercommands
 import com.annimon.tgbotsmodule.api.methods.Methods
 import com.senderman.lastkatkabot.Callbacks
 import com.senderman.lastkatkabot.LastkatkaBotHandler
+import com.senderman.lastkatkabot.Services
 import com.senderman.neblib.CommandExecutor
 import com.senderman.neblib.TgUser
+import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChatMember
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
@@ -17,28 +19,40 @@ class AdoptChild(private val handler: LastkatkaBotHandler) : CommandExecutor {
 
     override fun execute(message: Message) {
         if (!message.isReply || message.isUserMessage) return
+        val father = TgUser(message.from)
+        val fatherId = father.id
+        val motherId = Services.db.getLover(fatherId)
+        //val mother = TgUser(Methods.getChatMember(message.chatId, motherId).call(handler).user)
+        val mother = TgUser(handler.execute(GetChatMember().setChatId(motherId.toLong()).setUserId(motherId)).user)
+        if (motherId == 0) {
+            handler.sendMessage(message.chatId, "Вы не можете усыновить ребенка, если у вас нет второй половинки!")
+            return
+        }
+        val child = TgUser(message.replyToMessage.from)
+        val childId = child.id
+        if (childId == motherId || childId == fatherId) return
         val markup = InlineKeyboardMarkup()
         markup.keyboard = listOf(listOf(
             InlineKeyboardButton().apply {
-                text = "Принять"
-                callbackData = Callbacks.CALLBACK_CAKE_OK + message.text
-                    .replace("/cake", "")
+                text = "Усыновить"
+                callbackData = "${Callbacks.CALLBACK_ADOPT_CHILD} $childId $motherId"
             },
             InlineKeyboardButton().apply {
                 text = "Отказаться"
-                callbackData = Callbacks.CALLBACK_CAKE_NOT + message.text
-                    .replace("/cake", "")
+                callbackData = "${Callbacks.CALLBACK_DECLINE_CHILD} $childId $motherId"
             }
         ))
-        Methods.deleteMessage(message.chatId, message.messageId).call(handler)
-        val adult = TgUser(message.from)
-        val child = TgUser(message.replyToMessage.from)
+
+        //Methods.deleteMessage(message.chatId, message.messageId).call(handler)
         handler.sendMessage(
             Methods.sendMessage()
                 .setChatId(message.chatId)
                 .setText(
-                    "\uD83C\uDF82 ${luckyOne.name} пользователь ${presenter.name} подарил вам тортик " +
-                            message.text.replace("/cake", "")
+                    //"${motherId}, ${father.link} предлагает вам усыновить ${child.link}!"
+                    "${mother.link}, ${father.link} предлагает вам усыновить ${child.link}!"
                 )
                 .setReplyToMessageId(message.replyToMessage.messageId)
                 .setReplyMarkup(markup)
+        )
+    }
+}

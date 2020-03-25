@@ -76,9 +76,10 @@ internal class MongoDBService : DBService {
         val wins = doc.getInteger("wins")
         val bncwins = doc.getInteger("bnc")
         val lover = doc.getInteger("lover") ?: 0
+        val child = doc.getInteger("child") ?: 0
         val rouletteUser = rouletteUsers.find(eq("userId", id)).first()
         val coins = if (rouletteUser == null) 5000 else rouletteUser.getInteger("coins")
-        return UserStats(id, wins, total, bncwins, lover, coins)
+        return UserStats(id, wins, total, bncwins, lover, child, coins)
     }
 
     override fun getTop(): Map<Int, Int> {
@@ -133,7 +134,28 @@ internal class MongoDBService : DBService {
         }
     }
 
+    override fun setChild(userId: Int, loverId: Int, childId: Int) {
+        with(userstats) {
+            getUser(userId)
+            getUser(childId)
+            updateMany(
+                or(eq("id", userId), eq("id", loverId)), Document(
+                    "\$set",
+                    Document("child", childId)
+                )
+            )
+            updateOne(
+                eq("id", childId), Document(
+                    "\$set",
+                    Document("child", userId)
+                )
+            )
+        }
+    }
+
     override fun getLover(userId: Int): Int = userstats.getUser(userId).getInteger("lover") ?: 0
+
+    override fun getChild(userId: Int): Int = userstats.getUser(userId).getInteger("child") ?: 0
 
     override fun divorce(userId: Int) {
         with(userstats) {

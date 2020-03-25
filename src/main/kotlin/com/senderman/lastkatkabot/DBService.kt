@@ -25,7 +25,9 @@ interface DBService {
     fun setUserCity(id: Int, city: String)
     fun getUserCity(id: Int): String?
     fun setLover(userId: Int, loverId: Int)
+    fun setChild(userId: Int, loverId: Int, childId: Int)
     fun getLover(userId: Int): Int
+    fun getChild(userId: Int): Int
     fun divorce(userId: Int)
 
 
