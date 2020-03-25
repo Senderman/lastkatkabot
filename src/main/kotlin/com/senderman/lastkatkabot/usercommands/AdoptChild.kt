@@ -22,7 +22,6 @@ class AdoptChild(private val handler: LastkatkaBotHandler) : CommandExecutor {
         val father = TgUser(message.from)
         val fatherId = father.id
         val motherId = Services.db.getLover(fatherId)
-        //val mother = TgUser(Methods.getChatMember(message.chatId, motherId).call(handler).user)
         val mother = TgUser(handler.execute(GetChatMember().setChatId(motherId.toLong()).setUserId(motherId)).user)
         if (motherId == 0) {
             handler.sendMessage(message.chatId, "Вы не можете усыновить ребенка, если у вас нет второй половинки!")
@@ -45,13 +44,13 @@ class AdoptChild(private val handler: LastkatkaBotHandler) : CommandExecutor {
         ))
 
         //Methods.deleteMessage(message.chatId, message.messageId).call(handler)
-        val sm = Methods.sendMessage()
+        Methods.sendMessage()
             .setChatId(message.chatId)
             .setText(
                 "${mother.link}, ${father.link} предлагает вам усыновить ${child.link}! (ребенок навсегда останется у обоих)"
             )
             .setReplyToMessageId(message.replyToMessage.messageId)
             .setReplyMarkup(markup)
-        sm.call(handler)
+            .call(handler)
     }
 }

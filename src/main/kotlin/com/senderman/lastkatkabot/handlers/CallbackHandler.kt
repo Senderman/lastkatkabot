@@ -232,7 +232,10 @@ class CallbackHandler(private val handler: LastkatkaBotHandler) {
         val child = TgUser(Methods.getChatMember(message.chatId, childId).call(handler).user)
         val lover = TgUser(Methods.getChatMember(message.chatId, Services.db.getLover(userId)).call(handler).user)
         Services.db.setChild(user.id, lover.id, child.id)
-        handler.sendMessage(child.id.toLong(), "Поздравляем! Теперь ваши родители - ${user.link} и его супруг(а)!")
+        handler.sendMessage(
+            child.id.toLong(),
+            "Поздравляем! Теперь ваши родители - ${user.link} и его супруг(а) ${lover.link}!"
+        )
         val text =
             "Внимание все! Сегодня великий день усыновления ${user.link} ребенка ${child.link}! Так давайте же поздравим их и съедим шавуху в часть такого праздника!"
         handler.sendMessage(message.chatId, text)
