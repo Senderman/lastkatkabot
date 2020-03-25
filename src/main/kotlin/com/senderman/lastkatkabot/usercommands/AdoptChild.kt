@@ -51,6 +51,7 @@ class AdoptChild(private val handler: LastkatkaBotHandler) : CommandExecutor {
             )
             .setReplyToMessageId(message.replyToMessage.messageId)
             .setReplyMarkup(markup)
+            .enableHtml()
             .call(handler)
     }
 }
