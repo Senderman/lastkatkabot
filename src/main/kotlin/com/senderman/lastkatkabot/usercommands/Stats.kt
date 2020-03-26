@@ -1,10 +1,10 @@
 package com.senderman.lastkatkabot.usercommands
 
+import com.annimon.tgbotsmodule.api.methods.Methods
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services
 import com.senderman.neblib.CommandExecutor
 import com.senderman.neblib.TgUser
-import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChatMember
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
@@ -38,37 +38,32 @@ class Stats(private val handler: LastkatkaBotHandler) : CommandExecutor {
             🐮 Баллов за быки и коровы: $bnc
         """.trimIndent()
 
-        text += formatStats(message, loverId, StatsFormat.LOVER)
-        text += formatStats(message, childId, StatsFormat.CHILD)
+        text += formatStats(message, loverId, AnotherUser.LOVER)
+        text += formatStats(message, childId, AnotherUser.CHILD)
 
         handler.sendMessage(message.chatId, text)
     }
 
-    enum class StatsFormat {
-        LOVER, CHILD
+    private enum class AnotherUser(val title: String) {
+        LOVER("\n❤️ Вторая половинка: "),
+        CHILD("\n\uD83D\uDC76\uD83C\uDFFB️ Ребенок: ")
     }
 
-    private fun formatStats(message: Message, userId: Int, type: StatsFormat): String {
-        var text = ""
-        val user =
+    private fun formatStats(message: Message, userId: Int, type: AnotherUser): String {
+        if (userId == 0)
+            return ""
+
+        val user: TgUser =
             try {
-                TgUser(handler.execute(GetChatMember().setChatId(userId.toLong()).setUserId(userId)).user)
+                TgUser(Methods.getChatMember(userId.toLong(), userId).call(handler).user)
             } catch (e: TelegramApiException) {
                 try {
-                    TgUser(handler.execute(GetChatMember().setChatId(message.chatId).setUserId(userId)).user)
+                    TgUser(Methods.getChatMember(message.chatId, userId).call(handler).user)
                 } catch (e: TelegramApiException) {
                     TgUser(userId, "Без имени")
                 }
             }
-        text += when (type) {
-            StatsFormat.CHILD -> {
-                "\n\uD83D\uDC76\uD83C\uDFFB️ Ребенок: "
-            }
-            StatsFormat.LOVER -> {
-                "\n❤️ Вторая половинка: "
-            }
-        }
-        text += if (message.isUserMessage) user.link else user.name
-        return text
+
+        return type.title + if (message.isUserMessage) user.link else user.name
     }
 }
