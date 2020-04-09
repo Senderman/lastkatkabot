@@ -1,8 +1,8 @@
 package com.senderman.lastkatkabot.tempobjects
 
 import com.annimon.tgbotsmodule.api.methods.Methods
-import com.senderman.lastkatkabot.Callbacks
 import com.senderman.lastkatkabot.Services
+import com.senderman.lastkatkabot.callbacks.Callbacks
 import com.senderman.neblib.TgUser
 import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery
@@ -99,7 +99,7 @@ class Duel(message: Message) {
                 listOf(
                     InlineKeyboardButton()
                         .setText("Присоединиться")
-                        .setCallbackData(Callbacks.CALLBACK_JOIN_DUEL)
+                        .setCallbackData(Callbacks.JOIN_DUEL)
                 )
             )
             return markup

@@ -5,9 +5,7 @@ import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.api.methods.send.SendMessageMethod
 import com.senderman.lastkatkabot.DBService.UserType
 import com.senderman.lastkatkabot.admincommands.CleanChats
-import com.senderman.lastkatkabot.admincommands.UserLister
 import com.senderman.lastkatkabot.bnc.BullsAndCowsGame
-import com.senderman.lastkatkabot.handlers.CallbackHandler
 import com.senderman.lastkatkabot.tempobjects.Duel
 import com.senderman.lastkatkabot.tempobjects.UserRow
 import com.senderman.neblib.AbstractExecutorKeeper
@@ -34,7 +32,7 @@ import kotlin.collections.HashMap
 
 class LastkatkaBotHandler internal constructor() : BotHandler() {
     private val handlersSearcher: AbstractExecutorKeeper
-    private val callbackHandler: CallbackHandler
+    private val callbacksKeeper: CallbackHandlersKeeper
     val admins: MutableSet<Int>
     val blacklist: MutableSet<Int>
     val premiumUsers: MutableSet<Int>
@@ -55,17 +53,17 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         admins = Services.db.getTgUsersByType(UserType.ADMINS)
         premiumUsers = Services.db.getTgUsersByType(UserType.PREMIUM)
         blacklist = Services.db.getTgUsersByType(UserType.BLACKLIST)
-        callbackHandler = CallbackHandler(this)
         bullsAndCowsGames = Services.db.getBnCGames()
         userRows = Services.db.getUserRows()
         duels = HashMap()
         handlersSearcher = ExecutorKeeper(this)
+        callbacksKeeper = CallbackHandlersKeeper(this)
         sendMessage(mainAdmin, "Очистка бд от мусора...")
         CleanChats.cleanChats()
         sendMessage(mainAdmin, "Бот готов к работе!")
     }
 
-    public override fun onUpdate(update: Update): BotApiMethod<*>? { // first we will handle callbacks
+    public override fun onUpdate(update: Update): BotApiMethod<*>? {
         if (update.hasCallbackQuery()) {
             processCallbackQuery(update.callbackQuery)
             return null
@@ -85,10 +83,10 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
 
         val chatId = message.chatId
 
-        // migrate cats if needed
-        if (message.migrateFromChatId != null) {
-            migrateChat(message.migrateFromChatId, chatId)
-            sendMessage(message.migrateFromChatId, "Id чата обновлен!")
+        // migrate chats if needed
+        message.migrateFromChatId?.let {
+            migrateChat(it, chatId)
+            sendMessage(it, "Id чата обновлен!")
         }
 
         if (message.leftChatMember != null && message.leftChatMember.userName != botUsername && message.chatId != Services.botConfig.tourgroup) {
@@ -172,68 +170,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
     }
 
     private fun processCallbackQuery(query: CallbackQuery) {
-        val data = query.data
-        when {
-            data.startsWith(Callbacks.CALLBACK_CAKE_OK) ->
-                callbackHandler.cake(query, CallbackHandler.CakeAcion.CAKE_OK)
-
-            data.startsWith(Callbacks.CALLBACK_CAKE_NOT) ->
-                callbackHandler.cake(query, CallbackHandler.CakeAcion.CAKE_NOT)
-
-            data.startsWith(Callbacks.CALLBACK_ADOPT_CHILD) ->
-                callbackHandler.acceptChild(query)
-
-            data.startsWith(Callbacks.CALLBACK_DECLINE_CHILD) ->
-                callbackHandler.declineChild(query)
-
-            data.startsWith(Callbacks.CALLBACK_ACCEPT_MARRIAGE) ->
-                callbackHandler.acceptMarriage(query)
-
-            data.startsWith(Callbacks.CALLBACK_DENY_MARRIAGE) ->
-                callbackHandler.denyMarriage(query)
-
-            data.startsWith(Callbacks.CALLBACK_ANSWER_FEEDBACK) ->
-                callbackHandler.answerFeedback(query)
-
-            data.startsWith(Callbacks.CALLBACK_BLOCK_USER) ->
-                callbackHandler.blockUser(query)
-
-            data.startsWith("deleteuser_") -> {
-                val type: UserType = when (query.data.split(" ")[0]) {
-                    Callbacks.CALLBACK_DELETE_ADMIN -> UserType.ADMINS
-                    Callbacks.CALLBACK_DELETE_NEKO -> UserType.BLACKLIST
-                    Callbacks.CALLBACK_DELETE_PREM -> UserType.PREMIUM
-                    else -> return
-                }
-                callbackHandler.deleteUser(query, type)
-                UserLister.listUsers(this, query.message, type)
-            }
-
-            else -> when (data) {
-                // TODO Implement
-                /*Callbacks.CALLBACK_REGISTER_IN_TOURNAMENT ->
-                    callbackHandler.registerInTournament(query)*/
-
-                Callbacks.CALLBACK_PAY_RESPECTS ->
-                    callbackHandler.payRespects(query)
-
-                Callbacks.CALLBACK_CLOSE_MENU ->
-                    callbackHandler.closeMenu(query)
-
-                Callbacks.CALLBACK_JOIN_DUEL -> {
-                    val message = query.message
-                    val duel = duels[message.chatId.toString() + " " + message.messageId]
-                    if (duel == null) {
-                        Duel.answerCallbackQuery(query, "⏰ Дуэль устарела!", true)
-                        return
-                    }
-                    duel.join(query)
-                    return
-                }
-
-                Callbacks.CALLBACK_VOTE_BNC -> bullsAndCowsGames[query.message.chatId]?.addVote(query)
-            }
-        }
+        callbacksKeeper.findHandler(query)?.handle(query)
     }
 
     private fun processNewMembers(message: Message) {
@@ -335,7 +272,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
     fun deleteMessage(chatId: Long, messageId: Int) {
         try {
             execute(DeleteMessage(chatId, messageId))
-        } catch (e: TelegramApiException){
+        } catch (e: TelegramApiException) {
             BotLogger.error("DELETE", "No permissions, it's OK")
         }
     }
@@ -355,7 +292,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         return try {
             execute(sendMessage)
         } catch (e: TelegramApiRequestException) {
-            if (e.parameters != null && e.parameters.migrateToChatId != null){
+            if (e.parameters != null && e.parameters.migrateToChatId != null) {
                 migrateChat(sm.chatId.toLong(), e.parameters.migrateToChatId)
                 sm.setChatId(e.parameters.migrateToChatId)
             }

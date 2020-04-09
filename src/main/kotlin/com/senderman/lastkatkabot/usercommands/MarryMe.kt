@@ -1,11 +1,12 @@
 package com.senderman.lastkatkabot.usercommands
 
 import com.annimon.tgbotsmodule.api.methods.Methods
-import com.senderman.lastkatkabot.Callbacks
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services
+import com.senderman.lastkatkabot.callbacks.Callbacks
 import com.senderman.neblib.CommandExecutor
 import com.senderman.neblib.TgUser
+import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
@@ -17,59 +18,40 @@ class MarryMe(private val handler: LastkatkaBotHandler) : CommandExecutor {
         get() = "(reply) пожениться на ком-нибудь"
 
     override fun execute(message: Message) {
-        val marryById = message.text.trim().matches(Regex("/marryme\\s+\\d+"))
+        if (message.isUserMessage || !message.isReply) return
+
         val chatId = message.chatId
         val userId = message.from.id
-        val text: String
-        val loverId: Int
         if (Services.db.getLover(userId) != 0) {
             handler.sendMessage(chatId, "Всмысле? Вы что, хотите изменить своей второй половинке?!")
             return
         }
-
-        if (!marryById) {
-            if (!message.isReply
-                || message.from.id == message.replyToMessage.from.id || message.replyToMessage.from.bot
-            ) return
-            loverId = message.replyToMessage.from.id
-            val user = TgUser(Methods.getChatMember(chatId, userId).call(handler).user)
-            text = "Пользователь " + user.link + " предлагает вам руку, сердце и шавуху. Вы согласны?"
-
-        } else {
-            if (message.isUserMessage) return
-            loverId = try {
-                message.text.split(" ")[1].toInt()
-            } catch (e: NumberFormatException) {
-                handler.sendMessage(chatId, "Неверный формат!")
-                return
-            }
-            val user = TgUser(Methods.getChatMember(chatId, userId).call(handler).user)
-            val lover = TgUser(Methods.getChatMember(chatId, loverId).call(handler).user)
-            text = "${lover.link}, пользователь ${user.link} предлагает вам руку, сердце и шавуху. Вы согласны?"
-        }
+        val loverId: Int = message.replyToMessage.from.id
         if (Services.db.getLover(loverId) != 0) {
             handler.sendMessage(chatId, "У этого пользователя уже есть своя вторая половинка!")
             return
         }
+
+        val user = TgUser(Methods.getChatMember(chatId, userId).call(handler).user)
+        val text = "Пользователь ${user.link} предлагает вам руку, сердце и шавуху. Вы согласны?"
         val markup = InlineKeyboardMarkup()
         markup.keyboard = listOf(listOf(
             InlineKeyboardButton().apply {
                 this.text = "Принять"
-                callbackData = Callbacks.CALLBACK_ACCEPT_MARRIAGE + "$userId $loverId"
+                callbackData = Callbacks.ACCEPT_MARRIAGE + "$userId"
 
             },
             InlineKeyboardButton().apply {
                 this.text = "Отказаться"
-                callbackData = Callbacks.CALLBACK_DENY_MARRIAGE + "$userId $loverId"
+                callbackData = Callbacks.DENY_MARRIAGE
             }
         ))
         val sm = Methods.sendMessage()
             .setChatId(chatId)
             .setText(text)
+            .setReplyToMessageId(message.replyToMessage.messageId)
             .setReplyMarkup(markup)
-        if (!marryById) {
-            sm.replyToMessageId = message.replyToMessage.messageId
-        }
+            .setParseMode(ParseMode.HTML)
         handler.sendMessage(sm)
     }
 }

@@ -17,6 +17,7 @@ interface DBService {
     fun incDuelWins(id: Int)
     fun incBNCWins(id: Int, points: Int)
     fun getStats(id: Int): UserStats
+
     // return map of <id, score> sorted by descending order
     fun getTop(): Map<Int, Int>
 
