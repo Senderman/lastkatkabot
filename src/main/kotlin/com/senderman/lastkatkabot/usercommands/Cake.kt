@@ -1,8 +1,8 @@
 package com.senderman.lastkatkabot.usercommands
 
 import com.annimon.tgbotsmodule.api.methods.Methods
-import com.senderman.lastkatkabot.Callbacks
 import com.senderman.lastkatkabot.LastkatkaBotHandler
+import com.senderman.lastkatkabot.callbacks.Callbacks
 import com.senderman.neblib.CommandExecutor
 import com.senderman.neblib.TgUser
 import org.telegram.telegrambots.meta.api.objects.Message
@@ -21,13 +21,11 @@ class Cake(private val handler: LastkatkaBotHandler) : CommandExecutor {
         markup.keyboard = listOf(listOf(
             InlineKeyboardButton().apply {
                 text = "Принять"
-                callbackData = Callbacks.CALLBACK_CAKE_OK + message.text
-                    .replace("/cake", "")
+                callbackData = Callbacks.CAKE_OK
             },
             InlineKeyboardButton().apply {
                 text = "Отказаться"
-                callbackData = Callbacks.CALLBACK_CAKE_NOT + message.text
-                    .replace("/cake", "")
+                callbackData = Callbacks.CAKE_NOT
             }
         ))
 
@@ -38,7 +36,7 @@ class Cake(private val handler: LastkatkaBotHandler) : CommandExecutor {
             Methods.sendMessage()
                 .setChatId(message.chatId)
                 .setText(
-                    "\uD83C\uDF82 ${luckyOne.name}, пользователь ${presenter.name} подарил вам тортик " +
+                    "\uD83C\uDF82 ${luckyOne.name}, пользователь ${presenter.name} подарил вам тортик" +
                             message.text.replace("/cake", "")
                 )
                 .setReplyToMessageId(message.replyToMessage.messageId)

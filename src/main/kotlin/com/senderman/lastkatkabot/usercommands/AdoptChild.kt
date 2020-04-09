@@ -1,9 +1,9 @@
 package com.senderman.lastkatkabot.usercommands
 
 import com.annimon.tgbotsmodule.api.methods.Methods
-import com.senderman.lastkatkabot.Callbacks
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services
+import com.senderman.lastkatkabot.callbacks.Callbacks
 import com.senderman.neblib.CommandExecutor
 import com.senderman.neblib.TgUser
 import org.telegram.telegrambots.meta.api.objects.Message
@@ -36,13 +36,13 @@ class AdoptChild(private val handler: LastkatkaBotHandler) : CommandExecutor {
             listOf(
                 InlineKeyboardButton().apply {
                     text = "Усыновить"
-                    callbackData = "${Callbacks.CALLBACK_ADOPT_CHILD} ${child.id} $motherId"
+                    callbackData = "${Callbacks.ADOPT_CHILD} ${child.id} $motherId"
                 },
                 InlineKeyboardButton().apply {
                     text = "Отказаться"
-                    callbackData = "${Callbacks.CALLBACK_DECLINE_CHILD} ${child.id} $motherId"
-            }
-        ))
+                    callbackData = "${Callbacks.DECLINE_CHILD} ${child.id} $motherId"
+                }
+            ))
 
         //Methods.deleteMessage(message.chatId, message.messageId).call(handler)
         Methods.sendMessage()

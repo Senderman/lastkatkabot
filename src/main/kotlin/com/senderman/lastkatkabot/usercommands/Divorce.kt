@@ -25,11 +25,14 @@ class Divorce(private val handler: LastkatkaBotHandler) : CommandExecutor {
         Services.db.divorce(userId)
         handler.sendMessage(chatId, "Вы расстались со своей половинкой! А ведь так все хорошо начиналось...")
         val user = TgUser(Methods.getChatMember(userId.toLong(), userId).call(handler).user)
-        handler.execute(
-            SendMessage(
-                loverId.toLong(),
-                "Ваша половинка (${user.link}) покинула вас... Теперь вы одни..."
-            ).enableHtml(true)
-        )
+        try {
+            handler.execute(
+                SendMessage(
+                    loverId.toLong(),
+                    "Ваша половинка (${user.link}) покинула вас... Теперь вы одни..."
+                ).enableHtml(true)
+            )
+        } catch (ignored: Exception) {
+        }
     }
 }
