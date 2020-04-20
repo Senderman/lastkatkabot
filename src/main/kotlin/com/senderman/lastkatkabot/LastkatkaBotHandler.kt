@@ -56,7 +56,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         handlersSearcher = ExecutorKeeper(this)
         callbacks = Callbacks(this)
         sendMessage(mainAdmin, "Очистка бд от мусора...")
-        //CleanChats.cleanChats()
+        CleanChats.cleanChats()
         sendMessage(mainAdmin, "Бот готов к работе!")
     }
 
