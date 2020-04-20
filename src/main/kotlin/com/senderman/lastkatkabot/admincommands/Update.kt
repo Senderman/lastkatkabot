@@ -30,6 +30,7 @@ class Update(private val handler: LastkatkaBotHandler) : CommandExecutor {
         val chats = Services.db.getChatIdsSet()
         chats.remove(Services.botConfig.tourgroup)
         var counter = 0
+        handler.sendMessage(message.chatId, "Рассылка...")
         for (chat in chats) {
             try {
                 handler.execute(
@@ -37,7 +38,6 @@ class Update(private val handler: LastkatkaBotHandler) : CommandExecutor {
                 )
                 counter++
             }catch (ignored:TelegramApiException){}
-            Methods.sendMessage(chat, update.toString()).enableHtml().call(handler)
         }
         handler.sendMessage(message.chatId, "Обновления получили $counter/${chats.size} чатов")
     }
