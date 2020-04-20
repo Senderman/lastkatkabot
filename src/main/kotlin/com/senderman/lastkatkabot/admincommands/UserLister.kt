@@ -19,7 +19,6 @@ class UserLister {
             var allAdminsAccess = false
             val title: String
             val callback: String
-
             when (type) {
                 DBService.UserType.ADMINS -> {
                     title = "\uD83D\uDE0E <b>Админы бота:</b>\n"
@@ -62,7 +61,7 @@ class UserLister {
                     val user = TgUser(id, name)
                     row.add(InlineKeyboardButton().apply {
                         text = user.name
-                        callbackData = "$callback ${user.id}"
+                        callbackData = callback + user.id
                     }
                     )
                     if (row.size == 2) {

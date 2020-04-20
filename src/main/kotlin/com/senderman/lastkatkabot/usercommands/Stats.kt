@@ -38,9 +38,9 @@ class Stats(private val handler: LastkatkaBotHandler) : CommandExecutor {
             🐮 Баллов за быки и коровы: $bnc
         """.trimIndent()
 
-        text += formatStats(message, loverId, AnotherUser.LOVER)
-        text += formatStats(message, childId, AnotherUser.CHILD)
-
+        text += connectUserToStats(message, loverId, AnotherUser.LOVER)
+        text += connectUserToStats(message, childId, AnotherUser.CHILD)
+        text += "\n\nХочешь больше монеток? Играй в @miniroulette_bot!"
         handler.sendMessage(message.chatId, text)
     }
 
@@ -49,7 +49,15 @@ class Stats(private val handler: LastkatkaBotHandler) : CommandExecutor {
         CHILD("\n\uD83D\uDC76\uD83C\uDFFB️ Ребенок: ")
     }
 
-    private fun formatStats(message: Message, userId: Int, type: AnotherUser): String {
+    /**
+     * Add line about user connected to userId
+     * @param message - message object of /stats caller
+     * @param userId - ID of connected user
+     * @param type - type of connected user
+     * @return empty string if userId == 0, else type.title + link to user if message is pm, or user'name if not pm
+     */
+
+    private fun connectUserToStats(message: Message, userId: Int, type: AnotherUser): String {
         if (userId == 0)
             return ""
 

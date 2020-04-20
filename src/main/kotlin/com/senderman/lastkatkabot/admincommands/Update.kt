@@ -4,7 +4,9 @@ import com.annimon.tgbotsmodule.api.methods.Methods
 import com.senderman.lastkatkabot.LastkatkaBotHandler
 import com.senderman.lastkatkabot.Services
 import com.senderman.neblib.CommandExecutor
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Message
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
 class Update(private val handler: LastkatkaBotHandler) : CommandExecutor {
 
@@ -27,9 +29,17 @@ class Update(private val handler: LastkatkaBotHandler) : CommandExecutor {
         }
         val chats = Services.db.getChatIdsSet()
         chats.remove(Services.botConfig.tourgroup)
+        var counter = 0
         for (chat in chats) {
+            try {
+                handler.execute(
+                    SendMessage(chat, update.toString()).enableHtml(true)
+                )
+                counter++
+            }catch (ignored:TelegramApiException){}
             Methods.sendMessage(chat, update.toString()).enableHtml().call(handler)
         }
+        handler.sendMessage(message.chatId, "Обновления получили $counter/${chats.size} чатов")
     }
 }
 

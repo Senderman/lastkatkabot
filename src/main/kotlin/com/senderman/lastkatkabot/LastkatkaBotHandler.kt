@@ -6,24 +6,21 @@ import com.annimon.tgbotsmodule.api.methods.send.SendMessageMethod
 import com.senderman.lastkatkabot.DBService.UserType
 import com.senderman.lastkatkabot.admincommands.CleanChats
 import com.senderman.lastkatkabot.bnc.BullsAndCowsGame
+import com.senderman.lastkatkabot.callbacks.Callbacks
 import com.senderman.lastkatkabot.tempobjects.Duel
 import com.senderman.lastkatkabot.tempobjects.UserRow
 import com.senderman.neblib.AbstractExecutorKeeper
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException
-import org.telegram.telegrambots.meta.logging.BotLogger
 import java.awt.BasicStroke
 import java.awt.Color
 import java.awt.Font
 import java.awt.RenderingHints
 import java.io.File
-import java.io.IOException
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.util.*
@@ -32,7 +29,7 @@ import kotlin.collections.HashMap
 
 class LastkatkaBotHandler internal constructor() : BotHandler() {
     private val handlersSearcher: AbstractExecutorKeeper
-    private val callbacksKeeper: CallbackHandlersKeeper
+    private val callbacks: Callbacks
     val admins: MutableSet<Int>
     val blacklist: MutableSet<Int>
     val premiumUsers: MutableSet<Int>
@@ -57,9 +54,9 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         userRows = Services.db.getUserRows()
         duels = HashMap()
         handlersSearcher = ExecutorKeeper(this)
-        callbacksKeeper = CallbackHandlersKeeper(this)
+        callbacks = Callbacks(this)
         sendMessage(mainAdmin, "Очистка бд от мусора...")
-        CleanChats.cleanChats()
+        //CleanChats.cleanChats()
         sendMessage(mainAdmin, "Бот готов к работе!")
     }
 
@@ -170,7 +167,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
     }
 
     private fun processCallbackQuery(query: CallbackQuery) {
-        callbacksKeeper.findHandler(query)?.handle(query)
+        callbacks.findHandler(query)?.handle(query)
     }
 
     private fun processNewMembers(message: Message) {
@@ -213,7 +210,6 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         }
     }
 
-    @Throws(IOException::class)
     private fun getHelloSticker(name: String): File {
         val orig = javaClass.getResourceAsStream("/menhera.png")
         val img = ImageIO.read(orig)
@@ -262,19 +258,10 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         )
     }
 
-    // catch exceptions from call()
-    override fun handleTelegramApiException(ex: TelegramApiException) {
-        sendStackTrace(ex, "сеть")
-    }
-
     private fun migrateChat(oldChatId: Long, newChatId: Long) = Services.db.updateChatId(oldChatId, newChatId)
 
     fun deleteMessage(chatId: Long, messageId: Int) {
-        try {
-            execute(DeleteMessage(chatId, messageId))
-        } catch (e: TelegramApiException) {
-            BotLogger.error("DELETE", "No permissions, it's OK")
-        }
+        Methods.deleteMessage(chatId, messageId).call(this)
     }
 
     fun sendMessage(chatId: Int, text: String): Message = sendMessage(chatId.toLong(), text)

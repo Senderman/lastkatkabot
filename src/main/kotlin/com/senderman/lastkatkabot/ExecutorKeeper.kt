@@ -8,47 +8,49 @@ import com.senderman.neblib.AbstractExecutorKeeper
 internal class ExecutorKeeper(handler: LastkatkaBotHandler) : AbstractExecutorKeeper() {
 
     init {
-        // user commands
-        register(Action(handler))
-        register(PayRespects(handler))
-        register(Cake(handler))
-        register(Help(handler, commandExecutors))
-        register(GetInfo(handler))
-        register(BNCHelp(handler))
-        register(Pair(handler))
-        register(LastPairs(handler))
-        register(PinList(handler))
-        register(Weather(handler))
-        register(MarryMe(handler))
-        register(Divorce(handler))
-        register(FeedBack(handler))
-        register(BNCTop(handler))
-        register(BNCStart(handler))
-        register(BNCInfo(handler))
-        register(BNCStop(handler))
-        register(BNCRuin(handler))
-        register(DuelStart(handler))
-        register(Row(handler))
-        register(GetRow(handler))
-        register(ShortInfo(handler))
-        // TODO register when fixed: register(AdoptChild(handler))
+        sequenceOf(
+            // user commands
+            Action(handler),
+            PayRespects(handler),
+            Cake(handler),
+            Help(handler, commandExecutors),
+            GetInfo(handler),
+            BNCHelp(handler),
+            Pair(handler),
+            LastPairs(handler),
+            PinList(handler),
+            Weather(handler),
+            MarryMe(handler),
+            Divorce(handler),
+            FeedBack(handler),
+            BNCTop(handler),
+            BNCStart(handler),
+            BNCInfo(handler),
+            BNCStop(handler),
+            BNCRuin(handler),
+            DuelStart(handler),
+            Row(handler),
+            GetRow(handler),
+            ShortInfo(handler),
+            // AdoptChild(handler),
 
-        // admin commands
-        register(GoodNeko(handler))
-        register(TransferStats(handler))
-        register(Update(handler))
-        register(CleanChats())
-        register(Announce(handler))
-        register(SetupHelp(handler))
-        register(Owners(handler))
-        register(Prem(handler))
-        register(Nekos(handler))
-        register(Critical(handler))
-        register(BadNeko(handler))
-        register(AddPremium(handler))
-        register(Owner(handler))
-        register(Stats(handler))
-        register(RunAPI(handler))
+            // admin commands
+            GoodNeko(handler),
+            TransferStats(handler),
+            Update(handler),
+            CleanChats(),
+            Announce(handler),
+            SetupHelp(handler),
+            Owners(handler),
+            Prem(handler),
+            Nekos(handler),
+            Critical(handler),
+            BadNeko(handler),
+            AddPremium(handler),
+            Owner(handler),
+            Stats(handler),
+            RunAPI(handler)
+        ).forEach { register(it) }
     }
 
 }

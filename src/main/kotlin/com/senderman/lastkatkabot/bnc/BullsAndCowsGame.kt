@@ -270,6 +270,7 @@ class BullsAndCowsGame(message: Message) {
     }
 
     //calculate bulls and cows
+    data class Result(var bulls: Int, var cows: Int)
     private fun calculate(player: String): Result {
         var bulls = 0
         var cows = 0
@@ -306,6 +307,4 @@ class BullsAndCowsGame(message: Message) {
         <b>Голосование за завершение игры</b>
         Осталось %1${'$'}d голосов для завершения. Голос админа чата или создателя игры сразу заканчивает игру
     """.trimIndent()
-
-    data class Result(var bulls: Int, var cows: Int)
 }

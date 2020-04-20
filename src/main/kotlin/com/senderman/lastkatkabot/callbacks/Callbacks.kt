@@ -1,6 +1,39 @@
 package com.senderman.lastkatkabot.callbacks
 
-class Callbacks {
+import com.senderman.lastkatkabot.LastkatkaBotHandler
+import com.senderman.lastkatkabot.bnc.VoteBnc
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery
+
+class Callbacks(handler:LastkatkaBotHandler) {
+
+    private val callbackHandlers: MutableMap<String, CallbackHandler> = HashMap()
+
+    init {
+        sequenceOf(
+            AcceptMarriage(handler),
+            AnswerFeedback(handler),
+            BlockUser(handler),
+            CakeNot(handler),
+            CakeOk(handler),
+            CloseMenu(handler),
+            DeleteAdmin(handler),
+            DeleteNeko(handler),
+            DeletePremium(handler),
+            DenyMarriage(handler),
+            JoinDuel(handler),
+            PayRespects(handler),
+            VoteBnc(handler)
+        ).forEach(::register)
+    }
+
+    fun findHandler(query: CallbackQuery): CallbackHandler?{
+        return callbackHandlers[query.data.split(" ", limit = 2)[0].trim() + " "]
+    }
+
+    private fun register(callbackHandler: CallbackHandler){
+        callbackHandlers[callbackHandler.trigger] = callbackHandler
+    }
+
     companion object {
         //const val CALLBACK_REGISTER_IN_TOURNAMENT = "register_in_tournament "
         const val PAY_RESPECTS = "pay_respects "
