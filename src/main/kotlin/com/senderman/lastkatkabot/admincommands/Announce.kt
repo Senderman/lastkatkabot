@@ -8,7 +8,6 @@ import kotlinx.coroutines.launch
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
-import org.telegram.telegrambots.meta.logging.BotLogger
 
 class Announce(private val handler: LastkatkaBotHandler) : CommandExecutor {
 
@@ -31,8 +30,7 @@ class Announce(private val handler: LastkatkaBotHandler) : CommandExecutor {
                 try {
                     handler.execute(SendMessage(userId.toLong(), text).enableHtml(true))
                     counter++
-                } catch (e: TelegramApiException) {
-                    BotLogger.error("ANNOUNCE", e.toString())
+                } catch (ignored: TelegramApiException) {
                 }
             }
             handler.sendMessage(message.chatId, "Объявление получили $counter/${usersIds.size} человек")

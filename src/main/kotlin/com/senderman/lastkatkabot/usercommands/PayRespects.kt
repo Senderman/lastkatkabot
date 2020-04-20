@@ -12,20 +12,20 @@ class PayRespects(private val handler: LastkatkaBotHandler) : CommandExecutor {
     override val command: String
         get() = "/f"
     override val desc: String
-        get() = "(reply) press f to pay respects. А можно вот так: /f штаны за 40 хривень"
+        get() = "(reply) press f to pay respects. А можно вот так: /f штаны за 40 хривень. Или просто /f"
 
     override fun execute(message: Message) {
         if (message.isUserMessage) return
-        if (message.from.firstName == message.replyToMessage.from.firstName) return
+        if (message.isReply && message.from.firstName == message.replyToMessage.from.firstName) return
 
         val obj: String = when {
-            message.text.split(" ").size > 1 -> message.text.split(" ".toRegex(), 2)[1]
-            message.isReply -> message.replyToMessage.from.firstName
-            else -> return
+            message.text.split(" ").size > 1 -> "to " + message.text.split(" ".toRegex(), 2)[1]
+            message.isReply -> "to " + message.replyToMessage.from.firstName
+            else -> ""
         }
 
         Methods.deleteMessage(message.chatId, message.messageId).call(handler)
-        val text = "\uD83D\uDD6F Press F to pay respects to $obj" +
+        val text = "\uD83D\uDD6F Press F to pay respects $obj" +
                 "\n${message.from.firstName} has payed respects"
         handler.sendMessage(
             Methods.sendMessage()

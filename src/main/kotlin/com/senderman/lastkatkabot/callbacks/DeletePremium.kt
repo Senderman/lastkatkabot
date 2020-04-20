@@ -13,9 +13,9 @@ class DeletePremium(private val handler: LastkatkaBotHandler) : CallbackHandler(
     override fun handle(query: CallbackQuery) {
         val userId = query.getCleanData().toInt()
         Services.db.removeTGUser(userId, DBService.UserType.PREMIUM)
-        handler.admins.remove(userId)
+        handler.premiumUsers.remove(userId)
         answerQuery(query, "Пользователь удален из списка")
-        handler.sendMessage(userId, "Разработчик удалил вас из админов бота!")
+        handler.sendMessage(userId, "Разработчик удалил вас из премиум пользователей бота!")
         Methods.deleteMessage(query.message.chatId, query.message.messageId).call(handler)
     }
 }

@@ -18,7 +18,7 @@ class DeclineChild(handler: LastkatkaBotHandler) : CallbackHandler(handler) {
 
     private fun notFor(query: CallbackQuery): Boolean {
         val userId = query.from.id
-        val loverId = query.data.split(" ")[2].toInt()
+        val loverId = query.getCleanData().split(" ")[1].toInt()
         return userId != loverId
     }
 }

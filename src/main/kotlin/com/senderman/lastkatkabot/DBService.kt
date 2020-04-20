@@ -29,6 +29,7 @@ interface DBService {
     fun setChild(userId: Int, loverId: Int, childId: Int)
     fun getLover(userId: Int): Int
     fun getChild(userId: Int): Int
+    // TOOD implement fun hasParent(userId: Int): Boolean
     fun divorce(userId: Int)
 
 
