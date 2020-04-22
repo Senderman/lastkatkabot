@@ -31,9 +31,9 @@ class AcceptMarriage(private val handler: LastkatkaBotHandler) : CallbackHandler
         answerQuery(query, "Поздравляем! Теперь у вас есть вторая половинка")
         val message = query.message
         Methods.deleteMessage(message.chatId, message.messageId).call(handler)
-        // user - inviter, lover - inviter
-        val user = TgUser(userId, query.from.firstName)
-        val lover = TgUser(Methods.getChatMember(message.chatId, loverId).call(handler).user)
+        // user - inviter, lover - acceptor
+        val lover = TgUser(query.from)
+        val user = TgUser(Methods.getChatMember(message.chatId, userId).call(handler).user)
         Services.db.setLover(user.id, lover.id)
         try {
             handler.execute(
