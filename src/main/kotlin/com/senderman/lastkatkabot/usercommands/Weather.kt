@@ -1,16 +1,17 @@
 package com.senderman.lastkatkabot.usercommands
 
+import com.senderman.lastkatkabot.DBService
 import com.senderman.lastkatkabot.LastkatkaBotHandler
-import com.senderman.lastkatkabot.Services
 import com.senderman.neblib.CommandExecutor
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.jsoup.nodes.Element
 import org.telegram.telegrambots.meta.api.objects.Message
 import java.io.IOException
 import java.net.URL
 import java.net.URLEncoder
 
-class Weather(private val handler: LastkatkaBotHandler) : CommandExecutor {
+class Weather(private val handler: LastkatkaBotHandler, private val db: DBService) : CommandExecutor {
     override val command: String
         get() = "/weather"
     override val desc: String
@@ -18,51 +19,78 @@ class Weather(private val handler: LastkatkaBotHandler) : CommandExecutor {
 
     override fun execute(message: Message) {
         val chatId = message.chatId
-        var city: String? = message.text.trim().replace("/weather(:?@${handler.botUsername})?\\s*".toRegex(), "")
-        if (city!!.isBlank()) { // city is not specified
-            city = Services.db.getUserCity(message.from.id)
-            if (city == null) {
-                handler.sendMessage(chatId, "Вы не указали город!")
+        val city: String = message.text.trim().replace("/weather(:?@${handler.botUsername})?\\s*".toRegex(), "")
+
+        val cityLink: String = if (city.isBlank()) {
+            val cityLinkFromDb = db.getUserCity(message.from.id)
+            if (cityLinkFromDb == null) {
+                handler.sendMessage(chatId, "Вы не указали город! ( /weather город ). Бот запомнит ваш выбор.")
                 return
             }
-        } else { // find a city
-            try {
-                val searchPage = Jsoup.parse(
-                    URL(
-                        "https://yandex.ru/pogoda/search?request=" + URLEncoder.encode(
-                            city,
-                            "UTF-8"
-                        )
-                    ), 10000
-                )
-                val table = searchPage.selectFirst("div.grid")
-                val searchResult = table.selectFirst("li.place-list__item")
-                city = searchResult.selectFirst("a").attr("href")
-            } catch (e: NullPointerException) {
-                handler.sendMessage(chatId, "Город не найден")
-                return
-            } catch (e: IOException) {
-                handler.sendMessage(chatId, "Ошибка запроса")
-            }
-        }
-        Services.db.setUserCity(message.from.id, city!!)
-        val weatherPage: Document
-        weatherPage = try {
-            Jsoup.parse(URL("https://yandex.ru$city"), 10000)
+            cityLinkFromDb
+        } else try { // find city
+            getCityPageLink(city)
+        } catch (e: NullPointerException) {
+            handler.sendMessage(chatId, "Город не найден")
+            return
         } catch (e: IOException) {
             handler.sendMessage(chatId, "Ошибка запроса")
             return
         }
-        // parse weather
-        val table = weatherPage.selectFirst("div.card_size_big")
+
+        db.setUserCity(message.from.id, cityLink)
+        val weatherPage: Document
+        weatherPage = try { // open city's page from search results
+            Jsoup.parse(URL("https://yandex.ru$cityLink"), 10000)
+        } catch (e: IOException) {
+            handler.sendMessage(chatId, "Ошибка запроса")
+            return
+        }
+        val text: String = try {
+            parseForecast(weatherPage).toString()
+        } catch (e: Exception) {
+            "Ошибка. Попробуйте уточнить запрос"
+        }
+
+        handler.sendMessage(chatId, text)
+    }
+
+    private fun getCityPageLink(city: String): String {
+        val searchPage = Jsoup.parse(
+            URL(
+                "https://yandex.ru/pogoda/search?request=" + URLEncoder.encode(
+                    city,
+                    "UTF-8"
+                )
+            ), 10000
+        )
+        val table = searchPage.selectFirst("div.grid")
+        val searchResult = table.selectFirst("li.place-list__item")
+        return searchResult.selectFirst("a").attr("href")
+    }
+
+    private fun parseForecast(weatherPage: Element): Forecast {
         val title = weatherPage.selectFirst("h1.header-title__title").text()
+        val table = weatherPage.selectFirst("div.card_size_big")
         val temperature = table.selectFirst("div.fact__temp span.temp__value").text()
         val feelsLike = table.selectFirst("div.fact__feels-like div.term__value").text()
         val feelings = table.selectFirst("div.fact__feelings div.link__condition").text()
         val wind = table.selectFirst("div.fact__wind-speed div.term__value").text()
         val humidity = table.selectFirst("div.fact__humidity div.term__value").text()
         val pressure = table.selectFirst("div.fact__pressure div.term__value").text()
-        val forecast = """
+        return Forecast(title, temperature, feelsLike, feelings, wind, humidity, pressure)
+    }
+
+    private data class Forecast(
+        val title: String,
+        val temperature: String,
+        val feelsLike: String,
+        val feelings: String,
+        val wind: String,
+        val humidity: String,
+        val pressure: String
+    ) {
+        override fun toString() = """
             <b>$title</b>
             
             $feelings
@@ -72,7 +100,5 @@ class Weather(private val handler: LastkatkaBotHandler) : CommandExecutor {
             💧: $humidity
             🧭: $pressure
             """.trimIndent()
-
-        handler.sendMessage(chatId, forecast)
     }
 }

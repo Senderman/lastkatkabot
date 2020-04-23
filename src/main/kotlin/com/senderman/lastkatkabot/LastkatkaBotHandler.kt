@@ -53,7 +53,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         bullsAndCowsGames = Services.db.getBnCGames()
         userRows = Services.db.getUserRows()
         duels = HashMap()
-        handlersSearcher = ExecutorKeeper(this)
+        handlersSearcher = ExecutorKeeper(this, Services.db)
         callbacks = Callbacks(this)
         sendMessage(mainAdmin, "Очистка бд от мусора...")
         CleanChats.cleanChats()
