@@ -5,7 +5,7 @@ import com.senderman.lastkatkabot.bnc.commands.*
 import com.senderman.lastkatkabot.usercommands.*
 import com.senderman.neblib.AbstractExecutorKeeper
 
-internal class ExecutorKeeper(handler: LastkatkaBotHandler) : AbstractExecutorKeeper() {
+internal class ExecutorKeeper(handler: LastkatkaBotHandler, db:DBService) : AbstractExecutorKeeper() {
 
     init {
         sequenceOf(
@@ -19,7 +19,7 @@ internal class ExecutorKeeper(handler: LastkatkaBotHandler) : AbstractExecutorKe
             Pair(handler),
             LastPairs(handler),
             PinList(handler),
-            Weather(handler),
+            Weather(handler, db),
             MarryMe(handler),
             Divorce(handler),
             FeedBack(handler),
