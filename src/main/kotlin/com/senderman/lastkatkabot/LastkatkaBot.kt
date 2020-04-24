@@ -2,7 +2,6 @@ package com.senderman.lastkatkabot
 
 import com.annimon.tgbotsmodule.BotHandler
 import com.annimon.tgbotsmodule.BotModule
-import com.annimon.tgbotsmodule.Runner
 import com.annimon.tgbotsmodule.beans.Config
 import com.annimon.tgbotsmodule.services.YamlConfigLoaderService
 import org.apache.commons.lang3.StringEscapeUtils
@@ -58,9 +57,4 @@ class LastkatkaBot : BotModule {
             return StringEscapeUtils.unescapeJava(result)
         }
     }
-}
-
-fun main(args: Array<String>) {
-    val profile = if (args.isNotEmpty() && args[0].isNotEmpty()) args[0] else ""
-    Runner.run(profile, listOf(LastkatkaBot()))
 }

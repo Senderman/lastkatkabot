@@ -7,7 +7,7 @@ plugins {
 
 group 'com.senderman'
 version '1.0'
-mainClassName = 'com.senderman.lastkatkabot.LastkatkaBotKt'
+mainClassName = 'com.annimon.tgbotsmodule.Runner'
 
 sourceCompatibility = 13
 
