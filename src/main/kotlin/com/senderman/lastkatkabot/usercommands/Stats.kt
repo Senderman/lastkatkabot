@@ -6,7 +6,6 @@ import com.senderman.lastkatkabot.Services
 import com.senderman.neblib.CommandExecutor
 import com.senderman.neblib.TgUser
 import org.telegram.telegrambots.meta.api.objects.Message
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
 class Stats(private val handler: LastkatkaBotHandler) : CommandExecutor {
     override val command: String
@@ -64,10 +63,10 @@ class Stats(private val handler: LastkatkaBotHandler) : CommandExecutor {
         val user: TgUser =
             try {
                 TgUser(Methods.getChatMember(userId.toLong(), userId).call(handler).user)
-            } catch (e: TelegramApiException) {
+            } catch (e: Exception) {
                 try {
                     TgUser(Methods.getChatMember(message.chatId, userId).call(handler).user)
-                } catch (e: TelegramApiException) {
+                } catch (e: Exception) {
                     TgUser(userId, "Без имени")
                 }
             }

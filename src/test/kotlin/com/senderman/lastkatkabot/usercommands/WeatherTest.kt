@@ -41,13 +41,21 @@ internal class WeatherTest {
     }
 
     @BeforeEach
-    fun resetDB(){
+    fun resetDB() {
         callOf(db.getUserCity(anyInt())) willReturn null
     }
 
     @Test
-    fun testSpecifiedCity() {
+    fun testSpecifiedCityWithEmptyDbRecord() {
         callOf(message.text) willReturn "/weather Москва"
+        testingObject.execute(message)
+        assert("Погода в Москве" in sentMessage)
+    }
+
+    @Test
+    fun testSpecifiedCityWithExistingDbRecordWillIgnoreDb() {
+        callOf(message.text) willReturn "/weather Москва"
+        callOf(db.getUserCity(anyInt())) willReturn "/pogoda/mytischi"
         testingObject.execute(message)
         assert("Погода в Москве" in sentMessage)
     }
@@ -60,10 +68,17 @@ internal class WeatherTest {
     }
 
     @Test
-    fun testNotSpecifiedCityWithExistingDbRecord(){
+    fun testNotSpecifiedCityWithExistingDbRecord() {
         callOf(message.text) willReturn "/weather"
         callOf(db.getUserCity(anyInt())) willReturn "/pogoda/213"
         testingObject.execute(message)
         assert("Погода в Москве" in sentMessage)
+    }
+
+    @Test
+    fun testNotExistingCity() {
+        callOf(message.text) willReturn "/weather wfjwiojiowfjiow"
+        testingObject.execute(message)
+        assert(sentMessage == "Город не найден")
     }
 }
