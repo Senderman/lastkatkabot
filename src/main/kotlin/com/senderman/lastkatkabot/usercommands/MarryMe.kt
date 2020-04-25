@@ -1,8 +1,8 @@
 package com.senderman.lastkatkabot.usercommands
 
 import com.annimon.tgbotsmodule.api.methods.Methods
+import com.senderman.lastkatkabot.DBService
 import com.senderman.lastkatkabot.LastkatkaBotHandler
-import com.senderman.lastkatkabot.Services
 import com.senderman.lastkatkabot.callbacks.Callbacks
 import com.senderman.neblib.CommandExecutor
 import com.senderman.neblib.TgUser
@@ -11,7 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
 
-class MarryMe(private val handler: LastkatkaBotHandler) : CommandExecutor {
+class MarryMe(private val handler: LastkatkaBotHandler, private val db: DBService) : CommandExecutor {
     override val command: String
         get() = "/marryme"
     override val desc: String
@@ -19,15 +19,18 @@ class MarryMe(private val handler: LastkatkaBotHandler) : CommandExecutor {
 
     override fun execute(message: Message) {
         if (message.isUserMessage || !message.isReply) return
-
+        if (message.from.id == message.replyToMessage.from.id) {
+            handler.sendMessage(message.chatId, "На самом себе нельзя жениться!!!")
+            return
+        }
         val chatId = message.chatId
         val userId = message.from.id
-        if (Services.db.getLover(userId) != 0) {
+        if (db.getLover(userId) != 0) {
             handler.sendMessage(chatId, "Всмысле? Вы что, хотите изменить своей второй половинке?!")
             return
         }
         val loverId: Int = message.replyToMessage.from.id
-        if (Services.db.getLover(loverId) != 0) {
+        if (db.getLover(loverId) != 0) {
             handler.sendMessage(chatId, "У этого пользователя уже есть своя вторая половинка!")
             return
         }
