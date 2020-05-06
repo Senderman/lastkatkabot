@@ -143,7 +143,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
 
         handlersSearcher.findExecutor(command)?.let { executor ->
             when {
-                message.from.id != Services.botConfig.mainAdmin && executor.forMainAdmin -> return null
+                executor.forMainAdmin && message.from.id != Services.botConfig.mainAdmin -> return null
                 executor.forAllAdmins && !isFromAdmin(message) -> return null
                 executor.forPremium && !isPremiumUser(message) -> return null
                 isInBlacklist(message) -> return null

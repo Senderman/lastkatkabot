@@ -298,7 +298,9 @@ internal class MongoDBService : DBService {
     }
 
     override fun addChat(chatId: Long, title: String) {
-        chats.insertOne(Document("chatId", chatId).append("title", title))
+        val doc = chats.find(eq("chatId", chatId)).first()
+        if (doc == null)
+            chats.insertOne(Document("chatId", chatId).append("title", title))
     }
 
     override fun getChatTitleMap(): Map<Long, String> {
