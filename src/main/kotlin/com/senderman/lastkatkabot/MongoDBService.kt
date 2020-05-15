@@ -21,7 +21,6 @@ internal class MongoDBService : DBService {
     private val client = MongoClientKeeper.client
     private val lastkatkaDB: MongoDatabase = client.getDatabase("lastkatka")
     private val rouletteDB: MongoDatabase = client.getDatabase("roulette")
-    private val chatMembersDB: MongoDatabase = client.getDatabase("chatmembers")
     private val rouletteUsers = rouletteDB["users"]
     private val admins = lastkatkaDB["admins"]
     private val premiumUsers = lastkatkaDB["premium"]
@@ -35,8 +34,6 @@ internal class MongoDBService : DBService {
 
 
     private fun MongoCollection<Document>.getUser(id: Int) = find(eq("id", id)).first() ?: initStats(id)
-
-    private fun getChatMembersCollection(chatId: Long) = chatMembersDB[chatId.toString()]
 
     private fun getUsersCollection(type: UserType): MongoCollection<Document> = when (type) {
         UserType.ADMINS -> admins
@@ -187,17 +184,18 @@ internal class MongoDBService : DBService {
 
     override fun getAllUsersIds(): Set<Int> {
         val userIds = HashSet<Int>()
-        chatMembersDB.listCollectionNames().forEach { name ->
+        // TODO fix
+        /*chatMembersDB.listCollectionNames().forEach { name ->
             chatMembersDB.getCollection(name).find().forEach {
                 userIds.add(it.getInteger("id"))
             }
-        }
+        }*/
         userstats.find().forEach { userIds.add(it.getInteger("id")) }
         return userIds
     }
 
 
-    override fun addUserToChatDB(message: Message) {
+    override fun addUserToChatDB(message: Message) {/*
         val chatId = message.chatId
         val user = message.from
         val chat = getChatMembersCollection(chatId)
@@ -207,21 +205,22 @@ internal class MongoDBService : DBService {
             commit.append("id", user.id)
             chat.insertOne(commit)
         } else chat.updateOne(eq("id", user.id), Document("\$set", commit))
+        */
     }
 
     override fun removeUserFromChatDB(userId: Int, chatId: Long) {
-        getChatMembersCollection(chatId).deleteOne(eq("id", userId))
+        //getChatMembersCollection(chatId).deleteOne(eq("id", userId))
     }
 
     override fun getChatMembersIds(chatId: Long): MutableList<Int> {
-        val chat = getChatMembersCollection(chatId)
+        //val chat = getChatMembersCollection(chatId)
         val members = ArrayList<Int>()
-        chat.find().forEach { members.add(it.getInteger("id")) }
+        // TODO fix chat.find().forEach { members.add(it.getInteger("id")) }
         return members
     }
 
     override fun removeOldUsers(chatId: Long, date: Int) {
-        getChatMembersCollection(chatId).deleteMany(lt("lastMessageDate", date))
+
     }
 
     override fun getBnCGames(): MutableMap<Long, BullsAndCowsGame> {
@@ -331,12 +330,12 @@ internal class MongoDBService : DBService {
 
     override fun removeChat(chatId: Long) {
         chats.deleteOne(eq("chatId", chatId))
-        getChatMembersCollection(chatId).drop()
         bncgames.deleteOne(eq("chatId", chatId))
     }
 
     override fun cleanup() {
-        chatMembersDB.listCollectionNames().forEach { name ->
+        // TODO fix
+        /*chatMembersDB.listCollectionNames().forEach { name ->
             if (
                 chats.find(eq("chatId", name.toLong())).first() == null
                 || getChatMembersCollection(name.toLong()).countDocuments() < 2
@@ -344,7 +343,7 @@ internal class MongoDBService : DBService {
                 getChatMembersCollection(name.toLong()).drop()
                 chats.deleteOne(eq("chatId", name.toLong()))
             }
-        }
+        }*/
         userstats.deleteMany(
             and(
                 eq("total", 0),
