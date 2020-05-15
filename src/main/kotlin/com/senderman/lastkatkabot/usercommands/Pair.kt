@@ -17,6 +17,11 @@ class Pair(private val handler: LastkatkaBotHandler) : CommandExecutor {
     private data class Lover(val user: TgUser, val isTrueLover: Boolean)
 
     override fun execute(message: Message) {
+        handler.sendMessage(message.chatId, "Фича временно не доступна :(")
+    }
+
+    // TODO uncomment when fixed
+    /*override fun execute(message: Message) {
         if (message.isUserMessage) return
 
         val chatId = message.chatId
@@ -88,5 +93,5 @@ class Pair(private val handler: LastkatkaBotHandler) : CommandExecutor {
             }
         }
         throw Exception("Not enough users")
-    }
+    }*/
 }

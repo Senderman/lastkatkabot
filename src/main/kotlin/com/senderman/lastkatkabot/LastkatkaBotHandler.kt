@@ -101,8 +101,10 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
 
         if (!message.hasText()) return null
 
+        /* TODO uncomment when fix
         if (message.isGroupMessage || message.isSuperGroupMessage) // add user to DB
             Services.db.addUserToChatDB(message)
+         */
 
         val text = message.text
 
@@ -175,7 +177,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         val newMembers = message.newChatMembers
 
         if (newMembers[0].userName == botUsername) {
-            Services.db.addChat(message.chatId, message.chat.title)
+            // TODO uncomment when fix Services.db.addChat(message.chatId, message.chat.title)
             sendMessage(
                 chatId,
                 "Всем привет! Для полноценного использования всех моих фичей дайте мне права на пин и удаление сообщений, пожалуйста!"
