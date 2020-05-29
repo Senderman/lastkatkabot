@@ -39,8 +39,8 @@ interface DBService {
 
 
     fun getAllUsersIds(): Set<Int>
-    fun addUserToChatDB(message: Message)
-    fun removeUserFromChatDB(userId: Int, chatId: Long)
+    fun addUserToChat(message: Message)
+    fun removeUserFromChat(userId: Int, chatId: Long)
     fun getChatMembersIds(chatId: Long): MutableList<Int>
     fun removeOldUsers(chatId: Long, date: Int)
 

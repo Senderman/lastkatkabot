@@ -30,6 +30,11 @@ internal class MongoDBService : DBService {
     private val bncgames = lastkatkaDB["bncgames"]
     private val chats = lastkatkaDB["chats"]
 
+    private val set = "\$set"
+    private val unset = "\$unset"
+    private val pull = "\$pull"
+    private val push = "\$push"
+
     private operator fun MongoDatabase.get(s: String): MongoCollection<Document> = getCollection(s)
 
 
@@ -107,7 +112,7 @@ internal class MongoDBService : DBService {
 
     override fun setUserCity(id: Int, city: String) {
         userstats.getUser(id)
-        userstats.updateOne(eq("id", id), Document("\$set", Document("city", city)))
+        userstats.updateOne(eq("id", id), Document(set, Document("city", city)))
     }
 
     override fun getUserCity(id: Int): String? = userstats.getUser(id).getString("city")
@@ -184,43 +189,58 @@ internal class MongoDBService : DBService {
 
     override fun getAllUsersIds(): Set<Int> {
         val userIds = HashSet<Int>()
-        // TODO fix
-        /*chatMembersDB.listCollectionNames().forEach { name ->
-            chatMembersDB.getCollection(name).find().forEach {
-                userIds.add(it.getInteger("id"))
-            }
-        }*/
-        userstats.find().forEach { userIds.add(it.getInteger("id")) }
+        chats
+            .find(exists("chatId", true))
+            .forEach { userIds += getChatMembersIds(it.getLong("chatId")) }
+
+        userstats.find().forEach { userIds += it.getInteger("id") }
         return userIds
     }
 
 
-    override fun addUserToChatDB(message: Message) {/*
+    override fun addUserToChat(message: Message) {
         val chatId = message.chatId
-        val user = message.from
-        val chat = getChatMembersCollection(chatId)
-        val commit = Document("lastMessageDate", message.date)
-        val doc = chat.find(eq("id", user.id)).first()
-        if (doc == null) {
-            commit.append("id", user.id)
-            chat.insertOne(commit)
-        } else chat.updateOne(eq("id", user.id), Document("\$set", commit))
-        */
+        val userId = message.from.id
+        val date = message.date
+
+        val filter = Document.parse("{chatId: $chatId, users.userId: $userId}")
+        val doc = chats.find(filter).first()
+        val chatHasUser: Boolean = doc != null
+        if (chatHasUser) {
+            chats.updateOne(
+                filter,
+                Document.parse("{$set: {users.\$.date: $date}}")
+            )
+        } else {
+            chats.updateOne(
+                eq("chatId", chatId),
+                Document.parse("{$push: {users: {userId: $userId, date:$date} }}")
+            )
+        }
     }
 
-    override fun removeUserFromChatDB(userId: Int, chatId: Long) {
-        //getChatMembersCollection(chatId).deleteOne(eq("id", userId))
+    override fun removeUserFromChat(userId: Int, chatId: Long) {
+        chats.updateOne(
+            eq("chatId", chatId),
+            Document.parse("{$pull: {users: {userId: $userId}}}")
+        )
     }
 
     override fun getChatMembersIds(chatId: Long): MutableList<Int> {
-        //val chat = getChatMembersCollection(chatId)
         val members = ArrayList<Int>()
-        // TODO fix chat.find().forEach { members.add(it.getInteger("id")) }
+        val doc = chats.find(eq("chatId", chatId)).first() ?: return members
+
+        doc.getList("users", Document::class.java).forEach {
+            members.add(it.getInteger("userId"))
+        }
         return members
     }
 
     override fun removeOldUsers(chatId: Long, date: Int) {
-
+        chats.updateOne(
+            eq("chatId", chatId),
+            Document.parse("{$pull: {users: {\$lt: {date: $date}}}}")
+        )
     }
 
     override fun getBnCGames(): MutableMap<Long, BullsAndCowsGame> {
@@ -241,7 +261,7 @@ internal class MongoDBService : DBService {
         if (gameSaved) {
             bncgames.updateOne(
                 eq("chatId", chatId),
-                Document("\$set", commit)
+                Document(set, commit)
             )
         } else {
             bncgames.insertOne(commit.append("chatId", chatId))
@@ -257,7 +277,7 @@ internal class MongoDBService : DBService {
         val rowAsJson = gson.toJson(row)
         chats.updateOne(
             eq("chatId", chatId),
-            Document("\$set", Document("row", rowAsJson))
+            Document(set, Document("row", rowAsJson))
         )
     }
 
@@ -291,7 +311,7 @@ internal class MongoDBService : DBService {
             else
                 updateOne(
                     exists("messageId", true),
-                    Document("\$set", Document("messageId", messageId))
+                    Document(set, Document("messageId", messageId))
                 )
         }
     }
@@ -299,7 +319,9 @@ internal class MongoDBService : DBService {
     override fun addChat(chatId: Long, title: String) {
         val doc = chats.find(eq("chatId", chatId)).first()
         if (doc == null)
-            chats.insertOne(Document("chatId", chatId).append("title", title))
+            chats.insertOne(
+                Document.parse("{chatId: $chatId, title: $title, users: []}")
+            )
     }
 
     override fun getChatTitleMap(): Map<Long, String> {
@@ -319,13 +341,13 @@ internal class MongoDBService : DBService {
     override fun updateChatId(oldChatId: Long, newChatId: Long) {
         chats.updateOne(
             eq("chatId", oldChatId),
-            Document("\$set", Document("chatId", newChatId))
+            Document(set, Document("chatId", newChatId))
         )
     }
 
     override fun updateTitle(chatId: Long, title: String) {
         val commit = Document("title", title)
-        chats.updateOne(eq("chatId", chatId), Document("\$set", commit))
+        chats.updateOne(eq("chatId", chatId), Document(set, commit))
     }
 
     override fun removeChat(chatId: Long) {
@@ -334,16 +356,6 @@ internal class MongoDBService : DBService {
     }
 
     override fun cleanup() {
-        // TODO fix
-        /*chatMembersDB.listCollectionNames().forEach { name ->
-            if (
-                chats.find(eq("chatId", name.toLong())).first() == null
-                || getChatMembersCollection(name.toLong()).countDocuments() < 2
-            ) {
-                getChatMembersCollection(name.toLong()).drop()
-                chats.deleteOne(eq("chatId", name.toLong()))
-            }
-        }*/
         userstats.deleteMany(
             and(
                 eq("total", 0),
@@ -371,7 +383,7 @@ internal class MongoDBService : DBService {
         if (chats.find(eq("chatId", chatId)).first() == null) {
             commit.append("chatId", chatId)
             chats.insertOne(commit)
-        } else chats.updateOne(eq("chatId", chatId), Document("\$set", commit))
+        } else chats.updateOne(eq("chatId", chatId), Document(set, commit))
     }
 
     override fun pairExistsToday(chatId: Long): Boolean {
