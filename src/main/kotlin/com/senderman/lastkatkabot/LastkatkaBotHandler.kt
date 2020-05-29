@@ -92,7 +92,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
                 .setFile(Services.botConfig.leavesticker)
                 .setReplyToMessageId(message.messageId)
                 .call(this)
-            Services.db.removeUserFromChatDB(message.leftChatMember.id, chatId)
+            Services.db.removeUserFromChat(message.leftChatMember.id, chatId)
         }
 
         // update current userrow in chat if exists
@@ -101,10 +101,8 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
 
         if (!message.hasText()) return null
 
-        /* TODO uncomment when fix
-        if (message.isGroupMessage || message.isSuperGroupMessage) // add user to DB
-            Services.db.addUserToChatDB(message)
-         */
+        if (message.isGroupMessage || message.isSuperGroupMessage)
+            Services.db.addUserToChat(message) // add user to chat's user list
 
         val text = message.text
 
@@ -177,7 +175,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         val newMembers = message.newChatMembers
 
         if (newMembers[0].userName == botUsername) {
-            // TODO uncomment when fix Services.db.addChat(message.chatId, message.chat.title)
+            Services.db.addChat(message.chatId, message.chat.title)
             sendMessage(
                 chatId,
                 "Всем привет! Для полноценного использования всех моих фичей дайте мне права на пин и удаление сообщений, пожалуйста!"

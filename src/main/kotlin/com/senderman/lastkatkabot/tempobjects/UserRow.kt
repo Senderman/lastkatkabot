@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException
 import java.util.*
 
 class UserRow(message: Message) {
+    private val maxUsers = 50
     private val divider: Int
     private val name: String
     private val chatId: Long
@@ -33,6 +34,11 @@ class UserRow(message: Message) {
 
     fun addUser(newUser: User) {
         if (newUser.id in checkedUsers) return
+        if (checkedUsers.size +1 > maxUsers) {
+            deleteRow()
+            return
+        }
+        
         val user = TgUser(newUser)
         checkedUsers.add(user.id)
         val pref = if (checkedUsers.size % divider == 0) "" else "не"
@@ -46,9 +52,13 @@ class UserRow(message: Message) {
                     .enableHtml(true)
             )
         } catch (e: TelegramApiRequestException) {
-            Services.handler.userRows.remove(chatId)
-            Services.db.deleteRow(chatId)
+            deleteRow()
         }
         Services.db.saveRow(chatId, this)
+    }
+
+    private fun deleteRow(){
+        Services.handler.userRows.remove(chatId)
+        Services.db.deleteRow(chatId)
     }
 }
