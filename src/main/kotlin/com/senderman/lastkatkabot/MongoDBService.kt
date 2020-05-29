@@ -189,9 +189,9 @@ internal class MongoDBService : DBService {
 
     override fun getAllUsersIds(): Set<Int> {
         val userIds = HashSet<Int>()
-        chats
-            .find(exists("chatId", true))
-            .forEach { userIds += getChatMembersIds(it.getLong("chatId")) }
+        for (chat in chats.find(exists("chatId", true))) {
+            userIds += getChatMembersIds(chat.getLong("chatId"))
+        }
 
         userstats.find().forEach { userIds += it.getInteger("id") }
         return userIds
@@ -203,7 +203,7 @@ internal class MongoDBService : DBService {
         val userId = message.from.id
         val date = message.date
 
-        val filter = Document.parse("{chatId: $chatId, users.userId: $userId}")
+        val filter = Document.parse("{chatId: $chatId, users: {\$elemMatch: {userId: $userId}}}")
         val doc = chats.find(filter).first()
         val chatHasUser: Boolean = doc != null
         if (chatHasUser) {
@@ -229,10 +229,7 @@ internal class MongoDBService : DBService {
     override fun getChatMembersIds(chatId: Long): MutableList<Int> {
         val members = ArrayList<Int>()
         val doc = chats.find(eq("chatId", chatId)).first() ?: return members
-
-        doc.getList("users", Document::class.java).forEach {
-            members.add(it.getInteger("userId"))
-        }
+        members += doc.getList("users", Document::class.java).map { it.getInteger("userId") }
         return members
     }
 
