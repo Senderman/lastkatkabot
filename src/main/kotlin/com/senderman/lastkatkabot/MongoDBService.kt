@@ -34,6 +34,7 @@ internal class MongoDBService : DBService {
     private val unset = "\$unset"
     private val pull = "\$pull"
     private val push = "\$push"
+    private val elemMatch = "\$elemMatch"
 
     private operator fun MongoDatabase.get(s: String): MongoCollection<Document> = getCollection(s)
 
@@ -198,23 +199,20 @@ internal class MongoDBService : DBService {
     }
 
 
-    override fun addUserToChat(message: Message) {
-        val chatId = message.chatId
-        val userId = message.from.id
-        val date = message.date
+    override fun addUserToChat(chatId: Long, userId: Int, date: Int) {
 
-        val filter = Document.parse("{chatId: $chatId, users: {\$elemMatch: {userId: $userId}}}")
+        val filter = Document.parse("{chatId: $chatId, users: {$elemMatch: {userId: $userId}}}")
         val doc = chats.find(filter).first()
         val chatHasUser: Boolean = doc != null
         if (chatHasUser) {
             chats.updateOne(
                 filter,
-                Document.parse("{$set: {users.\$.date: $date}}")
+                Document.parse("{$set: {'users.$.date': $date}}")
             )
         } else {
             chats.updateOne(
                 eq("chatId", chatId),
-                Document.parse("{$push: {users: {userId: $userId, date:$date} }}")
+                Document.parse("{$push: {users: {userId: $userId, date: $date} }}")
             )
         }
     }

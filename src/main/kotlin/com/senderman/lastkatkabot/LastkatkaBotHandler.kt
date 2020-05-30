@@ -102,7 +102,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         if (!message.hasText()) return null
 
         if (message.isGroupMessage || message.isSuperGroupMessage)
-            Services.db.addUserToChat(message) // add user to chat's user list
+            Services.db.addUserToChat(chatId, message.from.id, message.date) // add user to chat's user list
 
         val text = message.text
 
