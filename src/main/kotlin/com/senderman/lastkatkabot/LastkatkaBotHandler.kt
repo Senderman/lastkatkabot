@@ -79,10 +79,6 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         }
 
         val chatId = message.chatId
-        if (chatId != -1001156345990L){
-            return null;
-        }
-        sendMessage(chatId, "GOT MESSAGE FROM LASTKATKA")
 
         // migrate chats if needed
         message.migrateFromChatId?.let {
@@ -106,13 +102,7 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
         if (!message.hasText()) return null
 
         if (message.isGroupMessage || message.isSuperGroupMessage)
-            try {
-                Services.db.addUserToChat(chatId, message.from.id, message.date) // add user to chat's user list
-                sendMessage(chatId, "SAVED TO DB")
-            }catch (e: Exception){
-                sendMessage(chatId, e.toString())
-            }
-
+            Services.db.addUserToChat(chatId, message.from.id, message.date) // add user to chat's user list
 
         val text = message.text
 
