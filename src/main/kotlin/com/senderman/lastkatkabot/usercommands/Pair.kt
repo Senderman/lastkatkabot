@@ -16,12 +16,8 @@ class Pair(private val handler: LastkatkaBotHandler) : CommandExecutor {
 
     private data class Lover(val user: TgUser, val isTrueLover: Boolean)
 
-    override fun execute(message: Message) {
-        handler.sendMessage(message.chatId, "Фича временно не доступна :(")
-    }
 
-    // TODO uncomment when fixed
-    /*override fun execute(message: Message) {
+    override fun execute(message: Message) {
         if (message.isUserMessage) return
 
         val chatId = message.chatId
@@ -87,11 +83,11 @@ class Pair(private val handler: LastkatkaBotHandler) : CommandExecutor {
                 val member = handler.execute(GetChatMember().setChatId(chatId).setUserId(userId))
                 return TgUser(member.user)
             } catch (e: TelegramApiException) {
-                Services.db.removeUserFromChatDB(userId, chatId)
+                Services.db.removeUserFromChat(userId, chatId)
                 userIds.remove(userId)
                 continue
             }
         }
         throw Exception("Not enough users")
-    }*/
+    }
 }
