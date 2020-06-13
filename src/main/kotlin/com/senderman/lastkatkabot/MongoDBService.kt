@@ -4,6 +4,8 @@ import com.google.gson.Gson
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.Filters.*
+import com.mongodb.client.model.UpdateOptions
+import com.mongodb.client.model.Updates
 import com.senderman.lastkatkabot.DBService.UserType
 import com.senderman.lastkatkabot.bnc.BullsAndCowsGame
 import com.senderman.lastkatkabot.tempobjects.UserRow
@@ -30,7 +32,6 @@ internal class MongoDBService : DBService {
     private val chats = lastkatkaDB["chats"]
 
     private val set = "\$set"
-    private val unset = "\$unset"
     private val pull = "\$pull"
     private val push = "\$push"
     private val elemMatch = "\$elemMatch"
@@ -47,18 +48,21 @@ internal class MongoDBService : DBService {
     }
 
     override fun initStats(id: Int): Document {
-        val doc = Document("id", id)
-            .append("total", 0)
-            .append("wins", 0)
-            .append("bnc", 0)
+        val doc = Document()
+        doc["id"] = id
+        doc["total"] = 0
+        doc["wins"] = 0
+        doc["bnc"] = 0
         userstats.insertOne(doc)
         return doc
     }
 
     override fun incTotalDuels(id: Int) {
         userstats.getUser(id)
-        val updateDoc = Document().append("\$inc", Document("total", 1))
-        userstats.updateOne(eq("id", id), updateDoc)
+        userstats.updateOne(
+            eq("id", id),
+            Updates.inc("total", 1)
+        )
     }
 
     override fun incDuelWins(id: Int) {
@@ -68,8 +72,10 @@ internal class MongoDBService : DBService {
     }
 
     override fun incBNCWins(id: Int, points: Int) {
-        val updateDoc = Document().append("\$inc", Document("bnc", points))
-        userstats.updateOne(eq("id", id), updateDoc)
+        userstats.updateOne(
+            eq("id", id),
+            Updates.inc("bnc", points)
+        )
     }
 
     override fun getStats(id: Int): UserStats {
@@ -80,7 +86,7 @@ internal class MongoDBService : DBService {
         val lover = doc.getInteger("lover") ?: 0
         val child = doc.getInteger("child") ?: 0
         val rouletteUser = rouletteUsers.find(eq("userId", id)).first()
-        val coins = if (rouletteUser == null) 5000 else rouletteUser.getInteger("coins")
+        val coins = rouletteUser?.getInteger("coins") ?: 5000
         return UserStats(id, wins, total, bncwins, lover, child, coins)
     }
 
@@ -90,7 +96,8 @@ internal class MongoDBService : DBService {
             .sort(Document("bnc", -1))
             .limit(10)
         val top = LinkedHashMap<Int, Int>()
-        bncPlayers.forEach { top[it.getInteger("id")] = it.getInteger("bnc") }
+        for (doc in bncPlayers)
+            top[doc.getInteger("id")] = doc.getInteger("bnc")
         return top
     }
 
@@ -112,7 +119,10 @@ internal class MongoDBService : DBService {
 
     override fun setUserCity(id: Int, city: String) {
         userstats.getUser(id)
-        userstats.updateOne(eq("id", id), Document(set, Document("city", city)))
+        userstats.updateOne(
+            eq("id", id),
+            Updates.set("city", city)
+        )
     }
 
     override fun getUserCity(id: Int): String? = userstats.getUser(id).getString("city")
@@ -122,16 +132,12 @@ internal class MongoDBService : DBService {
             getUser(userId)
             getUser(loverId)
             updateOne(
-                eq("id", userId), Document(
-                    "\$set",
-                    Document("lover", loverId)
-                )
+                eq("id", userId),
+                Updates.set("lover", loverId)
             )
             updateOne(
-                eq("id", loverId), Document(
-                    "\$set",
-                    Document("lover", userId)
-                )
+                eq("id", loverId),
+                Updates.set("lover", userId)
             )
         }
     }
@@ -141,16 +147,12 @@ internal class MongoDBService : DBService {
             getUser(userId)
             getUser(childId)
             updateMany(
-                or(eq("id", userId), eq("id", loverId)), Document(
-                    "\$set",
-                    Document("child", childId)
-                )
+                or(eq("id", userId), eq("id", loverId)),
+                Updates.set("child", childId)
             )
             updateOne(
-                eq("id", childId), Document(
-                    "\$set",
-                    Document("child", userId)
-                )
+                eq("id", childId),
+                Updates.set("child", userId)
             )
         }
     }
@@ -165,35 +167,33 @@ internal class MongoDBService : DBService {
             val lover = doc.getInteger("lover") ?: return
             updateMany(
                 or(eq("id", lover), eq("id", userId)),
-                Document("\$unset", Document("lover", 0))
+                Updates.unset("lover")
             )
         }
     }
 
     override fun addTgUser(id: Int, type: UserType) {
         val collection = getUsersCollection(type)
-        if (collection.find(eq("id", id)).first() == null)
-            collection.insertOne(Document("id", id))
+        collection.find(eq("id", id)).first() ?: collection.insertOne(Document("id", id))
     }
 
     override fun removeTGUser(id: Int, type: UserType) {
         getUsersCollection(type).deleteOne(eq("id", id))
     }
 
-    override fun getTgUsersByType(type: UserType): MutableSet<Int> {
-        val result = HashSet<Int>()
-        val collection = getUsersCollection(type)
-        collection.find().forEach { result.add(it.getInteger("id")) }
-        return result
-    }
+    override fun getTgUsersByType(type: UserType): MutableSet<Int> = getUsersCollection(type)
+        .find()
+        .map { it.getInteger("id") }
+        .toMutableSet()
+
 
     override fun getAllUsersIds(): Set<Int> {
         val userIds = HashSet<Int>()
-        for (chat in chats.find(exists("chatId", true))) {
+        for (chat in chats.find()) {
             userIds += getChatMembersIds(chat.getLong("chatId"))
         }
 
-        userstats.find().forEach { userIds += it.getInteger("id") }
+        userIds += userstats.find().map { it.getInteger("id") }
         return userIds
     }
 
@@ -211,7 +211,8 @@ internal class MongoDBService : DBService {
         } else {
             chats.updateOne(
                 eq("chatId", chatId),
-                Document.parse("{$push: {users: {userId: $userId, date: $date} }}")
+                Document.parse("{$push: {users: {userId: $userId, date: $date} }}"),
+                UpdateOptions().upsert(true)
             )
         }
     }
@@ -225,184 +226,174 @@ internal class MongoDBService : DBService {
 
     override fun getChatMembersIds(chatId: Long): MutableList<Int> =
         chats.find(eq("chatId", chatId))
-            .take(1)
             .flatMap { it.getList("users", Document::class.java) }
             .map { it.getInteger("userId") }
             .toMutableList()
 
-override fun removeOldUsers(chatId: Long, date: Int) {
-    chats.updateOne(
-        eq("chatId", chatId),
-        Document.parse("{$pull: {users: {\$lt: {date: $date}}}}")
-    )
-}
-
-override fun getBnCGames(): MutableMap<Long, BullsAndCowsGame> {
-    val games = HashMap<Long, BullsAndCowsGame>()
-    val gson = Gson()
-    bncgames.find().forEach {
-        val game = gson.fromJson(it.getString("game"), BullsAndCowsGame::class.java)
-        games[it.getLong("chatId")] = game
+    override fun removeOldUsers(chatId: Long, date: Int) {
+        chats.updateOne(
+            eq("chatId", chatId),
+            Document.parse("{$pull: {users: {\$lt: {date: $date}}}}")
+        )
     }
-    return games
-}
 
-override fun saveBncGame(chatId: Long, game: BullsAndCowsGame) {
-    val gameSaved = bncgames.find(eq("chatId", chatId)).first() != null
-    val gson = Gson()
-    val gameAsJson = gson.toJson(game)
-    val commit = Document("game", gameAsJson)
-    if (gameSaved) {
+    override fun getBnCGames(): MutableMap<Long, BullsAndCowsGame> {
+        val games = HashMap<Long, BullsAndCowsGame>()
+        val gson = Gson()
+
+        bncgames.find().forEach {
+            val game = gson.fromJson(it.getString("game"), BullsAndCowsGame::class.java)
+            games[it.getLong("chatId")] = game
+        }
+        return games
+    }
+
+    override fun saveBncGame(chatId: Long, game: BullsAndCowsGame) {
+        val gson = Gson()
+        val gameAsJson = gson.toJson(game)
+        val commit = Document("game", gameAsJson).append("chatId", chatId)
         bncgames.updateOne(
             eq("chatId", chatId),
-            Document(set, commit)
+            Document(set, commit),
+            UpdateOptions().upsert(true)
         )
-    } else {
-        bncgames.insertOne(commit.append("chatId", chatId))
     }
-}
 
-override fun deleteBncGame(chatId: Long) {
-    bncgames.deleteOne(eq("chatId", chatId))
-}
-
-override fun saveRow(chatId: Long, row: UserRow) {
-    val gson = Gson()
-    val rowAsJson = gson.toJson(row)
-    chats.updateOne(
-        eq("chatId", chatId),
-        Document(set, Document("row", rowAsJson))
-    )
-}
-
-override fun getUserRows(): MutableMap<Long, UserRow> {
-    val rows = HashMap<Long, UserRow>()
-    val gson = Gson()
-    chats.find(exists("row", true)).forEach {
-        val row = gson.fromJson(it.getString("row"), UserRow::class.java)
-        rows[it.getLong("chatId")] = row
+    override fun deleteBncGame(chatId: Long) {
+        bncgames.deleteOne(eq("chatId", chatId))
     }
-    return rows
-}
 
-override fun deleteRow(chatId: Long) {
-    chats.updateOne(
-        eq("chatId", chatId),
-        Document("\$unset", Document("row", ""))
-    )
-}
+    override fun saveRow(chatId: Long, row: UserRow) {
+        val gson = Gson()
+        val rowAsJson = gson.toJson(row)
+        chats.updateOne(
+            eq("chatId", chatId),
+            Document(set, Document("row", rowAsJson)),
+            UpdateOptions().upsert(true)
+        )
+    }
 
-override fun getTournamentMessageId(): Int {
-    val doc = settings.find(exists("messageId", true)).first() ?: return 0
-    return doc.getInteger("messageId")
-}
+    override fun getUserRows(): MutableMap<Long, UserRow> {
+        val rows = HashMap<Long, UserRow>()
+        val gson = Gson()
+        chats.find(exists("row", true)).forEach {
+            val row = gson.fromJson(it.getString("row"), UserRow::class.java)
+            rows[it.getLong("chatId")] = row
+        }
+        return rows
+    }
 
-override fun setTournamentMessage(messageId: Int) {
-    with(settings) {
-        val doc = find(exists("messageId", true)).first()
+    override fun deleteRow(chatId: Long) {
+        chats.updateOne(
+            eq("chatId", chatId),
+            Document("\$unset", Document("row", ""))
+        )
+    }
+
+    override fun getTournamentMessageId(): Int {
+        val doc = settings.find(exists("messageId", true)).first() ?: return 0
+        return doc.getInteger("messageId")
+    }
+
+    override fun setTournamentMessage(messageId: Int) {
+        settings.updateOne(
+            exists("messageId", true),
+            Updates.set("messageId", messageId),
+            UpdateOptions().upsert(true)
+        )
+    }
+
+    override fun addChat(chatId: Long, title: String) {
+        val doc = chats.find(eq("chatId", chatId)).first()
         if (doc == null)
-            insertOne(Document("messageId", messageId))
-        else
-            updateOne(
-                exists("messageId", true),
-                Document(set, Document("messageId", messageId))
+            chats.insertOne(
+                Document.parse("{chatId: $chatId, title: $title, users: []}")
             )
     }
-}
 
-override fun addChat(chatId: Long, title: String) {
-    val doc = chats.find(eq("chatId", chatId)).first()
-    if (doc == null)
-        chats.insertOne(
-            Document.parse("{chatId: $chatId, title: $title, users: []}")
-        )
-}
-
-override fun getChatTitleMap(): Map<Long, String> {
-    val result = HashMap<Long, String>()
-    chats.find().forEach {
-        result[it.getLong("chatId")] = it.getString("title") ?: "No title"
+    override fun getChatTitleMap(): Map<Long, String> {
+        val result = HashMap<Long, String>()
+        chats.find().forEach {
+            result[it.getLong("chatId")] = it.getString("title") ?: "No title"
+        }
+        return result
     }
-    return result
-}
 
-override fun getChatIdsSet(): MutableSet<Long> {
-    val allowedChats = HashSet<Long>()
-    chats.find().forEach { allowedChats.add(it.getLong("chatId")) }
-    return allowedChats
-}
+    override fun getChatIdsSet(): MutableSet<Long> = chats
+        .find()
+        .map { it.getLong("chatId") }
+        .toMutableSet()
 
-override fun updateChatId(oldChatId: Long, newChatId: Long) {
-    chats.updateOne(
-        eq("chatId", oldChatId),
-        Document(set, Document("chatId", newChatId))
-    )
-}
-
-override fun updateTitle(chatId: Long, title: String) {
-    val commit = Document("title", title)
-    chats.updateOne(eq("chatId", chatId), Document(set, commit))
-}
-
-override fun removeChat(chatId: Long) {
-    chats.deleteOne(eq("chatId", chatId))
-    bncgames.deleteOne(eq("chatId", chatId))
-}
-
-override fun cleanup() {
-    userstats.deleteMany(
-        and(
-            eq("total", 0),
-            eq("bnc", 0),
-            exists("city", false)
+    override fun updateChatId(oldChatId: Long, newChatId: Long) {
+        chats.updateOne(
+            eq("chatId", oldChatId),
+            Document(set, Document("chatId", newChatId))
         )
-    )
-}
+    }
 
-override fun setPair(chatId: Long, pair: String) {
-    var history = getPairsHistory(chatId)
-    history = if (history == null) pair
-    else pair + "\n" + history.lines().joinToString(separator = "\n", limit = 9, truncated = "")
+    override fun updateTitle(chatId: Long, title: String) {
+        val commit = Document("title", title)
+        chats.updateOne(eq("chatId", chatId), Document(set, commit))
+    }
 
-    val date = Calendar.getInstance(timeZone).time
-    val dateFormat = SimpleDateFormat("yyyyMMdd")
-    dateFormat.timeZone = timeZone
-    val commit = Document("pair", pair).append("history", history)
-    val hoursFormat = SimpleDateFormat("HH")
-    hoursFormat.timeZone = timeZone
-    var hours = hoursFormat.format(date).toInt()
-    hours = if (hours in 0..11) 0 else 12
-    commit.append("date", dateFormat.format(date).toLong())
-        .append("hours", hours)
-    if (chats.find(eq("chatId", chatId)).first() == null) {
-        commit.append("chatId", chatId)
-        chats.insertOne(commit)
-    } else chats.updateOne(eq("chatId", chatId), Document(set, commit))
-}
+    override fun removeChat(chatId: Long) {
+        chats.deleteOne(eq("chatId", chatId))
+        bncgames.deleteOne(eq("chatId", chatId))
+    }
 
-override fun pairExistsToday(chatId: Long): Boolean {
-    val doc = chats.find(eq("chatId", chatId)).first() ?: return false
-    val dateFormat = SimpleDateFormat("yyyyMMdd")
-    dateFormat.timeZone = timeZone
-    val date = Calendar.getInstance(timeZone).time
-    val today = dateFormat.format(date)
-    if ("date" !in doc || doc.getLong("date") < today.toLong()) return false
-    val hoursFormat = SimpleDateFormat("HH")
-    hoursFormat.timeZone = timeZone
-    var hours = hoursFormat.format(date).toInt()
-    hours = if (hours in 0..11) 0 else 12
-    return doc.getInteger("hours") == hours
-}
+    override fun cleanup() {
+        userstats.deleteMany(
+            and(
+                eq("total", 0),
+                eq("bnc", 0),
+                exists("city", false)
+            )
+        )
+    }
 
-override fun getPairOfTheDay(chatId: Long): String {
-    val doc = chats.find(eq("chatId", chatId)).first()
-    return doc!!.getString("pair")
-}
+    override fun setPair(chatId: Long, pair: String) {
+        var history = getPairsHistory(chatId)
+        history = if (history == null) pair
+        else pair + "\n" + history.lines().joinToString(separator = "\n", limit = 9, truncated = "")
 
-override fun getPairsHistory(chatId: Long): String? {
-    val doc = chats.find(eq("chatId", chatId)).first()
-    return doc?.getString("history")
-}
+        val date = Calendar.getInstance(timeZone).time
+        val dateFormat = SimpleDateFormat("yyyyMMdd")
+        dateFormat.timeZone = timeZone
+        val commit = Document("pair", pair).append("history", history)
+        val hoursFormat = SimpleDateFormat("HH")
+        hoursFormat.timeZone = timeZone
+        var hours = hoursFormat.format(date).toInt()
+        hours = if (hours in 0..11) 0 else 12
+        commit.append("date", dateFormat.format(date).toLong())
+            .append("hours", hours)
+        if (chats.find(eq("chatId", chatId)).first() == null) {
+            commit.append("chatId", chatId)
+            chats.insertOne(commit)
+        } else chats.updateOne(eq("chatId", chatId), Document(set, commit))
+    }
 
+    override fun pairExistsToday(chatId: Long): Boolean {
+        val doc = chats.find(eq("chatId", chatId)).first() ?: return false
+        val dateFormat = SimpleDateFormat("yyyyMMdd")
+        dateFormat.timeZone = timeZone
+        val date = Calendar.getInstance(timeZone).time
+        val today = dateFormat.format(date)
+        if ("date" !in doc || doc.getLong("date") < today.toLong()) return false
+        val hoursFormat = SimpleDateFormat("HH")
+        hoursFormat.timeZone = timeZone
+        var hours = hoursFormat.format(date).toInt()
+        hours = if (hours in 0..11) 0 else 12
+        return doc.getInteger("hours") == hours
+    }
+
+    override fun getPairOfTheDay(chatId: Long): String {
+        val doc = chats.find(eq("chatId", chatId)).first()
+        return doc!!.getString("pair")
+    }
+
+    override fun getPairsHistory(chatId: Long): String? {
+        val doc = chats.find(eq("chatId", chatId)).first()
+        return doc?.getString("history")
+    }
 
 }

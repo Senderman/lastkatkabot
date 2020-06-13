@@ -17,7 +17,7 @@ class PayRespects(handler: LastkatkaBotHandler) : CallbackHandler(handler) {
         editText(
             query,
             "${query.message.text}\n${query.from.firstName} has payed respects",
-            PayRespects.markupForPayingRespects
+            query.message.replyMarkup
         )
     }
 }

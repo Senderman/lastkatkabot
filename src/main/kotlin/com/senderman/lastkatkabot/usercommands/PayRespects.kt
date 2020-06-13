@@ -19,7 +19,7 @@ class PayRespects(private val handler: LastkatkaBotHandler) : CommandExecutor {
         if (message.isReply && message.from.firstName == message.replyToMessage.from.firstName) return
 
         val obj: String = when {
-            message.text.split(" ").size > 1 -> "to " + message.text.split(" ".toRegex(), 2)[1]
+            message.text.split(" ").size > 1 -> "to " + message.text.split(" ", limit = 2)[1]
             message.isReply -> "to " + message.replyToMessage.from.firstName
             else -> ""
         }
@@ -35,18 +35,16 @@ class PayRespects(private val handler: LastkatkaBotHandler) : CommandExecutor {
         )
     }
 
-    companion object {
-        val markupForPayingRespects: InlineKeyboardMarkup
-            get() {
-                val markup = InlineKeyboardMarkup()
-                markup.keyboard = listOf(
-                    listOf(
-                        InlineKeyboardButton()
-                            .setText("F")
-                            .setCallbackData(Callbacks.PAY_RESPECTS)
-                    )
+    private val markupForPayingRespects: InlineKeyboardMarkup
+        get() {
+            val markup = InlineKeyboardMarkup()
+            markup.keyboard = listOf(
+                listOf(
+                    InlineKeyboardButton()
+                        .setText("F")
+                        .setCallbackData(Callbacks.PAY_RESPECTS)
                 )
-                return markup
-            }
-    }
+            )
+            return markup
+        }
 }
