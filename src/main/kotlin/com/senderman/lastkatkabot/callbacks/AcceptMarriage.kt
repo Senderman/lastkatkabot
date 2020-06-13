@@ -38,8 +38,8 @@ class AcceptMarriage(private val handler: LastkatkaBotHandler) : CallbackHandler
         try {
             handler.execute(
                 SendMessage(
-                    userId.toLong(),
-                    "Поздравляем! Теперь ваша вторая половинка - " + user.link
+                    user.id.toLong(),
+                    "Поздравляем! Теперь ваша вторая половинка - " + lover.link
                 )
                     .enableHtml(true)
             )

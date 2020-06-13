@@ -19,7 +19,7 @@ class FeedBack(private val handler: LastkatkaBotHandler) : CommandExecutor {
     override fun execute(message: Message) {
         val report = message
             .text.trim()
-            .replace("/feedback(:?@${handler.botUsername})?\\s*".toRegex(), "")
+            .replace("/feedback(?:@${handler.botUsername})?\\s*".toRegex(), "")
         if (report.isBlank() && !message.isReply) return
 
         val user = TgUser(message.from)

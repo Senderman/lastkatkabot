@@ -159,11 +159,11 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
     }
 
     override fun getBotUsername(): String {
-        return Services.botConfig.login.split(" ".toRegex(), 2)[0]
+        return Services.botConfig.login.split(" ", limit = 2)[0]
     }
 
     override fun getBotToken(): String {
-        return Services.botConfig.login.split(" ".toRegex(), 2)[1]
+        return Services.botConfig.login.split(" ", limit = 2)[1]
     }
 
     private fun processCallbackQuery(query: CallbackQuery) {
