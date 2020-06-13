@@ -130,9 +130,7 @@ class BullsAndCowsGame(message: Message) {
         gameMessage(
             Methods.sendMessage()
                 .setChatId(chatId)
-                .setText(
-                    String.format(voteText, 5 - voted)
-                )
+                .setText(getVoteText(5 - voted))
                 .setReplyMarkup(endgameMarkup)
                 .setParseMode(ParseMode.HTML)
         )
@@ -154,9 +152,7 @@ class BullsAndCowsGame(message: Message) {
         }
         votedUsers.add(query.from.id)
         Methods.editMessageText()
-            .setText(
-                String.format(voteText, 5 - voted)
-            )
+            .setText(getVoteText(5 - voted))
             .setChatId(chatId)
             .setMessageId(query.message.messageId)
             .setReplyMarkup(endgameMarkup)
@@ -271,6 +267,7 @@ class BullsAndCowsGame(message: Message) {
 
     //calculate bulls and cows
     data class Result(var bulls: Int, var cows: Int)
+
     private fun calculate(player: String): Result {
         var bulls = 0
         var cows = 0
@@ -303,8 +300,8 @@ class BullsAndCowsGame(message: Message) {
             return markup
         }
 
-    private val voteText = """
+    private fun getVoteText(votes: Int): String = """
         <b>Голосование за завершение игры</b>
-        Осталось %d голосов для завершения. Голос админа чата или создателя игры сразу заканчивает игру
+        Осталось $votes голосов для завершения. Голос админа чата или создателя игры сразу заканчивает игру
     """.trimIndent()
 }
