@@ -101,10 +101,9 @@ class LastkatkaBotHandler internal constructor() : BotHandler() {
 
         if (!message.hasText()) return null
 
-        /* TODO implement fast userdata saving
         if (message.isGroupMessage || message.isSuperGroupMessage)
             Services.db.addUserToChat(chatId, message.from.id, message.date) // add user to chat's user list
-         */
+
         val text = message.text
 
         // for bulls and cows
