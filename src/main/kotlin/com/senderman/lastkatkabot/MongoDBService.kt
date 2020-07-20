@@ -224,11 +224,16 @@ internal class MongoDBService : DBService {
         )
     }
 
-    override fun getChatMembersIds(chatId: Long): MutableList<Int> =
-        chats.find(eq("chatId", chatId))
-            .flatMap { it.getList("users", Document::class.java) }
+    override fun getChatMembersIds(chatId: Long): MutableList<Int> {
+        val userList = chats
+            .find(eq("chatId", chatId))
+            .first()
+            ?.getList("users", Document::class.java) ?: return mutableListOf()
+
+        return userList
             .map { it.getInteger("userId") }
             .toMutableList()
+    }
 
     override fun removeOldUsers(chatId: Long, date: Int) {
         chats.updateOne(
