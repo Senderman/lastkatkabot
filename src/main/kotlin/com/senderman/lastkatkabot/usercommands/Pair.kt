@@ -7,6 +7,8 @@ import com.senderman.neblib.TgUser
 import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChatMember
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
+import java.util.concurrent.ThreadLocalRandom
+import java.util.concurrent.TimeUnit
 
 class Pair(private val handler: LastkatkaBotHandler) : CommandExecutor {
     override val command: String
@@ -29,8 +31,8 @@ class Pair(private val handler: LastkatkaBotHandler) : CommandExecutor {
             return
         }
 
-        // remove users without activity for 2 weeks and get list of actual users
-        Services.db.removeOldUsers(chatId, message.date - 1209600)
+        // remove users without activity for 2 months and get list of actual users
+        Services.db.removeOldUsers(chatId, (message.date.toLong() - TimeUnit.DAYS.toSeconds(30) * 2).toInt())
         val userIds = Services.db.getChatMembersIds(chatId)
 
         // generate 2 different random users
@@ -46,7 +48,7 @@ class Pair(private val handler: LastkatkaBotHandler) : CommandExecutor {
         } catch (e: Exception) {
             handler.sendMessage(
                 chatId,
-                "Недостаточно пользователей для создания пары! Подождите, пока кто-то еще напишет в чат!"
+                "Недостаточно пользователей для создания пары! Несколько человек должны зарегистрироваться (/regme) чтобы иметь шанс попасть в пару дня!"
             )
             return
         }
@@ -59,7 +61,16 @@ class Pair(private val handler: LastkatkaBotHandler) : CommandExecutor {
         }
         val pair = if (isTrueLove) "${user1.name} \uD83D\uDC96 ${user2.name}" else "${user1.name} ❤ ${user2.name}"
         Services.db.setPair(chatId, pair)
-        handler.sendMessage(chatId, java.lang.String.format(loveStrings.last(), user1.link, user2.link))
+        val finalMessage = java.lang.String.format(loveStrings.last(), user1.link, user2.link)
+        val remindOfRegme: Boolean = ThreadLocalRandom.current().nextInt(0, 100) < 33
+
+        handler.sendMessage(
+            chatId,
+            if (!remindOfRegme)
+                finalMessage
+            else
+                "$finalMessage\n\nНа пару дня необходимо регаться раз в два месяца командой /regme!"
+        )
     }
 
     private fun getSecondUserForPair(chatId: Long, userIds: MutableList<Int>, first: TgUser): Lover {

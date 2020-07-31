@@ -17,6 +17,7 @@ internal class ExecutorKeeper(handler: LastkatkaBotHandler, db:DBService) : Abst
             GetInfo(handler),
             BNCHelp(handler),
             Pair(handler),
+            RegMe(handler, db),
             LastPairs(handler),
             PinList(handler),
             Weather(handler, db),
