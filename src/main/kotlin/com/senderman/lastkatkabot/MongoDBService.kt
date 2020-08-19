@@ -319,7 +319,12 @@ internal class MongoDBService : DBService {
     override fun getChatTitleMap(): Map<Long, String> {
         val result = HashMap<Long, String>()
         chats.find().forEach {
-            result[it.getLong("chatId")] = it["title"].toString() // mongodb sometimes converts String to Int
+            val chatId: Long = try {
+                it.getLong("chatId")
+            } catch (e: ClassCastException) {
+                it.getInteger("chatId").toLong()
+            }
+            result[chatId] = it["title"].toString() // mongodb sometimes converts String to Int
         }
         return result
     }
