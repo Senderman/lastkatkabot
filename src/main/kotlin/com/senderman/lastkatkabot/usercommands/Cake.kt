@@ -32,12 +32,13 @@ class Cake(private val handler: LastkatkaBotHandler) : CommandExecutor {
         Methods.deleteMessage(message.chatId, message.messageId).call(handler)
         val presenter = TgUser(message.from)
         val luckyOne = TgUser(message.replyToMessage.from)
+        val re = Regex("/@\\S*\\s?|/\\S*\\s?")
         handler.sendMessage(
             Methods.sendMessage()
                 .setChatId(message.chatId)
                 .setText(
-                    "\uD83C\uDF82 ${luckyOne.name}, пользователь ${presenter.name} подарил вам тортик" +
-                            message.text.replace("/cake", "")
+                    "\uD83C\uDF82 ${luckyOne.name}, пользователь ${presenter.name} подарил вам тортик " +
+                            message.text.replace(re, "")
                 )
                 .setReplyToMessageId(message.replyToMessage.messageId)
                 .setReplyMarkup(markup)
