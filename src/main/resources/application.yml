@@ -1,0 +1,20 @@
+spring:
+  data:
+    mongodb:
+      uri: ${database}
+      database: lastkatka
+
+login: ${lastkatka} # username token
+
+main-admin-id: ${main_admin} # id of main admin
+
+ww-bots-usernames: # list of werewolf bot nicknames
+- 'werewolfbot'
+- 'werewolfbetabot'
+- 'blackwerewolfbot'
+
+bnc-help-picture-id: "AgADAgAD2qkxG1TVaUjH0X-0YjLur08E9Q4ABAG8AAEj0FdnA6d7AgABAg" # picture for /bnchelp
+hello-gif-id: "CgADAQADiwAD0r04RoeZTv5wklZNAg" # gif for new members
+leave-sticker-id: "CAADAgADDAADea1UE9LCz-IGyKZhAg" # sticker that bot will send after someone leaves the chat
+
+
