@@ -14,7 +14,7 @@ public class ChatUser {
     private int userId;
     private long chatId;
 
-    public ChatUser(){
+    public ChatUser() {
 
     }
 

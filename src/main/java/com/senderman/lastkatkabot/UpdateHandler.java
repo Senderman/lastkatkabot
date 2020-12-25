@@ -30,7 +30,8 @@ public class UpdateHandler extends BotHandler {
 
     @Override
     public void onUpdatesReceived(List<Update> updates) {
-        updates.stream()
+        updates
+                .stream()
                 .filter(this::filterUpdate)
                 .collect(Collectors.toList())
                 .forEach(this::onUpdateReceived);
@@ -39,9 +40,28 @@ public class UpdateHandler extends BotHandler {
     @Override
     protected BotApiMethod onUpdate(@NotNull Update update) {
 
-        if (update.hasMessage()){
-            commands.findExecutor("/action").execute(update.getMessage());
-        }
+        if (!update.hasMessage()) return null;
+
+        var message = update.getMessage();
+
+        if (!message.hasText()) return null;
+
+        var text = message.getText();
+
+        if (!message.isCommand()) return null;
+
+        /* bot should only trigger on general commands (like /command) or on commands for this bot (/command@mybot),
+         * and NOT on commands for another bots (like /command@notmybot)
+         */
+        var command = text.split("\\s+", 2)[0]
+                .toLowerCase(Locale.ENGLISH)
+                .replace("@" + getBotUsername(), "");
+        if (command.contains("@")) return null;
+
+        var executor = commands.findExecutor(command);
+        if (executor == null) return null;
+        executor.execute(message);
+
         return null;
     }
 
@@ -63,16 +83,6 @@ public class UpdateHandler extends BotHandler {
 
         // Skip messages older than 2 minutes
         if (message.getDate() + 120 < System.currentTimeMillis() / 1000) return false;
-
-        /* bot should only trigger on general commands (like /command) or on commands for this bot (/command@mybot),
-         * and NOT on commands for another bots (like /command@notmybot)
-         */
-        if (message.isCommand()){
-            var command = message.getText().split("\\s+",2)[0]
-                    .toLowerCase(Locale.ENGLISH)
-                    .replace("@"+getBotUsername(), "");
-            if (command.contains("@")) return false;
-        }
 
         return true;
     }

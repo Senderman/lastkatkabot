@@ -1,11 +1,11 @@
 package com.senderman.lastkatkabot.command;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -20,8 +20,8 @@ import java.util.Map;
 @Component
 public class ContextCommandExtractor implements CommandExtractor, ApplicationContextAware {
 
-    private ApplicationContext context;
     private final Map<String, CommandExecutor> executors = new HashMap<>();
+    private ApplicationContext context;
 
     @Override
     public void setApplicationContext(@NotNull ApplicationContext applicationContext) throws BeansException {

@@ -1,7 +1,7 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.senderman.lastkatkabot.UpdateHandler;
+import com.senderman.lastkatkabot.MethodExecutor;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -9,9 +9,9 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Component("/action")
 public class Action implements CommandExecutor {
 
-    private final UpdateHandler telegram;
+    private final MethodExecutor telegram;
 
-    public Action(UpdateHandler telegram) {
+    public Action(MethodExecutor telegram) {
         this.telegram = telegram;
     }
 
@@ -28,9 +28,9 @@ public class Action implements CommandExecutor {
 
         var action = message.getFrom().getFirstName() + " " + message.getText().split("\\s+", 2)[1];
         var sm = Methods.sendMessage(chatId, action);
-        if (message.isReply()){
+        if (message.isReply()) {
             sm.setReplyToMessageId(message.getReplyToMessage().getMessageId());
         }
-        sm.call(telegram);
+        telegram.sendMessage(sm);
     }
 }

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserStatsRepository extends MongoRepository<Userstats, Integer> {
 
-    Userstats findByUserId(int userId);
     Userstats findByLoverId(int loverId);
 
 }

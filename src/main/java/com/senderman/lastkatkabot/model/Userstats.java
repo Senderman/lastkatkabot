@@ -1,5 +1,6 @@
 package com.senderman.lastkatkabot.model;
 
+import org.jetbrains.annotations.Nullable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.TypeAlias;
 
@@ -13,14 +14,19 @@ public class Userstats {
     private int duelsTotal;
     private int duelWins;
     private int bncScore;
+    @Nullable
     private String cityLink;
-    private int loverId;
+    @Nullable
+    private Integer loverId;
 
     public Userstats() {
     }
 
     public Userstats(int userId) {
         this.userId = userId;
+        this.duelsTotal = 0;
+        this.duelWins = 0;
+        this.bncScore = 0;
     }
 
     public int getUserId() {
@@ -55,7 +61,7 @@ public class Userstats {
         this.bncScore = bncScore;
     }
 
-    public String getCityLink() {
+    public @Nullable String getCityLink() {
         return cityLink;
     }
 
@@ -63,7 +69,7 @@ public class Userstats {
         this.cityLink = cityLink;
     }
 
-    public int getLoverId() {
+    public @Nullable Integer getLoverId() {
         return loverId;
     }
 

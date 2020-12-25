@@ -4,6 +4,10 @@ spring:
       uri: ${database}
       database: lastkatka
 
+logging:
+  level:
+    org.springframework.data.mongodb.core.MongoTemplate: ERROR
+
 login: ${lastkatka} # username token
 
 main-admin-id: ${main_admin} # id of main admin

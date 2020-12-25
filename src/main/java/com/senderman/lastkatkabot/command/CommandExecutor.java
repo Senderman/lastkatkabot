@@ -5,21 +5,21 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 
 public interface CommandExecutor {
 
-    default String getCommand(){
+    default String getCommand() {
         return getMyCommand(this);
     }
 
     String getDescription();
 
-    default boolean isMainAdminOnly(){
+    default boolean isMainAdminOnly() {
         return false;
     }
 
-    default boolean isAdminOnly(){
+    default boolean isAdminOnly() {
         return false;
     }
 
-    default boolean showInHelp(){
+    default boolean showInHelp() {
         return true;
     }
 
