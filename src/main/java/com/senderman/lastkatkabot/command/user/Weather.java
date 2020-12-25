@@ -5,7 +5,6 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.model.Userstats;
 import com.senderman.lastkatkabot.repository.UserStatsRepository;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
@@ -31,14 +30,16 @@ public class Weather implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
-        var chatId = message.getChatId();
-        var userId = message.getFrom().getId();
-        var city = message
+    public void execute(Message trigger) {
+        var chatId = trigger.getChatId();
+        var userId = trigger.getFrom().getId();
+        // extract name of the city from the message
+        var city = trigger
                 .getText()
                 .trim()
                 .replaceAll("/weather(?:@[a-zA-Z0-9_-]*)?\\s*", "");
         String cityLink;
+
 
         if (city.isBlank()) {
             String dbCityLink = userStats.findById(userId)
@@ -49,9 +50,10 @@ public class Weather implements CommandExecutor {
                 return;
             }
             cityLink = dbCityLink;
-        } else {
+        } else { // if city defined in the message
             try {
                 cityLink = getCityPageLink(city);
+                // save last defined city in db
                 var user = userStats.findById(userId).orElse(new Userstats(userId));
                 user.setCityLink(cityLink);
                 userStats.save(user);
@@ -65,8 +67,7 @@ public class Weather implements CommandExecutor {
         }
 
         try {
-            var weatherPage = Jsoup.parse(new URL("https://yandex.ru" + cityLink), 10000);
-            var text = parseForecast(weatherPage).toString();
+            var text = parseForecast(cityLink).toString();
             telegram.sendMessage(chatId, text);
         } catch (Exception e) {
             telegram.sendMessage(chatId, "Внутренняя ошибка");
@@ -84,7 +85,8 @@ public class Weather implements CommandExecutor {
                 .selectFirst("a").attr("href");
     }
 
-    private Forecast parseForecast(Element weatherPage) {
+    private Forecast parseForecast(String cityLink) throws IOException {
+        var weatherPage = Jsoup.parse(new URL("https://yandex.ru" + cityLink), 10000);
         var title = weatherPage.selectFirst("h1.header-title__title").text();
         var table = weatherPage.selectFirst("div.card_size_big");
         var temperature = table.selectFirst("div.fact__temp span.temp__value").text();

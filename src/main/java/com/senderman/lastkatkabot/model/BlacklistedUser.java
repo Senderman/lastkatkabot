@@ -1,9 +1,11 @@
 package com.senderman.lastkatkabot.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.TypeAlias;
 
 import java.util.Objects;
 
+@TypeAlias("blacklist")
 public class BlacklistedUser {
 
     @Id

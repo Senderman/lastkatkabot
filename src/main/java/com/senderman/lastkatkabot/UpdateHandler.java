@@ -1,11 +1,14 @@
 package com.senderman.lastkatkabot;
 
 import com.annimon.tgbotsmodule.BotHandler;
-import com.senderman.lastkatkabot.command.CommandExtractor;
+import com.senderman.lastkatkabot.callback.CallbackExecutor;
+import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.command.HandlerExtractor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Lazy;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -18,14 +21,18 @@ public class UpdateHandler extends BotHandler {
 
     private final String username;
     private final String token;
-    private final CommandExtractor commands;
+    private final HandlerExtractor<CommandExecutor> commands;
+    private final HandlerExtractor<CallbackExecutor> callbacks;
 
     @Autowired
-    public UpdateHandler(@Value("${login}") String login, CommandExtractor commandExtractor) {
+    public UpdateHandler(@Value("${login}") String login,
+                         @Lazy HandlerExtractor<CommandExecutor> commandExtractor,
+                         @Lazy HandlerExtractor<CallbackExecutor> callbacks) {
         var args = login.split("\\s+");
         username = args[0];
         token = args[1];
         this.commands = commandExtractor;
+        this.callbacks = callbacks;
     }
 
     @Override

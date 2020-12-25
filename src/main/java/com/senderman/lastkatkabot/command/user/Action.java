@@ -21,15 +21,15 @@ public class Action implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
-        var chatId = message.getChatId();
-        Methods.deleteMessage(chatId, message.getMessageId());
-        if (message.getText().split("\\s+").length == 1) return;
+    public void execute(Message trigger) {
+        var chatId = trigger.getChatId();
+        Methods.deleteMessage(chatId, trigger.getMessageId());
+        if (trigger.getText().split("\\s+").length == 1) return;
 
-        var action = message.getFrom().getFirstName() + " " + message.getText().split("\\s+", 2)[1];
+        var action = trigger.getFrom().getFirstName() + " " + trigger.getText().split("\\s+", 2)[1];
         var sm = Methods.sendMessage(chatId, action);
-        if (message.isReply()) {
-            sm.setReplyToMessageId(message.getReplyToMessage().getMessageId());
+        if (trigger.isReply()) {
+            sm.setReplyToMessageId(trigger.getReplyToMessage().getMessageId());
         }
         telegram.sendMessage(sm);
     }

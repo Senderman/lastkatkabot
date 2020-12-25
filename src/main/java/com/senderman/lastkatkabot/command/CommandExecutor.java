@@ -1,13 +1,12 @@
 package com.senderman.lastkatkabot.command;
 
-import org.springframework.stereotype.Component;
+import com.senderman.lastkatkabot.TriggerHandler;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
-public interface CommandExecutor {
-
-    default String getCommand() {
-        return getMyCommand(this);
-    }
+/**
+ * Subclasses of this interface should process messages with commands
+ */
+public interface CommandExecutor extends TriggerHandler<Message> {
 
     String getDescription();
 
@@ -23,10 +22,4 @@ public interface CommandExecutor {
         return true;
     }
 
-    void execute(Message message);
-
-
-    private String getMyCommand(CommandExecutor executor) {
-        return executor.getClass().getAnnotation(Component.class).value();
-    }
 }
