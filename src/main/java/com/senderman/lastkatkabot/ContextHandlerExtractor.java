@@ -1,6 +1,5 @@
 package com.senderman.lastkatkabot;
 
-import com.senderman.lastkatkabot.command.HandlerExtractor;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

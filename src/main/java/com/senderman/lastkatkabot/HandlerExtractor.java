@@ -1,8 +1,8 @@
-package com.senderman.lastkatkabot.command;
+package com.senderman.lastkatkabot;
 
 import org.jetbrains.annotations.Nullable;
 
-public interface HandlerExtractor<T> {
+public interface HandlerExtractor<T extends TriggerHandler<?>> {
 
     /**
      * Find executor by command

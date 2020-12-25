@@ -3,7 +3,6 @@ package com.senderman.lastkatkabot;
 import com.annimon.tgbotsmodule.BotHandler;
 import com.senderman.lastkatkabot.callback.CallbackExecutor;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import com.senderman.lastkatkabot.command.HandlerExtractor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
