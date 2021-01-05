@@ -1,8 +1,13 @@
 package com.senderman.lastkatkabot;
 
 import com.annimon.tgbotsmodule.BotHandler;
+import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.callback.CallbackExecutor;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.model.AdminUser;
+import com.senderman.lastkatkabot.model.BlacklistedUser;
+import com.senderman.lastkatkabot.repository.AdminUserRepository;
+import com.senderman.lastkatkabot.repository.BlacklistedUserRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,8 +16,10 @@ import org.springframework.context.annotation.Lazy;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @SpringBootApplication
@@ -22,16 +29,39 @@ public class UpdateHandler extends BotHandler {
     private final String token;
     private final HandlerExtractor<CommandExecutor> commands;
     private final HandlerExtractor<CallbackExecutor> callbacks;
+    private final int mainAdminId;
+    private final Set<Integer> adminIds;
+    private final Set<Integer> blacklist;
 
     @Autowired
-    public UpdateHandler(@Value("${login}") String login,
-                         @Lazy HandlerExtractor<CommandExecutor> commandExtractor,
-                         @Lazy HandlerExtractor<CallbackExecutor> callbacks) {
+    public UpdateHandler(
+            @Value("${login}") String login,
+            @Value("${mainAdminId}") int mainAdminId,
+            @Lazy HandlerExtractor<CommandExecutor> commandExtractor,
+            @Lazy HandlerExtractor<CallbackExecutor> callbacks,
+            AdminUserRepository admins,
+            BlacklistedUserRepository blacklist
+    ) {
         var args = login.split("\\s+");
         username = args[0];
         token = args[1];
+
         this.commands = commandExtractor;
         this.callbacks = callbacks;
+        this.mainAdminId = mainAdminId;
+
+        this.blacklist = blacklist.findAll()
+                .stream()
+                .map(BlacklistedUser::getUserId)
+                .collect(Collectors.toSet());
+
+        this.adminIds = admins.findAll()
+                .stream()
+                .map(AdminUser::getUserId)
+                .collect(Collectors.toSet());
+        adminIds.add(mainAdminId);
+
+        Methods.sendMessage(mainAdminId, "Бот запущен!").call(this);
     }
 
     @Override
@@ -39,12 +69,18 @@ public class UpdateHandler extends BotHandler {
         updates
                 .stream()
                 .filter(this::filterUpdate)
-                .collect(Collectors.toList())
                 .forEach(this::onUpdateReceived);
     }
 
     @Override
-    protected BotApiMethod onUpdate(@NotNull Update update) {
+    protected BotApiMethod<?> onUpdate(@NotNull Update update) {
+
+        if (update.hasCallbackQuery()) {
+            var query = update.getCallbackQuery();
+            callbacks.findHandler(query.getData().split("\\s+", 2)[0])
+                    .ifPresent(e -> e.execute(query));
+            return null;
+        }
 
         if (!update.hasMessage()) return null;
 
@@ -64,9 +100,9 @@ public class UpdateHandler extends BotHandler {
                 .replace("@" + getBotUsername(), "");
         if (command.contains("@")) return null;
 
-        var executor = commands.findExecutor(command);
-        if (executor == null) return null;
-        executor.execute(message);
+        commands.findHandler(command)
+                .filter(e -> checkAccess(e.getRoles(), message.getFrom().getId()))
+                .ifPresent(e -> e.execute(message));
 
         return null;
     }
@@ -81,6 +117,18 @@ public class UpdateHandler extends BotHandler {
         return username;
     }
 
+
+    private boolean checkAccess(EnumSet<Role> roles, int userId) {
+        // allow all commands for the main admin
+        if (userId == mainAdminId) return true;
+        // do not allow blacklisted users
+        if (blacklist.contains(userId)) return false;
+        // allow users to use user commands
+        if (roles.contains(Role.USER)) return true;
+        // check admin permissions
+        return roles.contains(Role.ADMIN) && adminIds.contains(userId);
+    }
+
     // this method contains filtering rules for all updates
     private boolean filterUpdate(Update update) {
         if (update.hasCallbackQuery()) return true;
@@ -88,8 +136,6 @@ public class UpdateHandler extends BotHandler {
         if (message == null) return false;
 
         // Skip messages older than 2 minutes
-        if (message.getDate() + 120 < System.currentTimeMillis() / 1000) return false;
-
-        return true;
+        return message.getDate() + 120 >= System.currentTimeMillis() / 1000;
     }
 }

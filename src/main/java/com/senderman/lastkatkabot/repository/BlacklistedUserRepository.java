@@ -1,4 +1,7 @@
 package com.senderman.lastkatkabot.repository;
 
-public interface BlacklistedUserRepository {
+import com.senderman.lastkatkabot.model.BlacklistedUser;
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+public interface BlacklistedUserRepository extends MongoRepository<BlacklistedUser, Integer> {
 }

@@ -13,7 +13,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-@Component("/weather")
+@Component
 public class Weather implements CommandExecutor {
 
     private final MethodExecutor telegram;
@@ -22,6 +22,11 @@ public class Weather implements CommandExecutor {
     public Weather(MethodExecutor telegram, UserStatsRepository userStats) {
         this.telegram = telegram;
         this.userStats = userStats;
+    }
+
+    @Override
+    public String getTrigger() {
+        return "/weather";
     }
 
     @Override
@@ -36,10 +41,9 @@ public class Weather implements CommandExecutor {
         // extract name of the city from the message
         var city = trigger
                 .getText()
-                .trim()
+                .strip()
                 .replaceAll("/weather(?:@[a-zA-Z0-9_-]*)?\\s*", "");
         String cityLink;
-
 
         if (city.isBlank()) {
             String dbCityLink = userStats.findById(userId)

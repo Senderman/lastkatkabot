@@ -1,17 +1,15 @@
 package com.senderman.lastkatkabot;
 
-import org.springframework.stereotype.Component;
+import java.util.EnumSet;
 
 public interface TriggerHandler<TTrigger> {
 
-    default String getTrigger() {
-        return getMyName(this);
+    String getTrigger();
+
+    default EnumSet<Role> getRoles() {
+        return EnumSet.of(Role.USER);
     }
 
     void execute(TTrigger trigger);
-
-    private String getMyName(TriggerHandler<TTrigger> executor) {
-        return executor.getClass().getAnnotation(Component.class).value();
-    }
 
 }

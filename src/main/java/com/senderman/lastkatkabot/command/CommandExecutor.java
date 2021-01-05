@@ -10,14 +10,6 @@ public interface CommandExecutor extends TriggerHandler<Message> {
 
     String getDescription();
 
-    default boolean isMainAdminOnly() {
-        return false;
-    }
-
-    default boolean isAdminOnly() {
-        return false;
-    }
-
     default boolean showInHelp() {
         return true;
     }

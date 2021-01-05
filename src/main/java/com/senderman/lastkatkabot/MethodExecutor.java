@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.ResponseParameters;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -82,6 +83,26 @@ public class MethodExecutor {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public void answerCallbackQuery(CallbackQuery query, String text) {
+        answerCallbackQuery(query, text, false);
+    }
+
+    public void answerCallbackQuery(CallbackQuery query, String text, boolean showAlert) {
+        Methods.answerCallbackQuery(query.getId())
+                .setText(text)
+                .setShowAlert(showAlert)
+                .call(telegram);
+    }
+
+    public void editQueryMessage(CallbackQuery query, String text) {
+        var message = query.getMessage();
+        Methods.editMessageText()
+                .setChatId(message.getChatId())
+                .setMessageId(message.getMessageId())
+                .setText(text)
+                .call(telegram);
     }
 
     private void runChatIdMigration(long oldChatId, long newChatId) {

@@ -6,13 +6,18 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
-@Component("/action")
+@Component
 public class Action implements CommandExecutor {
 
     private final MethodExecutor telegram;
 
     public Action(MethodExecutor telegram) {
         this.telegram = telegram;
+    }
+
+    @Override
+    public String getTrigger() {
+        return "/action";
     }
 
     @Override
