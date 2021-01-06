@@ -1,23 +1,21 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.senderman.lastkatkabot.MethodExecutor;
+import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.callback.Callback;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.util.TelegramHtmlUtils;
+import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
+import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-
-import java.util.List;
 
 @Component
 public class Cake implements CommandExecutor {
 
-    private final MethodExecutor telegram;
+    private final ApiRequests telegram;
 
-    public Cake(MethodExecutor telegram) {
+    public Cake(ApiRequests telegram) {
         this.telegram = telegram;
     }
 
@@ -40,26 +38,20 @@ public class Cake implements CommandExecutor {
         var text = String.format("\uD83C\uDF82 %s, пользователь %s подарил вам тортик %s",
                 object, subject, message.getText().replaceAll("/@\\S*\\s?|/\\S*\\s?", ""));
 
+        var markup = new MarkupBuilder()
+                .addButton(ButtonBuilder.callbackButton()
+                        .text("Принять")
+                        .payload(Callback.CAKE + " accept"))
+                .addButton(ButtonBuilder.callbackButton()
+                        .text("Отказаться")
+                        .payload(Callback.CAKE + " decline"))
+                .build();
+
         telegram.sendMessage(Methods.sendMessage(message.getChatId(), text)
                 .setReplyToMessageId(message.getReplyToMessage().getMessageId())
-                .setReplyMarkup(createCakeMarkup())
+                .setReplyMarkup(markup)
         );
 
     }
-
-    private InlineKeyboardMarkup createCakeMarkup() {
-        var markup = new InlineKeyboardMarkup();
-
-        var acceptButton = new InlineKeyboardButton("Принять");
-        acceptButton.setCallbackData("CB_CAKE_OK");
-        acceptButton.setCallbackData(Callback.CAKE + " accept");
-
-        var declineButton = new InlineKeyboardButton("Отказаться");
-        declineButton.setCallbackData(Callback.CAKE + " decline");
-
-        markup.setKeyboard(List.of(List.of(acceptButton, declineButton)));
-        return markup;
-    }
-
 
 }

@@ -23,14 +23,14 @@ import java.util.Optional;
 import java.util.Set;
 
 @Component
-public class MethodExecutor {
+public class ApiRequests {
 
     private final CommonAbsSender telegram;
     private final ChatUserRepository chatUsers;
     private final ChatInfoRepository chats;
     private final Set<Long> runningChatMigrations;
 
-    public MethodExecutor(CommonAbsSender telegram, ChatUserRepository chatUsers, ChatInfoRepository chats) {
+    public ApiRequests(CommonAbsSender telegram, ChatUserRepository chatUsers, ChatInfoRepository chats) {
         this.telegram = telegram;
         this.chatUsers = chatUsers;
         this.chats = chats;
@@ -45,8 +45,12 @@ public class MethodExecutor {
         return telegram.execute(method);
     }
 
+    public Message sendMessage(long chatId, String text, @Nullable Integer replyToMessageId) {
+        return sendMessage(Methods.sendMessage(chatId, text).setReplyToMessageId(replyToMessageId));
+    }
+
     public Message sendMessage(long chatId, String text) {
-        return sendMessage(Methods.sendMessage(chatId, text));
+        return sendMessage(chatId, text, null);
     }
 
     @Nullable

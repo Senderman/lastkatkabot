@@ -1,4 +1,6 @@
-package com.senderman.lastkatkabot;
+package com.senderman.lastkatkabot.util;
+
+import com.senderman.lastkatkabot.Role;
 
 import java.util.EnumSet;
 

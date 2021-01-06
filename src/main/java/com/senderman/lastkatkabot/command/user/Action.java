@@ -1,7 +1,7 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.senderman.lastkatkabot.MethodExecutor;
+import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -9,9 +9,9 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Component
 public class Action implements CommandExecutor {
 
-    private final MethodExecutor telegram;
+    private final ApiRequests telegram;
 
-    public Action(MethodExecutor telegram) {
+    public Action(ApiRequests telegram) {
         this.telegram = telegram;
     }
 

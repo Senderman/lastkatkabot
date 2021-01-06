@@ -65,7 +65,7 @@ public class Userstats {
         return cityLink;
     }
 
-    public void setCityLink(String cityLink) {
+    public void setCityLink(@Nullable String cityLink) {
         this.cityLink = cityLink;
     }
 
@@ -73,7 +73,7 @@ public class Userstats {
         return loverId;
     }
 
-    public void setLoverId(int loverId) {
+    public void setLoverId(@Nullable Integer loverId) {
         this.loverId = loverId;
     }
 

@@ -13,6 +13,7 @@ public class ChatUser {
 
     private int userId;
     private long chatId;
+    private int lastMessageDate;
 
     public ChatUser() {
 
@@ -37,6 +38,14 @@ public class ChatUser {
 
     public void setChatId(long chatId) {
         this.chatId = chatId;
+    }
+
+    public int getLastMessageDate() {
+        return lastMessageDate;
+    }
+
+    public void setLastMessageDate(int lastMessageDate) {
+        this.lastMessageDate = lastMessageDate;
     }
 
     @Override

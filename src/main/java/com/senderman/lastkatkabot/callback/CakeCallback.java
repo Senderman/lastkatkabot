@@ -1,16 +1,16 @@
 package com.senderman.lastkatkabot.callback;
 
-import com.senderman.lastkatkabot.MethodExecutor;
+import com.senderman.lastkatkabot.ApiRequests;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
 @Component
 public class CakeCallback implements CallbackExecutor {
 
-    private final MethodExecutor telegram;
+    private final ApiRequests telegram;
 
 
-    public CakeCallback(MethodExecutor telegram) {
+    public CakeCallback(ApiRequests telegram) {
         this.telegram = telegram;
     }
 

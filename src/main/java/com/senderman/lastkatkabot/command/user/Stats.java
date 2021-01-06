@@ -1,7 +1,7 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.senderman.lastkatkabot.MethodExecutor;
+import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.model.Userstats;
 import com.senderman.lastkatkabot.repository.UserStatsRepository;
@@ -13,11 +13,11 @@ import org.telegram.telegrambots.meta.api.objects.User;
 @Component
 public class Stats implements CommandExecutor {
 
-    private final MethodExecutor telegram;
+    private final ApiRequests telegram;
     private final UserStatsRepository users;
 
 
-    public Stats(MethodExecutor telegram, UserStatsRepository users) {
+    public Stats(ApiRequests telegram, UserStatsRepository users) {
         this.telegram = telegram;
         this.users = users;
     }

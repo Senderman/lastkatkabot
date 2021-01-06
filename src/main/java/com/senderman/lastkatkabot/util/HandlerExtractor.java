@@ -1,4 +1,4 @@
-package com.senderman.lastkatkabot;
+package com.senderman.lastkatkabot.util;
 
 import java.util.Optional;
 

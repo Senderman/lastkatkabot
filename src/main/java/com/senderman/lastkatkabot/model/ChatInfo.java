@@ -1,14 +1,25 @@
 package com.senderman.lastkatkabot.model;
 
+import org.jetbrains.annotations.Nullable;
 import org.springframework.data.annotation.Id;
+
+import java.util.List;
 
 public class ChatInfo {
 
     @Id
     private long chatId;
+    @Nullable
+    private List<String> lastPairs;
+    @Nullable
+    private Integer lastPairDate;
 
     public ChatInfo() {
 
+    }
+
+    public ChatInfo(long chatId) {
+        this.chatId = chatId;
     }
 
     public long getChatId() {
@@ -17,5 +28,21 @@ public class ChatInfo {
 
     public void setChatId(long chatId) {
         this.chatId = chatId;
+    }
+
+    public @Nullable List<String> getLastPairs() {
+        return lastPairs;
+    }
+
+    public void setLastPairs(@Nullable List<String> lastPairs) {
+        this.lastPairs = lastPairs;
+    }
+
+    public @Nullable Integer getLastPairDate() {
+        return lastPairDate;
+    }
+
+    public void setLastPairDate(@Nullable Integer lastPairDate) {
+        this.lastPairDate = lastPairDate;
     }
 }

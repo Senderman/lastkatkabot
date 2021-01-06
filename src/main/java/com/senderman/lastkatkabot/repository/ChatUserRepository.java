@@ -11,4 +11,6 @@ public interface ChatUserRepository extends MongoRepository<ChatUser, String> {
 
     List<ChatUser> findAllByChatId(long chatId);
 
+    void deleteByChatIdAndLastMessageDateLessThan(long chatId, int lastMessageDate);
+
 }

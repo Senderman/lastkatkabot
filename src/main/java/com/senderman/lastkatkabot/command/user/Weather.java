@@ -1,6 +1,6 @@
 package com.senderman.lastkatkabot.command.user;
 
-import com.senderman.lastkatkabot.MethodExecutor;
+import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.model.Userstats;
 import com.senderman.lastkatkabot.repository.UserStatsRepository;
@@ -16,10 +16,10 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class Weather implements CommandExecutor {
 
-    private final MethodExecutor telegram;
+    private final ApiRequests telegram;
     private final UserStatsRepository userStats;
 
-    public Weather(MethodExecutor telegram, UserStatsRepository userStats) {
+    public Weather(ApiRequests telegram, UserStatsRepository userStats) {
         this.telegram = telegram;
         this.userStats = userStats;
     }

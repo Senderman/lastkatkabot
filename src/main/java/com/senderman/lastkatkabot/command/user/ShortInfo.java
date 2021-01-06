@@ -1,6 +1,6 @@
 package com.senderman.lastkatkabot.command.user;
 
-import com.senderman.lastkatkabot.MethodExecutor;
+import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -8,9 +8,9 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Component
 public class ShortInfo implements CommandExecutor {
 
-    private final MethodExecutor telegram;
+    private final ApiRequests telegram;
 
-    public ShortInfo(MethodExecutor telegram) {
+    public ShortInfo(ApiRequests telegram) {
         this.telegram = telegram;
     }
 
