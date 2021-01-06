@@ -85,6 +85,8 @@ public class Pair implements CommandExecutor {
             return;
         }
 
+        // clean inactive chat members
+        forgetOldMembers(chatId);
         int totalChatMembers = chatUsers.countChatUsers(chatId);
         if (totalChatMembers < 2) {
             telegram.sendMessage(chatId, "Недостаточно пользователей писало в чат за последние 2 недели!");
@@ -125,7 +127,6 @@ public class Pair implements CommandExecutor {
     }
 
     public PairData generateNewPair(long chatId, ChatUser firstUser, ChatUser secondUser) {
-        forgetOldMembers(chatId);
 
         var firstUserStats = userStats.findById(firstUser.getUserId());
 
