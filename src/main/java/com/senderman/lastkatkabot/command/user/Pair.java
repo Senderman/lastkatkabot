@@ -4,48 +4,55 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.Love;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import com.senderman.lastkatkabot.exception.NotEnoughElementsException;
 import com.senderman.lastkatkabot.model.ChatInfo;
 import com.senderman.lastkatkabot.model.ChatUser;
 import com.senderman.lastkatkabot.model.Userstats;
 import com.senderman.lastkatkabot.repository.ChatInfoRepository;
 import com.senderman.lastkatkabot.repository.ChatUserRepository;
 import com.senderman.lastkatkabot.repository.UserStatsRepository;
+import com.senderman.lastkatkabot.util.CurrentTime;
 import com.senderman.lastkatkabot.util.TelegramHtmlUtils;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Component
 public class Pair implements CommandExecutor {
 
-    private static final int TWO_WEEKS = (int) TimeUnit.DAYS.toSeconds(14);
-    private static final int MIN_USERS = 3;
+    private final static int TWO_WEEKS = (int) TimeUnit.DAYS.toSeconds(14);
 
     private final ApiRequests telegram;
     private final UserStatsRepository userStats;
     private final ChatUserRepository chatUsers;
     private final ChatInfoRepository chatInfoRepo;
     private final Love love;
+    private final CurrentTime currentTime;
     private final Set<Long> runningChatPairsGenerations;
+    private final ExecutorService threadPool;
 
     public Pair(
             ApiRequests telegram,
             UserStatsRepository userStats,
             ChatUserRepository chatUsers,
             ChatInfoRepository chatInfoRepo,
-            Love love
+            Love love,
+            CurrentTime currentTime
     ) {
         this.telegram = telegram;
         this.userStats = userStats;
         this.chatUsers = chatUsers;
         this.chatInfoRepo = chatInfoRepo;
         this.love = love;
+        this.currentTime = currentTime;
         this.runningChatPairsGenerations = Collections.synchronizedSet(new HashSet<>());
+        this.threadPool = Executors.newFixedThreadPool(2);
     }
 
     @Override
@@ -62,47 +69,72 @@ public class Pair implements CommandExecutor {
     public void execute(Message message) {
         var chatId = message.getChatId();
 
-        var chatInfo = chatInfoRepo.findById(chatId).orElse(new ChatInfo(chatId));
-        var pairs = Optional.ofNullable(chatInfo.getLastPairs()).orElse(new ArrayList<>());
-        var date = Optional.ofNullable(chatInfo.getLastPairDate()).orElse(-1);
+        if (message.isUserMessage()) {
+            telegram.sendMessage(chatId, "Команду нельзя использовать в лс!");
+            return;
+        }
 
-        if (!pairs.isEmpty() && date + TWO_WEEKS > System.currentTimeMillis() / 1000) {
-            telegram.sendMessage(chatId, "Пара дня: " + pairs.get(0));
+        // check if pair was generated today
+        var chatInfo = chatInfoRepo.findById(chatId).orElse(new ChatInfo(chatId));
+        var lastPairs = Optional.ofNullable(chatInfo.getLastPairs()).orElse(new ArrayList<>());
+        var lastPairGenerationDate = Optional.ofNullable(chatInfo.getLastPairDate()).orElse(-1);
+        int currentDay = Integer.parseInt(currentTime.getCurrentDay());
+
+        if (!lastPairs.isEmpty() && lastPairGenerationDate == currentDay) {
+            telegram.sendMessage(chatId, "Пара дня: " + lastPairs.get(0));
+            return;
+        }
+
+        int totalChatMembers = chatUsers.countChatUsers(chatId);
+        if (totalChatMembers < 2) {
+            telegram.sendMessage(chatId, "Недостаточно пользователей писало в чат за последние 2 недели!");
             return;
         }
 
         if (runningChatPairsGenerations.contains(chatId))
             return;
 
-        try {
-            String[] loveStrings = love.getRandomLoveStrings();
-            generateNewPair(chatInfo);
-        } catch (NotEnoughElementsException e) {
-            telegram.sendMessage(chatId,
-                    "Недостаточно пользователей! Хотя бы " + MIN_USERS + " должны написать в чат!");
-        }
+        runningChatPairsGenerations.add(chatId);
 
+        var usersForPair = chatUsers.sampleOfChat(chatId, 2);
+        String[] loveStrings = love.getRandomLoveStrings();
+        var pairFuture = threadPool.submit(
+                () -> generateNewPair(chatId, usersForPair.get(0), usersForPair.get(1)));
+
+        threadPool.execute(() -> {
+            try {
+                sendRandomShitWithDelay(chatId, loveStrings, 1000L);
+                var pair = pairFuture.get();
+                chatInfo.setLastPairDate(currentDay);
+                lastPairs.add(0, pair.toString());
+                chatInfo.setLastPairs(lastPairs.stream().limit(10).collect(Collectors.toList()));
+                chatInfoRepo.save(chatInfo);
+
+                var text = String.format(loveStrings[loveStrings.length - 1],
+                        TelegramHtmlUtils.getUserLink(pair.getFirst()),
+                        TelegramHtmlUtils.getUserLink(pair.getSecond()));
+                telegram.sendMessage(chatId, text);
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+                telegram.sendMessage(chatId, "...Упс, произошла ошибка. Попробуйте в другой раз");
+            } finally {
+                runningChatPairsGenerations.remove(chatId);
+            }
+        });
 
     }
 
-    public PairData generateNewPair(ChatInfo chatInfo) throws NotEnoughElementsException {
-        var chatId = chatInfo.getChatId();
+    public PairData generateNewPair(long chatId, ChatUser firstUser, ChatUser secondUser) {
         forgetOldMembers(chatId);
 
-        List<ChatUser> users = chatUsers.findAllByChatId(chatId);
-        if (users.size() < 3) {
-            throw new NotEnoughElementsException(3);
-        }
-        var random = ThreadLocalRandom.current();
-        var firstUser = users.remove(random.nextInt(users.size()));
         var firstUserStats = userStats.findById(firstUser.getUserId());
 
         // if user has lover (see /marryme command) and the lover is in the chat, use him as lover
         // or else, use random user from chat members
         int loverId = firstUserStats
                 .map(Userstats::getLoverId)
-                .filter(id -> users.stream().anyMatch(u -> u.getUserId() == id))
-                .orElse(users.get(random.nextInt(users.size())).getUserId());
+                .filter(id -> chatUsers.existsByChatIdAndUserId(chatId, id))
+                .orElse(secondUser.getUserId());
 
         var firstMember = telegram.execute(Methods.getChatMember(chatId, firstUser.getUserId())).getUser();
         var secondMember = telegram.execute(Methods.getChatMember(chatId, loverId)).getUser();
@@ -117,6 +149,18 @@ public class Pair implements CommandExecutor {
                 chatId,
                 (int) (System.currentTimeMillis() / 1000 - TWO_WEEKS)
         );
+    }
+
+
+    private void sendRandomShitWithDelay(long chatId, String[] shit, long delay) {
+        for (int i = 0; i < shit.length - 1; i++) {
+            telegram.sendMessage(chatId, shit[i]);
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private static class PairData {
@@ -139,24 +183,12 @@ public class Pair implements CommandExecutor {
             return second;
         }
 
-        public boolean isTrueLove() {
-            return isTrueLove;
-        }
-
         private String getPairEmoji() {
             return isTrueLove ? "\uD83D\uDC96" : "❤️";
         }
 
         @Override
         public String toString() {
-            return String.format("%s %s %s",
-                    TelegramHtmlUtils.getUserLink(first),
-                    getPairEmoji(),
-                    TelegramHtmlUtils.getUserLink(second)
-            );
-        }
-
-        public String toNoNotifyString() {
             return String.format("%s %s %s",
                     TelegramHtmlUtils.htmlSafe(first.getFirstName()),
                     getPairEmoji(),

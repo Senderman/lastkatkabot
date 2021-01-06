@@ -2,9 +2,11 @@ package com.senderman.lastkatkabot.model;
 
 import org.jetbrains.annotations.Nullable;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.TypeAlias;
 
 import java.util.List;
 
+@TypeAlias("chatinfo")
 public class ChatInfo {
 
     @Id

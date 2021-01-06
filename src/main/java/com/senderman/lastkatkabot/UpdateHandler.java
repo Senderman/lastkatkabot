@@ -6,8 +6,10 @@ import com.senderman.lastkatkabot.callback.CallbackExecutor;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.model.AdminUser;
 import com.senderman.lastkatkabot.model.BlacklistedUser;
+import com.senderman.lastkatkabot.model.ChatUser;
 import com.senderman.lastkatkabot.repository.AdminUserRepository;
 import com.senderman.lastkatkabot.repository.BlacklistedUserRepository;
+import com.senderman.lastkatkabot.repository.ChatUserRepository;
 import com.senderman.lastkatkabot.util.HandlerExtractor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Lazy;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.EnumSet;
@@ -33,6 +36,7 @@ public class UpdateHandler extends BotHandler {
     private final int mainAdminId;
     private final Set<Integer> adminIds;
     private final Set<Integer> blacklist;
+    private final ChatUserRepository chatUsers;
 
     @Autowired
     public UpdateHandler(
@@ -41,7 +45,8 @@ public class UpdateHandler extends BotHandler {
             @Lazy HandlerExtractor<CommandExecutor> commandExtractor,
             @Lazy HandlerExtractor<CallbackExecutor> callbacks,
             AdminUserRepository admins,
-            BlacklistedUserRepository blacklist
+            BlacklistedUserRepository blacklist,
+            ChatUserRepository chatUsers
     ) {
         var args = login.split("\\s+");
         username = args[0];
@@ -50,6 +55,7 @@ public class UpdateHandler extends BotHandler {
         this.commands = commandExtractor;
         this.callbacks = callbacks;
         this.mainAdminId = mainAdminId;
+        this.chatUsers = chatUsers;
 
         this.blacklist = blacklist.findAll()
                 .stream()
@@ -87,6 +93,11 @@ public class UpdateHandler extends BotHandler {
 
         var message = update.getMessage();
 
+        // track users activity in chats
+        if (!message.isUserMessage()) {
+            updateUserLastMessageDate(message);
+        }
+
         if (!message.hasText()) return null;
 
         var text = message.getText();
@@ -116,6 +127,17 @@ public class UpdateHandler extends BotHandler {
     @Override
     public String getBotUsername() {
         return username;
+    }
+
+
+    private void updateUserLastMessageDate(Message message) {
+        var chatId = message.getChatId();
+        var userId = message.getFrom().getId();
+        var date = message.getDate();
+
+        var chatUser = chatUsers.findByChatIdAndUserId(chatId, userId).orElse(new ChatUser(userId, chatId));
+        chatUser.setLastMessageDate(date);
+        chatUsers.save(chatUser);
     }
 
 

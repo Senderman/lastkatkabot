@@ -116,10 +116,10 @@ public class ApiRequests {
         chat.setChatId(newChatId);
         chats.save(chat);
 
-        for (var chatUser : chatUsers.findAllByChatId(oldChatId)) {
-            chatUser.setChatId(newChatId);
-            chatUsers.save(chatUser);
-        }
+        chatUsers.findAllByChatId(oldChatId)
+                .peek(user -> user.setChatId(newChatId))
+                .forEach(chatUsers::save);
+
         runningChatMigrations.remove(oldChatId);
     }
 
