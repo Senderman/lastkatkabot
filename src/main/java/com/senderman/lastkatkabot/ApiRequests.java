@@ -89,6 +89,10 @@ public class ApiRequests {
         }
     }
 
+    public void deleteMessage(long chatId, int messageId) {
+        execute(Methods.deleteMessage(chatId, messageId));
+    }
+
     public void answerCallbackQuery(CallbackQuery query, String text) {
         answerCallbackQuery(query, text, false);
     }

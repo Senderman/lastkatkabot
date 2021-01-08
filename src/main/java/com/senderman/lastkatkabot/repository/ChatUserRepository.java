@@ -3,7 +3,6 @@ package com.senderman.lastkatkabot.repository;
 import com.senderman.lastkatkabot.model.ChatUser;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,9 +13,6 @@ import java.util.stream.Stream;
 public interface ChatUserRepository extends MongoRepository<ChatUser, String> {
 
     Stream<ChatUser> findAllByChatId(long chatId);
-
-    @Query(value = "{ chatId: ?0 }", count = true)
-    int countChatUsers(long chatId);
 
     @Aggregation({
             "{ $match: { chatId: ?0 } }",

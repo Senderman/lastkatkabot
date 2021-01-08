@@ -87,8 +87,9 @@ public class Pair implements CommandExecutor {
 
         // clean inactive chat members
         forgetOldMembers(chatId);
-        int totalChatMembers = chatUsers.countChatUsers(chatId);
-        if (totalChatMembers < 2) {
+
+        var usersForPair = chatUsers.sampleOfChat(chatId, 2);
+        if (usersForPair.size() < 2) {
             telegram.sendMessage(chatId, "Недостаточно пользователей писало в чат за последние 2 недели!");
             return;
         }
@@ -98,7 +99,6 @@ public class Pair implements CommandExecutor {
 
         runningChatPairsGenerations.add(chatId);
 
-        var usersForPair = chatUsers.sampleOfChat(chatId, 2);
         String[] loveStrings = love.getRandomLoveStrings();
         var pairFuture = threadPool.submit(
                 () -> generateNewPair(chatId, usersForPair.get(0), usersForPair.get(1)));
