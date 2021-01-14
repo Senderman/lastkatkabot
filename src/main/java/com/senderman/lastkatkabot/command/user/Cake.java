@@ -4,7 +4,7 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.callback.Callback;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import com.senderman.lastkatkabot.util.TelegramHtmlUtils;
+import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
 import org.springframework.stereotype.Component;
@@ -33,8 +33,8 @@ public class Cake implements CommandExecutor {
     public void execute(Message message) {
         if (!message.isReply() || !message.isUserMessage()) return;
 
-        var subject = TelegramHtmlUtils.htmlSafe(message.getFrom().getFirstName());
-        var object = TelegramHtmlUtils.htmlSafe(message.getReplyToMessage().getFrom().getFirstName());
+        var subject = Html.htmlSafe(message.getFrom().getFirstName());
+        var object = Html.htmlSafe(message.getReplyToMessage().getFrom().getFirstName());
         var text = String.format("\uD83C\uDF82 %s, пользователь %s подарил вам тортик %s",
                 object, subject, message.getText().replaceAll("/@\\S*\\s?|/\\S*\\s?", ""));
 

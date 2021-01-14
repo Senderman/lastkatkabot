@@ -17,7 +17,8 @@ public class LastkatkaBot implements BotModule {
 
     @Override
     public @NotNull BotHandler botHandler(@NotNull Config config) {
-        var context = SpringApplication.run(UpdateHandler.class);
-        return context.getBean(UpdateHandler.class);
+        var handlerClass = UpdateHandler.class;
+        var context = SpringApplication.run(handlerClass);
+        return context.getBean(handlerClass);
     }
 }

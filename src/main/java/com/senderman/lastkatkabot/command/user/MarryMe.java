@@ -6,7 +6,7 @@ import com.senderman.lastkatkabot.callback.Callback;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.model.Userstats;
 import com.senderman.lastkatkabot.repository.UserStatsRepository;
-import com.senderman.lastkatkabot.util.TelegramHtmlUtils;
+import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +66,7 @@ public class MarryMe implements CommandExecutor {
             return;
         }
 
-        var userLink = TelegramHtmlUtils.getUserLink(message.getFrom());
+        var userLink = Html.getUserLink(message.getFrom());
         var text = "Пользователь " + userLink + " предлагает вам предлагает вам руку, сердце и шавуху. Вы согласны?";
 
         var markup = new MarkupBuilder()

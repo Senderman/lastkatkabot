@@ -11,7 +11,7 @@ import com.senderman.lastkatkabot.repository.ChatInfoRepository;
 import com.senderman.lastkatkabot.repository.ChatUserRepository;
 import com.senderman.lastkatkabot.repository.UserStatsRepository;
 import com.senderman.lastkatkabot.util.CurrentTime;
-import com.senderman.lastkatkabot.util.TelegramHtmlUtils;
+import com.senderman.lastkatkabot.util.Html;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -113,8 +113,8 @@ public class Pair implements CommandExecutor {
                 chatInfoRepo.save(chatInfo);
 
                 var text = String.format(loveStrings[loveStrings.length - 1],
-                        TelegramHtmlUtils.getUserLink(pair.getFirst()),
-                        TelegramHtmlUtils.getUserLink(pair.getSecond()));
+                        Html.getUserLink(pair.getFirst()),
+                        Html.getUserLink(pair.getSecond()));
                 telegram.sendMessage(chatId, text);
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
@@ -191,9 +191,9 @@ public class Pair implements CommandExecutor {
         @Override
         public String toString() {
             return String.format("%s %s %s",
-                    TelegramHtmlUtils.htmlSafe(first.getFirstName()),
+                    Html.htmlSafe(first.getFirstName()),
                     getPairEmoji(),
-                    TelegramHtmlUtils.htmlSafe(second.getFirstName())
+                    Html.htmlSafe(second.getFirstName())
             );
         }
     }

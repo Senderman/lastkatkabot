@@ -77,6 +77,18 @@ public class Userstats {
         this.loverId = loverId;
     }
 
+    public void increaseDuelWins() {
+        this.duelWins++;
+    }
+
+    public void increaseDuelsTotal() {
+        this.duelsTotal++;
+    }
+
+    public void increaseBncScore(int amount) {
+        this.bncScore += amount;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
