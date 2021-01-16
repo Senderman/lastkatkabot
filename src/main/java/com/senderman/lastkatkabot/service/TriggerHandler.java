@@ -1,4 +1,4 @@
-package com.senderman.lastkatkabot.util;
+package com.senderman.lastkatkabot.service;
 
 import com.senderman.lastkatkabot.Role;
 

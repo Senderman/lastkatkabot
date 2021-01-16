@@ -2,7 +2,7 @@ package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.ApiRequests;
-import com.senderman.lastkatkabot.callback.Callback;
+import com.senderman.lastkatkabot.callback.Callbacks;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.model.Userstats;
 import com.senderman.lastkatkabot.repository.UserStatsRepository;
@@ -72,10 +72,10 @@ public class MarryMe implements CommandExecutor {
         var markup = new MarkupBuilder()
                 .addButton(ButtonBuilder.callbackButton()
                         .text("Принять")
-                        .payload(Callback.MARRIAGE + " accept " + userId))
+                        .payload(Callbacks.MARRIAGE + " accept " + userId))
                 .addButton(ButtonBuilder.callbackButton()
                         .text("Отказаться")
-                        .payload(Callback.MARRIAGE + " decline"))
+                        .payload(Callbacks.MARRIAGE + " decline"))
                 .build();
 
         telegram.sendMessage(Methods.sendMessage()

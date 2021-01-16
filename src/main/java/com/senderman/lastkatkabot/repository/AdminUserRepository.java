@@ -1,7 +1,7 @@
 package com.senderman.lastkatkabot.repository;
 
 import com.senderman.lastkatkabot.model.AdminUser;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.repository.CrudRepository;
 
-public interface AdminUserRepository extends MongoRepository<AdminUser, Integer> {
+public interface AdminUserRepository extends CrudRepository<AdminUser, Integer> {
 }

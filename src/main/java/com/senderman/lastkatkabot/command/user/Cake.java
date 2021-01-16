@@ -2,7 +2,7 @@ package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.ApiRequests;
-import com.senderman.lastkatkabot.callback.Callback;
+import com.senderman.lastkatkabot.callback.Callbacks;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
@@ -41,10 +41,10 @@ public class Cake implements CommandExecutor {
         var markup = new MarkupBuilder()
                 .addButton(ButtonBuilder.callbackButton()
                         .text("Принять")
-                        .payload(Callback.CAKE + " accept"))
+                        .payload(Callbacks.CAKE + " accept"))
                 .addButton(ButtonBuilder.callbackButton()
                         .text("Отказаться")
-                        .payload(Callback.CAKE + " decline"))
+                        .payload(Callbacks.CAKE + " decline"))
                 .build();
 
         telegram.sendMessage(Methods.sendMessage(message.getChatId(), text)

@@ -35,7 +35,18 @@ public class DuelController {
         if (!duels.containsKey(key))
             throw new NoSuchElementException("No duel with given key \"" + key + "\" in memory");
 
-        var result = processDuelResultToDatabase(key, user);
+        var duel = duels.get(key);
+        if (duel.getUser1().getId().equals(user.getId())) {
+            throw new SameUserException(user.getId());
+        }
+
+        duels.remove(key);
+        var result = duel.run(user);
+        processDuelResultToDatabase(result);
+        processDuelResultToMessage(chatId, messageId, result);
+    }
+
+    private void processDuelResultToMessage(long chatId, int messageId, Duel.DuelResult result) {
         var method = Methods.editMessageText()
                 .setChatId(chatId)
                 .setMessageId(messageId)
@@ -53,26 +64,19 @@ public class DuelController {
         }
         method.setText(text);
         telegram.execute(method);
-
     }
 
-    private Duel.DuelResult processDuelResultToDatabase(String key, User user) throws SameUserException {
-        var duel = duels.get(key);
-        if (duel.getUser1().getId().equals(user.getId()))
-            throw new SameUserException(user.getId());
-
-        duels.remove(key);
-        var results = duel.run(user);
-        var winner = results.getWinner();
-        var loser = results.getLoser();
+    private void processDuelResultToDatabase(Duel.DuelResult result) {
+        var winner = result.getWinner();
+        var loser = result.getLoser();
         Userstats winnerStats = users.findById(winner.getId()).orElse(new Userstats(winner.getId()));
         Userstats loserStats = users.findById(loser.getId()).orElse(new Userstats(loser.getId()));
         winnerStats.increaseDuelsTotal();
         loserStats.increaseDuelsTotal();
-        if (!results.isDraw())
+        if (!result.isDraw())
             winnerStats.increaseDuelWins();
+
         users.saveAll(List.of(winnerStats, loserStats));
-        return results;
     }
 
     private String createKey(long chatId, int messageId) {

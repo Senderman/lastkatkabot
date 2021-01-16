@@ -16,7 +16,7 @@ public class PayRespectsCallback implements CallbackExecutor {
 
     @Override
     public String getTrigger() {
-        return Callback.F.toString();
+        return Callbacks.F;
     }
 
     @Override

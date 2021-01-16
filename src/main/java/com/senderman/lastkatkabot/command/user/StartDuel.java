@@ -2,7 +2,7 @@ package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.ApiRequests;
-import com.senderman.lastkatkabot.callback.Callback;
+import com.senderman.lastkatkabot.callback.Callbacks;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.duel.DuelController;
 import com.senderman.lastkatkabot.util.Html;
@@ -43,7 +43,7 @@ public class StartDuel implements CommandExecutor {
                 .setReplyMarkup(new MarkupBuilder()
                         .addButton(ButtonBuilder.callbackButton()
                                 .text("Присоединиться")
-                                .payload(Callback.DUEL.toString()))
+                                .payload(Callbacks.DUEL))
                         .build());
 
         var sentMessage = telegram.sendMessage(sm);

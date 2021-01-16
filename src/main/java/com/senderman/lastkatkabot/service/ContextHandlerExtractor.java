@@ -1,4 +1,4 @@
-package com.senderman.lastkatkabot.util;
+package com.senderman.lastkatkabot.service;
 
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;

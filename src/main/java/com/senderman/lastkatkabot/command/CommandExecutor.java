@@ -1,6 +1,6 @@
 package com.senderman.lastkatkabot.command;
 
-import com.senderman.lastkatkabot.util.TriggerHandler;
+import com.senderman.lastkatkabot.service.TriggerHandler;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 /**

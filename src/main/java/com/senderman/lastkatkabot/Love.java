@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-
 public class Love {
 
     @JsonProperty("love-strings")

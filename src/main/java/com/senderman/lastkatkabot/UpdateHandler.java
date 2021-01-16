@@ -10,7 +10,7 @@ import com.senderman.lastkatkabot.model.ChatUser;
 import com.senderman.lastkatkabot.repository.AdminUserRepository;
 import com.senderman.lastkatkabot.repository.BlacklistedUserRepository;
 import com.senderman.lastkatkabot.repository.ChatUserRepository;
-import com.senderman.lastkatkabot.util.HandlerExtractor;
+import com.senderman.lastkatkabot.service.HandlerExtractor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @SpringBootApplication
 public class UpdateHandler extends BotHandler {
@@ -57,13 +58,12 @@ public class UpdateHandler extends BotHandler {
         this.mainAdminId = mainAdminId;
         this.chatUsers = chatUsers;
 
-        this.blacklist = blacklist.findAll()
-                .stream()
+
+        this.blacklist = StreamSupport.stream(blacklist.findAll().spliterator(), false)
                 .map(BlacklistedUser::getUserId)
                 .collect(Collectors.toSet());
 
-        this.adminIds = admins.findAll()
-                .stream()
+        this.adminIds = StreamSupport.stream(admins.findAll().spliterator(), false)
                 .map(AdminUser::getUserId)
                 .collect(Collectors.toSet());
         adminIds.add(mainAdminId);

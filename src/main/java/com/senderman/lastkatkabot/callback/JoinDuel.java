@@ -21,7 +21,7 @@ public class JoinDuel implements CallbackExecutor {
 
     @Override
     public String getTrigger() {
-        return Callback.DUEL.toString();
+        return Callbacks.DUEL;
     }
 
     @Override

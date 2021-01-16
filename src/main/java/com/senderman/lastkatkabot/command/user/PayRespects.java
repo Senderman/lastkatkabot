@@ -2,7 +2,7 @@ package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.ApiRequests;
-import com.senderman.lastkatkabot.callback.Callback;
+import com.senderman.lastkatkabot.callback.Callbacks;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
@@ -48,7 +48,7 @@ public class PayRespects implements CommandExecutor {
         var markup = new MarkupBuilder()
                 .addButton(ButtonBuilder.callbackButton()
                         .text("F")
-                        .payload(Callback.F.toString()))
+                        .payload(Callbacks.F))
                 .build();
 
         telegram.sendMessage(Methods.sendMessage(message.getChatId(), text).setReplyMarkup(markup));

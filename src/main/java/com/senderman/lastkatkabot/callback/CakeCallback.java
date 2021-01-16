@@ -16,7 +16,7 @@ public class CakeCallback implements CallbackExecutor {
 
     @Override
     public String getTrigger() {
-        return Callback.CAKE.toString();
+        return Callbacks.CAKE;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.senderman.lastkatkabot.util;
+package com.senderman.lastkatkabot.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

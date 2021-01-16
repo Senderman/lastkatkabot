@@ -10,7 +10,7 @@ import com.senderman.lastkatkabot.model.Userstats;
 import com.senderman.lastkatkabot.repository.ChatInfoRepository;
 import com.senderman.lastkatkabot.repository.ChatUserRepository;
 import com.senderman.lastkatkabot.repository.UserStatsRepository;
-import com.senderman.lastkatkabot.util.CurrentTime;
+import com.senderman.lastkatkabot.service.CurrentTime;
 import com.senderman.lastkatkabot.util.Html;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
