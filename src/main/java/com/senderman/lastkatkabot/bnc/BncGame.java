@@ -33,11 +33,14 @@ public class BncGame {
      * @return results (with bulls and cows)
      * @throws GameOverException             if the given number is wrong and no attempts left for future numbers
      * @throws NumberAlreadyCheckedException if the given number is already checked
+     * @throws RepeatingDigitsException      if the given number has repeating digits
      * @throws InvalidLengthException        if the number's length is different from this.length
      */
     public BncResult check(String number) {
         if (number.length() != length)
             throw new InvalidLengthException(length, number.length());
+        if (hasRepeatingDigits(number))
+            throw new RepeatingDigitsException(number);
 
         int bulls = 0;
         int cows = 0;
@@ -63,6 +66,10 @@ public class BncGame {
         if (attemptsLeft <= 0)
             throw new GameOverException(result, answer);
         return result;
+    }
+
+    public boolean hasRepeatingDigits(String number) {
+        return number.chars().distinct().count() < number.length();
     }
 
     public BncGameState getGameState() {

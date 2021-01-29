@@ -4,6 +4,7 @@ import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.model.Userstats;
 import com.senderman.lastkatkabot.repository.UserStatsRepository;
 import com.senderman.lastkatkabot.util.Html;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
@@ -15,16 +16,16 @@ import java.util.stream.Collectors;
 public class BncTelegramHandler {
 
     private final ApiRequests telegram;
-    private final BncDatabaseController bncDatabaseController;
+    private final BncGamesManager gamesManager;
     private final UserStatsRepository usersRepo;
 
     public BncTelegramHandler(
             ApiRequests telegram,
-            BncDatabaseController bncDatabaseController,
+            @Qualifier("bncManagerDatabaseWrapper") BncGamesManager gamesManager,
             UserStatsRepository usersRepo
     ) {
         this.telegram = telegram;
-        this.bncDatabaseController = bncDatabaseController;
+        this.gamesManager = gamesManager;
         this.usersRepo = usersRepo;
     }
 
@@ -32,7 +33,7 @@ public class BncTelegramHandler {
         var chatId = message.getChatId();
         var number = message.getText();
         try {
-            var result = bncDatabaseController.check(chatId, number);
+            var result = gamesManager.check(chatId, number);
             if (result.isWin()) {
                 processWin(message, result);
             } else {
@@ -40,6 +41,8 @@ public class BncTelegramHandler {
             }
         } catch (NumberAlreadyCheckedException e) {
             telegram.sendMessage(chatId, "Уже проверяли! " + formatResult(e.getResult()));
+        } catch (RepeatingDigitsException e) {
+            telegram.sendMessage(chatId, "Число не должно иметь повторяющихся цифр!");
         } catch (GameOverException e) {
             processGameOver(message, e.getAnswer());
         } catch (InvalidLengthException | NoSuchElementException ignored) {
@@ -53,8 +56,10 @@ public class BncTelegramHandler {
         var userStats = usersRepo.findById(userId).orElse(new Userstats(userId));
         userStats.increaseBncScore(result.getNumber().length());
         usersRepo.save(userStats);
-        var gameState = bncDatabaseController.getGameState(chatId);
-        bncDatabaseController.deleteGame(chatId);
+
+        var gameState = gamesManager.getGameState(chatId);
+        gamesManager.deleteGame(chatId);
+
         var username = Html.htmlSafe(message.getFrom().getFirstName());
         var text = username + " выиграл за " + (BncGame.totalAttempts(gameState.getLength()) - result.getAttempts()) +
                 " попыток!\n\n" + formatGameEndMessage(gameState);
@@ -63,8 +68,8 @@ public class BncTelegramHandler {
 
     public void processGameOver(Message message, String answer) {
         var chatId = message.getChatId();
-        var gameState = bncDatabaseController.getGameState(chatId);
-        bncDatabaseController.deleteGame(chatId);
+        var gameState = gamesManager.getGameState(chatId);
+        gamesManager.deleteGame(chatId);
         var text = "Вы проиграли! Ответ: " + answer + "\n\n" + formatGameEndMessage(gameState);
         telegram.sendMessage(chatId, text);
     }

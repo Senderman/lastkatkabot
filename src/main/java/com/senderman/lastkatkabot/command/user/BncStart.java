@@ -1,8 +1,8 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.senderman.lastkatkabot.ApiRequests;
-import com.senderman.lastkatkabot.bnc.BncDatabaseController;
 import com.senderman.lastkatkabot.bnc.BncGameState;
+import com.senderman.lastkatkabot.bnc.BncManagerDatabaseWrapper;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -13,10 +13,10 @@ import java.util.stream.Collectors;
 @Component
 public class BncStart implements CommandExecutor {
 
-    private final BncDatabaseController gamesController;
+    private final BncManagerDatabaseWrapper gamesController;
     private final ApiRequests telegram;
 
-    public BncStart(BncDatabaseController gamesController, ApiRequests telegram) {
+    public BncStart(BncManagerDatabaseWrapper gamesController, ApiRequests telegram) {
         this.gamesController = gamesController;
         this.telegram = telegram;
     }
