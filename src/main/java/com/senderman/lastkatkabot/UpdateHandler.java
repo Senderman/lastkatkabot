@@ -2,6 +2,7 @@ package com.senderman.lastkatkabot;
 
 import com.annimon.tgbotsmodule.BotHandler;
 import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.senderman.lastkatkabot.bnc.BncTelegramHandler;
 import com.senderman.lastkatkabot.callback.CallbackExecutor;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.model.AdminUser;
@@ -38,6 +39,7 @@ public class UpdateHandler extends BotHandler {
     private final Set<Integer> adminIds;
     private final Set<Integer> blacklist;
     private final ChatUserRepository chatUsers;
+    private final BncTelegramHandler bnc;
 
     @Autowired
     public UpdateHandler(
@@ -47,7 +49,8 @@ public class UpdateHandler extends BotHandler {
             @Lazy HandlerExtractor<CallbackExecutor> callbacks,
             AdminUserRepository admins,
             BlacklistedUserRepository blacklist,
-            ChatUserRepository chatUsers
+            ChatUserRepository chatUsers,
+            @Lazy BncTelegramHandler bnc
     ) {
         var args = login.split("\\s+");
         username = args[0];
@@ -57,6 +60,7 @@ public class UpdateHandler extends BotHandler {
         this.callbacks = callbacks;
         this.mainAdminId = mainAdminId;
         this.chatUsers = chatUsers;
+        this.bnc = bnc;
 
 
         this.blacklist = StreamSupport.stream(blacklist.findAll().spliterator(), false)
@@ -101,6 +105,11 @@ public class UpdateHandler extends BotHandler {
         if (!message.hasText()) return null;
 
         var text = message.getText();
+
+        if (text.matches("\\d{4,10}")) {
+            bnc.processBncAnswer(message);
+            return null;
+        }
 
         if (!message.isCommand()) return null;
 

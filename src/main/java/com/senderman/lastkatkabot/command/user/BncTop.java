@@ -1,4 +1,4 @@
-package com.senderman.lastkatkabot.bnc;
+package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.ApiRequests;
