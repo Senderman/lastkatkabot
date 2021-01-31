@@ -2,9 +2,9 @@ language: java
 os: linux
 install: true
 jdk:
-  - oraclejdk13
+  - oraclejdk11
 cache:
   directories:
     - "$HOME/.m2"
     - "$HOME/.gradle"
-script: "./gradlew test"
+script: "./gradlew build"
