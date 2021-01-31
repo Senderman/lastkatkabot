@@ -28,6 +28,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -44,6 +45,7 @@ public class UpdateHandler extends BotHandler {
     private final ChatUserRepository chatUsers;
     private final BncTelegramHandler bnc;
     private final ImageService imageService;
+    private final ExecutorService threadPool;
 
     @Autowired
     public UpdateHandler(
@@ -55,7 +57,8 @@ public class UpdateHandler extends BotHandler {
             BlacklistedUserRepository blacklist,
             ChatUserRepository chatUsers,
             @Lazy BncTelegramHandler bnc,
-            ImageService imageService
+            ImageService imageService,
+            ExecutorService threadPool
     ) {
         var args = login.split("\\s+");
         username = args[0];
@@ -67,6 +70,7 @@ public class UpdateHandler extends BotHandler {
         this.chatUsers = chatUsers;
         this.bnc = bnc;
         this.imageService = imageService;
+        this.threadPool = threadPool;
 
 
         this.blacklist = StreamSupport.stream(blacklist.findAll().spliterator(), false)
@@ -122,7 +126,7 @@ public class UpdateHandler extends BotHandler {
 
         // track users activity in chats
         if (!message.isUserMessage()) {
-            updateUserLastMessageDate(message);
+            threadPool.execute(() -> updateUserLastMessageDate(message));
         }
 
         if (message.getLeftChatMember() != null) {
@@ -166,6 +170,7 @@ public class UpdateHandler extends BotHandler {
                         .setReplyToMessageId(messageId)
                         .setFile(file)
                         .call(this);
+                //noinspection ResultOfMethodCallIgnored
                 file.delete();
             } catch (ImageService.TooWideNicknameException | IOException e) {
                 // fallback with greeting gif

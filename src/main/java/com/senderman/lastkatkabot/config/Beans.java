@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Configuration
 public class Beans {
@@ -15,6 +17,11 @@ public class Beans {
     @Bean
     public ObjectMapper ymlMapper() {
         return new YAMLMapper();
+    }
+
+    @Bean
+    public ExecutorService threadPool() {
+        return Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     }
 
     @Bean

@@ -19,7 +19,6 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -43,7 +42,8 @@ public class Pair implements CommandExecutor {
             ChatUserRepository chatUsers,
             ChatInfoRepository chatInfoRepo,
             Love love,
-            CurrentTime currentTime
+            CurrentTime currentTime,
+            ExecutorService threadPool
     ) {
         this.telegram = telegram;
         this.userStats = userStats;
@@ -52,7 +52,7 @@ public class Pair implements CommandExecutor {
         this.love = love;
         this.currentTime = currentTime;
         this.runningChatPairsGenerations = Collections.synchronizedSet(new HashSet<>());
-        this.threadPool = Executors.newFixedThreadPool(2);
+        this.threadPool = threadPool;
     }
 
     @Override
