@@ -8,8 +8,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -18,6 +17,7 @@ public class BncTelegramHandler {
     private final ApiRequests telegram;
     private final BncGamesManager gamesManager;
     private final UserStatsRepository usersRepo;
+    private final Map<Long, List<Integer>> messagesToDelete;
 
     public BncTelegramHandler(
             ApiRequests telegram,
@@ -27,27 +27,49 @@ public class BncTelegramHandler {
         this.telegram = telegram;
         this.gamesManager = gamesManager;
         this.usersRepo = usersRepo;
+        this.messagesToDelete = new HashMap<>();
     }
 
     public void processBncAnswer(Message message) {
         var chatId = message.getChatId();
         var number = message.getText();
+        addMessageToDelete(message);
         try {
             var result = gamesManager.check(chatId, number);
             if (result.isWin()) {
                 processWin(message, result);
             } else {
-                telegram.sendMessage(chatId, formatResult(result));
+                sendGameMessage(chatId, formatResult(result));
             }
         } catch (NumberAlreadyCheckedException e) {
-            telegram.sendMessage(chatId, "Уже проверяли! " + formatResult(e.getResult()));
+            sendGameMessage(chatId, "Уже проверяли! " + formatResult(e.getResult()));
         } catch (RepeatingDigitsException e) {
-            telegram.sendMessage(chatId, "Число не должно иметь повторяющихся цифр!");
+            sendGameMessage(chatId, "Число не должно иметь повторяющихся цифр!");
         } catch (GameOverException e) {
             processGameOver(message, e.getAnswer());
         } catch (InvalidLengthException | NoSuchElementException ignored) {
 
         }
+    }
+
+    // Send message that will be deleted after game end
+    private void sendGameMessage(long chatId, String text) {
+        addMessageToDelete(telegram.sendMessage(chatId, text));
+    }
+
+    private void addMessageToDelete(Message message) {
+        var chatId = message.getChatId();
+        var messageId = message.getMessageId();
+        var list = messagesToDelete.computeIfAbsent(chatId, k -> new ArrayList<>());
+        list.add(messageId);
+    }
+
+    private void deleteGameMessages(long chatId) {
+        var messageIds = messagesToDelete.remove(chatId);
+        if (messageIds == null) return;
+
+        for (var messageId : messageIds)
+            telegram.deleteMessage(chatId, messageId);
     }
 
     public void processWin(Message message, BncResult result) {
@@ -63,7 +85,7 @@ public class BncTelegramHandler {
         var username = Html.htmlSafe(message.getFrom().getFirstName());
         var text = username + " выиграл за " + (BncGame.totalAttempts(gameState.getLength()) - result.getAttempts()) +
                 " попыток!\n\n" + formatGameEndMessage(gameState);
-        telegram.sendMessage(chatId, text);
+        sendGameMessage(chatId, text);
     }
 
     public void processGameOver(Message message, String answer) {
@@ -71,7 +93,7 @@ public class BncTelegramHandler {
         var gameState = gamesManager.getGameState(chatId);
         gamesManager.deleteGame(chatId);
         var text = "Вы проиграли! Ответ: " + answer + "\n\n" + formatGameEndMessage(gameState);
-        telegram.sendMessage(chatId, text);
+        sendGameMessage(chatId, text);
     }
 
     private String formatGameEndMessage(BncGameState state) {

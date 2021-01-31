@@ -82,8 +82,8 @@ public class Help implements CommandExecutor {
 
     private String prepareHelpText(int userId) {
         var userHelp = new StringBuilder("<b>Основные команды:</b>\n\n");
-        var adminHelp = new StringBuilder("<b>Команды админов:</b>\n\n");
-        var mainAdminHelp = new StringBuilder("<b>Команды главного админа:</b>");
+        var adminHelp = new StringBuilder("<b>Команды админов:</b>\n");
+        var mainAdminHelp = new StringBuilder("<b>Команды главного админа:</b>\n");
 
         for (var exe : executors) {
             var roles = exe.getRoles();
