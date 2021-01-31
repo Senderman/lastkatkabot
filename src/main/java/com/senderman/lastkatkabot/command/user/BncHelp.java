@@ -13,7 +13,7 @@ public class BncHelp implements CommandExecutor {
     private final ApiRequests telegram;
     private final String bncPhotoId;
 
-    public BncHelp(ApiRequests telegram, @Value("bnc-help-picture-id") String bncPhotoId) {
+    public BncHelp(ApiRequests telegram, @Value("${bnc-help-picture-id}") String bncPhotoId) {
         this.telegram = telegram;
         this.bncPhotoId = bncPhotoId;
     }

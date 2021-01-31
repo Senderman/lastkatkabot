@@ -22,6 +22,8 @@ public interface ChatUserRepository extends CrudRepository<ChatUser, String> {
 
     void deleteByChatIdAndLastMessageDateLessThan(long chatId, int lastMessageDate);
 
+    void deleteByChatIdAndUserId(long chatId, int userId);
+
     boolean existsByChatIdAndUserId(long chatId, int userId);
 
     Optional<ChatUser> findByChatIdAndUserId(long chatId, int userId);

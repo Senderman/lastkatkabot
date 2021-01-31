@@ -12,6 +12,8 @@ import com.senderman.lastkatkabot.repository.AdminUserRepository;
 import com.senderman.lastkatkabot.repository.BlacklistedUserRepository;
 import com.senderman.lastkatkabot.repository.ChatUserRepository;
 import com.senderman.lastkatkabot.service.HandlerExtractor;
+import com.senderman.lastkatkabot.service.ImageService;
+import com.senderman.lastkatkabot.util.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +23,7 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.io.IOException;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
@@ -40,6 +43,7 @@ public class UpdateHandler extends BotHandler {
     private final Set<Integer> blacklist;
     private final ChatUserRepository chatUsers;
     private final BncTelegramHandler bnc;
+    private final ImageService imageService;
 
     @Autowired
     public UpdateHandler(
@@ -50,7 +54,8 @@ public class UpdateHandler extends BotHandler {
             AdminUserRepository admins,
             BlacklistedUserRepository blacklist,
             ChatUserRepository chatUsers,
-            @Lazy BncTelegramHandler bnc
+            @Lazy BncTelegramHandler bnc,
+            ImageService imageService
     ) {
         var args = login.split("\\s+");
         username = args[0];
@@ -61,6 +66,7 @@ public class UpdateHandler extends BotHandler {
         this.mainAdminId = mainAdminId;
         this.chatUsers = chatUsers;
         this.bnc = bnc;
+        this.imageService = imageService;
 
 
         this.blacklist = StreamSupport.stream(blacklist.findAll().spliterator(), false)
@@ -77,10 +83,19 @@ public class UpdateHandler extends BotHandler {
 
     @Override
     public void onUpdatesReceived(List<Update> updates) {
-        updates
-                .stream()
-                .filter(this::filterUpdate)
-                .forEach(this::onUpdateReceived);
+        var updatesToProcess = updates.stream().filter(this::filterUpdate).iterator();
+        while (updatesToProcess.hasNext()) {
+            try {
+                onUpdate(updatesToProcess.next());
+            } catch (Throwable e) {
+                Methods.sendMessage()
+                        .setChatId(mainAdminId)
+                        .setText("⚠️ <b>Ошибка обработки апдейта</b>\n\n" + ExceptionUtils.stackTraceAsString(e))
+                        .enableHtml()
+                        .disableWebPagePreview()
+                        .call(this);
+            }
+        }
     }
 
     @Override
@@ -97,9 +112,22 @@ public class UpdateHandler extends BotHandler {
 
         var message = update.getMessage();
 
+        {
+            var newMembers = message.getNewChatMembers();
+            if (newMembers != null && !newMembers.isEmpty()) {
+                processNewChatMembers(message);
+                return null;
+            }
+        }
+
         // track users activity in chats
         if (!message.isUserMessage()) {
             updateUserLastMessageDate(message);
+        }
+
+        if (message.getLeftChatMember() != null) {
+            processLeftChatMember(message);
+            return null;
         }
 
         if (!message.hasText()) return null;
@@ -126,6 +154,35 @@ public class UpdateHandler extends BotHandler {
                 .ifPresent(e -> e.execute(message));
 
         return null;
+    }
+
+    private void processNewChatMembers(Message message) {
+        var chatId = message.getChatId();
+        var messageId = message.getMessageId();
+        for (var user : message.getNewChatMembers()) {
+            try {
+                var file = imageService.generateGreetingSticker(user.getFirstName());
+                Methods.sendDocument(chatId)
+                        .setReplyToMessageId(messageId)
+                        .setFile(file)
+                        .call(this);
+                file.delete();
+            } catch (ImageService.TooWideNicknameException | IOException e) {
+                // fallback with greeting gif
+                Methods.sendDocument(chatId)
+                        .setReplyToMessageId(messageId)
+                        .setFile(imageService.getHelloGifId())
+                        .call(this);
+            }
+        }
+    }
+
+    private void processLeftChatMember(Message message) {
+        chatUsers.deleteByChatIdAndUserId(message.getChatId(), message.getLeftChatMember().getId());
+        Methods.sendDocument(message.getChatId())
+                .setReplyToMessageId(message.getMessageId())
+                .setFile(imageService.getLeaveStickerId())
+                .call(this);
     }
 
     @Override
