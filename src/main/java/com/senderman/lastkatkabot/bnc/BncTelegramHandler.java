@@ -85,15 +85,17 @@ public class BncTelegramHandler {
         var username = Html.htmlSafe(message.getFrom().getFirstName());
         var text = username + " выиграл за " + (BncGame.totalAttempts(gameState.getLength()) - result.getAttempts()) +
                 " попыток!\n\n" + formatGameEndMessage(gameState);
-        sendGameMessage(chatId, text);
+        deleteGameMessages(chatId);
+        telegram.sendMessage(chatId, text);
     }
 
     public void processGameOver(Message message, String answer) {
         var chatId = message.getChatId();
         var gameState = gamesManager.getGameState(chatId);
         gamesManager.deleteGame(chatId);
+        deleteGameMessages(chatId);
         var text = "Вы проиграли! Ответ: " + answer + "\n\n" + formatGameEndMessage(gameState);
-        sendGameMessage(chatId, text);
+        telegram.sendMessage(chatId, text);
     }
 
     private String formatGameEndMessage(BncGameState state) {

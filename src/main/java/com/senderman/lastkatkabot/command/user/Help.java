@@ -75,6 +75,7 @@ public class Help implements CommandExecutor {
                     .enableHtml()
                     .disableWebPagePreview()
             );
+            telegram.sendMessage(chatId, "✅ Помощь отправлена вам в лс!", chatMessageId);
         } catch (TelegramApiException e) {
             telegram.sendMessage(chatId, "Пожалуйста, начните диалог со мной в лс", chatMessageId);
         }
