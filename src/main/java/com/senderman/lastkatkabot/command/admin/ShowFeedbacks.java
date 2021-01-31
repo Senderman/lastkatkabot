@@ -49,13 +49,12 @@ public class ShowFeedbacks implements CommandExecutor {
         var text = new StringBuilder("<b>Фидбеки от даунов не умеющих юзать бота</b>");
         for (Feedback feedback : feedbackRepo.findAll()) {
             String formattedFeedback = formatFeedback(feedback);
-            if (text.length() + feedbackSeparator.length() + formattedFeedback.length() < 4096) {
-                text.append(feedbackSeparator).append(formattedFeedback);
-            } else {// if maximum text length reached
+            // if maximum text length reached
+            if (text.length() + feedbackSeparator.length() + formattedFeedback.length() >= 4096) {
                 telegram.sendMessage(chatId, text.toString());
                 text.setLength(0);
-                text.append(feedbackSeparator).append(formattedFeedback);
             }
+            text.append(feedbackSeparator).append(formattedFeedback);
         }
         // send remaining feedbacks
         if (text.length() != 0) {
