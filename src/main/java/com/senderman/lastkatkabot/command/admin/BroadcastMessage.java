@@ -10,16 +10,19 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.EnumSet;
+import java.util.concurrent.ExecutorService;
 
 @Component
 public class BroadcastMessage implements CommandExecutor {
 
     private final ApiRequests telegram;
     private final ChatInfoRepository chats;
+    private final ExecutorService threadPool;
 
-    public BroadcastMessage(ApiRequests telegram, ChatInfoRepository chats) {
+    public BroadcastMessage(ApiRequests telegram, ChatInfoRepository chats, ExecutorService threadPool) {
         this.telegram = telegram;
         this.chats = chats;
+        this.threadPool = threadPool;
     }
 
     @Override
@@ -46,7 +49,7 @@ public class BroadcastMessage implements CommandExecutor {
         }
         var messageToBroadcast = message.getText().split("\\s+", 2)[1];
         telegram.sendMessage(chatId, "Начало рассылки сообщений...");
-        new Thread(() -> {
+        threadPool.execute(() -> {
             int counter = 0;
             int totalCounter = 0;
             for (var chat : chats.findAll()) {
@@ -63,6 +66,6 @@ public class BroadcastMessage implements CommandExecutor {
             telegram.sendMessage(chatId,
                     "Сообщение получили " + counter + "/" + totalCounter + " чатов",
                     message.getMessageId());
-        }).start();
+        });
     }
 }
