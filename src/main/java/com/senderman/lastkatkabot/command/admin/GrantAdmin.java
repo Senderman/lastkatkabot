@@ -32,7 +32,7 @@ public class GrantAdmin implements CommandExecutor {
 
     @Override
     public String getTrigger() {
-        return "/grantAdmin";
+        return "/grantadmin";
     }
 
     @Override
