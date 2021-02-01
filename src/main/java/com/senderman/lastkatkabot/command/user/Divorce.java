@@ -34,7 +34,7 @@ public class Divorce implements CommandExecutor {
         var chatId = message.getChatId();
         var messageId = message.getMessageId();
         var userId = message.getFrom().getId();
-        var userStats = users.findById(userId).orElse(new Userstats(userId));
+        var userStats = users.findById(userId).orElseGet(()->new Userstats(userId));
         var loverId = userStats.getLoverId();
 
         if (loverId == null) {

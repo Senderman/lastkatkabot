@@ -75,9 +75,9 @@ public class Pair implements CommandExecutor {
         }
 
         // check if pair was generated today
-        var chatInfo = chatInfoRepo.findById(chatId).orElse(new ChatInfo(chatId));
-        var lastPairs = Optional.ofNullable(chatInfo.getLastPairs()).orElse(new ArrayList<>());
-        var lastPairGenerationDate = Optional.ofNullable(chatInfo.getLastPairDate()).orElse(-1);
+        var chatInfo = chatInfoRepo.findById(chatId).orElseGet(()->new ChatInfo(chatId));
+        var lastPairs = Optional.ofNullable(chatInfo.getLastPairs()).orElseGet(ArrayList::new);
+        var lastPairGenerationDate = Objects.requireNonNullElse(chatInfo.getLastPairDate(), -1);
         int currentDay = Integer.parseInt(currentTime.getCurrentDay());
 
         if (!lastPairs.isEmpty() && lastPairGenerationDate == currentDay) {

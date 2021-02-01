@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BncRepository extends CrudRepository<BncGameSave, Long> {
+
+    void deleteByEditDateLessThan(int editDate);
+
 }

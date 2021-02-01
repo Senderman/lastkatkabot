@@ -89,6 +89,10 @@ public class Userstats {
         this.bncScore += amount;
     }
 
+    public boolean hasLover(){
+        return loverId != null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

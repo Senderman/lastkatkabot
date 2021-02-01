@@ -4,12 +4,13 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.callback.Callbacks;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.model.MarriageRequest;
 import com.senderman.lastkatkabot.model.Userstats;
+import com.senderman.lastkatkabot.repository.MarriageRequestRepository;
 import com.senderman.lastkatkabot.repository.UserStatsRepository;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
@@ -18,11 +19,12 @@ public class MarryMe implements CommandExecutor {
 
     private final ApiRequests telegram;
     private final UserStatsRepository users;
+    private final MarriageRequestRepository marriages;
 
-    @Autowired
-    public MarryMe(ApiRequests telegram, UserStatsRepository users) {
+    public MarryMe(ApiRequests telegram, UserStatsRepository users, MarriageRequestRepository marriages) {
         this.telegram = telegram;
         this.users = users;
+        this.marriages = marriages;
     }
 
     @Override
@@ -44,38 +46,47 @@ public class MarryMe implements CommandExecutor {
             return;
         }
 
-        var userId = message.getFrom().getId();
-        var loverId = message.getReplyToMessage().getFrom().getId();
+        var proposerId = message.getFrom().getId();
+        var proposeeId = message.getReplyToMessage().getFrom().getId();
 
-        if (userId.equals(loverId)) {
+        if (proposerId.equals(proposeeId)) {
             telegram.sendMessage(chatId, "На самом себе нельзя жениться!");
             return;
         }
 
-        var userStats = users.findById(userId).orElse(new Userstats(userId));
+        var proposerStats = users.findById(proposerId).orElseGet(() -> new Userstats(proposerId));
 
-        if (userStats.getLoverId() != null) {
+        if (proposerStats.hasLover()) {
             telegram.sendMessage(chatId, "Вы что, хотите изменить своей половинке?!", messageId);
             return;
         }
 
-        var loverStats = users.findById(loverId).orElse(new Userstats(loverId));
+        var proposeeStats = users.findById(proposeeId).orElseGet(() -> new Userstats(proposeeId));
 
-        if (loverStats.getLoverId() != null) {
+        if (proposeeStats.hasLover()) {
             telegram.sendMessage(chatId, "У этого пользователя уже есть своя вторая половинка!", messageId);
             return;
         }
 
-        var userLink = Html.getUserLink(message.getFrom());
-        var text = "Пользователь " + userLink + " предлагает вам предлагает вам руку, сердце и шавуху. Вы согласны?";
+        var proposerLink = Html.getUserLink(message.getFrom());
+        var text = "Пользователь " + proposerLink + " предлагает вам предлагает вам руку, сердце и шавуху. Вы согласны?";
+
+        var request = new MarriageRequest();
+        request.setId(marriages.findFirstByOrderByIdDesc().map(r -> r.getId() + 1).orElse(1));
+        request.setProposerId(proposerId);
+        request.setProposerName(proposerLink);
+        request.setProposeeId(proposeeId);
+        request.setProposeeName(Html.getUserLink(message.getReplyToMessage().getFrom()));
+        request.setRequestDate(message.getDate());
+        marriages.save(request);
 
         var markup = new MarkupBuilder()
                 .addButton(ButtonBuilder.callbackButton()
                         .text("Принять")
-                        .payload(Callbacks.MARRIAGE + " accept " + userId))
+                        .payload(Callbacks.MARRIAGE + " " + request.getId() + " accept"))
                 .addButton(ButtonBuilder.callbackButton()
                         .text("Отказаться")
-                        .payload(Callbacks.MARRIAGE + " decline"))
+                        .payload(Callbacks.MARRIAGE + " " + request.getId() + " decline"))
                 .build();
 
         telegram.sendMessage(Methods.sendMessage()

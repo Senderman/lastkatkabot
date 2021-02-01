@@ -102,6 +102,7 @@ public class ApiRequests {
                 .setChatId(message.getChatId())
                 .setMessageId(message.getMessageId())
                 .setText(text)
+                .enableHtml()
                 .call(telegram);
     }
 

@@ -72,6 +72,6 @@ public class BncManagerDatabaseWrapper implements BncGamesManager {
     }
 
     private void saveToDb(BncGame game) {
-        database.save(new BncGameSave(game.getId(), serializer.serialize(game)));
+        database.save(new BncGameSave(game.getId(), serializer.serialize(game), (int) System.currentTimeMillis() / 1000));
     }
 }

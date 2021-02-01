@@ -69,8 +69,8 @@ public class DuelController {
     private void processDuelResultToDatabase(Duel.DuelResult result) {
         var winner = result.getWinner();
         var loser = result.getLoser();
-        Userstats winnerStats = users.findById(winner.getId()).orElse(new Userstats(winner.getId()));
-        Userstats loserStats = users.findById(loser.getId()).orElse(new Userstats(loser.getId()));
+        Userstats winnerStats = users.findById(winner.getId()).orElseGet(()->new Userstats(winner.getId()));
+        Userstats loserStats = users.findById(loser.getId()).orElseGet(()->new Userstats(loser.getId()));
         winnerStats.increaseDuelsTotal();
         loserStats.increaseDuelsTotal();
         if (!result.isDraw())

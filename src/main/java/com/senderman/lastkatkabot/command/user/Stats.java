@@ -43,7 +43,7 @@ public class Stats implements CommandExecutor {
             return;
         }
 
-        var stats = users.findById(user.getId()).orElse(new Userstats(user.getId()));
+        var stats = users.findById(user.getId()).orElseGet(() ->new Userstats(user.getId()));
         String name = Html.htmlSafe(user.getFirstName());
         int winRate = stats.getDuelsTotal() == 0 ? 0 : 100 * stats.getDuelWins() / stats.getDuelsTotal();
         String text = String.format("\uD83D\uDCCA Статистика %s:\n\n" +

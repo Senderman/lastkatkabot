@@ -58,7 +58,7 @@ public class Weather implements CommandExecutor {
             try {
                 cityLink = getCityPageLink(city);
                 // save last defined city in db
-                var user = userStats.findById(userId).orElse(new Userstats(userId));
+                var user = userStats.findById(userId).orElseGet(() ->new Userstats(userId));
                 user.setCityLink(cityLink);
                 userStats.save(user);
             } catch (IOException e) {

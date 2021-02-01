@@ -27,7 +27,7 @@ public class ChatManagerService {
 
         runningChatMigrations.add(oldChatId);
         new Thread(() -> {
-            var chat = chats.findById(oldChatId).orElse(new ChatInfo());
+            var chat = chats.findById(oldChatId).orElseGet(ChatInfo::new);
             chat.setChatId(newChatId);
             chats.save(chat);
 

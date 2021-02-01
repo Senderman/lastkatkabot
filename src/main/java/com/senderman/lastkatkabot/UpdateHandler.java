@@ -206,7 +206,7 @@ public class UpdateHandler extends BotHandler {
         var userId = message.getFrom().getId();
         var date = message.getDate();
 
-        var chatUser = chatUsers.findByChatIdAndUserId(chatId, userId).orElse(new ChatUser(userId, chatId));
+        var chatUser = chatUsers.findByChatIdAndUserId(chatId, userId).orElseGet(()->new ChatUser(userId, chatId));
         chatUser.setLastMessageDate(date);
         chatUsers.save(chatUser);
     }

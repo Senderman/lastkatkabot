@@ -37,7 +37,7 @@ public class LastPairs implements CommandExecutor {
             return;
         }
 
-        var chatInfo = chats.findById(chatId).orElse(new ChatInfo(chatId));
+        var chatInfo = chats.findById(chatId).orElseGet(() -> new ChatInfo(chatId));
         var pairs = chatInfo.getLastPairs();
         if (pairs == null || pairs.isEmpty()) {
             telegram.sendMessage(chatId, "В этом чате еще ни разу не запускали /pair!");

@@ -10,13 +10,15 @@ public class BncGameSave {
     @Id
     private long id;
     private String game;
+    private int editDate;
 
     public BncGameSave() {
     }
 
-    public BncGameSave(long id, String game) {
+    public BncGameSave(long id, String game, int editDate) {
         this.id = id;
         this.game = game;
+        this.editDate = editDate;
     }
 
     public long getId() {
@@ -33,6 +35,14 @@ public class BncGameSave {
 
     public void setGame(String game) {
         this.game = game;
+    }
+
+    public int getEditDate() {
+        return editDate;
+    }
+
+    public void setEditDate(int editDate) {
+        this.editDate = editDate;
     }
 
     @Override
