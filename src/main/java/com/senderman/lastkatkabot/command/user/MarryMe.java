@@ -60,6 +60,11 @@ public class MarryMe implements CommandExecutor {
             telegram.sendMessage(chatId, "Вы что, хотите изменить своей половинке?!", messageId);
             return;
         }
+        
+        if (proposerStats.getLoverId().equals(proposeeId)) {
+            telegram.sendMessage(chatId, "Вы уже в браке с этим пользователем!", messageId);
+            return;
+        }
 
         var proposeeStats = users.findById(proposeeId).orElseGet(() -> new Userstats(proposeeId));
 
