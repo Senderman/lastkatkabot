@@ -12,7 +12,7 @@ login: ${lastkatka} # username token
 
 timezone: "Europe/Moscow"
 
-main-admin-id: ${main_admin} # id of main admin
+mainAdminId: ${main-admin} # id of main admin
 
 ww-bots-usernames: # list of werewolf bot nicknames
   - 'werewolfbot'

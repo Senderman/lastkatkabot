@@ -3,7 +3,8 @@ package com.senderman.lastkatkabot.command.admin;
 import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import com.senderman.lastkatkabot.repository.ChatInfoRepository;
+import com.senderman.lastkatkabot.model.ChatUser;
+import com.senderman.lastkatkabot.repository.ChatUserRepository;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -11,17 +12,19 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.EnumSet;
 import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Component
 public class BroadcastMessage implements CommandExecutor {
 
     private final ApiRequests telegram;
-    private final ChatInfoRepository chats;
+    private final ChatUserRepository chatUsers;
     private final ExecutorService threadPool;
 
-    public BroadcastMessage(ApiRequests telegram, ChatInfoRepository chats, ExecutorService threadPool) {
+    public BroadcastMessage(ApiRequests telegram, ChatUserRepository chatUsers, ExecutorService threadPool) {
         this.telegram = telegram;
-        this.chats = chats;
+        this.chatUsers = chatUsers;
         this.threadPool = threadPool;
     }
 
@@ -52,9 +55,13 @@ public class BroadcastMessage implements CommandExecutor {
         threadPool.execute(() -> {
             int counter = 0;
             int totalCounter = 0;
-            for (var chat : chats.findAll()) {
+            var chatIds = StreamSupport.stream(chatUsers.findAll().spliterator(), false)
+                    .map(ChatUser::getChatId)
+                    .distinct()
+                    .collect(Collectors.toList());
+            for (var chat : chatIds) {
                 try {
-                    var m = new SendMessage(Long.toString(chat.getChatId()), messageToBroadcast);
+                    var m = new SendMessage(Long.toString(chat), messageToBroadcast);
                     m.enableHtml(true);
                     telegram.tryExecute(m);
                     counter++;
