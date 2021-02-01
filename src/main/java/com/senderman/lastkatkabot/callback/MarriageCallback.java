@@ -75,7 +75,7 @@ public class MarriageCallback implements CallbackExecutor {
         telegram.editQueryMessage(query, "Пользователь " + r.getProposeeName() + " принял предложение!");
         telegram.sendMessage(r.getProposerId(), "Пользователь " + r.getProposeeName() + " принял предложение!");
         telegram.sendMessage(query.getMessage().getChatId(),
-                String.format("\uD83D\uDC90 У %s и %s свадьба! Давайте их поздравим и съедим шавуху\uD83C\uDF2F !!!",
+                String.format("\uD83D\uDC90 У %s и %s свадьба! Давайте их поздравим и съедим шавуху \uD83C\uDF2F !!!",
                         r.getProposerName(), r.getProposeeName()));
     }
 
