@@ -31,7 +31,7 @@ public class Cake implements CommandExecutor {
 
     @Override
     public void execute(Message message) {
-        if (!message.isReply() || !message.isUserMessage()) return;
+        if (!message.isReply() || message.isUserMessage()) return;
 
         var subject = Html.htmlSafe(message.getFrom().getFirstName());
         var object = Html.htmlSafe(message.getReplyToMessage().getFrom().getFirstName());

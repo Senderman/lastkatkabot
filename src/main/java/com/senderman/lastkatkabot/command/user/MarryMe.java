@@ -14,6 +14,8 @@ import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
+import java.util.Objects;
+
 @Component
 public class MarryMe implements CommandExecutor {
 
@@ -56,16 +58,15 @@ public class MarryMe implements CommandExecutor {
 
         var proposerStats = users.findById(proposerId).orElseGet(() -> new Userstats(proposerId));
 
-        if (proposerStats.hasLover()) {
-            telegram.sendMessage(chatId, "Вы что, хотите изменить своей половинке?!", messageId);
-            return;
-        }
-        
-        if (proposerStats.getLoverId().equals(proposeeId)) {
+        if (Objects.equals(proposerStats.getLoverId(), proposeeId)) {
             telegram.sendMessage(chatId, "Вы уже в браке с этим пользователем!", messageId);
             return;
         }
 
+        if (proposerStats.hasLover()) {
+            telegram.sendMessage(chatId, "Вы что, хотите изменить своей половинке?!", messageId);
+            return;
+        }
         var proposeeStats = users.findById(proposeeId).orElseGet(() -> new Userstats(proposeeId));
 
         if (proposeeStats.hasLover()) {

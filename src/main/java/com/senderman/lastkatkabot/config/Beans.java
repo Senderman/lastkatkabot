@@ -21,7 +21,8 @@ public class Beans {
 
     @Bean
     public ExecutorService threadPool() {
-        return Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        int cpus = Runtime.getRuntime().availableProcessors() - 1;
+        return Executors.newFixedThreadPool(Math.max(cpus, 1));
     }
 
     @Bean

@@ -40,7 +40,8 @@ public class BncTop implements CommandExecutor {
 
         int counter = 0;
         var top = new StringBuilder("<b>Топ-10 задротов в bnc:</b>\n\n");
-        for (var user : users.findTop10OrderByBncScore()) {
+        var topUsers = users.findTop10ByOrderByBncScoreDesc();
+        for (var user : topUsers) {
             top.append(++counter)
                     .append(": ")
                     .append(formatUser(user.getUserId(), user.getBncScore(), message.isUserMessage()))

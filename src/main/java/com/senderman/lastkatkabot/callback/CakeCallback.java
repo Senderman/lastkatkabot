@@ -21,7 +21,7 @@ public class CakeCallback implements CallbackExecutor {
 
     @Override
     public void execute(CallbackQuery query) {
-        if (query.getFrom().getId().equals(query.getMessage().getFrom().getId())) {
+        if (!query.getFrom().getId().equals(query.getMessage().getReplyToMessage().getFrom().getId())) {
             telegram.answerCallbackQuery(query, "Этот тортик не вам!");
             return;
         }

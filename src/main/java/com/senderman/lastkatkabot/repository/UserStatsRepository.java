@@ -12,6 +12,6 @@ public interface UserStatsRepository extends CrudRepository<Userstats, Integer> 
 
     Optional<Userstats> findByLoverId(int loverId);
 
-    List<Userstats> findTop10OrderByBncScore();
+    List<Userstats> findTop10ByOrderByBncScoreDesc();
 
 }
