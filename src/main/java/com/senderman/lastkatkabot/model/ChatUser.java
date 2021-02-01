@@ -20,6 +20,7 @@ public class ChatUser {
     }
 
     public ChatUser(int userId, long chatId) {
+        this.id = chatId + " " + userId;
         this.userId = userId;
         this.chatId = chatId;
     }
