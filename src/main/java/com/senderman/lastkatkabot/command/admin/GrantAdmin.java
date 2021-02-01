@@ -4,7 +4,8 @@ import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.model.AdminUser;
-import com.senderman.lastkatkabot.service.UserManagerService;
+import com.senderman.lastkatkabot.service.UserManager;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
@@ -14,10 +15,12 @@ import java.util.EnumSet;
 public class GrantAdmin implements CommandExecutor {
 
     private final ApiRequests telegram;
-    private final UserManagerService<AdminUser> admins;
+    private final UserManager<AdminUser> admins;
 
 
-    public GrantAdmin(ApiRequests telegram, UserManagerService<AdminUser> admins) {
+    public GrantAdmin(
+            ApiRequests telegram,
+            @Qualifier("adminManager") UserManager<AdminUser> admins) {
         this.telegram = telegram;
         this.admins = admins;
     }

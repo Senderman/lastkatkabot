@@ -11,7 +11,7 @@ import com.senderman.lastkatkabot.model.ChatUser;
 import com.senderman.lastkatkabot.repository.ChatUserRepository;
 import com.senderman.lastkatkabot.service.HandlerExtractor;
 import com.senderman.lastkatkabot.service.ImageService;
-import com.senderman.lastkatkabot.service.UserManagerService;
+import com.senderman.lastkatkabot.service.UserManager;
 import com.senderman.lastkatkabot.util.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +35,8 @@ public class UpdateHandler extends BotHandler {
     private final String token;
     private final HandlerExtractor<CommandExecutor> commands;
     private final HandlerExtractor<CallbackExecutor> callbacks;
-    private final UserManagerService<AdminUser> admins;
-    private final UserManagerService<BlacklistedUser> blacklist;
+    private final UserManager<AdminUser> admins;
+    private final UserManager<BlacklistedUser> blacklist;
     private final int mainAdminId;
     private final ChatUserRepository chatUsers;
     private final BncTelegramHandler bnc;
@@ -49,8 +49,8 @@ public class UpdateHandler extends BotHandler {
             @Value("${mainAdminId}") int mainAdminId,
             @Lazy HandlerExtractor<CommandExecutor> commandExtractor,
             @Lazy HandlerExtractor<CallbackExecutor> callbacks,
-            UserManagerService<AdminUser> admins,
-            UserManagerService<BlacklistedUser> blacklist,
+            UserManager<AdminUser> admins,
+            UserManager<BlacklistedUser> blacklist,
             ChatUserRepository chatUsers,
             @Lazy BncTelegramHandler bnc,
             ImageService imageService,

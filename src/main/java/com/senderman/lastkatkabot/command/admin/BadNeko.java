@@ -4,7 +4,8 @@ import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.model.BlacklistedUser;
-import com.senderman.lastkatkabot.service.UserManagerService;
+import com.senderman.lastkatkabot.service.UserManager;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
@@ -14,10 +15,13 @@ import java.util.EnumSet;
 public class BadNeko implements CommandExecutor {
 
     private final ApiRequests telegram;
-    private final UserManagerService<BlacklistedUser> blackUsers;
+    private final UserManager<BlacklistedUser> blackUsers;
 
 
-    public BadNeko(ApiRequests telegram, UserManagerService<BlacklistedUser> blackUsers) {
+    public BadNeko(
+            ApiRequests telegram,
+            @Qualifier("blacklistManager") UserManager<BlacklistedUser> blackUsers
+    ) {
         this.telegram = telegram;
         this.blackUsers = blackUsers;
     }
