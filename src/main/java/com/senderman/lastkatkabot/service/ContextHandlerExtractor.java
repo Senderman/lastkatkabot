@@ -20,7 +20,6 @@ public class ContextHandlerExtractor<T extends TriggerHandler<?>> implements Han
 
     @Autowired
     public ContextHandlerExtractor(Set<T> executors) {
-        var a = executors.stream().collect(Collectors.toMap(T::getTrigger, Function.identity()));
         this.executors = executors.stream().collect(Collectors.toMap(T::getTrigger, Function.identity()));
     }
 
