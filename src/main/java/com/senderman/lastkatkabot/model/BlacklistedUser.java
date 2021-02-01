@@ -6,7 +6,7 @@ import org.springframework.data.annotation.TypeAlias;
 import java.util.Objects;
 
 @TypeAlias("blacklist")
-public class BlacklistedUser {
+public class BlacklistedUser implements Entity<Integer> {
 
     @Id
     private int userId;
@@ -41,5 +41,10 @@ public class BlacklistedUser {
         return "BlacklistedUser{" +
                 "userId=" + userId +
                 '}';
+    }
+
+    @Override
+    public Integer getId() {
+        return getUserId();
     }
 }

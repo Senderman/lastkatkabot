@@ -6,7 +6,7 @@ import org.springframework.data.annotation.TypeAlias;
 import java.util.Objects;
 
 @TypeAlias("admin")
-public class AdminUser {
+public class AdminUser implements Entity<Integer> {
 
     @Id
     private int userId;
@@ -41,5 +41,10 @@ public class AdminUser {
         return "AdminUser{" +
                 "userId=" + userId +
                 '}';
+    }
+
+    @Override
+    public Integer getId() {
+        return getUserId();
     }
 }

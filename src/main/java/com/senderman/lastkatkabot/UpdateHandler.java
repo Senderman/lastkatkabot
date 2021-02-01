@@ -8,11 +8,10 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.model.AdminUser;
 import com.senderman.lastkatkabot.model.BlacklistedUser;
 import com.senderman.lastkatkabot.model.ChatUser;
-import com.senderman.lastkatkabot.repository.AdminUserRepository;
-import com.senderman.lastkatkabot.repository.BlacklistedUserRepository;
 import com.senderman.lastkatkabot.repository.ChatUserRepository;
 import com.senderman.lastkatkabot.service.HandlerExtractor;
 import com.senderman.lastkatkabot.service.ImageService;
+import com.senderman.lastkatkabot.service.UserManagerService;
 import com.senderman.lastkatkabot.util.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +26,7 @@ import java.io.IOException;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @SpringBootApplication
 public class UpdateHandler extends BotHandler {
@@ -39,9 +35,9 @@ public class UpdateHandler extends BotHandler {
     private final String token;
     private final HandlerExtractor<CommandExecutor> commands;
     private final HandlerExtractor<CallbackExecutor> callbacks;
+    private final UserManagerService<AdminUser> admins;
+    private final UserManagerService<BlacklistedUser> blacklist;
     private final int mainAdminId;
-    private final Set<Integer> adminIds;
-    private final Set<Integer> blacklist;
     private final ChatUserRepository chatUsers;
     private final BncTelegramHandler bnc;
     private final ImageService imageService;
@@ -53,8 +49,8 @@ public class UpdateHandler extends BotHandler {
             @Value("${mainAdminId}") int mainAdminId,
             @Lazy HandlerExtractor<CommandExecutor> commandExtractor,
             @Lazy HandlerExtractor<CallbackExecutor> callbacks,
-            AdminUserRepository admins,
-            BlacklistedUserRepository blacklist,
+            UserManagerService<AdminUser> admins,
+            UserManagerService<BlacklistedUser> blacklist,
             ChatUserRepository chatUsers,
             @Lazy BncTelegramHandler bnc,
             ImageService imageService,
@@ -66,21 +62,14 @@ public class UpdateHandler extends BotHandler {
 
         this.commands = commandExtractor;
         this.callbacks = callbacks;
+        this.admins = admins;
+        this.blacklist = blacklist;
         this.mainAdminId = mainAdminId;
         this.chatUsers = chatUsers;
         this.bnc = bnc;
         this.imageService = imageService;
         this.threadPool = threadPool;
 
-
-        this.blacklist = StreamSupport.stream(blacklist.findAll().spliterator(), false)
-                .map(BlacklistedUser::getUserId)
-                .collect(Collectors.toSet());
-
-        this.adminIds = StreamSupport.stream(admins.findAll().spliterator(), false)
-                .map(AdminUser::getUserId)
-                .collect(Collectors.toSet());
-        adminIds.add(mainAdminId);
 
         Methods.sendMessage(mainAdminId, "Бот запущен!").call(this);
     }
@@ -206,7 +195,7 @@ public class UpdateHandler extends BotHandler {
         var userId = message.getFrom().getId();
         var date = message.getDate();
 
-        var chatUser = chatUsers.findByChatIdAndUserId(chatId, userId).orElseGet(()->new ChatUser(userId, chatId));
+        var chatUser = chatUsers.findByChatIdAndUserId(chatId, userId).orElseGet(() -> new ChatUser(userId, chatId));
         chatUser.setLastMessageDate(date);
         chatUsers.save(chatUser);
     }
@@ -216,11 +205,11 @@ public class UpdateHandler extends BotHandler {
         // allow all commands for the main admin
         if (userId == mainAdminId) return true;
         // do not allow blacklisted users
-        if (blacklist.contains(userId)) return false;
+        if (blacklist.hasUser(userId)) return false;
         // allow users to use user commands
         if (roles.contains(Role.USER)) return true;
         // check admin permissions
-        return roles.contains(Role.ADMIN) && adminIds.contains(userId);
+        return roles.contains(Role.ADMIN) && admins.hasUser(userId);
     }
 
     // this method contains filtering rules for all updates

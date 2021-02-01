@@ -4,7 +4,7 @@ import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.model.BlacklistedUser;
-import com.senderman.lastkatkabot.repository.BlacklistedUserRepository;
+import com.senderman.lastkatkabot.service.UserManagerService;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
@@ -14,10 +14,10 @@ import java.util.EnumSet;
 public class BadNeko implements CommandExecutor {
 
     private final ApiRequests telegram;
-    private final BlacklistedUserRepository blackUsers;
+    private final UserManagerService<BlacklistedUser> blackUsers;
 
 
-    public BadNeko(ApiRequests telegram, BlacklistedUserRepository blackUsers) {
+    public BadNeko(ApiRequests telegram, UserManagerService<BlacklistedUser> blackUsers) {
         this.telegram = telegram;
         this.blackUsers = blackUsers;
     }
@@ -40,6 +40,7 @@ public class BadNeko implements CommandExecutor {
     @Override
     public void execute(Message message) {
         long chatId = message.getChatId();
+        var messageId = message.getMessageId();
         if (!message.isReply() || message.isUserMessage()) {
             telegram.sendMessage(chatId, "Опускать в плохие кисы нужно в группе и реплаем!");
             return;
@@ -51,15 +52,12 @@ public class BadNeko implements CommandExecutor {
                     "Разве может бот написать симфонию, иметь статистику, участвовать в дуэлях, быть плохой кисой?");
             return;
         }
-        if (blackUsers.existsById(user.getId())) {
-            telegram.sendMessage(chatId, "Он уже плохая киса!");
-            return;
-        }
-        var blackUser = new BlacklistedUser(user.getId());
-        blackUsers.save(blackUser);
 
-        var messageId = message.getMessageId();
-        telegram.sendMessage(chatId, "Теперь он плохая киса!", messageId);
+        if (blackUsers.addUser(new BlacklistedUser(user.getId())))
+            telegram.sendMessage(chatId, "Теперь он плохая киса!", messageId);
+        else
+            telegram.sendMessage(chatId, "Он уже плохая киса!", messageId);
+
     }
 }
 
