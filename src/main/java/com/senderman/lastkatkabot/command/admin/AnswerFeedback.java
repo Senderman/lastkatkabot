@@ -32,7 +32,7 @@ public class AnswerFeedback implements CommandExecutor {
 
     @Override
     public EnumSet<Role> getRoles() {
-        return EnumSet.of(Role.MAIN_ADMIN);
+        return EnumSet.of(Role.ADMIN, Role.MAIN_ADMIN);
     }
 
     @Override
