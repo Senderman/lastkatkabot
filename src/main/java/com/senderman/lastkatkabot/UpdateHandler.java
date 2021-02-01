@@ -165,6 +165,8 @@ public class UpdateHandler extends BotHandler {
         var messageId = message.getMessageId();
         for (var user : message.getNewChatMembers()) {
             try {
+                if (user.isBot()) {
+                    reurn}   
                 var file = imageService.generateGreetingSticker(user.getFirstName());
                 Methods.sendDocument(chatId)
                         .setReplyToMessageId(messageId)
