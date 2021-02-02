@@ -66,14 +66,19 @@ public class AnswerFeedback implements CommandExecutor {
         }
         // feedbackRepo.deleteById(feedbackId);
         var feedback = feedbackOptional.get();
-        var answer = "\uD83D\uDD14 <b>Ответ разработчика</b>\n\n" + args[2];
-        telegram.sendMessage(feedback.getChatId(), answer, feedback.getMessageId());
+        feedback.setReplied(true);
+        feedbackRepo.save(feedback);
+
+        var answer = args[2];
+        telegram.sendMessage(feedback.getChatId(),
+                "\uD83D\uDD14 <b>Ответ разработчика</b>\n\n" + answer,
+                feedback.getMessageId());
         telegram.sendMessage(chatId, "Ответ отправлен!", message.getMessageId());
 
 
-        var userFirstName = message.getFrom().getFirstName();
-        var text = "Фидбек #" + feedbackId + ":\n" +
-                "Ответил: " + userFirstName + "\n\n" + args[2];
-        telegram.sendMessage(feedbackChannelId, text);
+        var replierUsername = message.getFrom().getFirstName();
+        var answerReport = String.format("%s ответил на фидбек #%d:\n\n%s",
+                replierUsername, feedbackId, answer);
+        telegram.sendMessage(feedbackChannelId, answerReport);
     }
 }

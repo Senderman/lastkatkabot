@@ -13,7 +13,7 @@ import java.util.EnumSet;
 @Component
 public class ShowFeedbacks implements CommandExecutor {
 
-    private static final String feedbackSeparator = "\n\n<code>========================================</code>\n\n";
+    private static final String feedbackSeparator = "\n\n<code>====================================</code>\n\n";
     private final ApiRequests telegram;
     private final FeedbackRepository feedbackRepo;
 
@@ -63,7 +63,13 @@ public class ShowFeedbacks implements CommandExecutor {
     }
 
     private String formatFeedback(Feedback feedback) {
-        return String.format("<code>#%d</code> от %s (id<code>%d</code>)\n\n%s",
-                feedback.getId(), feedback.getUserName(), feedback.getUserId(), feedback.getMessage());
+        return String.format("<code>#%d</code>\n" +
+                        "От %s (id<code>%d</code>)\n" +
+                        "Отвечен: %s\n\n%s",
+                feedback.getId(),
+                feedback.getUserName(),
+                feedback.getUserId(),
+                feedback.isReplied() ? "✅" : "❌",
+                feedback.getMessage());
     }
 }
