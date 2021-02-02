@@ -4,6 +4,7 @@ import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.repository.FeedbackRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
@@ -14,10 +15,16 @@ public class AnswerFeedback implements CommandExecutor {
 
     private final ApiRequests telegram;
     private final FeedbackRepository feedbackRepo;
+    private final long feedbackChannelId;
 
-    public AnswerFeedback(ApiRequests telegram, FeedbackRepository feedbackRepo) {
+    public AnswerFeedback(
+            ApiRequests telegram,
+            FeedbackRepository feedbackRepo,
+            @Value("${feedbackChannelId}") long feedbackChannelId
+    ) {
         this.telegram = telegram;
         this.feedbackRepo = feedbackRepo;
+        this.feedbackChannelId = feedbackChannelId;
     }
 
     @Override
@@ -57,10 +64,16 @@ public class AnswerFeedback implements CommandExecutor {
             telegram.sendMessage(chatId, "Фидбека с таким id не существует!");
             return;
         }
-        feedbackRepo.deleteById(feedbackId);
+        // feedbackRepo.deleteById(feedbackId);
         var feedback = feedbackOptional.get();
         var answer = "\uD83D\uDD14 <b>Ответ разработчика</b>\n\n" + args[2];
         telegram.sendMessage(feedback.getChatId(), answer, feedback.getMessageId());
         telegram.sendMessage(chatId, "Ответ отправлен!", message.getMessageId());
+
+
+        var userFirstName = message.getFrom().getFirstName();
+        var text = "Фидбек #" + feedbackId + ":\n" +
+                "Ответил: " + userFirstName + "\n\n" + args[2];
+        telegram.sendMessage(feedbackChannelId, text);
     }
 }
