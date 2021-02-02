@@ -14,6 +14,7 @@ public class Feedback {
     private String userName;
     private long chatId;
     private int messageId;
+    private boolean replied;
 
     public Feedback() {
     }
@@ -25,6 +26,7 @@ public class Feedback {
         this.userName = userName;
         this.chatId = chatId;
         this.messageId = messageId;
+        this.replied = true;
     }
 
     public int getId() {
@@ -73,6 +75,14 @@ public class Feedback {
 
     public void setMessageId(int messageId) {
         this.messageId = messageId;
+    }
+
+    public boolean isReplied() {
+        return replied;
+    }
+
+    public void setReplied(boolean replied) {
+        this.replied = replied;
     }
 
     @Override
