@@ -70,7 +70,7 @@ public class BncGame {
         var result = new BncResult(number, bulls, cows, attemptsLeft);
         history.add(result);
 
-        if (attemptsLeft <= 0)
+        if (!result.isWin() && attemptsLeft <= 0)
             throw new GameOverException(result, answer);
         return result;
     }
