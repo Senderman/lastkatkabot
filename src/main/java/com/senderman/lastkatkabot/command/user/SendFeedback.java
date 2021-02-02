@@ -19,7 +19,7 @@ public class SendFeedback implements CommandExecutor {
     public SendFeedback(
             ApiRequests telegram,
             FeedbackRepository feedbackRepo,
-            @Value("${mainAdminId}") long feedbackChannelId
+            @Value("${feedbackChannelId}") long feedbackChannelId
     ) {
         this.telegram = telegram;
         this.feedbackRepo = feedbackRepo;
