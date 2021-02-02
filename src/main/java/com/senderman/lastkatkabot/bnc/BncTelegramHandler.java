@@ -54,8 +54,16 @@ public class BncTelegramHandler {
         }
     }
 
+    public BncGameState getGameState(long chatId) {
+        return gamesManager.getGameState(chatId);
+    }
+
+    public boolean createGameIfNotExists(long chatId, int length, boolean isHexadecimal) {
+        return gamesManager.createGameIfNotExists(chatId, length, isHexadecimal);
+    }
+
     // Send message that will be deleted after game end
-    private void sendGameMessage(long chatId, String text) {
+    public void sendGameMessage(long chatId, String text) {
         addMessageToDelete(telegram.sendMessage(chatId, text));
     }
 

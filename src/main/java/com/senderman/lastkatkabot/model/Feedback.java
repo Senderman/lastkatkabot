@@ -26,7 +26,7 @@ public class Feedback {
         this.userName = userName;
         this.chatId = chatId;
         this.messageId = messageId;
-        this.replied = true;
+        this.replied = false;
     }
 
     public int getId() {

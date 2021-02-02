@@ -17,6 +17,9 @@ public class BncGame {
 
     public BncGame(long id, int length, boolean isHexadecimal) {
         this.id = id;
+        if (length < 4 || length > (isHexadecimal ? 16 : 10)) {
+            throw new IllegalArgumentException("Wrong length " + length + ". 4..10 for DEC and 4..16 for HEX");
+        }
         this.length = length;
         this.isHexadecimal = isHexadecimal;
         this.history = new ArrayList<>();

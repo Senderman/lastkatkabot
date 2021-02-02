@@ -4,6 +4,7 @@ import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.repository.FeedbackRepository;
+import com.senderman.lastkatkabot.util.Html;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -69,6 +70,6 @@ public class DeleteFeedback implements CommandExecutor {
         feedbackRepo.deleteById(feedbackId);
         var text = "Фидбек #" + feedbackId + " удален!";
         telegram.sendMessage(chatId, text);
-        telegram.sendMessage(feedbackChannelId, text);
+        telegram.sendMessage(feedbackChannelId, text + " пользователем " + Html.getUserLink(message.getFrom()));
     }
 }

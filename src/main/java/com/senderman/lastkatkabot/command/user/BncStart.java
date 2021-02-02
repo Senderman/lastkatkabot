@@ -2,7 +2,7 @@ package com.senderman.lastkatkabot.command.user;
 
 import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.bnc.BncGameState;
-import com.senderman.lastkatkabot.bnc.BncManagerDatabaseWrapper;
+import com.senderman.lastkatkabot.bnc.BncTelegramHandler;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -13,11 +13,11 @@ import java.util.stream.Collectors;
 @Component
 public class BncStart implements CommandExecutor {
 
-    private final BncManagerDatabaseWrapper gamesController;
+    private final BncTelegramHandler gamesHandler;
     private final ApiRequests telegram;
 
-    public BncStart(BncManagerDatabaseWrapper gamesController, ApiRequests telegram) {
-        this.gamesController = gamesController;
+    public BncStart(BncTelegramHandler gamesHandler, ApiRequests telegram) {
+        this.gamesHandler = gamesHandler;
         this.telegram = telegram;
     }
 
@@ -28,8 +28,9 @@ public class BncStart implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "начать игру \"Быки и коровы\". Можно указать /bnc x, где x от 4 до 10 - длина числа." +
-                " А еще можно выбрать режим игры с hexadecimal системой. /bnc hex либо /bnc hex длина";
+        return "начать игру \"Быки и коровы\". Можно указать /bnc x, где x от 4 до 10 - длина числа. " +
+                " А еще можно выбрать режим игры с hexadecimal системой. /bnc hex либо /bnc hex длина. " +
+                "Максимальная длина для hex - 16";
     }
 
     @Override
@@ -43,23 +44,24 @@ public class BncStart implements CommandExecutor {
             isHexadecimal = true;
         try {
             length = parseLength(isHexadecimal, args);
-            if (length < 4 || length > 10) {
-                wrongLength(chatId);
+            int maxLength = isHexadecimal ? 16 : 10;
+            if (length < 4 || length > maxLength) {
+                wrongLength(chatId, maxLength);
                 return;
             }
         } catch (NumberFormatException e) {
-            wrongLength(chatId);
+            telegram.sendMessage(chatId, "Ошибка. Длина должна быть числом");
             return;
         }
 
 
         // if there's game in this chat already, send state
         try {
-            var gameState = gamesController.getGameState(chatId);
+            var gameState = gamesHandler.getGameState(chatId);
             sendGameState(chatId, gameState);
         } catch (NoSuchElementException e) {
-            gamesController.createGameIfNotExists(chatId, length, isHexadecimal);
-            telegram.sendMessage(chatId, startText(length));
+            gamesHandler.createGameIfNotExists(chatId, length, isHexadecimal);
+            gamesHandler.sendGameMessage(chatId, startText(length));
         }
 
     }
@@ -89,7 +91,7 @@ public class BncStart implements CommandExecutor {
                 state.getAttemptsLeft(),
                 historyText);
 
-        telegram.sendMessage(chatId, textToSend);
+        gamesHandler.sendGameMessage(chatId, textToSend);
     }
 
     private String startText(int length) {
@@ -100,7 +102,7 @@ public class BncStart implements CommandExecutor {
                 "Длина числа - " + length;
     }
 
-    private void wrongLength(long chatId) {
-        telegram.sendMessage(chatId, "Неверная длина числа. Допустимое значение от 4 до 10!");
+    private void wrongLength(long chatId, int maxLength) {
+        telegram.sendMessage(chatId, "Неверная длина числа. Допустимое значение от 4 до " + maxLength + "!");
     }
 }
