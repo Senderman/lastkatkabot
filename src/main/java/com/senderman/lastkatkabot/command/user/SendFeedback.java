@@ -14,12 +14,12 @@ public class SendFeedback implements CommandExecutor {
 
     private final ApiRequests telegram;
     private final FeedbackRepository feedbackRepo;
-    private final int feedbackChannelId;
+    private final long feedbackChannelId;
 
     public SendFeedback(
             ApiRequests telegram,
             FeedbackRepository feedbackRepo,
-            @Value("${mainAdminId}") int feedbackChannelId
+            @Value("${mainAdminId}") long feedbackChannelId
     ) {
         this.telegram = telegram;
         this.feedbackRepo = feedbackRepo;
@@ -59,6 +59,6 @@ public class SendFeedback implements CommandExecutor {
                 "От: " + userLink + "\n\n" + feedbackText + "\n\n" +
                 "Для ответа, введите /fresp " + feedbackId + " &lt;ваш ответ&gt;";
         telegram.sendMessage(feedbackChannelId, text);
-        telegram.sendMessage(chatId, "✅ Сообщение отправлено разработчику!", message.getMessageId());
+        telegram.sendMessage(chatId, "✅ Сообщение отправлено разработчикам!", message.getMessageId());
     }
 }
