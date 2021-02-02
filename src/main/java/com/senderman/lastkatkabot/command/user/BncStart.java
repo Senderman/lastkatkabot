@@ -28,7 +28,8 @@ public class BncStart implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "начать игру \"Быки и коровы\". Можно указать /bnc x, где x от 4 до 10 - длина числа";
+        return "начать игру \"Быки и коровы\". Можно указать /bnc x, где x от 4 до 10 - длина числа." +
+                " А еще можно выбрать режим игры с hexadecimal системой. /bnc hex либо /bnc hex длина";
     }
 
     @Override
@@ -36,31 +37,42 @@ public class BncStart implements CommandExecutor {
         var chatId = message.getChatId();
 
         int length;
-        var args = message.getText().split("\\s+", 2);
-        if (args.length == 1) {
-            length = 4;
-        } else {
-            try {
-                length = Integer.parseInt(args[1]);
-                if (length < 4 || length > 10) {
-                    wrongLength(chatId);
-                    return;
-                }
-            } catch (NumberFormatException e) {
+        boolean isHexadecimal = false;
+        var args = message.getText().split("\\s+");
+        if (args.length > 1 && args[1].equalsIgnoreCase("hex"))
+            isHexadecimal = true;
+        try {
+            length = parseLength(isHexadecimal, args);
+            if (length < 4 || length > 10) {
                 wrongLength(chatId);
                 return;
             }
+        } catch (NumberFormatException e) {
+            wrongLength(chatId);
+            return;
         }
+
 
         // if there's game in this chat already, send state
         try {
             var gameState = gamesController.getGameState(chatId);
             sendGameState(chatId, gameState);
         } catch (NoSuchElementException e) {
-            gamesController.createGameIfNotExists(chatId, length);
+            gamesController.createGameIfNotExists(chatId, length, isHexadecimal);
             telegram.sendMessage(chatId, startText(length));
         }
 
+    }
+
+
+    private int parseLength(boolean isHexadecimal, String[] args) throws NumberFormatException {
+        if (!isHexadecimal) {
+            if (args.length == 1) return 4;
+            return Integer.parseInt(args[1]);
+        } else {
+            if (args.length == 2) return 4;
+            return Integer.parseInt(args[2]);
+        }
     }
 
     private void sendGameState(long chatId, BncGameState state) {
@@ -69,8 +81,13 @@ public class BncStart implements CommandExecutor {
                 .collect(Collectors.joining("\n"));
 
         var textToSend = String.format("Длина числа: %d\n" +
-                "Осталось попыток: %d\n\n" +
-                "%s", state.getLength(), state.getAttemptsLeft(), historyText);
+                        "Тип числа: %s\n" +
+                        "Осталось попыток: %d\n\n" +
+                        "%s",
+                state.getLength(),
+                state.isHexadecimal() ? "HEX" : "DEC",
+                state.getAttemptsLeft(),
+                historyText);
 
         telegram.sendMessage(chatId, textToSend);
     }

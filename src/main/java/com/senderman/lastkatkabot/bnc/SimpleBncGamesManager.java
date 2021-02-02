@@ -23,10 +23,10 @@ public class SimpleBncGamesManager implements BncGamesManager {
     }
 
     @Override
-    public boolean createGameIfNotExists(long id, int length) {
+    public boolean createGameIfNotExists(long id, int length, boolean isHexadecimal) {
         if (games.containsKey(id)) return false;
 
-        games.put(id, new BncGame(id, length));
+        games.put(id, new BncGame(id, length, isHexadecimal));
         return true;
     }
 

@@ -127,7 +127,7 @@ public class UpdateHandler extends BotHandler {
 
         var text = message.getText();
 
-        if (text.matches("\\d{4,10}")) {
+        if (text.matches("(\\d|[a-fA-F]){4,10}")) {
             bnc.processBncAnswer(message);
             return null;
         }

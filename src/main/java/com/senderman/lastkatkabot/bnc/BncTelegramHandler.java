@@ -32,23 +32,25 @@ public class BncTelegramHandler {
 
     public void processBncAnswer(Message message) {
         var chatId = message.getChatId();
-        var number = message.getText();
-        addMessageToDelete(message);
+        var number = message.getText().toUpperCase(Locale.ENGLISH);
         try {
             var result = gamesManager.check(chatId, number);
+            addMessageToDelete(message);
             if (result.isWin()) {
                 processWin(message, result);
             } else {
                 sendGameMessage(chatId, formatResult(result));
             }
         } catch (NumberAlreadyCheckedException e) {
+            addMessageToDelete(message);
             sendGameMessage(chatId, "Уже проверяли! " + formatResult(e.getResult()));
         } catch (RepeatingDigitsException e) {
+            addMessageToDelete(message);
             sendGameMessage(chatId, "Число не должно иметь повторяющихся цифр!");
         } catch (GameOverException e) {
+            addMessageToDelete(message);
             processGameOver(message, e.getAnswer());
-        } catch (InvalidLengthException | NoSuchElementException ignored) {
-
+        } catch (InvalidLengthException | InvalidCharacterException | NoSuchElementException ignored) {
         }
     }
 
@@ -83,7 +85,8 @@ public class BncTelegramHandler {
         gamesManager.deleteGame(chatId);
 
         var username = Html.htmlSafe(message.getFrom().getFirstName());
-        var text = username + " выиграл за " + (BncGame.totalAttempts(gameState.getLength()) - result.getAttempts()) +
+        var text = username + " выиграл за " +
+                (BncGame.totalAttempts(gameState.getLength(), gameState.isHexadecimal()) - result.getAttempts()) +
                 " попыток!\n\n" + formatGameEndMessage(gameState);
         deleteGameMessages(chatId);
         telegram.sendMessage(chatId, text);

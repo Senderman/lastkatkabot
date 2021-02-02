@@ -1,6 +1,8 @@
 package com.senderman.lastkatkabot.bnc;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class BncGame {
 
@@ -11,19 +13,22 @@ public class BncGame {
     private final Set<String> checkedNumbers;
     private int attemptsLeft;
     private final long startTime;
+    private final boolean isHexadecimal;
 
-    public BncGame(long id, int length) {
+    public BncGame(long id, int length, boolean isHexadecimal) {
         this.id = id;
         this.length = length;
+        this.isHexadecimal = isHexadecimal;
         this.history = new ArrayList<>();
         this.checkedNumbers = new HashSet<>();
         this.answer = generateAnswer(length);
-        this.attemptsLeft = totalAttempts(length);
+        this.attemptsLeft = totalAttempts(length, isHexadecimal);
         this.startTime = System.currentTimeMillis();
     }
 
-    public static int totalAttempts(int length) {
-        return (int) (length * 2.5);
+    public static int totalAttempts(int length, boolean isHexadecimal) {
+        double k = isHexadecimal ? 3.5 : 2.5;
+        return (int) (length * k);
     }
 
     /**
@@ -41,6 +46,8 @@ public class BncGame {
             throw new InvalidLengthException(length, number.length());
         if (hasRepeatingDigits(number))
             throw new RepeatingDigitsException(number);
+        if (!isHexadecimal && !number.matches("\\d+"))
+            throw new InvalidCharacterException(number);
 
         int bulls = 0;
         int cows = 0;
@@ -73,11 +80,15 @@ public class BncGame {
     }
 
     public BncGameState getGameState() {
-        return new BncGameState(id, length, Collections.unmodifiableList(history), attemptsLeft, startTime);
+        return new BncGameState(id, length, Collections.unmodifiableList(history), attemptsLeft, startTime, isHexadecimal);
     }
 
     private String generateAnswer(int length) {
         var list = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
+        if (isHexadecimal)
+            list = Stream.of(list, List.of("A", "B", "C", "D", "E", "F"))
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList());
         Collections.shuffle(list);
         return String.join("", list.subList(0, length));
     }

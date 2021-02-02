@@ -37,8 +37,8 @@ public class BncManagerDatabaseWrapper implements BncGamesManager {
     }
 
     @Override
-    public boolean createGameIfNotExists(long id, int length) {
-        if (!gamesManager.createGameIfNotExists(id, length)) return false;
+    public boolean createGameIfNotExists(long id, int length, boolean isHexadecimal) {
+        if (!gamesManager.createGameIfNotExists(id, length, isHexadecimal)) return false;
 
         var game = gamesManager.getGame(id);
         saveToDb(game);

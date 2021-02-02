@@ -17,6 +17,7 @@ public interface BncGamesManager {
      * @throws InvalidLengthException        if the number's length is different from answer length
      * @throws NoSuchElementException        if there's no game with given id
      * @throws RepeatingDigitsException      if the given number has repeating digits
+     * @throws InvalidCharacterException     if the given number contains invalid characters
      */
     BncResult check(long id, String number);
 
@@ -27,7 +28,7 @@ public interface BncGamesManager {
      * @param length length of the answer
      * @return true if the game was created, else false
      */
-    boolean createGameIfNotExists(long id, int length);
+    boolean createGameIfNotExists(long id, int length, boolean isHexadecimal);
 
     /**
      * Return Immutable information about game
