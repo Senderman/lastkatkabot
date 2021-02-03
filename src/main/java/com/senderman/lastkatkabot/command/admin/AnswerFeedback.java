@@ -75,10 +75,12 @@ public class AnswerFeedback implements CommandExecutor {
                 feedback.getMessageId());
         telegram.sendMessage(chatId, "Ответ отправлен!", message.getMessageId());
 
-
-        var replierUsername = message.getFrom().getFirstName();
-        var answerReport = String.format("%s ответил на фидбек #%d:\n\n%s",
-                replierUsername, feedbackId, answer);
-        telegram.sendMessage(feedbackChannelId, answerReport);
+        // notify others about answer
+        if (!chatId.equals(feedbackChannelId)) {
+            var replierUsername = message.getFrom().getFirstName();
+            var answerReport = String.format("%s ответил на фидбек #%d:\n\n%s",
+                    replierUsername, feedbackId, answer);
+            telegram.sendMessage(feedbackChannelId, answerReport);
+        }
     }
 }

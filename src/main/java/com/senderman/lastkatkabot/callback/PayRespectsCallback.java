@@ -2,6 +2,7 @@ package com.senderman.lastkatkabot.callback;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.ApiRequests;
+import com.senderman.lastkatkabot.util.Html;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
@@ -36,7 +37,7 @@ public class PayRespectsCallback implements CallbackExecutor {
                 .setChatId(message.getChatId())
                 .setMessageId(message.getMessageId())
                 .setReplyMarkup(message.getReplyMarkup())
-                .setText(message.getText() + "\n" + message.getFrom().getFirstName() + " has payed respects"));
+                .setText(message.getText() + "\n" + Html.htmlSafe(query.getFrom().getFirstName()) + " has payed respects"));
 
     }
 }
