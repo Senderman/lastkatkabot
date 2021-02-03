@@ -68,7 +68,7 @@ public class DeleteFeedback implements CommandExecutor {
         }
 
         feedbackRepo.deleteById(feedbackId);
-        var text = "Фидбек #" + feedbackId + " удален!";
+        var text = "Фидбек #" + feedbackId + " удален";
         telegram.sendMessage(chatId, text);
         telegram.sendMessage(feedbackChannelId, text + " пользователем " + Html.getUserLink(message.getFrom()));
     }
