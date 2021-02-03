@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Lazy;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -149,14 +150,21 @@ public class UpdateHandler extends BotHandler {
         return null;
     }
 
+
+    // Telegram API exceptions are often the cause of huge logs. If anything will go wrong,
+    // we will catch the exception in onUpdatesReceived
+    @Override
+    public void handleTelegramApiException(TelegramApiException ex) {
+    }
+
     private void processNewChatMembers(Message message) {
         var chatId = message.getChatId();
         var messageId = message.getMessageId();
         for (var user : message.getNewChatMembers()) {
             if (user.getIsBot()) {
                 continue;
-            }  
-            try { 
+            }
+            try {
                 var file = imageService.generateGreetingSticker(user.getFirstName());
                 Methods.sendDocument(chatId)
                         .setReplyToMessageId(messageId)

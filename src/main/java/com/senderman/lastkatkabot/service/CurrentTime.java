@@ -11,10 +11,12 @@ import java.util.TimeZone;
 public class CurrentTime {
 
     private final TimeZone timeZone;
-    private final SimpleDateFormat dayFormat = new SimpleDateFormat("yyyyMMdd");
+    private final SimpleDateFormat dayFormat;
 
     public CurrentTime(@Value("${timezone}") String timezone) {
         this.timeZone = TimeZone.getTimeZone(timezone);
+        this.dayFormat = new SimpleDateFormat("yyyyMMdd");
+        dayFormat.setTimeZone(timeZone);
     }
 
     public String getCurrentDay() {
