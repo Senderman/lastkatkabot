@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.command.user;
 
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -8,9 +9,9 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Component
 public class ShortInfo implements CommandExecutor {
 
-    private final ApiRequests telegram;
+    private final CommonAbsSender telegram;
 
-    public ShortInfo(ApiRequests telegram) {
+    public ShortInfo(CommonAbsSender telegram) {
         this.telegram = telegram;
     }
 
@@ -46,7 +47,7 @@ public class ShortInfo implements CommandExecutor {
                 info += String.format("\n\uD83D\uDCE2 ID канала: <code>%d</code>", forward.getId());
             }
         }
-        telegram.sendMessage(chatId, info);
+        Methods.sendMessage(chatId, info).call(telegram);
 
     }
 }

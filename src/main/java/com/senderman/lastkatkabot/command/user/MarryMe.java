@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.callback.Callbacks;
 import com.senderman.lastkatkabot.command.CommandExecutor;
@@ -19,11 +20,11 @@ import java.util.Objects;
 @Component
 public class MarryMe implements CommandExecutor {
 
-    private final ApiRequests telegram;
+    private final CommonAbsSender telegram;
     private final UserStatsRepository users;
     private final MarriageRequestRepository marriages;
 
-    public MarryMe(ApiRequests telegram, UserStatsRepository users, MarriageRequestRepository marriages) {
+    public MarryMe(CommonAbsSender telegram, UserStatsRepository users, MarriageRequestRepository marriages) {
         this.telegram = telegram;
         this.users = users;
         this.marriages = marriages;
@@ -44,7 +45,8 @@ public class MarryMe implements CommandExecutor {
         var chatId = message.getChatId();
         var messageId = message.getMessageId();
         if (message.isUserMessage() || !message.isReply()) {
-            telegram.sendMessage(chatId, "Для использования команды необходимо ответить ей на чье-нибудь сообщение!", messageId);
+            ApiRequests.answerMessage(message, "Для использования команды необходимо ответить ей на чье-нибудь сообщение!")
+                    .call(telegram);
             return;
         }
 
@@ -52,25 +54,25 @@ public class MarryMe implements CommandExecutor {
         var proposeeId = message.getReplyToMessage().getFrom().getId();
 
         if (proposerId.equals(proposeeId)) {
-            telegram.sendMessage(chatId, "На самом себе нельзя жениться!");
+            Methods.sendMessage(chatId, "На самом себе нельзя жениться!").call(telegram);
             return;
         }
 
         var proposerStats = users.findById(proposerId).orElseGet(() -> new Userstats(proposerId));
 
         if (Objects.equals(proposerStats.getLoverId(), proposeeId)) {
-            telegram.sendMessage(chatId, "Вы уже в браке с этим пользователем!", messageId);
+            ApiRequests.answerMessage(message, "Вы уже в браке с этим пользователем!").call(telegram);
             return;
         }
 
         if (proposerStats.hasLover()) {
-            telegram.sendMessage(chatId, "Вы что, хотите изменить своей половинке?!", messageId);
+            ApiRequests.answerMessage(message, "Вы что, хотите изменить своей половинке?!").call(telegram);
             return;
         }
         var proposeeStats = users.findById(proposeeId).orElseGet(() -> new Userstats(proposeeId));
 
         if (proposeeStats.hasLover()) {
-            telegram.sendMessage(chatId, "У этого пользователя уже есть своя вторая половинка!", messageId);
+            ApiRequests.answerMessage(message, "У этого пользователя уже есть своя вторая половинка!").call(telegram);
             return;
         }
 
@@ -95,12 +97,12 @@ public class MarryMe implements CommandExecutor {
                         .payload(Callbacks.MARRIAGE + " " + request.getId() + " decline"))
                 .build();
 
-        telegram.sendMessage(Methods.sendMessage()
+        Methods.sendMessage()
                 .setChatId(chatId)
                 .setText(text)
                 .setReplyToMessageId(message.getReplyToMessage().getMessageId())
                 .setReplyMarkup(markup)
-        );
+                .call(telegram);
     }
 
 }

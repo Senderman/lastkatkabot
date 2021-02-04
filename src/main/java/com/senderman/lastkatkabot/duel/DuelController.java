@@ -1,7 +1,7 @@
 package com.senderman.lastkatkabot.duel;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.model.Userstats;
 import com.senderman.lastkatkabot.repository.UserStatsRepository;
 import com.senderman.lastkatkabot.util.Html;
@@ -18,9 +18,9 @@ public class DuelController {
 
     private final Map<String, Duel> duels = new HashMap<>(); // key is "chatId messageId"
     private final UserStatsRepository users;
-    private final ApiRequests telegram;
+    private final CommonAbsSender telegram;
 
-    public DuelController(UserStatsRepository users, ApiRequests telegram) {
+    public DuelController(UserStatsRepository users, CommonAbsSender telegram) {
         this.users = users;
         this.telegram = telegram;
     }
@@ -63,7 +63,7 @@ public class DuelController {
                     "\uD83D\uDE14 Проигравший: " + loserName;
         }
         method.setText(text);
-        telegram.execute(method);
+        method.call(telegram);
     }
 
     private void processDuelResultToDatabase(Duel.DuelResult result) {

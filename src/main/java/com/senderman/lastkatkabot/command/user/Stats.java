@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.model.Userstats;
@@ -13,11 +14,11 @@ import org.telegram.telegrambots.meta.api.objects.User;
 @Component
 public class Stats implements CommandExecutor {
 
-    private final ApiRequests telegram;
+    private final CommonAbsSender telegram;
     private final UserStatsRepository users;
 
 
-    public Stats(ApiRequests telegram, UserStatsRepository users) {
+    public Stats(CommonAbsSender telegram, UserStatsRepository users) {
         this.telegram = telegram;
         this.users = users;
     }
@@ -38,8 +39,9 @@ public class Stats implements CommandExecutor {
         User user = (message.isReply()) ? message.getReplyToMessage().getFrom() : message.getFrom();
 
         if (user.getIsBot()) {
-            telegram.sendMessage(chatId, "Но это же просто бот, имитация человека! " +
-                    "Разве может бот написать симфонию, иметь статистику, играть в BnC, участвовать в дуэлях?");
+            ApiRequests.answerMessage(message, "Но это же просто бот, имитация человека! " +
+                    "Разве может бот написать симфонию, иметь статистику, играть в BnC, участвовать в дуэлях?")
+                    .call(telegram);
             return;
         }
 
@@ -54,12 +56,12 @@ public class Stats implements CommandExecutor {
                 name, stats.getDuelWins(), stats.getDuelsTotal(), winRate, stats.getBncScore());
 
         if (stats.getLoverId() != null) {
-            var lover = telegram.execute(Methods.getChatMember(stats.getLoverId(), stats.getLoverId()));
+            var lover = Methods.getChatMember(stats.getLoverId(), stats.getLoverId()).call(telegram);
             if (lover != null) {
                 String loverLink = Html.getUserLink(lover.getUser());
                 text += "\n\n❤️ Вторая половинка: " + loverLink;
             }
         }
-        telegram.sendMessage(chatId, text);
+        Methods.sendMessage(chatId, text).call(telegram);
     }
 }

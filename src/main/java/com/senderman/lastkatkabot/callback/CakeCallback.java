@@ -1,5 +1,6 @@
 package com.senderman.lastkatkabot.callback;
 
+import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.ApiRequests;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -7,10 +8,10 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 @Component
 public class CakeCallback implements CallbackExecutor {
 
-    private final ApiRequests telegram;
+    private final CommonAbsSender telegram;
 
 
-    public CakeCallback(ApiRequests telegram) {
+    public CakeCallback(CommonAbsSender telegram) {
         this.telegram = telegram;
     }
 
@@ -22,7 +23,7 @@ public class CakeCallback implements CallbackExecutor {
     @Override
     public void execute(CallbackQuery query) {
         if (!query.getFrom().getId().equals(query.getMessage().getReplyToMessage().getFrom().getId())) {
-            telegram.answerCallbackQuery(query, "Этот тортик не вам!");
+            ApiRequests.answerCallbackQuery(query, "Этот тортик не вам!").call(telegram);
             return;
         }
 
@@ -39,20 +40,20 @@ public class CakeCallback implements CallbackExecutor {
     }
 
     private void acceptCake(CallbackQuery query) {
-        telegram.answerCallbackQuery(query, "П p u я т н o г o  a п п e т u т a");
-        telegram.editQueryMessage(query, formatEditedMessage(query, "\uD83C\uDF82 %s принял тортик %s"));
+        ApiRequests.answerCallbackQuery(query, "П p u я т н o г o  a п п e т u т a").call(telegram);
+        ApiRequests.editMessage(query, formatEditedMessage(query, "\uD83C\uDF82 %s принял тортик %s")).call(telegram);
     }
 
     private void declineCake(CallbackQuery query) {
-        telegram.answerCallbackQuery(query, "Ну и ладно :(");
-        telegram.editQueryMessage(query,
+        ApiRequests.answerCallbackQuery(query, "Ну и ладно :(").call(telegram);
+        ApiRequests.editMessage(query,
                 formatEditedMessage(query, "\uD83D\uDEAB \uD83C\uDF82 %s отказался от тортика %s")
-        );
+        ).call(telegram);
     }
 
     private void cakeIsRotten(CallbackQuery query) {
-        telegram.answerCallbackQuery(query, "Тортик испортился!");
-        telegram.editQueryMessage(query, "\uD83E\uDD22 Тортик попытались взять, но он испортился!");
+        ApiRequests.answerCallbackQuery(query, "Тортик испортился!").call(telegram);
+        ApiRequests.editMessage(query, "\uD83E\uDD22 Тортик попытались взять, но он испортился!").call(telegram);
     }
 
     private String formatEditedMessage(CallbackQuery query, String format) {

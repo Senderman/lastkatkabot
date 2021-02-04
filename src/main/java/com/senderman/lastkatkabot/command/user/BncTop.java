@@ -1,7 +1,7 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.repository.UserStatsRepository;
 import com.senderman.lastkatkabot.util.Html;
@@ -16,10 +16,10 @@ import java.util.function.Function;
 @Component
 public class BncTop implements CommandExecutor {
 
-    private final ApiRequests telegram;
+    private final CommonAbsSender telegram;
     private final UserStatsRepository users;
 
-    public BncTop(ApiRequests telegram, UserStatsRepository users) {
+    public BncTop(CommonAbsSender telegram, UserStatsRepository users) {
         this.telegram = telegram;
         this.users = users;
     }
@@ -48,13 +48,13 @@ public class BncTop implements CommandExecutor {
                     .append("\n");
         }
 
-        telegram.sendMessage(chatId, top.toString());
+        Methods.sendMessage(chatId, top.toString()).call(telegram);
     }
 
     private String formatUser(int userId, int score, boolean printLink) {
         Function<User, String> userPrinter = printLink ? Html::getUserLink : u -> Html.htmlSafe(u.getFirstName());
 
-        String user = Optional.ofNullable(telegram.execute(Methods.getChatMember(userId, userId)))
+        String user = Optional.ofNullable(Methods.getChatMember(userId, userId).call(telegram))
                 .map(ChatMember::getUser)
                 .map(userPrinter)
                 .orElse("Без имени");

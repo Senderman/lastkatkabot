@@ -9,24 +9,31 @@ import com.senderman.lastkatkabot.model.AdminUser;
 import com.senderman.lastkatkabot.model.BlacklistedUser;
 import com.senderman.lastkatkabot.model.ChatUser;
 import com.senderman.lastkatkabot.repository.ChatUserRepository;
+import com.senderman.lastkatkabot.service.ChatManagerService;
 import com.senderman.lastkatkabot.service.HandlerExtractor;
 import com.senderman.lastkatkabot.service.ImageService;
 import com.senderman.lastkatkabot.service.UserManager;
 import com.senderman.lastkatkabot.util.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Lazy;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.ResponseParameters;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 
 @SpringBootApplication
@@ -38,6 +45,7 @@ public class UpdateHandler extends BotHandler {
     private final HandlerExtractor<CallbackExecutor> callbacks;
     private final UserManager<AdminUser> admins;
     private final UserManager<BlacklistedUser> blacklist;
+    private final ChatManagerService chatManagerService;
     private final int mainAdminId;
     private final ChatUserRepository chatUsers;
     private final BncTelegramHandler bnc;
@@ -52,6 +60,7 @@ public class UpdateHandler extends BotHandler {
             @Lazy HandlerExtractor<CallbackExecutor> callbacks,
             UserManager<AdminUser> admins,
             UserManager<BlacklistedUser> blacklist,
+            ChatManagerService chatManagerService,
             ChatUserRepository chatUsers,
             @Lazy BncTelegramHandler bnc,
             ImageService imageService,
@@ -65,6 +74,7 @@ public class UpdateHandler extends BotHandler {
         this.callbacks = callbacks;
         this.admins = admins;
         this.blacklist = blacklist;
+        this.chatManagerService = chatManagerService;
         this.mainAdminId = mainAdminId;
         this.chatUsers = chatUsers;
         this.bnc = bnc;
@@ -156,6 +166,37 @@ public class UpdateHandler extends BotHandler {
     @Override
     public void handleTelegramApiException(TelegramApiException ex) {
     }
+
+    @Override
+    public <T extends Serializable, M extends BotApiMethod<T>> @Nullable T call(@NotNull M method) {
+        if (!method.getMethod().equals(SendMessage.PATH))
+            return super.call(method);
+
+
+        SendMessage sm = (SendMessage) method;
+        sm.enableHtml(true);
+        sm.disableWebPagePreview();
+        try {
+            return execute(method);
+        } catch (TelegramApiRequestException e) {
+            // this happens when chatId changes (when converting group to a supergroup)
+            var newChatId = Optional.ofNullable(e.getParameters())
+                    .map(ResponseParameters::getMigrateToChatId);
+            if (newChatId.isEmpty()) {
+                handleTelegramApiException(e);
+                return null;
+            }
+
+            long oldChatId = Long.parseLong(sm.getChatId());
+            chatManagerService.migrateChatIfNeeded(oldChatId, newChatId.get());
+            sm.setChatId(Long.toString(newChatId.get()));
+            return call(method);
+        } catch (TelegramApiException e) {
+            handleTelegramApiException(e);
+            return null;
+        }
+    }
+
 
     private void processNewChatMembers(Message message) {
         var chatId = message.getChatId();

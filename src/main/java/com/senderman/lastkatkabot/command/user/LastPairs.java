@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.command.user;
 
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.model.ChatInfo;
 import com.senderman.lastkatkabot.repository.ChatInfoRepository;
@@ -10,10 +11,10 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Component
 public class LastPairs implements CommandExecutor {
 
-    private final ApiRequests telegram;
+    private final CommonAbsSender telegram;
     private final ChatInfoRepository chats;
 
-    public LastPairs(ApiRequests telegram, ChatInfoRepository chats) {
+    public LastPairs(CommonAbsSender telegram, ChatInfoRepository chats) {
         this.telegram = telegram;
         this.chats = chats;
     }
@@ -33,18 +34,18 @@ public class LastPairs implements CommandExecutor {
         var chatId = message.getChatId();
 
         if (message.isUserMessage()) {
-            telegram.sendMessage(chatId, "Команду нельзя использовать в ЛС!");
+            Methods.sendMessage(chatId, "Команду нельзя использовать в ЛС!").call(telegram);
             return;
         }
 
         var chatInfo = chats.findById(chatId).orElseGet(() -> new ChatInfo(chatId));
         var pairs = chatInfo.getLastPairs();
         if (pairs == null || pairs.isEmpty()) {
-            telegram.sendMessage(chatId, "В этом чате еще ни разу не запускали /pair!");
+            Methods.sendMessage(chatId, "В этом чате еще ни разу не запускали /pair!").call(telegram);
             return;
         }
 
         var text = "<b>Последние 10 пар:</b>\n\n" + String.join("\n", pairs);
-        telegram.sendMessage(chatId, text);
+        Methods.sendMessage(chatId, text).call(telegram);
     }
 }

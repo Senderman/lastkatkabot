@@ -1,7 +1,7 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.callback.Callbacks;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.duel.DuelController;
@@ -15,9 +15,9 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 public class StartDuel implements CommandExecutor {
 
     private final DuelController duelController;
-    private final ApiRequests telegram;
+    private final CommonAbsSender telegram;
 
-    public StartDuel(DuelController duelController, ApiRequests telegram) {
+    public StartDuel(DuelController duelController, CommonAbsSender telegram) {
         this.duelController = duelController;
         this.telegram = telegram;
     }
@@ -46,7 +46,7 @@ public class StartDuel implements CommandExecutor {
                                 .payload(Callbacks.DUEL))
                         .build());
 
-        var sentMessage = telegram.sendMessage(sm);
+        var sentMessage = sm.call(telegram);
         if (sentMessage == null) return;
         duelController.newDuel(sentMessage.getChatId(), sentMessage.getMessageId(), user);
 

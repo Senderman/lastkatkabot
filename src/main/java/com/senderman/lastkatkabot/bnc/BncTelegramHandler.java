@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.bnc;
 
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.model.Userstats;
 import com.senderman.lastkatkabot.repository.UserStatsRepository;
 import com.senderman.lastkatkabot.util.Html;
@@ -14,13 +15,13 @@ import java.util.stream.Collectors;
 @Component
 public class BncTelegramHandler {
 
-    private final ApiRequests telegram;
+    private final CommonAbsSender telegram;
     private final BncGamesManager gamesManager;
     private final UserStatsRepository usersRepo;
     private final Map<Long, List<Integer>> messagesToDelete;
 
     public BncTelegramHandler(
-            ApiRequests telegram,
+            CommonAbsSender telegram,
             @Qualifier("bncManagerDatabaseWrapper") BncGamesManager gamesManager,
             UserStatsRepository usersRepo
     ) {
@@ -64,7 +65,7 @@ public class BncTelegramHandler {
 
     // Send message that will be deleted after game end
     public void sendGameMessage(long chatId, String text) {
-        addMessageToDelete(telegram.sendMessage(chatId, text));
+        addMessageToDelete(Methods.sendMessage(chatId, text).call(telegram));
     }
 
     private void addMessageToDelete(Message message) {
@@ -79,7 +80,7 @@ public class BncTelegramHandler {
         if (messageIds == null) return;
 
         for (var messageId : messageIds)
-            telegram.deleteMessage(chatId, messageId);
+            Methods.deleteMessage(chatId, messageId).call(telegram);
     }
 
     public void processWin(Message message, BncResult result) {
@@ -97,7 +98,7 @@ public class BncTelegramHandler {
                 (BncGame.totalAttempts(gameState.getLength(), gameState.isHexadecimal()) - result.getAttempts()) +
                 " попыток!\n\n" + formatGameEndMessage(gameState);
         deleteGameMessages(chatId);
-        telegram.sendMessage(chatId, text);
+        Methods.sendMessage(chatId, text).call(telegram);
     }
 
     public void processGameOver(Message message, String answer) {
@@ -106,7 +107,7 @@ public class BncTelegramHandler {
         gamesManager.deleteGame(chatId);
         deleteGameMessages(chatId);
         var text = "Вы проиграли! Ответ: " + answer + "\n\n" + formatGameEndMessage(gameState);
-        telegram.sendMessage(chatId, text);
+        Methods.sendMessage(chatId, text).call(telegram);
     }
 
     private String formatGameEndMessage(BncGameState state) {

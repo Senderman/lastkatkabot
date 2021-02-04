@@ -1,7 +1,7 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.callback.Callbacks;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
@@ -12,9 +12,9 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Component
 public class PayRespects implements CommandExecutor {
 
-    private final ApiRequests telegram;
+    private final CommonAbsSender telegram;
 
-    public PayRespects(ApiRequests telegram) {
+    public PayRespects(CommonAbsSender telegram) {
         this.telegram = telegram;
     }
 
@@ -41,7 +41,7 @@ public class PayRespects implements CommandExecutor {
             object = "";
         }
 
-        telegram.deleteMessage(message.getChatId(), message.getMessageId());
+        Methods.deleteMessage(message.getChatId(), message.getMessageId()).call(telegram);
         var text = "\uD83D\uDD6F Press F to pay respects " + object +
                 "\n" + message.getFrom().getFirstName() + " has payed respects";
 
@@ -51,6 +51,8 @@ public class PayRespects implements CommandExecutor {
                         .payload(Callbacks.F))
                 .build();
 
-        telegram.sendMessage(Methods.sendMessage(message.getChatId(), text).setReplyMarkup(markup));
+        Methods.sendMessage(message.getChatId(), text)
+                .setReplyMarkup(markup)
+                .call(telegram);
     }
 }

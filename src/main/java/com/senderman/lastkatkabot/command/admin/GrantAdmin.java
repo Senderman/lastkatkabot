@@ -1,5 +1,6 @@
 package com.senderman.lastkatkabot.command.admin;
 
+import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
@@ -14,12 +15,12 @@ import java.util.EnumSet;
 @Component
 public class GrantAdmin implements CommandExecutor {
 
-    private final ApiRequests telegram;
+    private final CommonAbsSender telegram;
     private final UserManager<AdminUser> admins;
 
 
     public GrantAdmin(
-            ApiRequests telegram,
+            CommonAbsSender telegram,
             @Qualifier("adminManager") UserManager<AdminUser> admins) {
         this.telegram = telegram;
         this.admins = admins;
@@ -42,26 +43,23 @@ public class GrantAdmin implements CommandExecutor {
 
     @Override
     public void execute(Message message) {
-        long chatId = message.getChatId();
-        var messageId = message.getMessageId();
-
         if (!message.isReply() || message.isUserMessage()) {
-            telegram.sendMessage(chatId, "Посвящать в админы нужно в группе и реплаем!");
+            ApiRequests.answerMessage(message, "Посвящать в админы нужно в группе и реплаем!").call(telegram);
             return;
         }
         var user = message.getReplyToMessage().getFrom();
 
         if (user.getIsBot()) {
-            telegram.sendMessage(chatId, "Но это же просто бот, имитация человека! " +
-                    "Разве может бот написать симфонию, иметь статистику, участвовать в дуэлях, быть админом?");
+            ApiRequests.answerMessage(message, "Но это же просто бот, имитация человека! " +
+                    "Разве может бот написать симфонию, иметь статистику, участвовать в дуэлях, быть админом?")
+                    .call(telegram);
             return;
         }
 
         if (admins.addUser(new AdminUser(user.getId())))
-            telegram.sendMessage(chatId, "Пользователь успешно посвящен в админы!", messageId);
+            ApiRequests.answerMessage(message, "Пользователь успешно посвящен в админы!").call(telegram);
         else
-            telegram.sendMessage(chatId, "Не следует посвящать в админы дважды!", messageId);
-
+            ApiRequests.answerMessage(message, "Не следует посвящать в админы дважды!").call(telegram);
     }
 }
 

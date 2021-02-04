@@ -1,7 +1,7 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.callback.Callbacks;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.util.Html;
@@ -13,9 +13,9 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Component
 public class Cake implements CommandExecutor {
 
-    private final ApiRequests telegram;
+    private final CommonAbsSender telegram;
 
-    public Cake(ApiRequests telegram) {
+    public Cake(CommonAbsSender telegram) {
         this.telegram = telegram;
     }
 
@@ -47,10 +47,10 @@ public class Cake implements CommandExecutor {
                         .payload(Callbacks.CAKE + " decline"))
                 .build();
 
-        telegram.sendMessage(Methods.sendMessage(message.getChatId(), text)
+        Methods.sendMessage(message.getChatId(), text)
                 .setReplyToMessageId(message.getReplyToMessage().getMessageId())
                 .setReplyMarkup(markup)
-        );
+                .call(telegram);
 
     }
 

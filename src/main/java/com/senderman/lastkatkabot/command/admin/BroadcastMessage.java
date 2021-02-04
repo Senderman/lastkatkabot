@@ -1,5 +1,7 @@
 package com.senderman.lastkatkabot.command.admin;
 
+import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
@@ -18,11 +20,11 @@ import java.util.stream.StreamSupport;
 @Component
 public class BroadcastMessage implements CommandExecutor {
 
-    private final ApiRequests telegram;
+    private final CommonAbsSender telegram;
     private final ChatUserRepository chatUsers;
     private final ExecutorService threadPool;
 
-    public BroadcastMessage(ApiRequests telegram, ChatUserRepository chatUsers, ExecutorService threadPool) {
+    public BroadcastMessage(CommonAbsSender telegram, ChatUserRepository chatUsers, ExecutorService threadPool) {
         this.telegram = telegram;
         this.chatUsers = chatUsers;
         this.threadPool = threadPool;
@@ -47,11 +49,12 @@ public class BroadcastMessage implements CommandExecutor {
     public void execute(Message message) {
         var chatId = message.getChatId();
         if (message.getText().strip().equals(getTrigger())) {
-            telegram.sendMessage(chatId, "Неверное количество аргументов!", message.getMessageId());
+            ApiRequests.answerMessage(message, "Неверное количество аргументов!").call(telegram);
             return;
         }
-        var messageToBroadcast = message.getText().split("\\s+", 2)[1];
-        telegram.sendMessage(chatId, "Начало рассылки сообщений...");
+        var messageToBroadcast = "\uD83D\uDD14 <b>Сообщение от разработчиков</b>\n\n" +
+                message.getText().split("\\s+", 2)[1];
+        Methods.sendMessage(chatId, "Начало рассылки сообщений...").call(telegram);
         threadPool.execute(() -> {
             int counter = 0;
             int totalCounter = 0;
@@ -63,16 +66,15 @@ public class BroadcastMessage implements CommandExecutor {
                 try {
                     var m = new SendMessage(Long.toString(chat), messageToBroadcast);
                     m.enableHtml(true);
-                    telegram.tryExecute(m);
+                    telegram.execute(m);
                     counter++;
                 } catch (TelegramApiException ignored) {
                 } finally {
                     totalCounter++;
                 }
             }
-            telegram.sendMessage(chatId,
-                    "Сообщение получили " + counter + "/" + totalCounter + " чатов",
-                    message.getMessageId());
+            ApiRequests.answerMessage(message, "Сообщение получили " + counter + "/" + totalCounter + " чатов")
+                    .call(telegram);
         });
     }
 }

@@ -1,5 +1,6 @@
 package com.senderman.lastkatkabot.callback;
 
+import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.duel.DuelController;
 import com.senderman.lastkatkabot.duel.SameUserException;
@@ -12,9 +13,9 @@ import java.util.NoSuchElementException;
 public class JoinDuel implements CallbackExecutor {
 
     private final DuelController duelController;
-    private final ApiRequests telegram;
+    private final CommonAbsSender telegram;
 
-    public JoinDuel(DuelController duelController, ApiRequests telegram) {
+    public JoinDuel(DuelController duelController, CommonAbsSender telegram) {
         this.duelController = duelController;
         this.telegram = telegram;
     }
@@ -30,13 +31,13 @@ public class JoinDuel implements CallbackExecutor {
         try {
             duelController.joinDuel(message.getChatId(), message.getMessageId(), query.getFrom());
         } catch (SameUserException e) {
-            telegram.answerCallbackQuery(query,
+            ApiRequests.answerCallbackQuery(query,
                     "\uD83D\uDC7A Похоже, вам надо обратиться к психологу! Вы пытаетесь вызвать на дуэль самого себя!",
-                    true);
+                    true).call(telegram);
         } catch (NoSuchElementException e) {
-            telegram.answerCallbackQuery(query,
+            ApiRequests.answerCallbackQuery(query,
                     "⏰ Дуэль устарела, ищите другую!",
-                    true);
+                    true).call(telegram);
         }
     }
 }

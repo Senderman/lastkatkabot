@@ -1,7 +1,7 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Love;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.model.ChatInfo;
@@ -27,7 +27,7 @@ public class Pair implements CommandExecutor {
 
     private final static int TWO_WEEKS = (int) TimeUnit.DAYS.toSeconds(14);
 
-    private final ApiRequests telegram;
+    private final CommonAbsSender telegram;
     private final UserStatsRepository userStats;
     private final ChatUserRepository chatUsers;
     private final ChatInfoRepository chatInfoRepo;
@@ -37,7 +37,7 @@ public class Pair implements CommandExecutor {
     private final ExecutorService threadPool;
 
     public Pair(
-            ApiRequests telegram,
+            CommonAbsSender telegram,
             UserStatsRepository userStats,
             ChatUserRepository chatUsers,
             ChatInfoRepository chatInfoRepo,
@@ -70,7 +70,7 @@ public class Pair implements CommandExecutor {
         var chatId = message.getChatId();
 
         if (message.isUserMessage()) {
-            telegram.sendMessage(chatId, "Команду нельзя использовать в лс!");
+            Methods.sendMessage(chatId, "Команду нельзя использовать в лс!").call(telegram);
             return;
         }
 
@@ -81,7 +81,7 @@ public class Pair implements CommandExecutor {
         int currentDay = Integer.parseInt(currentTime.getCurrentDay());
 
         if (!lastPairs.isEmpty() && lastPairGenerationDate == currentDay) {
-            telegram.sendMessage(chatId, "Пара дня: " + lastPairs.get(0));
+            Methods.sendMessage(chatId, "Пара дня: " + lastPairs.get(0)).call(telegram);
             return;
         }
 
@@ -90,7 +90,7 @@ public class Pair implements CommandExecutor {
 
         var usersForPair = chatUsers.sampleOfChat(chatId, 2);
         if (usersForPair.size() < 2) {
-            telegram.sendMessage(chatId, "Недостаточно пользователей писало в чат за последние 2 недели!");
+            Methods.sendMessage(chatId, "Недостаточно пользователей писало в чат за последние 2 недели!").call(telegram);
             return;
         }
 
@@ -115,10 +115,10 @@ public class Pair implements CommandExecutor {
                 var text = String.format(loveStrings[loveStrings.length - 1],
                         Html.getUserLink(pair.getFirst()),
                         Html.getUserLink(pair.getSecond()));
-                telegram.sendMessage(chatId, text);
+                Methods.sendMessage(chatId, text).call(telegram);
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
-                telegram.sendMessage(chatId, "...Упс, произошла ошибка. Попробуйте в другой раз");
+                Methods.sendMessage(chatId, "...Упс, произошла ошибка. Попробуйте в другой раз").call(telegram);
             } finally {
                 runningChatPairsGenerations.remove(chatId);
             }
@@ -137,8 +137,8 @@ public class Pair implements CommandExecutor {
                 .filter(id -> chatUsers.existsByChatIdAndUserId(chatId, id))
                 .orElse(secondUser.getUserId());
 
-        var firstMember = telegram.execute(Methods.getChatMember(chatId, firstUser.getUserId())).getUser();
-        var secondMember = telegram.execute(Methods.getChatMember(chatId, loverId)).getUser();
+        var firstMember = Methods.getChatMember(chatId, firstUser.getUserId()).call(telegram).getUser();
+        var secondMember = Methods.getChatMember(chatId, loverId).call(telegram).getUser();
         boolean isTrueLove = loverId == firstUserStats.map(Userstats::getLoverId).orElse(-1);
 
         return new PairData(firstMember, secondMember, isTrueLove);
@@ -155,7 +155,7 @@ public class Pair implements CommandExecutor {
 
     private void sendRandomShitWithDelay(long chatId, String[] shit, long delay) {
         for (int i = 0; i < shit.length - 1; i++) {
-            telegram.sendMessage(chatId, shit[i]);
+            Methods.sendMessage(chatId, shit[i]).call(telegram);
             try {
                 Thread.sleep(delay);
             } catch (InterruptedException e) {

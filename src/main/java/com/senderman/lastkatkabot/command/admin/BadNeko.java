@@ -1,10 +1,12 @@
 package com.senderman.lastkatkabot.command.admin;
 
+import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.model.BlacklistedUser;
 import com.senderman.lastkatkabot.service.UserManager;
+import com.senderman.lastkatkabot.util.Html;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -14,12 +16,12 @@ import java.util.EnumSet;
 @Component
 public class BadNeko implements CommandExecutor {
 
-    private final ApiRequests telegram;
+    private final CommonAbsSender telegram;
     private final UserManager<BlacklistedUser> blackUsers;
 
 
     public BadNeko(
-            ApiRequests telegram,
+            CommonAbsSender telegram,
             @Qualifier("blacklistManager") UserManager<BlacklistedUser> blackUsers
     ) {
         this.telegram = telegram;
@@ -43,24 +45,23 @@ public class BadNeko implements CommandExecutor {
 
     @Override
     public void execute(Message message) {
-        long chatId = message.getChatId();
-        var messageId = message.getMessageId();
         if (!message.isReply() || message.isUserMessage()) {
-            telegram.sendMessage(chatId, "Опускать в плохие кисы нужно в группе и реплаем!");
+            ApiRequests.answerMessage(message, "Опускать в плохие кисы нужно в группе и реплаем!").call(telegram);
             return;
         }
         var user = message.getReplyToMessage().getFrom();
-
+        var userLink = Html.getUserLink(user);
         if (user.getIsBot()) {
-            telegram.sendMessage(chatId, "Но это же просто бот, имитация человека! " +
-                    "Разве может бот написать симфонию, иметь статистику, участвовать в дуэлях, быть плохой кисой?");
+            ApiRequests.answerMessage(message, "Но это же просто бот, имитация человека! " +
+                    "Разве может бот написать симфонию, иметь статистику, участвовать в дуэлях, быть плохой кисой?")
+                    .call(telegram);
             return;
         }
 
         if (blackUsers.addUser(new BlacklistedUser(user.getId())))
-            telegram.sendMessage(chatId, "Теперь он плохая киса!", messageId);
+            ApiRequests.answerMessage(message, "Теперь " + userLink + " -  плохая киса!").call(telegram);
         else
-            telegram.sendMessage(chatId, "Он уже плохая киса!", messageId);
+            ApiRequests.answerMessage(message, userLink + " уже плохая киса!").call(telegram);
 
     }
 }

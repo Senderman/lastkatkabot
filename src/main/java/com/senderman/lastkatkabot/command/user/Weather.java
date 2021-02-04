@@ -1,5 +1,7 @@
 package com.senderman.lastkatkabot.command.user;
 
+import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.model.Userstats;
@@ -16,10 +18,10 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class Weather implements CommandExecutor {
 
-    private final ApiRequests telegram;
+    private final CommonAbsSender telegram;
     private final UserStatsRepository userStats;
 
-    public Weather(ApiRequests telegram, UserStatsRepository userStats) {
+    public Weather(CommonAbsSender telegram, UserStatsRepository userStats) {
         this.telegram = telegram;
         this.userStats = userStats;
     }
@@ -35,11 +37,11 @@ public class Weather implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message trigger) {
-        var chatId = trigger.getChatId();
-        var userId = trigger.getFrom().getId();
+    public void execute(Message message) {
+        var chatId = message.getChatId();
+        var userId = message.getFrom().getId();
         // extract name of the city from the message
-        var city = trigger
+        var city = message
                 .getText()
                 .strip()
                 .replaceAll("/weather(?:@[a-zA-Z0-9_-]*)?\\s*", "");
@@ -50,7 +52,8 @@ public class Weather implements CommandExecutor {
                     .map(Userstats::getCityLink)
                     .orElse(null);
             if (dbCityLink == null) {
-                telegram.sendMessage(chatId, "Вы не указали город! ( /weather город ). Бот запомнит ваш выбор.");
+                Methods.sendMessage(chatId, "Вы не указали город! ( /weather город ). Бот запомнит ваш выбор.")
+                        .call(telegram);
                 return;
             }
             cityLink = dbCityLink;
@@ -62,19 +65,19 @@ public class Weather implements CommandExecutor {
                 user.setCityLink(cityLink);
                 userStats.save(user);
             } catch (IOException e) {
-                telegram.sendMessage(chatId, "Ошибка запроса");
+                ApiRequests.answerMessage(message, "Ошибка запроса").call(telegram);
                 return;
             } catch (NullPointerException e) {
-                telegram.sendMessage(chatId, "Город не найден");
+                ApiRequests.answerMessage(message, "Город не найден").call(telegram);
                 return;
             }
         }
 
         try {
             var text = parseForecast(cityLink).toString();
-            telegram.sendMessage(chatId, text);
+            ApiRequests.answerMessage(message, text).call(telegram);
         } catch (Exception e) {
-            telegram.sendMessage(chatId, "Внутренняя ошибка");
+            ApiRequests.answerMessage(message, "Внутренняя ошибка").call(telegram);
         }
     }
 

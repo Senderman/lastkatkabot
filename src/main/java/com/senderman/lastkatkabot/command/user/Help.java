@@ -1,14 +1,16 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.repository.AdminUserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -21,12 +23,12 @@ public class Help implements CommandExecutor {
     private final Set<CommandExecutor> executors;
     private final AdminUserRepository admins;
     private final int mainAdminId;
-    private final ApiRequests telegram;
+    private final CommonAbsSender telegram;
 
     public Help(@Lazy Set<CommandExecutor> executors,
                 AdminUserRepository admins,
                 @Value("${mainAdminId}") int mainAdminId,
-                ApiRequests telegram
+                CommonAbsSender telegram
     ) {
         this.executors = executors.stream()
                 .filter(CommandExecutor::showInHelp)
@@ -61,23 +63,29 @@ public class Help implements CommandExecutor {
             return;
         }
 
-        telegram.sendMessage(chatId, prepareHelpText(userId));
+        Methods.sendMessage(chatId, prepareHelpText(userId)).call(telegram);
 
     }
 
     private void sendHelpToPm(long chatId, int userId, int chatMessageId) {
         try {
-            var sentMessage = telegram.tryExecute(new SendMessage(String.valueOf(userId), "Подождите..."));
-            telegram.execute(Methods.editMessageText()
-                    .setChatId(userId)
-                    .setText(prepareHelpText(userId))
-                    .setMessageId(sentMessage.getMessageId())
-                    .enableHtml()
-                    .disableWebPagePreview()
+            var sentMessage = telegram.execute(new SendMessage(String.valueOf(userId), "Подождите..."));
+            telegram.execute(EditMessageText
+                    .builder()
+                    .chatId(Integer.toString(userId))
+                    .text(prepareHelpText(userId))
+                    .messageId(sentMessage.getMessageId())
+                    .parseMode(ParseMode.HTML)
+                    .disableWebPagePreview(true)
+                    .build()
             );
-            telegram.sendMessage(chatId, "✅ Помощь отправлена вам в лс!", chatMessageId);
+            Methods.sendMessage(chatId, "✅ Помощь отправлена вам в лс!")
+                    .setReplyToMessageId(chatMessageId)
+                    .call(telegram);
         } catch (TelegramApiException e) {
-            telegram.sendMessage(chatId, "Пожалуйста, начните диалог со мной в лс", chatMessageId);
+            Methods.sendMessage(chatId, "Пожалуйста, начните диалог со мной в лс")
+                    .setReplyToMessageId(chatMessageId)
+                    .call(telegram);
         }
     }
 

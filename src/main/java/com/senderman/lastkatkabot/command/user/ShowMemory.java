@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.command.user;
 
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -8,9 +9,9 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Component
 public class ShowMemory implements CommandExecutor {
 
-    private final ApiRequests telegram;
+    private final CommonAbsSender telegram;
 
-    public ShowMemory(ApiRequests telegram) {
+    public ShowMemory(CommonAbsSender telegram) {
         this.telegram = telegram;
     }
 
@@ -26,7 +27,7 @@ public class ShowMemory implements CommandExecutor {
 
     @Override
     public void execute(Message message) {
-        telegram.sendMessage(message.getChatId(), formatMemory());
+        Methods.sendMessage(message.getChatId(), formatMemory()).call(telegram);
     }
 
     private String formatMemory() {

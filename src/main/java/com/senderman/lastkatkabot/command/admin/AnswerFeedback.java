@@ -1,5 +1,7 @@
 package com.senderman.lastkatkabot.command.admin;
 
+import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
@@ -13,12 +15,12 @@ import java.util.EnumSet;
 @Component
 public class AnswerFeedback implements CommandExecutor {
 
-    private final ApiRequests telegram;
+    private final CommonAbsSender telegram;
     private final FeedbackRepository feedbackRepo;
     private final long feedbackChannelId;
 
     public AnswerFeedback(
-            ApiRequests telegram,
+            CommonAbsSender telegram,
             FeedbackRepository feedbackRepo,
             @Value("${feedbackChannelId}") long feedbackChannelId
     ) {
@@ -47,7 +49,7 @@ public class AnswerFeedback implements CommandExecutor {
         var chatId = message.getChatId();
         var args = message.getText().split("\\s+", 3);
         if (args.length < 3) {
-            telegram.sendMessage(chatId, "Неверное количество аргументов!", message.getMessageId());
+            ApiRequests.answerMessage(message, "Неверное количество аргументов!").call(telegram);
             return;
         }
 
@@ -55,13 +57,13 @@ public class AnswerFeedback implements CommandExecutor {
         try {
             feedbackId = Integer.parseInt(args[1]);
         } catch (NumberFormatException e) {
-            telegram.sendMessage(chatId, "id фидбека - это число!");
+            ApiRequests.answerMessage(message, "id фидбека - это число!").call(telegram);
             return;
         }
 
         var feedbackOptional = feedbackRepo.findById(feedbackId);
         if (feedbackOptional.isEmpty()) {
-            telegram.sendMessage(chatId, "Фидбека с таким id не существует!");
+            Methods.sendMessage(chatId, "Фидбека с таким id не существует!").call(telegram);
             return;
         }
         // feedbackRepo.deleteById(feedbackId);
@@ -70,17 +72,19 @@ public class AnswerFeedback implements CommandExecutor {
         feedbackRepo.save(feedback);
 
         var answer = args[2];
-        telegram.sendMessage(feedback.getChatId(),
-                "\uD83D\uDD14 <b>Ответ разработчика</b>\n\n" + answer,
-                feedback.getMessageId());
-        telegram.sendMessage(chatId, "Ответ отправлен!", message.getMessageId());
+        Methods.sendMessage()
+                .setChatId(feedback.getChatId())
+                .setText("\uD83D\uDD14 <b>Ответ разработчика</b>\n\n" + answer)
+                .setReplyToMessageId(feedback.getMessageId())
+                .call(telegram);
+        ApiRequests.answerMessage(message, "Ответ отправлен!").call(telegram);
 
         // notify others about answer
         if (!chatId.equals(feedbackChannelId)) {
             var replierUsername = message.getFrom().getFirstName();
             var answerReport = String.format("%s ответил на фидбек #%d:\n\n%s",
                     replierUsername, feedbackId, answer);
-            telegram.sendMessage(feedbackChannelId, answerReport);
+            Methods.sendMessage(feedbackChannelId, answerReport).call(telegram);
         }
     }
 }

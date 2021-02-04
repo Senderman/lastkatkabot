@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.command.admin;
 
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.model.Feedback;
@@ -14,10 +15,10 @@ import java.util.EnumSet;
 public class ShowFeedbacks implements CommandExecutor {
 
     private static final String feedbackSeparator = "\n\n<code>====================================</code>\n\n";
-    private final ApiRequests telegram;
+    private final CommonAbsSender telegram;
     private final FeedbackRepository feedbackRepo;
 
-    public ShowFeedbacks(ApiRequests telegram, FeedbackRepository feedbackRepo) {
+    public ShowFeedbacks(CommonAbsSender telegram, FeedbackRepository feedbackRepo) {
         this.telegram = telegram;
         this.feedbackRepo = feedbackRepo;
     }
@@ -40,9 +41,9 @@ public class ShowFeedbacks implements CommandExecutor {
     @Override
     public void execute(Message message) {
         var chatId = message.getChatId();
-        telegram.sendMessage(chatId, "Собираем фидбеки...");
+        Methods.sendMessage(chatId, "Собираем фидбеки...").call(telegram);
         if (feedbackRepo.count() == 0) {
-            telegram.sendMessage(chatId, "Фидбеков нет!");
+            Methods.sendMessage(chatId, "Фидбеков нет!").call(telegram);
             return;
         }
 
@@ -51,14 +52,14 @@ public class ShowFeedbacks implements CommandExecutor {
             String formattedFeedback = formatFeedback(feedback);
             // if maximum text length reached
             if (text.length() + feedbackSeparator.length() + formattedFeedback.length() >= 4096) {
-                telegram.sendMessage(chatId, text.toString());
+                Methods.sendMessage(chatId, text.toString()).call(telegram);
                 text.setLength(0);
             }
             text.append(feedbackSeparator).append(formattedFeedback);
         }
         // send remaining feedbacks
         if (text.length() != 0) {
-            telegram.sendMessage(chatId, text.toString());
+            Methods.sendMessage(chatId, text.toString()).call(telegram);
         }
     }
 

@@ -1,5 +1,7 @@
 package com.senderman.lastkatkabot.command.admin;
 
+import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
@@ -14,13 +16,13 @@ import java.util.EnumSet;
 @Component
 public class DeleteFeedback implements CommandExecutor {
 
-    private final ApiRequests telegram;
+    private final CommonAbsSender telegram;
     private final FeedbackRepository feedbackRepo;
     private final long feedbackChannelId;
 
 
     public DeleteFeedback(
-            ApiRequests telegram,
+            CommonAbsSender telegram,
             FeedbackRepository feedbackRepo,
             @Value("${feedbackChannelId}") long feedbackChannelId
     ) {
@@ -46,11 +48,9 @@ public class DeleteFeedback implements CommandExecutor {
 
     @Override
     public void execute(Message message) {
-        var chatId = message.getChatId();
-        var messageId = message.getMessageId();
         var args = message.getText().split("\\s+", 2);
         if (args.length < 2) {
-            telegram.sendMessage(chatId, "Неверное количество аргументов!", messageId);
+            ApiRequests.answerMessage(message, "Неверное количество аргументов!").call(telegram);
             return;
         }
 
@@ -58,19 +58,23 @@ public class DeleteFeedback implements CommandExecutor {
         try {
             feedbackId = Integer.parseInt(args[1]);
         } catch (NumberFormatException e) {
-            telegram.sendMessage(chatId, "id фидбека - это число!", messageId);
+            ApiRequests.answerMessage(message, "id фидбека - это число!").call(telegram);
             return;
         }
 
         if (!feedbackRepo.existsById(feedbackId)) {
-            telegram.sendMessage(chatId, "Фидбека с таким id не существует!", messageId);
+            ApiRequests.answerMessage(message, "Фидбека с таким id не существует!").call(telegram);
             return;
         }
 
         feedbackRepo.deleteById(feedbackId);
+        var chatId = message.getChatId();
         var text = "Фидбек #" + feedbackId + " удален";
-        telegram.sendMessage(chatId, text);
+        Methods.sendMessage(chatId, text).call(telegram);
         if (!chatId.equals(feedbackChannelId))
-            telegram.sendMessage(feedbackChannelId, text + " пользователем " + Html.getUserLink(message.getFrom()));
+            Methods.sendMessage()
+                    .setChatId(feedbackChannelId)
+                    .setText(text + " пользователем " + Html.getUserLink(message.getFrom()))
+                    .call(telegram);
     }
 }

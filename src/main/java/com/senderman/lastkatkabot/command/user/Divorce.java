@@ -1,5 +1,7 @@
 package com.senderman.lastkatkabot.command.user;
 
+import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.model.Userstats;
@@ -10,10 +12,10 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Component
 public class Divorce implements CommandExecutor {
 
-    private final ApiRequests telegram;
+    private final CommonAbsSender telegram;
     private final UserStatsRepository users;
 
-    public Divorce(ApiRequests telegram, UserStatsRepository users) {
+    public Divorce(CommonAbsSender telegram, UserStatsRepository users) {
         this.telegram = telegram;
         this.users = users;
     }
@@ -38,7 +40,7 @@ public class Divorce implements CommandExecutor {
         var loverId = userStats.getLoverId();
 
         if (loverId == null) {
-            telegram.sendMessage(chatId, "У вас и так никого нет!", messageId);
+            ApiRequests.answerMessage(message, "У вас и так никого нет!").call(telegram);
             return;
         }
 
@@ -49,8 +51,8 @@ public class Divorce implements CommandExecutor {
         users.save(userStats);
         users.save(loverStats);
 
-        telegram.sendMessage(chatId, "Вы расстались со своей половинкой!", messageId);
-        telegram.sendMessage(loverId, "Ваша половинка решила с вами расстаться :(");
+        ApiRequests.answerMessage(message, "Вы расстались со своей половинкой!").call(telegram);
+        Methods.sendMessage(loverId, "Ваша половинка решила с вами расстаться :(").call(telegram);
 
     }
 }

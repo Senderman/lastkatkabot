@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.command.user;
 
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.bnc.BncGameState;
 import com.senderman.lastkatkabot.bnc.BncTelegramHandler;
 import com.senderman.lastkatkabot.command.CommandExecutor;
@@ -14,9 +15,9 @@ import java.util.stream.Collectors;
 public class BncStart implements CommandExecutor {
 
     private final BncTelegramHandler gamesHandler;
-    private final ApiRequests telegram;
+    private final CommonAbsSender telegram;
 
-    public BncStart(BncTelegramHandler gamesHandler, ApiRequests telegram) {
+    public BncStart(BncTelegramHandler gamesHandler, CommonAbsSender telegram) {
         this.gamesHandler = gamesHandler;
         this.telegram = telegram;
     }
@@ -50,7 +51,7 @@ public class BncStart implements CommandExecutor {
                 return;
             }
         } catch (NumberFormatException e) {
-            telegram.sendMessage(chatId, "Ошибка. Длина должна быть числом");
+            Methods.sendMessage(chatId, "Ошибка. Длина должна быть числом").call(telegram);
             return;
         }
 
@@ -103,6 +104,7 @@ public class BncStart implements CommandExecutor {
     }
 
     private void wrongLength(long chatId, int maxLength) {
-        telegram.sendMessage(chatId, "Неверная длина числа. Допустимое значение от 4 до " + maxLength + "!");
+        Methods.sendMessage(chatId, "Неверная длина числа. Допустимое значение от 4 до " + maxLength + "!")
+                .call(telegram);
     }
 }
