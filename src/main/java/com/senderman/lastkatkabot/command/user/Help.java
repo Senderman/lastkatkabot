@@ -93,21 +93,24 @@ public class Help implements CommandExecutor {
         var userHelp = new StringBuilder("<b>Основные команды:</b>\n\n");
         var adminHelp = new StringBuilder("<b>Команды админов:</b>\n\n");
         var mainAdminHelp = new StringBuilder("<b>Команды главного админа:</b>\n\n");
+        boolean userIsMainAdmin = userId == mainAdminId;
+        boolean userIsAdmin = userIsMainAdmin || admins.existsById(userId);
 
         for (var exe : executors) {
             var roles = exe.getRoles();
-            if (roles.contains(Role.MAIN_ADMIN))
-                mainAdminHelp.append(formatExecutor(exe)).append("\n");
-            else if (roles.contains(Role.ADMIN))
-                adminHelp.append(formatExecutor(exe)).append("\n");
-            else if (roles.contains(Role.USER))
+            if (roles.contains(Role.USER)) {
                 userHelp.append(formatExecutor(exe)).append("\n");
+            } else if (userIsAdmin && roles.contains(Role.ADMIN))
+                adminHelp.append(formatExecutor(exe)).append("\n");
+            else if (userIsMainAdmin && roles.contains(Role.MAIN_ADMIN))
+                mainAdminHelp.append(formatExecutor(exe)).append("\n");
+
         }
 
-        if (admins.existsById(userId) || userId == mainAdminId) {
+        if (userIsAdmin) {
             userHelp.append("\n\n").append(adminHelp);
         }
-        if (userId == mainAdminId) {
+        if (userIsMainAdmin) {
             userHelp.append("\n\n").append(mainAdminHelp);
         }
 
