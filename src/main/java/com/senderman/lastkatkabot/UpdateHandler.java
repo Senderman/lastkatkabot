@@ -96,7 +96,7 @@ public class UpdateHandler extends BotHandlerExtension {
                         .setText("⚠️ <b>Ошибка обработки апдейта</b>\n\n" + ExceptionUtils.stackTraceAsString(e))
                         .enableHtml()
                         .disableWebPagePreview()
-                        .call(this);
+                        .callAsync(this);
             }
         }
     }
@@ -215,7 +215,7 @@ public class UpdateHandler extends BotHandlerExtension {
                 Methods.sendDocument(chatId)
                         .setReplyToMessageId(messageId)
                         .setFile(file)
-                        .call(this);
+                        .callAsync(this);
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
             } catch (ImageService.TooWideNicknameException | IOException e) {
@@ -223,7 +223,7 @@ public class UpdateHandler extends BotHandlerExtension {
                 Methods.sendDocument(chatId)
                         .setReplyToMessageId(messageId)
                         .setFile(imageService.getHelloGifId())
-                        .call(this);
+                        .callAsync(this);
             }
         }
     }
@@ -233,7 +233,7 @@ public class UpdateHandler extends BotHandlerExtension {
         Methods.sendDocument(message.getChatId())
                 .setReplyToMessageId(message.getMessageId())
                 .setFile(imageService.getLeaveStickerId())
-                .call(this);
+                .callAsync(this);
     }
 
     @Override

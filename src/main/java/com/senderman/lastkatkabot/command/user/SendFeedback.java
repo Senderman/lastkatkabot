@@ -61,6 +61,6 @@ public class SendFeedback implements CommandExecutor {
                 "От: " + userLink + "\n\n" + feedbackText + "\n\n" +
                 "Для ответа, введите /fresp " + feedbackId + " &lt;ваш ответ&gt;";
         Methods.sendMessage(feedbackChannelId, text).callAsync(telegram);
-        ApiRequests.answerMessage(message, "✅ Сообщение отправлено разработчикам!");
+        ApiRequests.answerMessage(message, "✅ Сообщение отправлено разработчикам!").callAsync(telegram);
     }
 }

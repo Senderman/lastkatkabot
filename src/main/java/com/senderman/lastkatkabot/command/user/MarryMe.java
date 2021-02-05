@@ -43,7 +43,6 @@ public class MarryMe implements CommandExecutor {
     @Override
     public void execute(Message message) {
         var chatId = message.getChatId();
-        var messageId = message.getMessageId();
         if (message.isUserMessage() || !message.isReply()) {
             ApiRequests.answerMessage(message, "Для использования команды необходимо ответить ей на чье-нибудь сообщение!")
                     .callAsync(telegram);
