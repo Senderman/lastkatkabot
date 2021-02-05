@@ -49,7 +49,7 @@ public class AnswerFeedback implements CommandExecutor {
         var chatId = message.getChatId();
         var args = message.getText().split("\\s+", 3);
         if (args.length < 3) {
-            ApiRequests.answerMessage(message, "Неверное количество аргументов!").call(telegram);
+            ApiRequests.answerMessage(message, "Неверное количество аргументов!").callAsync(telegram);
             return;
         }
 
@@ -57,13 +57,13 @@ public class AnswerFeedback implements CommandExecutor {
         try {
             feedbackId = Integer.parseInt(args[1]);
         } catch (NumberFormatException e) {
-            ApiRequests.answerMessage(message, "id фидбека - это число!").call(telegram);
+            ApiRequests.answerMessage(message, "id фидбека - это число!").callAsync(telegram);
             return;
         }
 
         var feedbackOptional = feedbackRepo.findById(feedbackId);
         if (feedbackOptional.isEmpty()) {
-            Methods.sendMessage(chatId, "Фидбека с таким id не существует!").call(telegram);
+            Methods.sendMessage(chatId, "Фидбека с таким id не существует!").callAsync(telegram);
             return;
         }
         // feedbackRepo.deleteById(feedbackId);
@@ -77,14 +77,14 @@ public class AnswerFeedback implements CommandExecutor {
                 .setText("\uD83D\uDD14 <b>Ответ разработчика</b>\n\n" + answer)
                 .setReplyToMessageId(feedback.getMessageId())
                 .call(telegram);
-        ApiRequests.answerMessage(message, "Ответ отправлен!").call(telegram);
+        ApiRequests.answerMessage(message, "Ответ отправлен!").callAsync(telegram);
 
         // notify others about answer
         if (!chatId.equals(feedbackChannelId)) {
             var replierUsername = message.getFrom().getFirstName();
             var answerReport = String.format("%s ответил на фидбек #%d:\n\n%s",
                     replierUsername, feedbackId, answer);
-            Methods.sendMessage(feedbackChannelId, answerReport).call(telegram);
+            Methods.sendMessage(feedbackChannelId, answerReport).callAsync(telegram);
         }
     }
 }

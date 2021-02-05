@@ -53,7 +53,7 @@ public class Weather implements CommandExecutor {
                     .orElse(null);
             if (dbCityLink == null) {
                 Methods.sendMessage(chatId, "Вы не указали город! ( /weather город ). Бот запомнит ваш выбор.")
-                        .call(telegram);
+                        .callAsync(telegram);
                 return;
             }
             cityLink = dbCityLink;
@@ -65,19 +65,19 @@ public class Weather implements CommandExecutor {
                 user.setCityLink(cityLink);
                 userStats.save(user);
             } catch (IOException e) {
-                ApiRequests.answerMessage(message, "Ошибка запроса").call(telegram);
+                ApiRequests.answerMessage(message, "Ошибка запроса").callAsync(telegram);
                 return;
             } catch (NullPointerException e) {
-                ApiRequests.answerMessage(message, "Город не найден").call(telegram);
+                ApiRequests.answerMessage(message, "Город не найден").callAsync(telegram);
                 return;
             }
         }
 
         try {
             var text = parseForecast(cityLink).toString();
-            ApiRequests.answerMessage(message, text).call(telegram);
+            ApiRequests.answerMessage(message, text).callAsync(telegram);
         } catch (Exception e) {
-            ApiRequests.answerMessage(message, "Внутренняя ошибка").call(telegram);
+            ApiRequests.answerMessage(message, "Внутренняя ошибка").callAsync(telegram);
         }
     }
 

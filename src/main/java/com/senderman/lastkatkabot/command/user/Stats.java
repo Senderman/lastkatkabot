@@ -41,7 +41,7 @@ public class Stats implements CommandExecutor {
         if (user.getIsBot()) {
             ApiRequests.answerMessage(message, "Но это же просто бот, имитация человека! " +
                     "Разве может бот написать симфонию, иметь статистику, играть в BnC, участвовать в дуэлях?")
-                    .call(telegram);
+                    .callAsync(telegram);
             return;
         }
 
@@ -62,6 +62,6 @@ public class Stats implements CommandExecutor {
                 text += "\n\n❤️ Вторая половинка: " + loverLink;
             }
         }
-        Methods.sendMessage(chatId, text).call(telegram);
+        Methods.sendMessage(chatId, text).callAsync(telegram);
     }
 }

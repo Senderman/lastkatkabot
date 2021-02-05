@@ -32,7 +32,7 @@ public class GetInfo implements CommandExecutor {
 
         if (!message.isReply()) {
             ApiRequests.answerMessage(message, "Для использования команды, отправьте ее в ответ на нужное сообщение!")
-                    .call(telegram);
+                    .callAsync(telegram);
             return;
         }
 
@@ -41,6 +41,6 @@ public class GetInfo implements CommandExecutor {
                 .replaceAll("\\w+=null,?\\s*", "")
                 .replaceAll("=([\\w\\d]+)", "=<code>$1</code>");
 
-        Methods.sendMessage(chatId, replyInfo).call(telegram);
+        Methods.sendMessage(chatId, replyInfo).callAsync(telegram);
     }
 }

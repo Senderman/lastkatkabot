@@ -46,7 +46,7 @@ public class MarryMe implements CommandExecutor {
         var messageId = message.getMessageId();
         if (message.isUserMessage() || !message.isReply()) {
             ApiRequests.answerMessage(message, "Для использования команды необходимо ответить ей на чье-нибудь сообщение!")
-                    .call(telegram);
+                    .callAsync(telegram);
             return;
         }
 
@@ -54,25 +54,25 @@ public class MarryMe implements CommandExecutor {
         var proposeeId = message.getReplyToMessage().getFrom().getId();
 
         if (proposerId.equals(proposeeId)) {
-            Methods.sendMessage(chatId, "На самом себе нельзя жениться!").call(telegram);
+            Methods.sendMessage(chatId, "На самом себе нельзя жениться!").callAsync(telegram);
             return;
         }
 
         var proposerStats = users.findById(proposerId).orElseGet(() -> new Userstats(proposerId));
 
         if (Objects.equals(proposerStats.getLoverId(), proposeeId)) {
-            ApiRequests.answerMessage(message, "Вы уже в браке с этим пользователем!").call(telegram);
+            ApiRequests.answerMessage(message, "Вы уже в браке с этим пользователем!").callAsync(telegram);
             return;
         }
 
         if (proposerStats.hasLover()) {
-            ApiRequests.answerMessage(message, "Вы что, хотите изменить своей половинке?!").call(telegram);
+            ApiRequests.answerMessage(message, "Вы что, хотите изменить своей половинке?!").callAsync(telegram);
             return;
         }
         var proposeeStats = users.findById(proposeeId).orElseGet(() -> new Userstats(proposeeId));
 
         if (proposeeStats.hasLover()) {
-            ApiRequests.answerMessage(message, "У этого пользователя уже есть своя вторая половинка!").call(telegram);
+            ApiRequests.answerMessage(message, "У этого пользователя уже есть своя вторая половинка!").callAsync(telegram);
             return;
         }
 
@@ -102,7 +102,7 @@ public class MarryMe implements CommandExecutor {
                 .setText(text)
                 .setReplyToMessageId(message.getReplyToMessage().getMessageId())
                 .setReplyMarkup(markup)
-                .call(telegram);
+                .callAsync(telegram);
     }
 
 }

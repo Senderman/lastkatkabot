@@ -74,7 +74,7 @@ public class BroadcastMessage implements CommandExecutor {
                 }
             }
             ApiRequests.answerMessage(message, "Сообщение получили " + counter + "/" + totalCounter + " чатов")
-                    .call(telegram);
+                    .callAsync(telegram);
         });
     }
 }

@@ -40,7 +40,7 @@ public class Divorce implements CommandExecutor {
         var loverId = userStats.getLoverId();
 
         if (loverId == null) {
-            ApiRequests.answerMessage(message, "У вас и так никого нет!").call(telegram);
+            ApiRequests.answerMessage(message, "У вас и так никого нет!").callAsync(telegram);
             return;
         }
 
@@ -51,8 +51,8 @@ public class Divorce implements CommandExecutor {
         users.save(userStats);
         users.save(loverStats);
 
-        ApiRequests.answerMessage(message, "Вы расстались со своей половинкой!").call(telegram);
-        Methods.sendMessage(loverId, "Ваша половинка решила с вами расстаться :(").call(telegram);
+        ApiRequests.answerMessage(message, "Вы расстались со своей половинкой!").callAsync(telegram);
+        Methods.sendMessage(loverId, "Ваша половинка решила с вами расстаться :(").callAsync(telegram);
 
     }
 }

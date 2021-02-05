@@ -63,7 +63,7 @@ public class Help implements CommandExecutor {
             return;
         }
 
-        Methods.sendMessage(chatId, prepareHelpText(userId)).call(telegram);
+        Methods.sendMessage(chatId, prepareHelpText(userId)).callAsync(telegram);
 
     }
 
@@ -81,11 +81,11 @@ public class Help implements CommandExecutor {
             );
             Methods.sendMessage(chatId, "✅ Помощь отправлена вам в лс!")
                     .setReplyToMessageId(chatMessageId)
-                    .call(telegram);
+                    .callAsync(telegram);
         } catch (TelegramApiException e) {
             Methods.sendMessage(chatId, "Пожалуйста, начните диалог со мной в лс")
                     .setReplyToMessageId(chatMessageId)
-                    .call(telegram);
+                    .callAsync(telegram);
         }
     }
 

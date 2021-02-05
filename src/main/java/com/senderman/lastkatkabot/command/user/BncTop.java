@@ -48,7 +48,7 @@ public class BncTop implements CommandExecutor {
                     .append("\n");
         }
 
-        Methods.sendMessage(chatId, top.toString()).call(telegram);
+        Methods.sendMessage(chatId, top.toString()).callAsync(telegram);
     }
 
     private String formatUser(int userId, int score, boolean printLink) {

@@ -41,9 +41,9 @@ public class ShowFeedbacks implements CommandExecutor {
     @Override
     public void execute(Message message) {
         var chatId = message.getChatId();
-        Methods.sendMessage(chatId, "Собираем фидбеки...").call(telegram);
+        Methods.sendMessage(chatId, "Собираем фидбеки...").callAsync(telegram);
         if (feedbackRepo.count() == 0) {
-            Methods.sendMessage(chatId, "Фидбеков нет!").call(telegram);
+            Methods.sendMessage(chatId, "Фидбеков нет!").callAsync(telegram);
             return;
         }
 
@@ -52,14 +52,14 @@ public class ShowFeedbacks implements CommandExecutor {
             String formattedFeedback = formatFeedback(feedback);
             // if maximum text length reached
             if (text.length() + feedbackSeparator.length() + formattedFeedback.length() >= 4096) {
-                Methods.sendMessage(chatId, text.toString()).call(telegram);
+                Methods.sendMessage(chatId, text.toString()).callAsync(telegram);
                 text.setLength(0);
             }
             text.append(feedbackSeparator).append(formattedFeedback);
         }
         // send remaining feedbacks
         if (text.length() != 0) {
-            Methods.sendMessage(chatId, text.toString()).call(telegram);
+            Methods.sendMessage(chatId, text.toString()).callAsync(telegram);
         }
     }
 

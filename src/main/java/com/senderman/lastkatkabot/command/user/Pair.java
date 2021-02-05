@@ -70,7 +70,7 @@ public class Pair implements CommandExecutor {
         var chatId = message.getChatId();
 
         if (message.isUserMessage()) {
-            Methods.sendMessage(chatId, "Команду нельзя использовать в лс!").call(telegram);
+            Methods.sendMessage(chatId, "Команду нельзя использовать в лс!").callAsync(telegram);
             return;
         }
 
@@ -81,7 +81,7 @@ public class Pair implements CommandExecutor {
         int currentDay = Integer.parseInt(currentTime.getCurrentDay());
 
         if (!lastPairs.isEmpty() && lastPairGenerationDate == currentDay) {
-            Methods.sendMessage(chatId, "Пара дня: " + lastPairs.get(0)).call(telegram);
+            Methods.sendMessage(chatId, "Пара дня: " + lastPairs.get(0)).callAsync(telegram);
             return;
         }
 
@@ -90,7 +90,7 @@ public class Pair implements CommandExecutor {
 
         var usersForPair = chatUsers.sampleOfChat(chatId, 2);
         if (usersForPair.size() < 2) {
-            Methods.sendMessage(chatId, "Недостаточно пользователей писало в чат за последние 2 недели!").call(telegram);
+            Methods.sendMessage(chatId, "Недостаточно пользователей писало в чат за последние 2 недели!").callAsync(telegram);
             return;
         }
 
@@ -115,10 +115,10 @@ public class Pair implements CommandExecutor {
                 var text = String.format(loveStrings[loveStrings.length - 1],
                         Html.getUserLink(pair.getFirst()),
                         Html.getUserLink(pair.getSecond()));
-                Methods.sendMessage(chatId, text).call(telegram);
+                Methods.sendMessage(chatId, text).callAsync(telegram);
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
-                Methods.sendMessage(chatId, "...Упс, произошла ошибка. Попробуйте в другой раз").call(telegram);
+                Methods.sendMessage(chatId, "...Упс, произошла ошибка. Попробуйте в другой раз").callAsync(telegram);
             } finally {
                 runningChatPairsGenerations.remove(chatId);
             }
@@ -155,7 +155,7 @@ public class Pair implements CommandExecutor {
 
     private void sendRandomShitWithDelay(long chatId, String[] shit, long delay) {
         for (int i = 0; i < shit.length - 1; i++) {
-            Methods.sendMessage(chatId, shit[i]).call(telegram);
+            Methods.sendMessage(chatId, shit[i]).callAsync(telegram);
             try {
                 Thread.sleep(delay);
             } catch (InterruptedException e) {

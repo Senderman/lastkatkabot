@@ -50,7 +50,7 @@ public class Cake implements CommandExecutor {
         Methods.sendMessage(message.getChatId(), text)
                 .setReplyToMessageId(message.getReplyToMessage().getMessageId())
                 .setReplyMarkup(markup)
-                .call(telegram);
+                .callAsync(telegram);
 
     }
 

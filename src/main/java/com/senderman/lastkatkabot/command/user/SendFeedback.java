@@ -42,12 +42,12 @@ public class SendFeedback implements CommandExecutor {
     public void execute(Message message) {
         var chatId = message.getChatId();
         if (message.getText().strip().equals(getTrigger())) {
-            ApiRequests.answerMessage(message, "Неверное кол-во аргументов!").call(telegram);
+            ApiRequests.answerMessage(message, "Неверное кол-во аргументов!").callAsync(telegram);
             return;
         }
         var feedbackText = Html.htmlSafe(message.getText().split("\\s+", 2)[1]);
         if (feedbackText.length() > 2000) {
-            ApiRequests.answerMessage(message, "Максимальная длина текста - 2000 символов!").call(telegram);
+            ApiRequests.answerMessage(message, "Максимальная длина текста - 2000 символов!").callAsync(telegram);
             return;
         }
         var user = message.getFrom();
@@ -60,7 +60,7 @@ public class SendFeedback implements CommandExecutor {
         var text = "\uD83D\uDD14 <b>Фидбек #" + feedbackId + "</b>\n\n" +
                 "От: " + userLink + "\n\n" + feedbackText + "\n\n" +
                 "Для ответа, введите /fresp " + feedbackId + " &lt;ваш ответ&gt;";
-        Methods.sendMessage(feedbackChannelId, text).call(telegram);
+        Methods.sendMessage(feedbackChannelId, text).callAsync(telegram);
         ApiRequests.answerMessage(message, "✅ Сообщение отправлено разработчикам!");
     }
 }

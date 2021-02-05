@@ -51,7 +51,7 @@ public class BncStart implements CommandExecutor {
                 return;
             }
         } catch (NumberFormatException e) {
-            Methods.sendMessage(chatId, "Ошибка. Длина должна быть числом").call(telegram);
+            Methods.sendMessage(chatId, "Ошибка. Длина должна быть числом").callAsync(telegram);
             return;
         }
 
@@ -105,6 +105,6 @@ public class BncStart implements CommandExecutor {
 
     private void wrongLength(long chatId, int maxLength) {
         Methods.sendMessage(chatId, "Неверная длина числа. Допустимое значение от 4 до " + maxLength + "!")
-                .call(telegram);
+                .callAsync(telegram);
     }
 }

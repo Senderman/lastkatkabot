@@ -34,6 +34,6 @@ public class BncHelp implements CommandExecutor {
                 .setChatId(message.getChatId())
                 .setReplyToMessageId(message.getMessageId())
                 .setFile(bncPhotoId)
-                .call(telegram);
+                .callAsync(telegram);
     }
 }

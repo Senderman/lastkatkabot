@@ -46,7 +46,8 @@ public class BadNeko implements CommandExecutor {
     @Override
     public void execute(Message message) {
         if (!message.isReply() || message.isUserMessage()) {
-            ApiRequests.answerMessage(message, "Опускать в плохие кисы нужно в группе и реплаем!").call(telegram);
+            ApiRequests.answerMessage(message, "Опускать в плохие кисы нужно в группе и реплаем!")
+                    .callAsync(telegram);
             return;
         }
         var user = message.getReplyToMessage().getFrom();
@@ -54,14 +55,14 @@ public class BadNeko implements CommandExecutor {
         if (user.getIsBot()) {
             ApiRequests.answerMessage(message, "Но это же просто бот, имитация человека! " +
                     "Разве может бот написать симфонию, иметь статистику, участвовать в дуэлях, быть плохой кисой?")
-                    .call(telegram);
+                    .callAsync(telegram);
             return;
         }
 
         if (blackUsers.addUser(new BlacklistedUser(user.getId())))
-            ApiRequests.answerMessage(message, "Теперь " + userLink + " -  плохая киса!").call(telegram);
+            ApiRequests.answerMessage(message, "Теперь " + userLink + " -  плохая киса!").callAsync(telegram);
         else
-            ApiRequests.answerMessage(message, userLink + " уже плохая киса!").call(telegram);
+            ApiRequests.answerMessage(message, userLink + " уже плохая киса!").callAsync(telegram);
 
     }
 }

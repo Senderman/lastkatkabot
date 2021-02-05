@@ -50,7 +50,7 @@ public class DeleteFeedback implements CommandExecutor {
     public void execute(Message message) {
         var args = message.getText().split("\\s+", 2);
         if (args.length < 2) {
-            ApiRequests.answerMessage(message, "Неверное количество аргументов!").call(telegram);
+            ApiRequests.answerMessage(message, "Неверное количество аргументов!").callAsync(telegram);
             return;
         }
 
@@ -58,23 +58,23 @@ public class DeleteFeedback implements CommandExecutor {
         try {
             feedbackId = Integer.parseInt(args[1]);
         } catch (NumberFormatException e) {
-            ApiRequests.answerMessage(message, "id фидбека - это число!").call(telegram);
+            ApiRequests.answerMessage(message, "id фидбека - это число!").callAsync(telegram);
             return;
         }
 
         if (!feedbackRepo.existsById(feedbackId)) {
-            ApiRequests.answerMessage(message, "Фидбека с таким id не существует!").call(telegram);
+            ApiRequests.answerMessage(message, "Фидбека с таким id не существует!").callAsync(telegram);
             return;
         }
 
         feedbackRepo.deleteById(feedbackId);
         var chatId = message.getChatId();
         var text = "Фидбек #" + feedbackId + " удален";
-        Methods.sendMessage(chatId, text).call(telegram);
+        Methods.sendMessage(chatId, text).callAsync(telegram);
         if (!chatId.equals(feedbackChannelId))
             Methods.sendMessage()
                     .setChatId(feedbackChannelId)
                     .setText(text + " пользователем " + Html.getUserLink(message.getFrom()))
-                    .call(telegram);
+                    .callAsync(telegram);
     }
 }

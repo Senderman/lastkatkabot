@@ -44,7 +44,7 @@ public class GrantAdmin implements CommandExecutor {
     @Override
     public void execute(Message message) {
         if (!message.isReply() || message.isUserMessage()) {
-            ApiRequests.answerMessage(message, "Посвящать в админы нужно в группе и реплаем!").call(telegram);
+            ApiRequests.answerMessage(message, "Посвящать в админы нужно в группе и реплаем!").callAsync(telegram);
             return;
         }
         var user = message.getReplyToMessage().getFrom();
@@ -52,14 +52,14 @@ public class GrantAdmin implements CommandExecutor {
         if (user.getIsBot()) {
             ApiRequests.answerMessage(message, "Но это же просто бот, имитация человека! " +
                     "Разве может бот написать симфонию, иметь статистику, участвовать в дуэлях, быть админом?")
-                    .call(telegram);
+                    .callAsync(telegram);
             return;
         }
 
         if (admins.addUser(new AdminUser(user.getId())))
-            ApiRequests.answerMessage(message, "Пользователь успешно посвящен в админы!").call(telegram);
+            ApiRequests.answerMessage(message, "Пользователь успешно посвящен в админы!").callAsync(telegram);
         else
-            ApiRequests.answerMessage(message, "Не следует посвящать в админы дважды!").call(telegram);
+            ApiRequests.answerMessage(message, "Не следует посвящать в админы дважды!").callAsync(telegram);
     }
 }
 

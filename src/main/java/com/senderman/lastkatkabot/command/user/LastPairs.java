@@ -34,18 +34,18 @@ public class LastPairs implements CommandExecutor {
         var chatId = message.getChatId();
 
         if (message.isUserMessage()) {
-            Methods.sendMessage(chatId, "Команду нельзя использовать в ЛС!").call(telegram);
+            Methods.sendMessage(chatId, "Команду нельзя использовать в ЛС!").callAsync(telegram);
             return;
         }
 
         var chatInfo = chats.findById(chatId).orElseGet(() -> new ChatInfo(chatId));
         var pairs = chatInfo.getLastPairs();
         if (pairs == null || pairs.isEmpty()) {
-            Methods.sendMessage(chatId, "В этом чате еще ни разу не запускали /pair!").call(telegram);
+            Methods.sendMessage(chatId, "В этом чате еще ни разу не запускали /pair!").callAsync(telegram);
             return;
         }
 
         var text = "<b>Последние 10 пар:</b>\n\n" + String.join("\n", pairs);
-        Methods.sendMessage(chatId, text).call(telegram);
+        Methods.sendMessage(chatId, text).callAsync(telegram);
     }
 }
