@@ -33,11 +33,11 @@ public class JoinDuel implements CallbackExecutor {
         } catch (SameUserException e) {
             ApiRequests.answerCallbackQuery(query,
                     "\uD83D\uDC7A Похоже, вам надо обратиться к психологу! Вы пытаетесь вызвать на дуэль самого себя!",
-                    true).call(telegram);
+                    true).callAsync(telegram);
         } catch (NoSuchElementException e) {
             ApiRequests.answerCallbackQuery(query,
                     "⏰ Дуэль устарела, ищите другую!",
-                    true).call(telegram);
+                    true).callAsync(telegram);
         }
     }
 }

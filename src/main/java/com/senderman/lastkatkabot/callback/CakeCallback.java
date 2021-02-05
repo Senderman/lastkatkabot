@@ -23,7 +23,7 @@ public class CakeCallback implements CallbackExecutor {
     @Override
     public void execute(CallbackQuery query) {
         if (!query.getFrom().getId().equals(query.getMessage().getReplyToMessage().getFrom().getId())) {
-            ApiRequests.answerCallbackQuery(query, "Этот тортик не вам!").call(telegram);
+            ApiRequests.answerCallbackQuery(query, "Этот тортик не вам!").callAsync(telegram);
             return;
         }
 
@@ -40,20 +40,20 @@ public class CakeCallback implements CallbackExecutor {
     }
 
     private void acceptCake(CallbackQuery query) {
-        ApiRequests.answerCallbackQuery(query, "П p u я т н o г o  a п п e т u т a").call(telegram);
-        ApiRequests.editMessage(query, formatEditedMessage(query, "\uD83C\uDF82 %s принял тортик %s")).call(telegram);
+        ApiRequests.answerCallbackQuery(query, "П p u я т н o г o  a п п e т u т a").callAsync(telegram);
+        ApiRequests.editMessage(query, formatEditedMessage(query, "\uD83C\uDF82 %s принял тортик %s")).callAsync(telegram);
     }
 
     private void declineCake(CallbackQuery query) {
-        ApiRequests.answerCallbackQuery(query, "Ну и ладно :(").call(telegram);
+        ApiRequests.answerCallbackQuery(query, "Ну и ладно :(").callAsync(telegram);
         ApiRequests.editMessage(query,
                 formatEditedMessage(query, "\uD83D\uDEAB \uD83C\uDF82 %s отказался от тортика %s")
-        ).call(telegram);
+        ).callAsync(telegram);
     }
 
     private void cakeIsRotten(CallbackQuery query) {
-        ApiRequests.answerCallbackQuery(query, "Тортик испортился!").call(telegram);
-        ApiRequests.editMessage(query, "\uD83E\uDD22 Тортик попытались взять, но он испортился!").call(telegram);
+        ApiRequests.answerCallbackQuery(query, "Тортик испортился!").callAsync(telegram);
+        ApiRequests.editMessage(query, "\uD83E\uDD22 Тортик попытались взять, но он испортился!").callAsync(telegram);
     }
 
     private String formatEditedMessage(CallbackQuery query, String format) {

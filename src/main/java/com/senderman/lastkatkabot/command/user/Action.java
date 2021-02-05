@@ -36,7 +36,7 @@ public class Action implements CommandExecutor {
         if (message.isReply()) {
             sm.setReplyToMessageId(message.getReplyToMessage().getMessageId());
         }
-        sm.call(telegram);
-        Methods.deleteMessage(chatId, message.getMessageId()).call(telegram);
+        sm.callAsync(telegram);
+        Methods.deleteMessage(chatId, message.getMessageId()).callAsync(telegram);
     }
 }

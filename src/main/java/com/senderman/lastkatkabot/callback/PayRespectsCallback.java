@@ -29,18 +29,18 @@ public class PayRespectsCallback implements CallbackExecutor {
                     query,
                     "You've already payed respects! (or you've tried to pay respects to yourself)",
                     true)
-                    .call(telegram);
+                    .callAsync(telegram);
             return;
         }
 
         var message = query.getMessage();
-        ApiRequests.answerCallbackQuery(query, "You've paid respects").call(telegram);
+        ApiRequests.answerCallbackQuery(query, "You've paid respects").callAsync(telegram);
         Methods.editMessageText()
                 .setChatId(message.getChatId())
                 .setMessageId(message.getMessageId())
                 .setReplyMarkup(message.getReplyMarkup())
                 .setText(message.getText() + "\n" + Html.htmlSafe(query.getFrom().getFirstName()) + " has paid respects")
-                .call(telegram);
+                .callAsync(telegram);
 
     }
 }

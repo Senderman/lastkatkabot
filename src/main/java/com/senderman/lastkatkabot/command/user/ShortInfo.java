@@ -47,7 +47,7 @@ public class ShortInfo implements CommandExecutor {
                 info += String.format("\n\uD83D\uDCE2 ID канала: <code>%d</code>", forward.getId());
             }
         }
-        Methods.sendMessage(chatId, info).call(telegram);
+        Methods.sendMessage(chatId, info).callAsync(telegram);
 
     }
 }

@@ -1,6 +1,5 @@
 package com.senderman.lastkatkabot;
 
-import com.annimon.tgbotsmodule.BotHandler;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.bnc.BncTelegramHandler;
 import com.senderman.lastkatkabot.callback.CallbackExecutor;
@@ -15,7 +14,6 @@ import com.senderman.lastkatkabot.service.ImageService;
 import com.senderman.lastkatkabot.service.UserManager;
 import com.senderman.lastkatkabot.util.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,21 +21,17 @@ import org.springframework.context.annotation.Lazy;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.ResponseParameters;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 
 @SpringBootApplication
-public class UpdateHandler extends BotHandler {
+public class UpdateHandler extends BotHandlerExtension {
 
     private final String username;
     private final String token;
@@ -81,8 +75,13 @@ public class UpdateHandler extends BotHandler {
         this.imageService = imageService;
         this.threadPool = threadPool;
 
+        addMethodPreprocessor(SendMessage.PATH, m -> {
+            var sm = (SendMessage) m;
+            sm.enableHtml(true);
+            sm.disableWebPagePreview();
+        });
 
-        Methods.sendMessage(mainAdminId, "Бот запущен!").call(this);
+        Methods.sendMessage(mainAdminId, "Бот запущен!").callAsync(this);
     }
 
     @Override
@@ -115,6 +114,11 @@ public class UpdateHandler extends BotHandler {
         if (!update.hasMessage()) return null;
 
         var message = update.getMessage();
+
+        if (message.getMigrateFromChatId() != null && message.getMigrateToChatId() != null) {
+            chatManagerService.migrateChatIfNeeded(message.getMigrateFromChatId(), message.getMigrateToChatId());
+            return null;
+        }
 
         {
             var newMembers = message.getNewChatMembers();
@@ -167,17 +171,18 @@ public class UpdateHandler extends BotHandler {
     public void handleTelegramApiException(TelegramApiException ex) {
     }
 
+
+    /*
+    Chat migration on SendMessage by old chat id exception. not needed for now
     @Override
-    public <T extends Serializable, M extends BotApiMethod<T>> @Nullable T call(@NotNull M method) {
+    public <T extends Serializable, Method extends BotApiMethod<T>> T execute(Method method) throws TelegramApiException {
         if (!method.getMethod().equals(SendMessage.PATH))
-            return super.call(method);
+            return super.execute(method);
 
 
         SendMessage sm = (SendMessage) method;
-        sm.enableHtml(true);
-        sm.disableWebPagePreview();
         try {
-            return execute(method);
+            return super.execute(method);
         } catch (TelegramApiRequestException e) {
             // this happens when chatId changes (when converting group to a supergroup)
             var newChatId = Optional.ofNullable(e.getParameters())
@@ -190,12 +195,12 @@ public class UpdateHandler extends BotHandler {
             long oldChatId = Long.parseLong(sm.getChatId());
             chatManagerService.migrateChatIfNeeded(oldChatId, newChatId.get());
             sm.setChatId(Long.toString(newChatId.get()));
-            return call(method);
+            return super.execute(method);
         } catch (TelegramApiException e) {
             handleTelegramApiException(e);
             return null;
         }
-    }
+    }*/
 
 
     private void processNewChatMembers(Message message) {

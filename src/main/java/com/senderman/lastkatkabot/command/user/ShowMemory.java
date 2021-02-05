@@ -27,7 +27,7 @@ public class ShowMemory implements CommandExecutor {
 
     @Override
     public void execute(Message message) {
-        Methods.sendMessage(message.getChatId(), formatMemory()).call(telegram);
+        Methods.sendMessage(message.getChatId(), formatMemory()).callAsync(telegram);
     }
 
     private String formatMemory() {
