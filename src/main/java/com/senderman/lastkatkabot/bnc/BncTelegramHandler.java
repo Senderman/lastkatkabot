@@ -80,7 +80,7 @@ public class BncTelegramHandler {
         if (messageIds == null) return;
 
         for (var messageId : messageIds)
-            Methods.deleteMessage(chatId, messageId).call(telegram);
+            Methods.deleteMessage(chatId, messageId).callAsync(telegram);
     }
 
     public void processWin(Message message, BncResult result) {
@@ -98,7 +98,7 @@ public class BncTelegramHandler {
                 (BncGame.totalAttempts(gameState.getLength(), gameState.isHexadecimal()) - result.getAttempts()) +
                 " попыток!\n\n" + formatGameEndMessage(gameState);
         deleteGameMessages(chatId);
-        Methods.sendMessage(chatId, text).call(telegram);
+        Methods.sendMessage(chatId, text).callAsync(telegram);
     }
 
     public void processGameOver(Message message, String answer) {
@@ -107,7 +107,7 @@ public class BncTelegramHandler {
         gamesManager.deleteGame(chatId);
         deleteGameMessages(chatId);
         var text = "Вы проиграли! Ответ: " + answer + "\n\n" + formatGameEndMessage(gameState);
-        Methods.sendMessage(chatId, text).call(telegram);
+        Methods.sendMessage(chatId, text).callAsync(telegram);
     }
 
     private String formatGameEndMessage(BncGameState state) {

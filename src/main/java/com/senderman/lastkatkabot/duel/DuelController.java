@@ -63,7 +63,7 @@ public class DuelController {
                     "\uD83D\uDE14 Проигравший: " + loserName;
         }
         method.setText(text);
-        method.call(telegram);
+        method.callAsync(telegram);
     }
 
     private void processDuelResultToDatabase(Duel.DuelResult result) {
