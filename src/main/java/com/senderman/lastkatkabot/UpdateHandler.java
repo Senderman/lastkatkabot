@@ -41,6 +41,7 @@ public class UpdateHandler extends BotHandlerExtension {
     private final UserManager<BlacklistedUser> blacklist;
     private final ChatManagerService chatManagerService;
     private final int mainAdminId;
+    private final int errorsChannelId;
     private final ChatUserRepository chatUsers;
     private final BncTelegramHandler bnc;
     private final ImageService imageService;
@@ -50,6 +51,7 @@ public class UpdateHandler extends BotHandlerExtension {
     public UpdateHandler(
             @Value("${login}") String login,
             @Value("${mainAdminId}") int mainAdminId,
+            @Value("${errorsChannelId}") int errorsChannelId,
             @Lazy HandlerExtractor<CommandExecutor> commandExtractor,
             @Lazy HandlerExtractor<CallbackExecutor> callbacks,
             UserManager<AdminUser> admins,
@@ -70,6 +72,7 @@ public class UpdateHandler extends BotHandlerExtension {
         this.blacklist = blacklist;
         this.chatManagerService = chatManagerService;
         this.mainAdminId = mainAdminId;
+        this.errorsChannelId = errorsChannelId;
         this.chatUsers = chatUsers;
         this.bnc = bnc;
         this.imageService = imageService;
@@ -86,13 +89,12 @@ public class UpdateHandler extends BotHandlerExtension {
 
     @Override
     public void onUpdatesReceived(List<Update> updates) {
-        var updatesToProcess = updates.stream().filter(this::filterUpdate).iterator();
-        while (updatesToProcess.hasNext()) {
+        for (var update : updates) {
             try {
-                onUpdate(updatesToProcess.next());
+                onUpdate(update);
             } catch (Throwable e) {
                 Methods.sendMessage()
-                        .setChatId(mainAdminId)
+                        .setChatId(errorsChannelId)
                         .setText("⚠️ <b>Ошибка обработки апдейта</b>\n\n" + ExceptionUtils.stackTraceAsString(e))
                         .enableHtml()
                         .disableWebPagePreview()
@@ -119,6 +121,8 @@ public class UpdateHandler extends BotHandlerExtension {
             chatManagerService.migrateChatIfNeeded(message.getMigrateFromChatId(), message.getMigrateToChatId());
             return null;
         }
+
+        if (message.getDate() + 120 < System.currentTimeMillis() / 1000) return null;
 
         {
             var newMembers = message.getNewChatMembers();
@@ -267,15 +271,5 @@ public class UpdateHandler extends BotHandlerExtension {
         if (roles.contains(Role.USER)) return true;
         // check admin permissions
         return roles.contains(Role.ADMIN) && admins.hasUser(userId);
-    }
-
-    // this method contains filtering rules for all updates
-    private boolean filterUpdate(Update update) {
-        if (update.hasCallbackQuery()) return true;
-        var message = update.getMessage();
-        if (message == null) return false;
-
-        // Skip messages older than 2 minutes
-        return message.getDate() + 120 >= System.currentTimeMillis() / 1000;
     }
 }

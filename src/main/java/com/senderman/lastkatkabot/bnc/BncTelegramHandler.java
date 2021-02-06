@@ -65,7 +65,9 @@ public class BncTelegramHandler {
 
     // Send message that will be deleted after game end
     public void sendGameMessage(long chatId, String text) {
-        addMessageToDelete(Methods.sendMessage(chatId, text).call(telegram));
+        var sentMessage = Methods.sendMessage(chatId, text).call(telegram);
+        if (sentMessage != null)
+            addMessageToDelete(sentMessage);
     }
 
     private void addMessageToDelete(Message message) {
