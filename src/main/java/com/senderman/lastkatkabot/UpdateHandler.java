@@ -29,6 +29,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
 
 @SpringBootApplication
 public class UpdateHandler extends BotHandlerExtension {
@@ -92,6 +93,7 @@ public class UpdateHandler extends BotHandlerExtension {
         for (var update : updates) {
             try {
                 onUpdate(update);
+            } catch (RejectedExecutionException ignored) {
             } catch (Throwable e) {
                 Methods.sendMessage()
                         .setChatId(errorsChannelId)
