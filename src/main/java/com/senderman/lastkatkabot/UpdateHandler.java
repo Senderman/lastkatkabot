@@ -218,12 +218,11 @@ public class UpdateHandler extends BotHandlerExtension {
             }
             try {
                 var file = imageService.generateGreetingSticker(user.getFirstName());
+                //noinspection ResultOfMethodCallIgnored
                 Methods.sendDocument(chatId)
                         .setReplyToMessageId(messageId)
                         .setFile(file)
-                        .callAsync(this);
-                //noinspection ResultOfMethodCallIgnored
-                file.delete();
+                        .callAsync(this, m -> file.delete());
             } catch (ImageService.TooWideNicknameException | IOException e) {
                 // fallback with greeting gif
                 Methods.sendDocument(chatId)
