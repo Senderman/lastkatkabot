@@ -22,8 +22,9 @@ public class CakeCallback implements CallbackExecutor {
 
     @Override
     public void execute(CallbackQuery query) {
-        if (!query.getFrom().getId().equals(query.getMessage().getReplyToMessage().getFrom().getId())) {
-            ApiRequests.answerCallbackQuery(query, "Этот тортик не вам!").callAsync(telegram);
+        var args = query.getData().split("\\s+");
+        if (!query.getFrom().getId().equals(Integer.parseInt(args[2]))) {
+            ApiRequests.answerCallbackQuery(query, "Этот тортик не вам!", true).callAsync(telegram);
             return;
         }
 
@@ -32,7 +33,7 @@ public class CakeCallback implements CallbackExecutor {
             return;
         }
 
-        var action = query.getData().split("\\s+")[1];
+        var action = args[1];
         if (action.equals("accept"))
             acceptCake(query);
         else if (action.equals("decline"))

@@ -33,18 +33,20 @@ public class Cake implements CommandExecutor {
     public void execute(Message message) {
         if (!message.isReply() || message.isUserMessage()) return;
 
-        var subject = Html.htmlSafe(message.getFrom().getFirstName());
-        var object = Html.htmlSafe(message.getReplyToMessage().getFrom().getFirstName());
+
+        var subjectName = Html.htmlSafe(message.getFrom().getFirstName());
+        var target = message.getReplyToMessage().getFrom();
+        var targetName = Html.htmlSafe(target.getFirstName());
         var text = String.format("\uD83C\uDF82 %s, пользователь %s подарил вам тортик %s",
-                object, subject, message.getText().replaceAll("/@\\S*\\s?|/\\S*\\s?", ""));
+                targetName, subjectName, message.getText().replaceAll("/@\\S*\\s?|/\\S*\\s?", ""));
 
         var markup = new MarkupBuilder()
                 .addButton(ButtonBuilder.callbackButton()
                         .text("Принять")
-                        .payload(Callbacks.CAKE + " accept"))
+                        .payload(Callbacks.CAKE + " accept " + target.getId()))
                 .addButton(ButtonBuilder.callbackButton()
                         .text("Отказаться")
-                        .payload(Callbacks.CAKE + " decline"))
+                        .payload(Callbacks.CAKE + " decline " + target.getId()))
                 .build();
 
         Methods.sendMessage(message.getChatId(), text)
