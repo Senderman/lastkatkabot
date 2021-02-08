@@ -129,7 +129,7 @@ public class UpdateHandler extends BotHandlerExtension {
         {
             var newMembers = message.getNewChatMembers();
             if (!newMembers.isEmpty()) {
-                processNewChatMembers(message);
+                threadPool.execute(() -> processNewChatMembers(message));
                 return null;
             }
         }

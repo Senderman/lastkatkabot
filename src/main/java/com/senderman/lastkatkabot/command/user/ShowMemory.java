@@ -6,6 +6,8 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
+import java.lang.management.ManagementFactory;
+
 @Component
 public class ShowMemory implements CommandExecutor {
 
@@ -17,30 +19,36 @@ public class ShowMemory implements CommandExecutor {
 
     @Override
     public String getTrigger() {
-        return "/memory";
+        return "/health";
     }
 
     @Override
     public String getDescription() {
-        return "использование памяти";
+        return "здоровье бота";
     }
 
     @Override
     public void execute(Message message) {
-        Methods.sendMessage(message.getChatId(), formatMemory()).callAsync(telegram);
+        Methods.sendMessage(message.getChatId(), formatHealth()).callAsync(telegram);
     }
 
-    private String formatMemory() {
+    private String formatHealth() {
         var r = Runtime.getRuntime();
         double delimiter = 1048576f;
-        return String.format("\uD83D\uDDA5 <b>Память:</b>\n\n" +
-                        "Занято: %.2f MiB\n" +
-                        "Свободно: %.2f MiB\n" +
-                        "Выделено JVM: %.2f MiB\n" +
-                        "Доступно JVM: %.2f MiB",
+        return String.format("\uD83D\uDDA5 <b>Нагрузка:</b>\n\n" +
+                        "Занято: <code>%.2f MiB</code>\n" +
+                        "Свободно: <code>%.2f MiB</code>\n" +
+                        "Выделено JVM: <code>%.2f MiB</code>\n" +
+                        "Доступно JVM: <code>%.2f MiB</code>\n" +
+                        "Аптайм: <code>%d min</code>\n" +
+                        "Потоки: <code>%d</code>\n" +
+                        "CPUs: <code>%d</code>",
                 (r.totalMemory() - r.freeMemory()) / delimiter,
                 r.freeMemory() / delimiter,
                 r.totalMemory() / delimiter,
-                r.maxMemory() / delimiter);
+                r.maxMemory() / delimiter,
+                ManagementFactory.getRuntimeMXBean().getUptime() / 60000,
+                ManagementFactory.getThreadMXBean().getThreadCount(),
+                ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors());
     }
 }
