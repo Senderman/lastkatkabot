@@ -22,7 +22,7 @@ public class BncTelegramHandler {
 
     public BncTelegramHandler(
             CommonAbsSender telegram,
-            @Qualifier("bncManagerDatabaseWrapper") BncGamesManager gamesManager,
+            @Qualifier("bncDatabaseManager") BncGamesManager gamesManager,
             UserStatsRepository usersRepo
     ) {
         this.telegram = telegram;
