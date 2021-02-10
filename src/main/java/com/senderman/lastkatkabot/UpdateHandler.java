@@ -42,7 +42,7 @@ public class UpdateHandler extends BotHandlerExtension {
     private final UserManager<BlacklistedUser> blacklist;
     private final ChatManagerService chatManagerService;
     private final int mainAdminId;
-    private final int errorsChannelId;
+    private final int notificationChannelId;
     private final ChatUserRepository chatUsers;
     private final BncTelegramHandler bnc;
     private final ImageService imageService;
@@ -52,7 +52,7 @@ public class UpdateHandler extends BotHandlerExtension {
     public UpdateHandler(
             @Value("${login}") String login,
             @Value("${mainAdminId}") int mainAdminId,
-            @Value("${errorsChannelId}") int errorsChannelId,
+            @Value("${notificationChannelId}") int notificationChannelId,
             @Lazy HandlerExtractor<CommandExecutor> commandExtractor,
             @Lazy HandlerExtractor<CallbackExecutor> callbacks,
             UserManager<AdminUser> admins,
@@ -73,7 +73,7 @@ public class UpdateHandler extends BotHandlerExtension {
         this.blacklist = blacklist;
         this.chatManagerService = chatManagerService;
         this.mainAdminId = mainAdminId;
-        this.errorsChannelId = errorsChannelId;
+        this.notificationChannelId = notificationChannelId;
         this.chatUsers = chatUsers;
         this.bnc = bnc;
         this.imageService = imageService;
@@ -85,7 +85,7 @@ public class UpdateHandler extends BotHandlerExtension {
             sm.disableWebPagePreview();
         });
 
-        Methods.sendMessage(mainAdminId, "Бот запущен!").callAsync(this);
+        Methods.sendMessage(notificationChannelId, "Бот запущен!").callAsync(this);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class UpdateHandler extends BotHandlerExtension {
             } catch (RejectedExecutionException ignored) {
             } catch (Throwable e) {
                 Methods.sendMessage()
-                        .setChatId(errorsChannelId)
+                        .setChatId(notificationChannelId)
                         .setText("⚠️ <b>Ошибка обработки апдейта</b>\n\n" + ExceptionUtils.stackTraceAsString(e))
                         .enableHtml()
                         .disableWebPagePreview()
