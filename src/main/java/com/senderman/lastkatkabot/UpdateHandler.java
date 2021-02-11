@@ -8,7 +8,7 @@ import com.senderman.lastkatkabot.model.AdminUser;
 import com.senderman.lastkatkabot.model.BlacklistedUser;
 import com.senderman.lastkatkabot.model.ChatUser;
 import com.senderman.lastkatkabot.repository.ChatUserRepository;
-import com.senderman.lastkatkabot.service.ChatManagerService;
+import com.senderman.lastkatkabot.service.DatabaseCleanupService;
 import com.senderman.lastkatkabot.service.HandlerExtractor;
 import com.senderman.lastkatkabot.service.ImageService;
 import com.senderman.lastkatkabot.service.UserManager;
@@ -40,10 +40,10 @@ public class UpdateHandler extends BotHandlerExtension {
     private final HandlerExtractor<CallbackExecutor> callbacks;
     private final UserManager<AdminUser> admins;
     private final UserManager<BlacklistedUser> blacklist;
-    private final ChatManagerService chatManagerService;
     private final int mainAdminId;
     private final int notificationChannelId;
     private final ChatUserRepository chatUsers;
+    private final DatabaseCleanupService databaseCleanupService;
     private final BncTelegramHandler bnc;
     private final ImageService imageService;
     private final ExecutorService threadPool;
@@ -57,27 +57,27 @@ public class UpdateHandler extends BotHandlerExtension {
             @Lazy HandlerExtractor<CallbackExecutor> callbacks,
             UserManager<AdminUser> admins,
             UserManager<BlacklistedUser> blacklist,
-            ChatManagerService chatManagerService,
             ChatUserRepository chatUsers,
+            DatabaseCleanupService databaseCleanupService,
             @Lazy BncTelegramHandler bnc,
             ImageService imageService,
             ExecutorService threadPool
     ) {
-        var args = login.split("\\s+");
-        username = args[0];
-        token = args[1];
-
         this.commands = commandExtractor;
         this.callbacks = callbacks;
         this.admins = admins;
         this.blacklist = blacklist;
-        this.chatManagerService = chatManagerService;
         this.mainAdminId = mainAdminId;
         this.notificationChannelId = notificationChannelId;
         this.chatUsers = chatUsers;
+        this.databaseCleanupService = databaseCleanupService;
         this.bnc = bnc;
         this.imageService = imageService;
         this.threadPool = threadPool;
+
+        var args = login.split("\\s+");
+        username = args[0];
+        token = args[1];
 
         addMethodPreprocessor(SendMessage.PATH, m -> {
             var sm = (SendMessage) m;
@@ -85,6 +85,8 @@ public class UpdateHandler extends BotHandlerExtension {
             sm.disableWebPagePreview();
         });
 
+        Methods.sendMessage(notificationChannelId, "Инициализация и очистка БД...").callAsync(this);
+        cleanupDatabase();
         Methods.sendMessage(notificationChannelId, "Бот запущен!").callAsync(this);
     }
 
@@ -118,11 +120,6 @@ public class UpdateHandler extends BotHandlerExtension {
         if (!update.hasMessage()) return null;
 
         var message = update.getMessage();
-
-        if (message.getMigrateFromChatId() != null && message.getMigrateToChatId() != null) {
-            chatManagerService.migrateChatIfNeeded(message.getMigrateFromChatId(), message.getMigrateToChatId());
-            return null;
-        }
 
         if (message.getDate() + 120 < System.currentTimeMillis() / 1000) return null;
 
@@ -272,5 +269,16 @@ public class UpdateHandler extends BotHandlerExtension {
         if (roles.contains(Role.USER)) return true;
         // check admin permissions
         return roles.contains(Role.ADMIN) && admins.hasUser(userId);
+    }
+
+    private void cleanupDatabase() {
+        var r = databaseCleanupService.cleanAll();
+        var text = String.format("♻️ <b>Результаты очистки БД</b>\n\n" +
+                        "\uD83D\uDC64 Пользователи: %d\n" +
+                        "\uD83D\uDC65 Чаты: %d\n" +
+                        "\uD83D\uDC2E BnC: %d\n" +
+                        "\uD83D\uDC92 Запросы в ЗАГС: %d",
+                r.getUsers(), r.getChats(), r.getBncGames(), r.getMarriageRequests());
+        Methods.sendMessage(notificationChannelId, text).callAsync(this);
     }
 }

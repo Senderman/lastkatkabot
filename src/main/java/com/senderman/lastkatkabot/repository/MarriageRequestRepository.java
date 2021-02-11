@@ -9,7 +9,7 @@ public interface MarriageRequestRepository extends CrudRepository<MarriageReques
 
     Optional<MarriageRequest> findFirstByOrderByIdDesc();
 
-    void deleteByRequestDateLessThan(int requestDate);
+    long deleteByRequestDateLessThan(int requestDate);
 
     void deleteByProposerIdOrProposeeId(int proposerId, int proposeeId);
 
