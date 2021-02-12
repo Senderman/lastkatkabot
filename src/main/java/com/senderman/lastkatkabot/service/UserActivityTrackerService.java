@@ -11,10 +11,11 @@ import java.util.concurrent.TimeUnit;
 
 public class UserActivityTrackerService {
 
-    private final static int FLUSH_INTERVAL = 30;
+    public final static int FLUSH_INTERVAL = 30;
     private final ChatUserRepository chatUserRepo;
     private final ScheduledExecutorService threadPool = Executors.newSingleThreadScheduledExecutor();
     private final Map<String, ChatUser> cache = new HashMap<>();
+    private int avgCacheFlushingSize = -1;
 
     private UserActivityTrackerService(ChatUserRepository chatUserRepo) {
         this.chatUserRepo = chatUserRepo;
@@ -36,9 +37,15 @@ public class UserActivityTrackerService {
         threadPool.scheduleAtFixedRate(this::flush, FLUSH_INTERVAL, FLUSH_INTERVAL, TimeUnit.SECONDS);
     }
 
+    public int getAvgCacheFlushingSize() {
+        return avgCacheFlushingSize;
+    }
+
     private synchronized void flush() {
         if (cache.isEmpty()) return;
-        chatUserRepo.saveAll(cache.values());
+        var data = cache.values();
+        avgCacheFlushingSize = avgCacheFlushingSize == -1 ? data.size() : (avgCacheFlushingSize + data.size()) / 2;
+        chatUserRepo.saveAll(data);
         cache.clear();
     }
 }
