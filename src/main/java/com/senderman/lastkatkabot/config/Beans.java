@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.google.gson.Gson;
 import com.senderman.lastkatkabot.Love;
+import com.senderman.lastkatkabot.repository.ChatUserRepository;
+import com.senderman.lastkatkabot.service.UserActivityTrackerService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,6 +15,12 @@ import java.util.concurrent.Executors;
 
 @Configuration
 public class Beans {
+
+    private final ChatUserRepository chatUserRepo;
+
+    public Beans(ChatUserRepository chatUserRepo) {
+        this.chatUserRepo = chatUserRepo;
+    }
 
     @Bean
     public ObjectMapper ymlMapper() {
@@ -37,6 +45,11 @@ public class Beans {
     @Bean
     public Gson gson() {
         return new Gson();
+    }
+
+    @Bean
+    public UserActivityTrackerService activityTrackerService() {
+        return UserActivityTrackerService.newInstance(chatUserRepo);
     }
 
 }

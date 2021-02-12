@@ -6,12 +6,8 @@ import com.senderman.lastkatkabot.callback.CallbackExecutor;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.model.AdminUser;
 import com.senderman.lastkatkabot.model.BlacklistedUser;
-import com.senderman.lastkatkabot.model.ChatUser;
 import com.senderman.lastkatkabot.repository.ChatUserRepository;
-import com.senderman.lastkatkabot.service.DatabaseCleanupService;
-import com.senderman.lastkatkabot.service.HandlerExtractor;
-import com.senderman.lastkatkabot.service.ImageService;
-import com.senderman.lastkatkabot.service.UserManager;
+import com.senderman.lastkatkabot.service.*;
 import com.senderman.lastkatkabot.util.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +39,7 @@ public class UpdateHandler extends BotHandlerExtension {
     private final int mainAdminId;
     private final int notificationChannelId;
     private final ChatUserRepository chatUsers;
+    private final UserActivityTrackerService activityTrackerService;
     private final DatabaseCleanupService databaseCleanupService;
     private final BncTelegramHandler bnc;
     private final ImageService imageService;
@@ -58,6 +55,7 @@ public class UpdateHandler extends BotHandlerExtension {
             UserManager<AdminUser> admins,
             UserManager<BlacklistedUser> blacklist,
             ChatUserRepository chatUsers,
+            UserActivityTrackerService activityTrackerService,
             DatabaseCleanupService databaseCleanupService,
             @Lazy BncTelegramHandler bnc,
             ImageService imageService,
@@ -70,6 +68,7 @@ public class UpdateHandler extends BotHandlerExtension {
         this.mainAdminId = mainAdminId;
         this.notificationChannelId = notificationChannelId;
         this.chatUsers = chatUsers;
+        this.activityTrackerService = activityTrackerService;
         this.databaseCleanupService = databaseCleanupService;
         this.bnc = bnc;
         this.imageService = imageService;
@@ -254,9 +253,7 @@ public class UpdateHandler extends BotHandlerExtension {
         var userId = message.getFrom().getId();
         var date = message.getDate();
 
-        var chatUser = new ChatUser(userId, chatId);
-        chatUser.setLastMessageDate(date);
-        chatUsers.save(chatUser);
+        activityTrackerService.updateLastMessageDate(chatId, userId, date);
     }
 
 
