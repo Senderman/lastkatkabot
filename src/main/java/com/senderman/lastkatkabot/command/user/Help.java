@@ -5,6 +5,7 @@ import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.repository.AdminUserRepository;
+import com.senderman.lastkatkabot.service.TriggerHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -96,7 +98,9 @@ public class Help implements CommandExecutor {
         boolean userIsMainAdmin = userId == mainAdminId;
         boolean userIsAdmin = userIsMainAdmin || admins.existsById(userId);
 
-        for (var exe : executors) {
+        var exeIterator = executors.stream().sorted(Comparator.comparing(TriggerHandler::getTrigger)).iterator();
+        while (exeIterator.hasNext()) {
+            var exe = exeIterator.next();
             var roles = exe.getRoles();
             if (roles.contains(Role.USER)) {
                 userHelp.append(formatExecutor(exe)).append("\n");
