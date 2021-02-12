@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
 @Service
 public class ImageService {
@@ -55,7 +56,7 @@ public class ImageService {
         g.setColor(Color.white);
         g.fill(textOutline);
         g.dispose();
-        var out = new File("greeting.webp");
+        var out = new File(UUID.randomUUID() + ".webp");
         ImageIO.write(img, "webp", out);
         return out;
     }
