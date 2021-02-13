@@ -1,1 +1,1 @@
-bot: java -client -jar build/libs/lastkatkabot-1.0.jar
+bot: java -Xmx 250M -client -jar build/libs/lastkatkabot-1.0.jar

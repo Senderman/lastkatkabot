@@ -5,7 +5,6 @@ import com.senderman.lastkatkabot.repository.ChatUserRepository;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -13,16 +12,20 @@ public class UserActivityTrackerService {
 
     public final static int FLUSH_INTERVAL = 30;
     private final ChatUserRepository chatUserRepo;
-    private final ScheduledExecutorService threadPool = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService threadPool;
     private final Map<String, ChatUser> cache = new HashMap<>();
     private int avgCacheFlushingSize = -1;
 
-    private UserActivityTrackerService(ChatUserRepository chatUserRepo) {
+    private UserActivityTrackerService(ChatUserRepository chatUserRepo, ScheduledExecutorService threadPool) {
         this.chatUserRepo = chatUserRepo;
+        this.threadPool = threadPool;
     }
 
-    public static UserActivityTrackerService newInstance(ChatUserRepository chatUserRepo) {
-        var instance = new UserActivityTrackerService(chatUserRepo);
+    public static UserActivityTrackerService newInstance(
+            ChatUserRepository chatUserRepo,
+            ScheduledExecutorService threadPool
+    ) {
+        var instance = new UserActivityTrackerService(chatUserRepo, threadPool);
         instance.runCacheListener();
         return instance;
     }
