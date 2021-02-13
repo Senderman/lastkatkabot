@@ -1,1 +1,1 @@
-bot: java -jar build/libs/lastkatkabot-1.0.jar
+bot: java -client -jar build/libs/lastkatkabot-1.0.jar

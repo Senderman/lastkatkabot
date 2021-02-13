@@ -19,10 +19,10 @@ public class ChatUser {
 
     }
 
-    public ChatUser(int userId, long chatId) {
-        this.id = chatId + " " + userId;
-        this.userId = userId;
+    public ChatUser(long chatId, int userId) {
+        this.id = generateId(chatId, userId);
         this.chatId = chatId;
+        this.userId = userId;
     }
 
     public int getUserId() {
@@ -68,5 +68,9 @@ public class ChatUser {
                 "userId=" + userId +
                 ", chatId=" + chatId +
                 '}';
+    }
+
+    public static String generateId(long chatId, int userId) {
+        return chatId + " " + userId;
     }
 }

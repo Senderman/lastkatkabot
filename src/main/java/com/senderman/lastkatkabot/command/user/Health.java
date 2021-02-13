@@ -3,18 +3,21 @@ package com.senderman.lastkatkabot.command.user;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.service.UserActivityTrackerService;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.lang.management.ManagementFactory;
 
 @Component
-public class ShowMemory implements CommandExecutor {
+public class Health implements CommandExecutor {
 
     private final CommonAbsSender telegram;
+    private final UserActivityTrackerService trackerService;
 
-    public ShowMemory(CommonAbsSender telegram) {
+    public Health(CommonAbsSender telegram, UserActivityTrackerService trackerService) {
         this.telegram = telegram;
+        this.trackerService = trackerService;
     }
 
     @Override
@@ -42,13 +45,16 @@ public class ShowMemory implements CommandExecutor {
                         "Доступно JVM: <code>%.2f MiB</code>\n" +
                         "Аптайм: <code>%d min</code>\n" +
                         "Потоки: <code>%d</code>\n" +
-                        "CPUs: <code>%d</code>",
+                        "CPUs: <code>%d</code>\n" +
+                        "Средний сброс кеша трекера юзеров: %d/%ds",
                 (r.totalMemory() - r.freeMemory()) / delimiter,
                 r.freeMemory() / delimiter,
                 r.totalMemory() / delimiter,
                 r.maxMemory() / delimiter,
                 ManagementFactory.getRuntimeMXBean().getUptime() / 60000,
                 ManagementFactory.getThreadMXBean().getThreadCount(),
-                ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors());
+                ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors(),
+                trackerService.getAvgCacheFlushingSize(),
+                UserActivityTrackerService.FLUSH_INTERVAL);
     }
 }

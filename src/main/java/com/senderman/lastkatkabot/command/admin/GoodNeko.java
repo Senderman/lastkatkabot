@@ -45,18 +45,18 @@ public class GoodNeko implements CommandExecutor {
     @Override
     public void execute(Message message) {
         if (!message.isReply() || message.isUserMessage()) {
-            ApiRequests.answerMessage(message, "Возвышать до хороших нужно в группе и реплаем!")
+            ApiRequests.answerMessage(message, "Позвышать до хороших кис нужно в группе и реплаем!")
                     .callAsync(telegram);
             return;
         }
         var user = message.getReplyToMessage().getFrom();
-        var userLink = Html.getUserLink(user);
         if (user.getIsBot()) {
             ApiRequests.answerMessage(message, "Но это же просто бот, имитация человека! " +
                     "Разве может бот написать симфонию, иметь статистику, участвовать в дуэлях, быть хорошей кисой?")
                     .callAsync(telegram);
             return;
         }
+        var userLink = Html.getUserLink(user);
         if (blackUsers.deleteUser(new BlacklistedUser(user.getId())))
             ApiRequests.answerMessage(message, "Теперь " + userLink + " -  хорошая киса!").callAsync(telegram);
         else
