@@ -24,7 +24,8 @@ public class Beans {
 
     @Bean
     public ScheduledExecutorService threadPool() {
-        return Executors.newScheduledThreadPool(3);
+        int cpus = Runtime.getRuntime().availableProcessors() - 1;
+        return Executors.newScheduledThreadPool(Math.max(cpus, 1));
     }
 
     @Bean
