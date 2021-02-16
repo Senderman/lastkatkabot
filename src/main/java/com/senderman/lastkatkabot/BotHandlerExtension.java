@@ -2,7 +2,6 @@ package com.senderman.lastkatkabot;
 
 import com.annimon.tgbotsmodule.BotHandler;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.updateshandlers.SentCallback;
@@ -32,32 +31,13 @@ public abstract class BotHandlerExtension extends BotHandler {
         super.executeAsync(method, callback);
     }
 
-    @Override
-    public <T extends Serializable, M extends BotApiMethod<T>> @Nullable T call(@NotNull M method) {
-        try {
-            return execute(method);
-        } catch (TelegramApiException e) {
-            handleTelegramApiException(e);
-        }
-        return null;
-    }
-
-    @Override
-    public <T extends Serializable, M extends BotApiMethod<T>, C extends SentCallback<T>> void callAsyncWithCallback(@NotNull M method, @NotNull C callback) {
-        try {
-            executeAsync(method, callback);
-        } catch (TelegramApiException e) {
-            handleTelegramApiException(e);
-        }
+    protected void addMethodPreprocessor(String methodPath, Consumer<BotApiMethod<?>> preprocessor) {
+        preprocessors.put(methodPath, preprocessor);
     }
 
     private <T extends Serializable, Method extends BotApiMethod<T>> void preprocessMethod(@NotNull Method method) {
         var preprocessor = preprocessors.get(method.getMethod());
         if (preprocessor == null) return;
         preprocessor.accept(method);
-    }
-
-    protected void addMethodPreprocessor(String methodPath, Consumer<BotApiMethod<?>> preprocessor) {
-        preprocessors.put(methodPath, preprocessor);
     }
 }
