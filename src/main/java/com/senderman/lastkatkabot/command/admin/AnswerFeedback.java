@@ -5,7 +5,7 @@ import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import com.senderman.lastkatkabot.repository.FeedbackRepository;
+import com.senderman.lastkatkabot.dbservice.FeedbackService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -16,12 +16,12 @@ import java.util.EnumSet;
 public class AnswerFeedback implements CommandExecutor {
 
     private final CommonAbsSender telegram;
-    private final FeedbackRepository feedbackRepo;
+    private final FeedbackService feedbackRepo;
     private final long feedbackChannelId;
 
     public AnswerFeedback(
             CommonAbsSender telegram,
-            FeedbackRepository feedbackRepo,
+            FeedbackService feedbackRepo,
             @Value("${feedbackChannelId}") long feedbackChannelId
     ) {
         this.telegram = telegram;
@@ -69,7 +69,7 @@ public class AnswerFeedback implements CommandExecutor {
         // feedbackRepo.deleteById(feedbackId);
         var feedback = feedbackOptional.get();
         feedback.setReplied(true);
-        feedbackRepo.save(feedback);
+        feedbackRepo.update(feedback);
 
         var answer = args[2];
         Methods.sendMessage()

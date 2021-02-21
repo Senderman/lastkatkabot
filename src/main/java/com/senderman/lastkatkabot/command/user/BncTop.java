@@ -3,7 +3,7 @@ package com.senderman.lastkatkabot.command.user;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import com.senderman.lastkatkabot.repository.UserStatsRepository;
+import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.ChatMember;
@@ -17,9 +17,9 @@ import java.util.function.Function;
 public class BncTop implements CommandExecutor {
 
     private final CommonAbsSender telegram;
-    private final UserStatsRepository users;
+    private final UserStatsService users;
 
-    public BncTop(CommonAbsSender telegram, UserStatsRepository users) {
+    public BncTop(CommonAbsSender telegram, UserStatsService users) {
         this.telegram = telegram;
         this.users = users;
     }
@@ -40,7 +40,7 @@ public class BncTop implements CommandExecutor {
 
         int counter = 0;
         var top = new StringBuilder("<b>Топ-10 задротов в bnc:</b>\n\n");
-        var topUsers = users.findTop10ByOrderByBncScoreDesc();
+        var topUsers = users.findTop10BncPlayers();
         for (var user : topUsers) {
             top.append(++counter)
                     .append(": ")

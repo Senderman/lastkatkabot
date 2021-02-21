@@ -5,7 +5,7 @@ import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import com.senderman.lastkatkabot.repository.FeedbackRepository;
+import com.senderman.lastkatkabot.dbservice.FeedbackService;
 import com.senderman.lastkatkabot.util.Html;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -17,13 +17,13 @@ import java.util.EnumSet;
 public class DeleteFeedback implements CommandExecutor {
 
     private final CommonAbsSender telegram;
-    private final FeedbackRepository feedbackRepo;
+    private final FeedbackService feedbackRepo;
     private final long feedbackChannelId;
 
 
     public DeleteFeedback(
             CommonAbsSender telegram,
-            FeedbackRepository feedbackRepo,
+            FeedbackService feedbackRepo,
             @Value("${feedbackChannelId}") long feedbackChannelId
     ) {
         this.telegram = telegram;

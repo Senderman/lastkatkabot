@@ -4,8 +4,7 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import com.senderman.lastkatkabot.model.Userstats;
-import com.senderman.lastkatkabot.repository.UserStatsRepository;
+import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import org.jsoup.Jsoup;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -19,9 +18,9 @@ import java.nio.charset.StandardCharsets;
 public class Weather implements CommandExecutor {
 
     private final CommonAbsSender telegram;
-    private final UserStatsRepository userStats;
+    private final UserStatsService userStats;
 
-    public Weather(CommonAbsSender telegram, UserStatsRepository userStats) {
+    public Weather(CommonAbsSender telegram, UserStatsService userStats) {
         this.telegram = telegram;
         this.userStats = userStats;
     }
@@ -48,9 +47,7 @@ public class Weather implements CommandExecutor {
         String cityLink;
 
         if (city.isBlank()) {
-            String dbCityLink = userStats.findById(userId)
-                    .map(Userstats::getCityLink)
-                    .orElse(null);
+            String dbCityLink = userStats.findById(userId).getCityLink();
             if (dbCityLink == null) {
                 Methods.sendMessage(chatId, "Вы не указали город! ( /weather город ). Бот запомнит ваш выбор.")
                         .callAsync(telegram);
@@ -61,7 +58,7 @@ public class Weather implements CommandExecutor {
             try {
                 cityLink = getCityPageLink(city);
                 // save last defined city in db
-                var user = userStats.findById(userId).orElseGet(() ->new Userstats(userId));
+                var user = userStats.findById(userId);
                 user.setCityLink(cityLink);
                 userStats.save(user);
             } catch (IOException e) {

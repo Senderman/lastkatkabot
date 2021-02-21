@@ -4,8 +4,7 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import com.senderman.lastkatkabot.model.Userstats;
-import com.senderman.lastkatkabot.repository.UserStatsRepository;
+import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -15,10 +14,10 @@ import org.telegram.telegrambots.meta.api.objects.User;
 public class Stats implements CommandExecutor {
 
     private final CommonAbsSender telegram;
-    private final UserStatsRepository users;
+    private final UserStatsService users;
 
 
-    public Stats(CommonAbsSender telegram, UserStatsRepository users) {
+    public Stats(CommonAbsSender telegram, UserStatsService users) {
         this.telegram = telegram;
         this.users = users;
     }
@@ -45,7 +44,7 @@ public class Stats implements CommandExecutor {
             return;
         }
 
-        var stats = users.findById(user.getId()).orElseGet(() ->new Userstats(user.getId()));
+        var stats = users.findById(user.getId());
         String name = Html.htmlSafe(user.getFirstName());
         int winRate = stats.getDuelsTotal() == 0 ? 0 : 100 * stats.getDuelWins() / stats.getDuelsTotal();
         String text = String.format("\uD83D\uDCCA Статистика %s:\n\n" +

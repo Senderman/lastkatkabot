@@ -4,8 +4,8 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.dbservice.FeedbackService;
 import com.senderman.lastkatkabot.model.Feedback;
-import com.senderman.lastkatkabot.repository.FeedbackRepository;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
@@ -16,9 +16,9 @@ public class ShowFeedbacks implements CommandExecutor {
 
     private static final String feedbackSeparator = "\n\n<code>====================================</code>\n\n";
     private final CommonAbsSender telegram;
-    private final FeedbackRepository feedbackRepo;
+    private final FeedbackService feedbackRepo;
 
-    public ShowFeedbacks(CommonAbsSender telegram, FeedbackRepository feedbackRepo) {
+    public ShowFeedbacks(CommonAbsSender telegram, FeedbackService feedbackRepo) {
         this.telegram = telegram;
         this.feedbackRepo = feedbackRepo;
     }

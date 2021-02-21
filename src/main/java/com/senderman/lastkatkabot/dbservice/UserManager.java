@@ -1,4 +1,4 @@
-package com.senderman.lastkatkabot.service;
+package com.senderman.lastkatkabot.dbservice;
 
 import com.senderman.lastkatkabot.model.Entity;
 import org.springframework.data.repository.CrudRepository;

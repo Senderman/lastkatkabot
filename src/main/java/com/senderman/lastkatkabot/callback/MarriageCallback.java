@@ -3,9 +3,8 @@ package com.senderman.lastkatkabot.callback;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.ApiRequests;
-import com.senderman.lastkatkabot.model.Userstats;
+import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.repository.MarriageRequestRepository;
-import com.senderman.lastkatkabot.repository.UserStatsRepository;
 import com.senderman.lastkatkabot.util.Html;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -16,10 +15,10 @@ import java.util.List;
 public class MarriageCallback implements CallbackExecutor {
 
     private final CommonAbsSender telegram;
-    private final UserStatsRepository userStats;
+    private final UserStatsService userStats;
     private final MarriageRequestRepository marriages;
 
-    public MarriageCallback(CommonAbsSender telegram, UserStatsRepository userStats, MarriageRequestRepository marriages) {
+    public MarriageCallback(CommonAbsSender telegram, UserStatsService userStats, MarriageRequestRepository marriages) {
         this.telegram = telegram;
         this.userStats = userStats;
         this.marriages = marriages;
@@ -51,7 +50,7 @@ public class MarriageCallback implements CallbackExecutor {
             ApiRequests.answerCallbackQuery(query, "Это не вам!").callAsync(telegram);
             return;
         }
-        var proposeeStats = userStats.findById(r.getProposeeId()).orElseGet(() -> new Userstats(r.getProposeeId()));
+        var proposeeStats = userStats.findById(r.getProposeeId());
         // proposee should not have lover
         if (proposeeStats.hasLover()) {
             ApiRequests.answerCallbackQuery(query, "Вы уже имеете вторую половинку!", true).callAsync(telegram);
@@ -59,7 +58,7 @@ public class MarriageCallback implements CallbackExecutor {
             marriages.delete(r);
             return;
         }
-        var proposerStats = userStats.findById(r.getProposerId()).orElseGet(() -> new Userstats(r.getProposerId()));
+        var proposerStats = userStats.findById(r.getProposerId());
         // proposer also should not have lover
         if (proposerStats.hasLover()) {
             ApiRequests.answerCallbackQuery(query, "Слишком поздно, у пользователя уже есть другой!", true).callAsync(telegram);

@@ -1,5 +1,6 @@
-package com.senderman.lastkatkabot.service;
+package com.senderman.lastkatkabot.dbservice.mongodb;
 
+import com.senderman.lastkatkabot.dbservice.DatabaseCleanupService;
 import com.senderman.lastkatkabot.model.ChatInfo;
 import com.senderman.lastkatkabot.repository.BncRepository;
 import com.senderman.lastkatkabot.repository.ChatInfoRepository;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
-public class DatabaseCleanupService {
+public class MongoCleanupService implements DatabaseCleanupService {
 
     private final static int TWO_WEEKS = (int) TimeUnit.DAYS.toSeconds(14);
     private final ChatUserRepository chatUserRepo;
@@ -21,10 +22,10 @@ public class DatabaseCleanupService {
     private final BncRepository bncRepo;
     private final MarriageRequestRepository marriageRequestRepo;
 
-    public DatabaseCleanupService(ChatUserRepository chatUserRepo,
-                                  ChatInfoRepository chatInfoRepo,
-                                  BncRepository bncRepo,
-                                  MarriageRequestRepository marriageRequestRepo
+    public MongoCleanupService(ChatUserRepository chatUserRepo,
+                               ChatInfoRepository chatInfoRepo,
+                               BncRepository bncRepo,
+                               MarriageRequestRepository marriageRequestRepo
     ) {
         this.chatUserRepo = chatUserRepo;
         this.chatInfoRepo = chatInfoRepo;
@@ -38,10 +39,12 @@ public class DatabaseCleanupService {
      *
      * @return amount of users deleted
      */
+    @Override
     public long cleanInactiveUsers() {
         return chatUserRepo.deleteByLastMessageDateLessThan(twoWeeksBeforeNow());
     }
 
+    @Override
     public long cleanEmptyChats() {
         var chatsToClean = StreamSupport.stream(chatInfoRepo.findAll().spliterator(), false)
                 .map(ChatInfo::getChatId)
@@ -50,19 +53,22 @@ public class DatabaseCleanupService {
         return chatInfoRepo.deleteByChatIdIn(chatsToClean);
     }
 
+    @Override
     public long cleanOldBncGames() {
         return bncRepo.deleteByEditDateLessThan(twoWeeksBeforeNow());
     }
 
+    @Override
     public long cleanOldMarriageRequests() {
         return marriageRequestRepo.deleteByRequestDateLessThan(twoWeeksBeforeNow());
     }
 
+    @Override
     public DbCleanupResults cleanAll() {
         long users = cleanInactiveUsers();
         long chats = cleanEmptyChats();
         long bncGames = cleanOldBncGames();
-        long marriageRequests = cleanOldBncGames();
+        long marriageRequests = cleanOldMarriageRequests();
         return new DbCleanupResults(users, chats, bncGames, marriageRequests);
     }
 

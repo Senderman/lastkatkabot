@@ -2,8 +2,7 @@ package com.senderman.lastkatkabot.bnc;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
-import com.senderman.lastkatkabot.model.Userstats;
-import com.senderman.lastkatkabot.repository.UserStatsRepository;
+import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -17,13 +16,13 @@ public class BncTelegramHandler {
 
     private final CommonAbsSender telegram;
     private final BncGamesManager gamesManager;
-    private final UserStatsRepository usersRepo;
+    private final UserStatsService usersRepo;
     private final Map<Long, List<Integer>> messagesToDelete;
 
     public BncTelegramHandler(
             CommonAbsSender telegram,
             @Qualifier("bncDatabaseManager") BncGamesManager gamesManager,
-            UserStatsRepository usersRepo
+            UserStatsService usersRepo
     ) {
         this.telegram = telegram;
         this.gamesManager = gamesManager;
@@ -88,7 +87,7 @@ public class BncTelegramHandler {
     public void processWin(Message message, BncResult result) {
         var chatId = message.getChatId();
         var userId = message.getFrom().getId();
-        var userStats = usersRepo.findById(userId).orElse(new Userstats(userId));
+        var userStats = usersRepo.findById(userId);
         userStats.increaseBncScore(result.getNumber().length());
         usersRepo.save(userStats);
 

@@ -4,7 +4,8 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import com.senderman.lastkatkabot.repository.AdminUserRepository;
+import com.senderman.lastkatkabot.dbservice.UserManager;
+import com.senderman.lastkatkabot.model.AdminUser;
 import com.senderman.lastkatkabot.service.TriggerHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -23,12 +24,12 @@ import java.util.stream.Collectors;
 public class Help implements CommandExecutor {
 
     private final Set<CommandExecutor> executors;
-    private final AdminUserRepository admins;
+    private final UserManager<AdminUser> admins;
     private final int mainAdminId;
     private final CommonAbsSender telegram;
 
     public Help(@Lazy Set<CommandExecutor> executors,
-                AdminUserRepository admins,
+                UserManager<AdminUser> admins,
                 @Value("${mainAdminId}") int mainAdminId,
                 CommonAbsSender telegram
     ) {
@@ -96,7 +97,7 @@ public class Help implements CommandExecutor {
         var adminHelp = new StringBuilder("<b>Команды админов:</b>\n\n");
         var mainAdminHelp = new StringBuilder("<b>Команды главного админа:</b>\n\n");
         boolean userIsMainAdmin = userId == mainAdminId;
-        boolean userIsAdmin = userIsMainAdmin || admins.existsById(userId);
+        boolean userIsAdmin = userIsMainAdmin || admins.hasUser(userId);
 
         var exeIterator = executors.stream().sorted(Comparator.comparing(TriggerHandler::getTrigger)).iterator();
         while (exeIterator.hasNext()) {

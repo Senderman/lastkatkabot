@@ -4,8 +4,7 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import com.senderman.lastkatkabot.model.Userstats;
-import com.senderman.lastkatkabot.repository.UserStatsRepository;
+import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
@@ -13,9 +12,9 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 public class Divorce implements CommandExecutor {
 
     private final CommonAbsSender telegram;
-    private final UserStatsRepository users;
+    private final UserStatsService users;
 
-    public Divorce(CommonAbsSender telegram, UserStatsRepository users) {
+    public Divorce(CommonAbsSender telegram, UserStatsService users) {
         this.telegram = telegram;
         this.users = users;
     }
@@ -33,10 +32,8 @@ public class Divorce implements CommandExecutor {
     @Override
     public void execute(Message message) {
 
-        var chatId = message.getChatId();
-        var messageId = message.getMessageId();
         var userId = message.getFrom().getId();
-        var userStats = users.findById(userId).orElseGet(() -> new Userstats(userId));
+        var userStats = users.findById(userId);
         var loverId = userStats.getLoverId();
 
         if (loverId == null) {
@@ -44,7 +41,7 @@ public class Divorce implements CommandExecutor {
             return;
         }
 
-        var loverStats = users.findById(loverId).orElseGet(() -> new Userstats(loverId));
+        var loverStats = users.findById(loverId);
 
         userStats.setLoverId(null);
         loverStats.setLoverId(null);

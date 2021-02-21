@@ -4,12 +4,11 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Love;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.model.ChatInfo;
 import com.senderman.lastkatkabot.model.ChatUser;
-import com.senderman.lastkatkabot.model.Userstats;
 import com.senderman.lastkatkabot.repository.ChatInfoRepository;
 import com.senderman.lastkatkabot.repository.ChatUserRepository;
-import com.senderman.lastkatkabot.repository.UserStatsRepository;
 import com.senderman.lastkatkabot.service.CurrentTime;
 import com.senderman.lastkatkabot.util.Html;
 import org.springframework.stereotype.Component;
@@ -28,7 +27,7 @@ public class Pair implements CommandExecutor {
     private final static int TWO_WEEKS = (int) TimeUnit.DAYS.toSeconds(14);
 
     private final CommonAbsSender telegram;
-    private final UserStatsRepository userStats;
+    private final UserStatsService userStats;
     private final ChatUserRepository chatUsers;
     private final ChatInfoRepository chatInfoRepo;
     private final Love love;
@@ -38,7 +37,7 @@ public class Pair implements CommandExecutor {
 
     public Pair(
             CommonAbsSender telegram,
-            UserStatsRepository userStats,
+            UserStatsService userStats,
             ChatUserRepository chatUsers,
             ChatInfoRepository chatInfoRepo,
             Love love,
@@ -75,7 +74,7 @@ public class Pair implements CommandExecutor {
         }
 
         // check if pair was generated today
-        var chatInfo = chatInfoRepo.findById(chatId).orElseGet(()->new ChatInfo(chatId));
+        var chatInfo = chatInfoRepo.findById(chatId).orElseGet(() -> new ChatInfo(chatId));
         var lastPairs = Optional.ofNullable(chatInfo.getLastPairs()).orElseGet(ArrayList::new);
         var lastPairGenerationDate = Objects.requireNonNullElse(chatInfo.getLastPairDate(), -1);
         int currentDay = Integer.parseInt(currentTime.getCurrentDay());
@@ -128,20 +127,24 @@ public class Pair implements CommandExecutor {
 
     public PairData generateNewPair(long chatId, ChatUser firstUser, ChatUser secondUser) {
 
-        var firstUserStats = userStats.findById(firstUser.getUserId());
+        var stats1 = userStats.findById(firstUser.getUserId());
 
         // if user has lover (see /marryme command) and the lover is in the chat, use him as lover
         // or else, use random user from chat members
-        int loverId = firstUserStats
-                .map(Userstats::getLoverId)
-                .filter(id -> chatUsers.existsByChatIdAndUserId(chatId, id))
-                .orElse(secondUser.getUserId());
+        int loverId;
+        boolean isTrueLove;
+        if (stats1.getLoverId() != null && chatUsers.existsByChatIdAndUserId(chatId, stats1.getLoverId())) {
+            loverId = stats1.getLoverId();
+            isTrueLove = true;
+        } else {
+            loverId = secondUser.getUserId();
+            isTrueLove = false;
+        }
 
-        var firstMember = Methods.getChatMember(chatId, firstUser.getUserId()).call(telegram).getUser();
-        var secondMember = Methods.getChatMember(chatId, loverId).call(telegram).getUser();
-        boolean isTrueLove = loverId == firstUserStats.map(Userstats::getLoverId).orElse(-1);
+        var member1 = Methods.getChatMember(chatId, firstUser.getUserId()).call(telegram).getUser();
+        var member2 = Methods.getChatMember(chatId, loverId).call(telegram).getUser();
 
-        return new PairData(firstMember, secondMember, isTrueLove);
+        return new PairData(member1, member2, isTrueLove);
 
     }
 

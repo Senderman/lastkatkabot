@@ -3,8 +3,8 @@ package com.senderman.lastkatkabot.callback;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.ApiRequests;
+import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.model.Userstats;
-import com.senderman.lastkatkabot.repository.UserStatsRepository;
 import com.senderman.lastkatkabot.util.Html;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -16,10 +16,10 @@ import java.util.concurrent.ThreadLocalRandom;
 @Component
 public class JoinDuel implements CallbackExecutor {
 
-    private final UserStatsRepository users;
+    private final UserStatsService users;
     private final CommonAbsSender telegram;
 
-    public JoinDuel(UserStatsRepository users, CommonAbsSender telegram) {
+    public JoinDuel(UserStatsService users, CommonAbsSender telegram) {
         this.users = users;
         this.telegram = telegram;
     }
@@ -86,8 +86,8 @@ public class JoinDuel implements CallbackExecutor {
     private void processDuelResultToDatabase(DuelResult result) {
         var winner = result.getWinner();
         var loser = result.getLoser();
-        Userstats winnerStats = users.findById(winner.getId()).orElseGet(() -> new Userstats(winner.getId()));
-        Userstats loserStats = users.findById(loser.getId()).orElseGet(() -> new Userstats(loser.getId()));
+        Userstats winnerStats = users.findById(winner.getId());
+        Userstats loserStats = users.findById(loser.getId());
         winnerStats.increaseDuelsTotal();
         loserStats.increaseDuelsTotal();
         if (!result.isDraw())

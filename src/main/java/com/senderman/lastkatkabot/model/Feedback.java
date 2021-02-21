@@ -19,8 +19,7 @@ public class Feedback {
     public Feedback() {
     }
 
-    public Feedback(int id, String message, int userId, String userName, long chatId, int messageId) {
-        this.id = id;
+    public Feedback(String message, int userId, String userName, long chatId, int messageId) {
         this.message = message;
         this.userId = userId;
         this.userName = userName;

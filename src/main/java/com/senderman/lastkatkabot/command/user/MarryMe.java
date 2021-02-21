@@ -5,10 +5,9 @@ import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.callback.Callbacks;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.model.MarriageRequest;
-import com.senderman.lastkatkabot.model.Userstats;
 import com.senderman.lastkatkabot.repository.MarriageRequestRepository;
-import com.senderman.lastkatkabot.repository.UserStatsRepository;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
@@ -21,10 +20,10 @@ import java.util.Objects;
 public class MarryMe implements CommandExecutor {
 
     private final CommonAbsSender telegram;
-    private final UserStatsRepository users;
+    private final UserStatsService users;
     private final MarriageRequestRepository marriages;
 
-    public MarryMe(CommonAbsSender telegram, UserStatsRepository users, MarriageRequestRepository marriages) {
+    public MarryMe(CommonAbsSender telegram, UserStatsService users, MarriageRequestRepository marriages) {
         this.telegram = telegram;
         this.users = users;
         this.marriages = marriages;
@@ -57,7 +56,7 @@ public class MarryMe implements CommandExecutor {
             return;
         }
 
-        var proposerStats = users.findById(proposerId).orElseGet(() -> new Userstats(proposerId));
+        var proposerStats = users.findById(proposerId);
 
         if (Objects.equals(proposerStats.getLoverId(), proposeeId)) {
             ApiRequests.answerMessage(message, "Вы уже в браке с этим пользователем!").callAsync(telegram);
@@ -68,7 +67,7 @@ public class MarryMe implements CommandExecutor {
             ApiRequests.answerMessage(message, "Вы что, хотите изменить своей половинке?!").callAsync(telegram);
             return;
         }
-        var proposeeStats = users.findById(proposeeId).orElseGet(() -> new Userstats(proposeeId));
+        var proposeeStats = users.findById(proposeeId);
 
         if (proposeeStats.hasLover()) {
             ApiRequests.answerMessage(message, "У этого пользователя уже есть своя вторая половинка!").callAsync(telegram);
