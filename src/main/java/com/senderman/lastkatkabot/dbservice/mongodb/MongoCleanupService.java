@@ -9,14 +9,12 @@ import com.senderman.lastkatkabot.repository.MarriageRequestRepository;
 import com.senderman.lastkatkabot.util.DbCleanupResults;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
 public class MongoCleanupService implements DatabaseCleanupService {
 
-    private final static int TWO_WEEKS = (int) TimeUnit.DAYS.toSeconds(14);
     private final ChatUserRepository chatUserRepo;
     private final ChatInfoRepository chatInfoRepo;
     private final BncRepository bncRepo;
@@ -35,13 +33,13 @@ public class MongoCleanupService implements DatabaseCleanupService {
 
 
     /**
-     * Deletes all users from DB without 2 week activity
+     * Deletes all users from DB without given activity period
      *
      * @return amount of users deleted
      */
     @Override
     public long cleanInactiveUsers() {
-        return chatUserRepo.deleteByLastMessageDateLessThan(twoWeeksBeforeNow());
+        return chatUserRepo.deleteByLastMessageDateLessThan(DatabaseCleanupService.inactivePeriod());
     }
 
     @Override
@@ -55,12 +53,12 @@ public class MongoCleanupService implements DatabaseCleanupService {
 
     @Override
     public long cleanOldBncGames() {
-        return bncRepo.deleteByEditDateLessThan(twoWeeksBeforeNow());
+        return bncRepo.deleteByEditDateLessThan(DatabaseCleanupService.inactivePeriod());
     }
 
     @Override
     public long cleanOldMarriageRequests() {
-        return marriageRequestRepo.deleteByRequestDateLessThan(twoWeeksBeforeNow());
+        return marriageRequestRepo.deleteByRequestDateLessThan(DatabaseCleanupService.inactivePeriod());
     }
 
     @Override
@@ -70,9 +68,5 @@ public class MongoCleanupService implements DatabaseCleanupService {
         long bncGames = cleanOldBncGames();
         long marriageRequests = cleanOldMarriageRequests();
         return new DbCleanupResults(users, chats, bncGames, marriageRequests);
-    }
-
-    private int twoWeeksBeforeNow() {
-        return (int) (System.currentTimeMillis() / 1000 - TWO_WEEKS);
     }
 }

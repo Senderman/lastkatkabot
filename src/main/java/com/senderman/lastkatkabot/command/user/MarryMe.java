@@ -5,9 +5,9 @@ import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.callback.Callbacks;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.dbservice.MarriageRequestService;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.model.MarriageRequest;
-import com.senderman.lastkatkabot.repository.MarriageRequestRepository;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
@@ -21,9 +21,9 @@ public class MarryMe implements CommandExecutor {
 
     private final CommonAbsSender telegram;
     private final UserStatsService users;
-    private final MarriageRequestRepository marriages;
+    private final MarriageRequestService marriages;
 
-    public MarryMe(CommonAbsSender telegram, UserStatsService users, MarriageRequestRepository marriages) {
+    public MarryMe(CommonAbsSender telegram, UserStatsService users, MarriageRequestService marriages) {
         this.telegram = telegram;
         this.users = users;
         this.marriages = marriages;
@@ -78,13 +78,12 @@ public class MarryMe implements CommandExecutor {
         var text = "Пользователь " + proposerLink + " предлагает вам предлагает вам руку, сердце и шавуху. Вы согласны?";
 
         var request = new MarriageRequest();
-        request.setId(marriages.findFirstByOrderByIdDesc().map(r -> r.getId() + 1).orElse(1));
         request.setProposerId(proposerId);
         request.setProposerName(proposerLink);
         request.setProposeeId(proposeeId);
         request.setProposeeName(Html.getUserLink(message.getReplyToMessage().getFrom()));
         request.setRequestDate(message.getDate());
-        marriages.save(request);
+        request = marriages.insert(request);
 
         var markup = new MarkupBuilder()
                 .addButton(ButtonBuilder.callbackButton()

@@ -1,8 +1,5 @@
-spring:
-  data:
-    mongodb:
-      uri: ${database}
-      database: lastkatka
+dbUri: ${database}
+dbName: lastkatka
 
 logging:
   level:

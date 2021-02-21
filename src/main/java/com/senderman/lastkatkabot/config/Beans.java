@@ -3,7 +3,7 @@ package com.senderman.lastkatkabot.config;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.google.gson.Gson;
 import com.senderman.lastkatkabot.Love;
-import com.senderman.lastkatkabot.repository.ChatUserRepository;
+import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.service.UserActivityTrackerService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,10 +15,10 @@ import java.util.concurrent.ScheduledExecutorService;
 @Configuration
 public class Beans {
 
-    private final ChatUserRepository chatUserRepo;
+    private final ChatUserService chatUserService;
 
-    public Beans(ChatUserRepository chatUserRepo) {
-        this.chatUserRepo = chatUserRepo;
+    public Beans(ChatUserService chatUserService) {
+        this.chatUserService = chatUserService;
     }
 
 
@@ -44,7 +44,7 @@ public class Beans {
 
     @Bean
     public UserActivityTrackerService activityTrackerService() {
-        return UserActivityTrackerService.newInstance(chatUserRepo, threadPool());
+        return UserActivityTrackerService.newInstance(chatUserService, threadPool());
     }
 
 }

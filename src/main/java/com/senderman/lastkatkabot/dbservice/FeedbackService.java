@@ -16,7 +16,7 @@ public interface FeedbackService {
 
     Iterable<Feedback> findAll();
 
-    // Feedback ID could be changed!
+    // id could be changed, so use the returned object
     Feedback insert(Feedback feedback);
 
     Feedback update(Feedback feedback);

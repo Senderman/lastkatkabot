@@ -5,8 +5,8 @@ import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.model.ChatUser;
-import com.senderman.lastkatkabot.repository.ChatUserRepository;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -21,10 +21,10 @@ import java.util.stream.StreamSupport;
 public class BroadcastMessage implements CommandExecutor {
 
     private final CommonAbsSender telegram;
-    private final ChatUserRepository chatUsers;
+    private final ChatUserService chatUsers;
     private final ExecutorService threadPool;
 
-    public BroadcastMessage(CommonAbsSender telegram, ChatUserRepository chatUsers, ExecutorService threadPool) {
+    public BroadcastMessage(CommonAbsSender telegram, ChatUserService chatUsers, ExecutorService threadPool) {
         this.telegram = telegram;
         this.chatUsers = chatUsers;
         this.threadPool = threadPool;

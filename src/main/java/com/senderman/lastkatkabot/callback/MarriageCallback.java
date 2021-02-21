@@ -3,8 +3,8 @@ package com.senderman.lastkatkabot.callback;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.ApiRequests;
+import com.senderman.lastkatkabot.dbservice.MarriageRequestService;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
-import com.senderman.lastkatkabot.repository.MarriageRequestRepository;
 import com.senderman.lastkatkabot.util.Html;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -16,9 +16,9 @@ public class MarriageCallback implements CallbackExecutor {
 
     private final CommonAbsSender telegram;
     private final UserStatsService userStats;
-    private final MarriageRequestRepository marriages;
+    private final MarriageRequestService marriages;
 
-    public MarriageCallback(CommonAbsSender telegram, UserStatsService userStats, MarriageRequestRepository marriages) {
+    public MarriageCallback(CommonAbsSender telegram, UserStatsService userStats, MarriageRequestService marriages) {
         this.telegram = telegram;
         this.userStats = userStats;
         this.marriages = marriages;

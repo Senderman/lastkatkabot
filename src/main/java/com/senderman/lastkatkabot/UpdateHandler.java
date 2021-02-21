@@ -4,11 +4,11 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.bnc.BncTelegramHandler;
 import com.senderman.lastkatkabot.callback.CallbackExecutor;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.dbservice.DatabaseCleanupService;
 import com.senderman.lastkatkabot.dbservice.UserManager;
 import com.senderman.lastkatkabot.model.AdminUser;
 import com.senderman.lastkatkabot.model.BlacklistedUser;
-import com.senderman.lastkatkabot.repository.ChatUserRepository;
 import com.senderman.lastkatkabot.service.HandlerExtractor;
 import com.senderman.lastkatkabot.service.ImageService;
 import com.senderman.lastkatkabot.service.UserActivityTrackerService;
@@ -42,7 +42,7 @@ public class UpdateHandler extends BotHandlerExtension {
     private final UserManager<BlacklistedUser> blacklist;
     private final int mainAdminId;
     private final int notificationChannelId;
-    private final ChatUserRepository chatUsers;
+    private final ChatUserService chatUsers;
     private final UserActivityTrackerService activityTrackerService;
     private final DatabaseCleanupService databaseCleanupService;
     private final BncTelegramHandler bnc;
@@ -58,7 +58,7 @@ public class UpdateHandler extends BotHandlerExtension {
             @Lazy HandlerExtractor<CallbackExecutor> callbacks,
             UserManager<AdminUser> admins,
             UserManager<BlacklistedUser> blacklist,
-            ChatUserRepository chatUsers,
+            ChatUserService chatUsers,
             UserActivityTrackerService activityTrackerService,
             DatabaseCleanupService databaseCleanupService,
             @Lazy BncTelegramHandler bnc,

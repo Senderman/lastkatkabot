@@ -1,7 +1,7 @@
 package com.senderman.lastkatkabot.service;
 
+import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.model.ChatUser;
-import com.senderman.lastkatkabot.repository.ChatUserRepository;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,22 +10,22 @@ import java.util.concurrent.TimeUnit;
 
 public class UserActivityTrackerService {
 
-    public final static int FLUSH_INTERVAL = 10;
-    private final ChatUserRepository chatUserRepo;
+    public final static int FLUSH_INTERVAL = 5;
+    private final ChatUserService chatUserService;
     private final ScheduledExecutorService threadPool;
     private final Map<String, ChatUser> cache = new HashMap<>();
     private int avgCacheFlushingSize = -1;
 
-    private UserActivityTrackerService(ChatUserRepository chatUserRepo, ScheduledExecutorService threadPool) {
-        this.chatUserRepo = chatUserRepo;
+    private UserActivityTrackerService(ChatUserService chatUserService, ScheduledExecutorService threadPool) {
+        this.chatUserService = chatUserService;
         this.threadPool = threadPool;
     }
 
     public static UserActivityTrackerService newInstance(
-            ChatUserRepository chatUserRepo,
+            ChatUserService chatUserService,
             ScheduledExecutorService threadPool
     ) {
-        var instance = new UserActivityTrackerService(chatUserRepo, threadPool);
+        var instance = new UserActivityTrackerService(chatUserService, threadPool);
         instance.runCacheListener();
         return instance;
     }
@@ -48,7 +48,7 @@ public class UserActivityTrackerService {
         if (cache.isEmpty()) return;
         var data = cache.values();
         avgCacheFlushingSize = avgCacheFlushingSize == -1 ? data.size() : (avgCacheFlushingSize + data.size()) / 2;
-        chatUserRepo.saveAll(data);
+        chatUserService.saveAll(data);
         cache.clear();
     }
 }

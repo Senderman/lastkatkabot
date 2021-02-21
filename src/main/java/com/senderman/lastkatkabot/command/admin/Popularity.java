@@ -4,21 +4,19 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import com.senderman.lastkatkabot.model.ChatUser;
-import com.senderman.lastkatkabot.repository.ChatUserRepository;
+import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.EnumSet;
-import java.util.stream.StreamSupport;
 
 @Component
 public class Popularity implements CommandExecutor {
 
     private final CommonAbsSender telegram;
-    private final ChatUserRepository chatUsers;
+    private final ChatUserService chatUsers;
 
-    public Popularity(CommonAbsSender telegram, ChatUserRepository chatUsers) {
+    public Popularity(CommonAbsSender telegram, ChatUserService chatUsers) {
         this.telegram = telegram;
         this.chatUsers = chatUsers;
     }
@@ -41,15 +39,9 @@ public class Popularity implements CommandExecutor {
     @Override
     public void execute(Message message) {
         var text = "\uD83D\uDCCA <b>Популярность бота:</b>\n\n";
-        var chatsWithUsers = StreamSupport.stream(chatUsers.findAll().spliterator(), false)
-                .map(ChatUser::getChatId)
-                .distinct()
-                .count();
+        var chatsWithUsers = chatUsers.getTotalChats();
         text += "\uD83D\uDC65 Активные чаты: " + chatsWithUsers + "\n\n";
-        var users = StreamSupport.stream(chatUsers.findAll().spliterator(), false)
-                .map(ChatUser::getUserId)
-                .distinct()
-                .count();
+        var users = chatUsers.getTotalUsers();
         text += "\uD83D\uDC64 Уникальные пользователи: " + users;
         Methods.sendMessage(message.getChatId(), text).callAsync(telegram);
     }

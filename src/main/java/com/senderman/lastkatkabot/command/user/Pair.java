@@ -4,11 +4,11 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Love;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.model.ChatInfo;
 import com.senderman.lastkatkabot.model.ChatUser;
 import com.senderman.lastkatkabot.repository.ChatInfoRepository;
-import com.senderman.lastkatkabot.repository.ChatUserRepository;
 import com.senderman.lastkatkabot.service.CurrentTime;
 import com.senderman.lastkatkabot.util.Html;
 import org.springframework.stereotype.Component;
@@ -18,17 +18,14 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Component
 public class Pair implements CommandExecutor {
 
-    private final static int TWO_WEEKS = (int) TimeUnit.DAYS.toSeconds(14);
-
     private final CommonAbsSender telegram;
     private final UserStatsService userStats;
-    private final ChatUserRepository chatUsers;
+    private final ChatUserService chatUsers;
     private final ChatInfoRepository chatInfoRepo;
     private final Love love;
     private final CurrentTime currentTime;
@@ -38,7 +35,7 @@ public class Pair implements CommandExecutor {
     public Pair(
             CommonAbsSender telegram,
             UserStatsService userStats,
-            ChatUserRepository chatUsers,
+            ChatUserService chatUsers,
             ChatInfoRepository chatInfoRepo,
             Love love,
             CurrentTime currentTime,
@@ -85,9 +82,9 @@ public class Pair implements CommandExecutor {
         }
 
         // clean inactive chat members
-        forgetOldMembers(chatId);
+        chatUsers.deleteInactiveChatUsers(chatId);
 
-        var usersForPair = chatUsers.sampleOfChat(chatId, 2);
+        var usersForPair = chatUsers.getTwoOrLessUsersOfChat(chatId);
         if (usersForPair.size() < 2) {
             Methods.sendMessage(chatId, "Недостаточно пользователей писало в чат за последние 2 недели!").callAsync(telegram);
             return;
@@ -133,7 +130,7 @@ public class Pair implements CommandExecutor {
         // or else, use random user from chat members
         int loverId;
         boolean isTrueLove;
-        if (stats1.getLoverId() != null && chatUsers.existsByChatIdAndUserId(chatId, stats1.getLoverId())) {
+        if (stats1.getLoverId() != null && chatUsers.chatHasUser(chatId, stats1.getLoverId())) {
             loverId = stats1.getLoverId();
             isTrueLove = true;
         } else {
@@ -147,14 +144,6 @@ public class Pair implements CommandExecutor {
         return new PairData(member1, member2, isTrueLove);
 
     }
-
-    private void forgetOldMembers(long chatId) {
-        chatUsers.deleteByChatIdAndLastMessageDateLessThan(
-                chatId,
-                (int) (System.currentTimeMillis() / 1000 - TWO_WEEKS)
-        );
-    }
-
 
     private void sendRandomShitWithDelay(long chatId, String[] shit, long delay) {
         for (int i = 0; i < shit.length - 1; i++) {
