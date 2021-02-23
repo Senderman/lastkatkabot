@@ -274,12 +274,14 @@ public class UpdateHandler extends BotHandlerExtension {
 
     private void cleanupDatabase() {
         var r = databaseCleanupService.cleanAll();
-        var text = String.format("♻️ <b>Результаты очистки БД</b>\n\n" +
-                        "\uD83D\uDC64 Пользователи: %d\n" +
-                        "\uD83D\uDC65 Чаты: %d\n" +
-                        "\uD83D\uDC2E BnC: %d\n" +
-                        "\uD83D\uDC92 Запросы в ЗАГС: %d",
-                r.getUsers(), r.getChats(), r.getBncGames(), r.getMarriageRequests());
+        var text = """
+                ♻️ <b>Результаты очистки БД</b>
+
+                👤 Пользователи: %d
+                👥 Чаты: %d
+                🐮 BnC: %d
+                💒 Запросы в ЗАГС: %d"""
+                .formatted(r.getUsers(), r.getChats(), r.getBncGames(), r.getMarriageRequests());
         Methods.sendMessage(notificationChannelId, text).callAsync(this);
     }
 }

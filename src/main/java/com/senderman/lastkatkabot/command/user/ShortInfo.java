@@ -30,17 +30,21 @@ public class ShortInfo implements CommandExecutor {
         var chatId = message.getChatId();
         var userId = message.getFrom().getId();
 
-        String info = String.format("==== Информация ====\n\n" +
-                "\uD83D\uDCAC ID чата: <code>%d</code>\n" +
-                "\uD83D\uDE4D\u200D♂️ Ваш ID: <code>%d</code>", chatId, userId);
+        String info = String.format("""
+                ==== Информация ====
+
+                💬 ID чата: <code>%d</code>
+                🙍‍♂️ Ваш ID: <code>%d</code>""", chatId, userId);
 
         if (message.isReply()) {
             var reply = message.getReplyToMessage();
             var replyMessageId = reply.getMessageId();
             var replyUserId = reply.getFrom().getId();
-            info += String.format("\n\n" +
-                    "✉️ ID reply: <code>%d</code>\n" +
-                    "\uD83D\uDE4D\u200D♂ ID юзера из reply: <code>%d</code>", replyMessageId, replyUserId);
+            info += String.format("""
+
+
+                    ✉️ ID reply: <code>%d</code>
+                    🙍‍♂ ID юзера из reply: <code>%d</code>""", replyMessageId, replyUserId);
 
             var forward = reply.getForwardFromChat();
             if (forward != null && forward.isChannelChat()) {

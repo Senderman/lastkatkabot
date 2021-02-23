@@ -176,7 +176,7 @@ public class Pair implements CommandExecutor {
         }
 
         private String getPairEmoji() {
-            return isTrueLove ? "\uD83D\uDC96" : "❤️";
+            return isTrueLove ? "💖" : "❤️";
         }
 
         @Override

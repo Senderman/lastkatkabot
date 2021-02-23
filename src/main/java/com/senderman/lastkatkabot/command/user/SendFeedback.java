@@ -56,9 +56,15 @@ public class SendFeedback implements CommandExecutor {
         var feedback = feedbackRepo.insert(new Feedback(feedbackText, user.getId(), userLink, chatId, message.getMessageId()));
         var feedbackId = feedback.getId();
 
-        var text = "\uD83D\uDD14 <b>Фидбек #" + feedbackId + "</b>\n\n" +
-                "От: " + userLink + "\n\n" + feedbackText + "\n\n" +
-                "Для ответа, введите /fresp " + feedbackId + " &lt;ваш ответ&gt;";
+        var text = ("""
+                🔔 <b>Фидбек #%d</b>
+
+                От: %s
+
+                %s
+
+                Для ответа, введите /fresp %d &lt;ваш ответ&gt;""")
+                .formatted(feedbackId, userLink, feedbackText, feedbackId);
         Methods.sendMessage(feedbackChannelId, text).callAsync(telegram);
         ApiRequests.answerMessage(message, "✅ Сообщение отправлено разработчикам!").callAsync(telegram);
     }

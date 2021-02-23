@@ -38,11 +38,11 @@ public class Popularity implements CommandExecutor {
 
     @Override
     public void execute(Message message) {
-        var text = "\uD83D\uDCCA <b>Популярность бота:</b>\n\n";
+        var text = "📊 <b>Популярность бота:</b>\n\n";
         var chatsWithUsers = chatUsers.getTotalChats();
-        text += "\uD83D\uDC65 Активные чаты: " + chatsWithUsers + "\n\n";
+        text += "👥 Активные чаты: " + chatsWithUsers + "\n\n";
         var users = chatUsers.getTotalUsers();
-        text += "\uD83D\uDC64 Уникальные пользователи: " + users;
+        text += "👤 Уникальные пользователи: " + users;
         Methods.sendMessage(message.getChatId(), text).callAsync(telegram);
     }
 }

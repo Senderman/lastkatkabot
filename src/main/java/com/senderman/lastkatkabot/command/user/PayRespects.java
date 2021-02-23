@@ -42,8 +42,8 @@ public class PayRespects implements CommandExecutor {
         }
 
         Methods.deleteMessage(message.getChatId(), message.getMessageId()).callAsync(telegram);
-        var text = "\uD83D\uDD6F Press F to pay respects " + object +
-                "\n" + message.getFrom().getFirstName() + " has paid respects";
+        var text = "🕯 Press F to pay respects " + object +
+                   "\n" + message.getFrom().getFirstName() + " has paid respects";
 
         var markup = new MarkupBuilder()
                 .addButton(ButtonBuilder.callbackButton()

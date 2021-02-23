@@ -39,7 +39,7 @@ public class Stats implements CommandExecutor {
 
         if (user.getIsBot()) {
             ApiRequests.answerMessage(message, "Но это же просто бот, имитация человека! " +
-                    "Разве может бот написать симфонию, иметь статистику, играть в BnC, участвовать в дуэлях?")
+                                               "Разве может бот написать симфонию, иметь статистику, играть в BnC, участвовать в дуэлях?")
                     .callAsync(telegram);
             return;
         }
@@ -47,12 +47,15 @@ public class Stats implements CommandExecutor {
         var stats = users.findById(user.getId());
         String name = Html.htmlSafe(user.getFirstName());
         int winRate = stats.getDuelsTotal() == 0 ? 0 : 100 * stats.getDuelWins() / stats.getDuelsTotal();
-        String text = String.format("\uD83D\uDCCA Статистика %s:\n\n" +
-                        "\uD83D\uDC51 Дуэлей выиграно: %d\n" +
-                        "⚔️ Всего дуэлей: %d\n" +
-                        "\uD83D\uDCC8 Винрейт: %d\n\n" +
-                        "\uD83D\uDC2E Баллов за быки и коровы: %d",
-                name, stats.getDuelWins(), stats.getDuelsTotal(), winRate, stats.getBncScore());
+        String text = """
+                📊 Статистика %s:
+
+                👑 Дуэлей выиграно: %d
+                ⚔️ Всего дуэлей: %d
+                📈 Винрейт: %d
+
+                🐮 Баллов за быки и коровы: %d"""
+                .formatted(name, stats.getDuelWins(), stats.getDuelsTotal(), winRate, stats.getBncScore());
 
         if (stats.getLoverId() != null) {
             var lover = Methods.getChatMember(stats.getLoverId(), stats.getLoverId()).call(telegram);

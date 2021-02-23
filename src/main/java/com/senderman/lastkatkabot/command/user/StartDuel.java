@@ -36,7 +36,7 @@ public class StartDuel implements CommandExecutor {
         var name = Html.htmlSafe(user.getFirstName());
         Methods.sendMessage()
                 .setChatId(chatId)
-                .setText("\uD83C\uDFAF Пользователь " + name + " начинает набор на дуэль!")
+                .setText("🎯 Пользователь " + name + " начинает набор на дуэль!")
                 .setReplyMarkup(new MarkupBuilder()
                         .addButton(ButtonBuilder.callbackButton()
                                 .text("Присоединиться")
