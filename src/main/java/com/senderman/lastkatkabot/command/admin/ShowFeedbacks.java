@@ -16,11 +16,11 @@ public class ShowFeedbacks implements CommandExecutor {
 
     private static final String feedbackSeparator = "\n\n<code>====================================</code>\n\n";
     private final CommonAbsSender telegram;
-    private final FeedbackService feedbackRepo;
+    private final FeedbackService feedbackService;
 
-    public ShowFeedbacks(CommonAbsSender telegram, FeedbackService feedbackRepo) {
+    public ShowFeedbacks(CommonAbsSender telegram, FeedbackService feedbackService) {
         this.telegram = telegram;
-        this.feedbackRepo = feedbackRepo;
+        this.feedbackService = feedbackService;
     }
 
     @Override
@@ -42,13 +42,13 @@ public class ShowFeedbacks implements CommandExecutor {
     public void execute(Message message) {
         var chatId = message.getChatId();
         Methods.sendMessage(chatId, "Собираем фидбеки...").callAsync(telegram);
-        if (feedbackRepo.count() == 0) {
+        if (feedbackService.count() == 0) {
             Methods.sendMessage(chatId, "Фидбеков нет!").callAsync(telegram);
             return;
         }
 
         var text = new StringBuilder("<b>Фидбеки от даунов не умеющих юзать бота</b>");
-        for (Feedback feedback : feedbackRepo.findAll()) {
+        for (Feedback feedback : feedbackService.findAll()) {
             String formattedFeedback = formatFeedback(feedback);
             // if maximum text length reached
             if (text.length() + feedbackSeparator.length() + formattedFeedback.length() >= 4096) {

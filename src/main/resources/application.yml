@@ -2,7 +2,7 @@ spring:
   data:
     mongodb:
       uri: ${database}
-      database: lastkatka-test
+      database: lastkatka
 
 logging:
   level:
