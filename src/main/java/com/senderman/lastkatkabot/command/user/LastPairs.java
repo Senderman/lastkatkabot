@@ -3,8 +3,7 @@ package com.senderman.lastkatkabot.command.user;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import com.senderman.lastkatkabot.model.ChatInfo;
-import com.senderman.lastkatkabot.repository.ChatInfoRepository;
+import com.senderman.lastkatkabot.dbservice.ChatInfoService;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
@@ -12,9 +11,9 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 public class LastPairs implements CommandExecutor {
 
     private final CommonAbsSender telegram;
-    private final ChatInfoRepository chats;
+    private final ChatInfoService chats;
 
-    public LastPairs(CommonAbsSender telegram, ChatInfoRepository chats) {
+    public LastPairs(CommonAbsSender telegram, ChatInfoService chats) {
         this.telegram = telegram;
         this.chats = chats;
     }
@@ -38,7 +37,7 @@ public class LastPairs implements CommandExecutor {
             return;
         }
 
-        var chatInfo = chats.findById(chatId).orElseGet(() -> new ChatInfo(chatId));
+        var chatInfo = chats.findById(chatId);
         var pairs = chatInfo.getLastPairs();
         if (pairs == null || pairs.isEmpty()) {
             Methods.sendMessage(chatId, "В этом чате еще ни разу не запускали /pair!").callAsync(telegram);

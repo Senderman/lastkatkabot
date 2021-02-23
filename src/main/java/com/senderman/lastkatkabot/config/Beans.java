@@ -4,6 +4,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.google.gson.Gson;
 import com.senderman.lastkatkabot.Love;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
+import com.senderman.lastkatkabot.service.CachingUserActivityTrackerService;
 import com.senderman.lastkatkabot.service.UserActivityTrackerService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,7 +45,7 @@ public class Beans {
 
     @Bean
     public UserActivityTrackerService activityTrackerService() {
-        return UserActivityTrackerService.newInstance(chatUserService, threadPool());
+        return CachingUserActivityTrackerService.newInstance(chatUserService, threadPool());
     }
 
 }

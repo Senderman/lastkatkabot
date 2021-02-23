@@ -4,11 +4,10 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Love;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.dbservice.ChatInfoService;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
-import com.senderman.lastkatkabot.model.ChatInfo;
 import com.senderman.lastkatkabot.model.ChatUser;
-import com.senderman.lastkatkabot.repository.ChatInfoRepository;
 import com.senderman.lastkatkabot.service.CurrentTime;
 import com.senderman.lastkatkabot.util.Html;
 import org.springframework.stereotype.Component;
@@ -26,7 +25,7 @@ public class Pair implements CommandExecutor {
     private final CommonAbsSender telegram;
     private final UserStatsService userStats;
     private final ChatUserService chatUsers;
-    private final ChatInfoRepository chatInfoRepo;
+    private final ChatInfoService chatInfoService;
     private final Love love;
     private final CurrentTime currentTime;
     private final Set<Long> runningChatPairsGenerations;
@@ -36,7 +35,7 @@ public class Pair implements CommandExecutor {
             CommonAbsSender telegram,
             UserStatsService userStats,
             ChatUserService chatUsers,
-            ChatInfoRepository chatInfoRepo,
+            ChatInfoService chatInfoService,
             Love love,
             CurrentTime currentTime,
             ExecutorService threadPool
@@ -44,7 +43,7 @@ public class Pair implements CommandExecutor {
         this.telegram = telegram;
         this.userStats = userStats;
         this.chatUsers = chatUsers;
-        this.chatInfoRepo = chatInfoRepo;
+        this.chatInfoService = chatInfoService;
         this.love = love;
         this.currentTime = currentTime;
         this.runningChatPairsGenerations = Collections.synchronizedSet(new HashSet<>());
@@ -71,7 +70,7 @@ public class Pair implements CommandExecutor {
         }
 
         // check if pair was generated today
-        var chatInfo = chatInfoRepo.findById(chatId).orElseGet(() -> new ChatInfo(chatId));
+        var chatInfo = chatInfoService.findById(chatId);
         var lastPairs = Optional.ofNullable(chatInfo.getLastPairs()).orElseGet(ArrayList::new);
         var lastPairGenerationDate = Objects.requireNonNullElse(chatInfo.getLastPairDate(), -1);
         int currentDay = Integer.parseInt(currentTime.getCurrentDay());
@@ -106,7 +105,7 @@ public class Pair implements CommandExecutor {
                 chatInfo.setLastPairDate(currentDay);
                 lastPairs.add(0, pair.toString());
                 chatInfo.setLastPairs(lastPairs.stream().limit(10).collect(Collectors.toList()));
-                chatInfoRepo.save(chatInfo);
+                chatInfoService.save(chatInfo);
 
                 var text = String.format(loveStrings[loveStrings.length - 1],
                         Html.getUserLink(pair.getFirst()),
