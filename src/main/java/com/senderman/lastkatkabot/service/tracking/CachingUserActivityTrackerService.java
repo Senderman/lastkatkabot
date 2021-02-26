@@ -1,4 +1,4 @@
-package com.senderman.lastkatkabot.service;
+package com.senderman.lastkatkabot.service.tracking;
 
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.model.ChatUser;

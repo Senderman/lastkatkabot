@@ -9,6 +9,8 @@ logging:
     root: ERROR
 
 login: ${lastkatka} # username token
+externalTrackerToken: ${ext-tr-token}
+externalTrackerUrl: ${ext-tr-url}
 
 timezone: "Europe/Moscow"
 
