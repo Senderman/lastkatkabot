@@ -3,6 +3,7 @@ package com.senderman.lastkatkabot.command.user;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.service.CachingUserActivityTrackerService;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
@@ -12,11 +13,11 @@ import java.lang.management.ManagementFactory;
 public class Health implements CommandExecutor {
 
     private final CommonAbsSender telegram;
-    //private final CachingUserActivityTrackerService trackerService;
+    private final CachingUserActivityTrackerService trackerService;
 
-    public Health(CommonAbsSender telegram/*, CachingUserActivityTrackerService trackerService*/) {
+    public Health(CommonAbsSender telegram, CachingUserActivityTrackerService trackerService) {
         this.telegram = telegram;
-        //this.trackerService = trackerService;
+        this.trackerService = trackerService;
     }
 
     @Override
@@ -47,7 +48,7 @@ public class Health implements CommandExecutor {
                 Аптайм: <code>%d min</code>
                 Потоки: <code>%d</code>
                 CPUs: <code>%d</code>
-                """
+                Средний сброс кеша трекера юзеров: %d/%ds"""
                 .formatted(
                         (r.totalMemory() - r.freeMemory()) / delimiter,
                         r.freeMemory() / delimiter,
@@ -55,9 +56,9 @@ public class Health implements CommandExecutor {
                         r.maxMemory() / delimiter,
                         ManagementFactory.getRuntimeMXBean().getUptime() / 60000,
                         ManagementFactory.getThreadMXBean().getThreadCount(),
-                        ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors()
-                        /*trackerService.getAvgCacheFlushingSize(),
-                        CachingUserActivityTrackerService.FLUSH_INTERVAL*/
+                        ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors(),
+                        trackerService.getAvgCacheFlushingSize(),
+                        CachingUserActivityTrackerService.FLUSH_INTERVAL
                 );
     }
 }
