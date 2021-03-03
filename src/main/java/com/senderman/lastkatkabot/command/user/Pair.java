@@ -10,6 +10,7 @@ import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.model.ChatUser;
 import com.senderman.lastkatkabot.service.CurrentTime;
 import com.senderman.lastkatkabot.util.Html;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -34,7 +35,7 @@ public class Pair implements CommandExecutor {
     public Pair(
             CommonAbsSender telegram,
             UserStatsService userStats,
-            ChatUserService chatUsers,
+            @Qualifier("pairService") ChatUserService chatUsers,
             ChatInfoService chatInfoService,
             Love love,
             CurrentTime currentTime,
@@ -71,7 +72,7 @@ public class Pair implements CommandExecutor {
 
         // check if pair was generated today
         var chatInfo = chatInfoService.findById(chatId);
-        var lastPairs = Optional.ofNullable(chatInfo.getLastPairs()).orElseGet(ArrayList::new);
+        List<String> lastPairs = Objects.requireNonNullElseGet(chatInfo.getLastPairs(), ArrayList::new);
         var lastPairGenerationDate = Objects.requireNonNullElse(chatInfo.getLastPairDate(), -1);
         int currentDay = Integer.parseInt(currentTime.getCurrentDay());
 
@@ -102,7 +103,6 @@ public class Pair implements CommandExecutor {
             try {
                 sendRandomShitWithDelay(chatId, loveStrings, 1000L);
                 var pair = pairFuture.get();
-                chatInfo.setLastPairDate(currentDay);
                 lastPairs.add(0, pair.toString());
                 chatInfo.setLastPairs(lastPairs.stream().limit(10).collect(Collectors.toList()));
                 chatInfoService.save(chatInfo);

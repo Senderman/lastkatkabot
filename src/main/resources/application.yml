@@ -9,6 +9,7 @@ logging:
     root: ERROR
 
 login: ${lastkatka} # username token
+remotePairServiceUrl: ${remote-pair-url}
 
 timezone: "Europe/Moscow"
 
