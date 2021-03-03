@@ -26,7 +26,7 @@ public class CachingUserActivityTrackerService implements UserActivityTrackerSer
             ScheduledExecutorService threadPool
     ) {
         var instance = new CachingUserActivityTrackerService(chatUserService, threadPool);
-        instance.runCacheListener();
+        //instance.runCacheListener();
         return instance;
     }
 

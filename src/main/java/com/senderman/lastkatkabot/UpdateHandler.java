@@ -134,10 +134,10 @@ public class UpdateHandler extends BotHandlerExtension {
             }
         }
 
-        // track users activity in chats
-        if (!message.isUserMessage()) {
+        // track users activity in chats TEMP DISABLED
+        /*if (!message.isUserMessage()) {
             threadPool.execute(() -> updateUserLastMessageDate(message));
-        }
+        }*/
 
         if (message.getLeftChatMember() != null) {
             processLeftChatMember(message);
