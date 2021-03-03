@@ -113,7 +113,9 @@ public class Pair implements CommandExecutor {
                 Methods.sendMessage(chatId, text).callAsync(telegram);
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
-                Methods.sendMessage(chatId, "...Упс, произошла ошибка. Попробуйте в другой раз").callAsync(telegram);
+                chatUsers.delete(usersForPair.get(0));
+                chatUsers.delete(usersForPair.get(0));
+                Methods.sendMessage(chatId, "...Упс, произошла ошибка. Попробуйте еще раз").callAsync(telegram);
             } finally {
                 runningChatPairsGenerations.remove(chatId);
             }
@@ -137,11 +139,15 @@ public class Pair implements CommandExecutor {
             isTrueLove = false;
         }
 
-        var member1 = Methods.getChatMember(chatId, firstUser.getUserId()).call(telegram).getUser();
-        var member2 = Methods.getChatMember(chatId, loverId).call(telegram).getUser();
+        var member1 = getUser(chatId, firstUser.getUserId());
+        var member2 = getUser(chatId, loverId);
 
         return new PairData(member1, member2, isTrueLove);
 
+    }
+
+    private User getUser(long chatId, int userId) {
+        return Methods.getChatMember(chatId, userId).call(telegram).getUser();
     }
 
     private void sendRandomShitWithDelay(long chatId, String[] shit, long delay) {

@@ -48,6 +48,11 @@ public class MongoChatUserService implements ChatUserService {
     }
 
     @Override
+    public void delete(ChatUser chatUser) {
+        repository.delete(chatUser);
+    }
+
+    @Override
     public Iterable<ChatUser> saveAll(Iterable<ChatUser> chatUsers) {
         return repository.saveAll(chatUsers);
     }
