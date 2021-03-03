@@ -63,10 +63,10 @@ public class MongoCleanupService implements DatabaseCleanupService {
 
     @Override
     public DbCleanupResults cleanAll() {
-        long users = cleanInactiveUsers();
-        long chats = cleanEmptyChats();
+       /* long users = cleanInactiveUsers();
+        long chats = cleanEmptyChats();*/
         long bncGames = cleanOldBncGames();
         long marriageRequests = cleanOldMarriageRequests();
-        return new DbCleanupResults(users, chats, bncGames, marriageRequests);
+        return new DbCleanupResults(0, 0, bncGames, marriageRequests);
     }
 }

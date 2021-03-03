@@ -10,6 +10,7 @@ import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.model.ChatUser;
 import com.senderman.lastkatkabot.service.CurrentTime;
 import com.senderman.lastkatkabot.util.Html;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -34,7 +35,7 @@ public class Pair implements CommandExecutor {
     public Pair(
             CommonAbsSender telegram,
             UserStatsService userStats,
-            ChatUserService chatUsers,
+            @Qualifier("pairService") ChatUserService chatUsers,
             ChatInfoService chatInfoService,
             Love love,
             CurrentTime currentTime,
@@ -71,7 +72,7 @@ public class Pair implements CommandExecutor {
 
         // check if pair was generated today
         var chatInfo = chatInfoService.findById(chatId);
-        var lastPairs = Optional.ofNullable(chatInfo.getLastPairs()).orElseGet(ArrayList::new);
+        List<String> lastPairs = Objects.requireNonNullElseGet(chatInfo.getLastPairs(), ArrayList::new);
         var lastPairGenerationDate = Objects.requireNonNullElse(chatInfo.getLastPairDate(), -1);
         int currentDay = Integer.parseInt(currentTime.getCurrentDay());
 
@@ -83,25 +84,25 @@ public class Pair implements CommandExecutor {
         // clean inactive chat members
         chatUsers.deleteInactiveChatUsers(chatId);
 
-        var usersForPair = chatUsers.getTwoOrLessUsersOfChat(chatId);
-        if (usersForPair.size() < 2) {
-            Methods.sendMessage(chatId, "Недостаточно пользователей писало в чат за последние 2 недели!").callAsync(telegram);
-            return;
-        }
-
         if (runningChatPairsGenerations.contains(chatId))
             return;
 
         runningChatPairsGenerations.add(chatId);
 
+        // start chat flooding to make users wait for pair generation
         String[] loveStrings = love.getRandomLoveStrings();
-        var pairFuture = threadPool.submit(
-                () -> generateNewPair(chatId, usersForPair.get(0), usersForPair.get(1)));
+        var floodFuture = threadPool.submit(() -> sendRandomShitWithDelay(chatId, loveStrings, 1000L));
+
 
         threadPool.execute(() -> {
+            var usersForPair = chatUsers.getTwoOrLessUsersOfChat(chatId);
+            if (usersForPair.size() < 2) {
+                Methods.sendMessage(chatId, "Недостаточно пользователей писало в чат за последние 2 недели!").callAsync(telegram);
+                return;
+            }
+
             try {
-                sendRandomShitWithDelay(chatId, loveStrings, 1000L);
-                var pair = pairFuture.get();
+                var pair = generateNewPair(chatId, usersForPair.get(0), usersForPair.get(1));
                 chatInfo.setLastPairDate(currentDay);
                 lastPairs.add(0, pair.toString());
                 chatInfo.setLastPairs(lastPairs.stream().limit(10).collect(Collectors.toList()));
@@ -110,8 +111,11 @@ public class Pair implements CommandExecutor {
                 var text = String.format(loveStrings[loveStrings.length - 1],
                         Html.getUserLink(pair.getFirst()),
                         Html.getUserLink(pair.getSecond()));
+                // wait while flood ends to prevent race condition
+                floodFuture.get();
                 Methods.sendMessage(chatId, text).callAsync(telegram);
             } catch (InterruptedException | ExecutionException e) {
+                floodFuture.cancel(true);
                 e.printStackTrace();
                 chatUsers.delete(usersForPair.get(0));
                 chatUsers.delete(usersForPair.get(0));
@@ -120,7 +124,6 @@ public class Pair implements CommandExecutor {
                 runningChatPairsGenerations.remove(chatId);
             }
         });
-
     }
 
     public PairData generateNewPair(long chatId, ChatUser firstUser, ChatUser secondUser) {
