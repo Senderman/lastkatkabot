@@ -3,7 +3,6 @@ package com.senderman.lastkatkabot.pair;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.model.ChatUser;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
@@ -12,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Service
+
 public class PairService implements ChatUserService {
 
     private final RemotePairService remotePairService;
