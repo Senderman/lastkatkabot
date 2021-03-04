@@ -10,7 +10,6 @@ import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.model.ChatUser;
 import com.senderman.lastkatkabot.service.CurrentTime;
 import com.senderman.lastkatkabot.util.Html;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -35,7 +34,7 @@ public class Pair implements CommandExecutor {
     public Pair(
             CommonAbsSender telegram,
             UserStatsService userStats,
-            @Qualifier("pairService") ChatUserService chatUsers,
+            ChatUserService chatUsers,
             ChatInfoService chatInfoService,
             Love love,
             CurrentTime currentTime,
