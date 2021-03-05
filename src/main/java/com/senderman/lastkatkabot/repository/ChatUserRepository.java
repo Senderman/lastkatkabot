@@ -7,12 +7,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 @Repository
 public interface ChatUserRepository extends CrudRepository<ChatUser, String> {
-
-    Stream<ChatUser> findAllByChatId(long chatId);
 
     @Aggregation({
             "{ $match: { chatId: ?0 } }",
@@ -28,7 +25,7 @@ public interface ChatUserRepository extends CrudRepository<ChatUser, String> {
 
     boolean existsByChatIdAndUserId(long chatId, int userId);
 
-    boolean existsByChatId(long chatId);
+    long countByChatId(long chatId);
 
     Optional<ChatUser> findByChatIdAndUserId(long chatId, int userId);
 

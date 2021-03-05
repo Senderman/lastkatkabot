@@ -17,6 +17,7 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @Component
@@ -80,28 +81,39 @@ public class Pair implements CommandExecutor {
             return;
         }
 
+        if (runningChatPairsGenerations.contains(chatId)) {
+            Methods.sendMessage(chatId, "Пара дня все еще генерируется, подождите!").callAsync(telegram);
+            return;
+        }
+
         // clean inactive chat members
         chatUsers.deleteInactiveChatUsers(chatId);
 
-        if (runningChatPairsGenerations.contains(chatId))
+        if (chatUsers.countByChatId(chatId) < 2) {
+            Methods.sendMessage(chatId, "Недостаточно пользователей писало в чат за последние 2 недели!").callAsync(telegram);
             return;
-
-        runningChatPairsGenerations.add(chatId);
+        }
 
         // start chat flooding to make users wait for pair generation
         String[] loveStrings = love.getRandomLoveStrings();
-        var floodFuture = threadPool.submit(() -> sendRandomShitWithDelay(chatId, loveStrings, 1000L));
-
+        Future<?> floodFuture = threadPool.submit(() -> sendRandomShitWithDelay(chatId, loveStrings, 1000L));
+        ;
 
         threadPool.execute(() -> {
-            var usersForPair = chatUsers.getTwoOrLessUsersOfChat(chatId);
-            if (usersForPair.size() < 2) {
-                Methods.sendMessage(chatId, "Недостаточно пользователей писало в чат за последние 2 недели!").callAsync(telegram);
-                return;
-            }
-
+            runningChatPairsGenerations.add(chatId);
             try {
-                var pair = generateNewPair(chatId, usersForPair.get(0), usersForPair.get(1));
+                PairData pair;
+                try {
+                    pair = generateNewPair(chatId);
+                } catch (NotEnoughUsersException e) {
+                    floodFuture.cancel(true);
+                    Methods.sendMessage(chatId,
+                            "Ой, а у вас мало пользователей в чате доступно... Придется остановить генерацию пары")
+                            .callAsync(telegram);
+                    return;
+                }
+
+                // save new generated pair and date to DB
                 chatInfo.setLastPairDate(currentDay);
                 lastPairs.add(0, pair.toString());
                 chatInfo.setLastPairs(lastPairs.stream().limit(10).collect(Collectors.toList()));
@@ -116,8 +128,6 @@ public class Pair implements CommandExecutor {
             } catch (InterruptedException | ExecutionException e) {
                 floodFuture.cancel(true);
                 e.printStackTrace();
-                chatUsers.delete(usersForPair.get(0));
-                chatUsers.delete(usersForPair.get(0));
                 Methods.sendMessage(chatId, "...Упс, произошла ошибка. Попробуйте еще раз").callAsync(telegram);
             } finally {
                 runningChatPairsGenerations.remove(chatId);
@@ -125,31 +135,58 @@ public class Pair implements CommandExecutor {
         });
     }
 
-    public PairData generateNewPair(long chatId, ChatUser firstUser, ChatUser secondUser) {
+    private PairData generateNewPair(long chatId) throws NotEnoughUsersException {
 
-        var stats1 = userStats.findById(firstUser.getUserId());
+        final int USERS_REQUIRED = 2;
 
-        // if user has lover (see /marryme command) and the lover is in the chat, use him as lover
-        // or else, use random user from chat members
-        int loverId;
-        boolean isTrueLove;
-        if (stats1.getLoverId() != null && chatUsers.chatHasUser(chatId, stats1.getLoverId())) {
-            loverId = stats1.getLoverId();
-            isTrueLove = true;
-        } else {
-            loverId = secondUser.getUserId();
-            isTrueLove = false;
+        List<ChatUser> usersForPair;
+        while (true) {
+            // request two random users from db
+            usersForPair = chatUsers.getTwoOrLessUsersOfChat(chatId);
+            if (usersForPair.size() < USERS_REQUIRED)
+                throw new NotEnoughUsersException(usersForPair.size(), USERS_REQUIRED);
+
+            var chatUser1 = usersForPair.get(0);
+            var chatUser2 = usersForPair.get(1);
+            // check that these users are available through getChatMember method
+            // if at least one of the users is not available, continue the while loop
+            User user1, user2;
+            try {
+                user1 = getUserFromChatMember(chatId, chatUser1.getUserId());
+            } catch (NoChatMemberException e) {
+                chatUsers.delete(chatUser1);
+                continue;
+            }
+            try {
+                user2 = getUserFromChatMember(chatId, chatUser2.getUserId());
+            } catch (NoChatMemberException e) {
+                chatUsers.delete(chatUser2);
+                continue;
+            }
+
+            // at this point, we can be sure that user1 and user2 are present in chat.
+            // now we have to change user2 to user1's lover if needed and if lover available as ChatMember
+            boolean isTrueLove = false;
+            var user1Stats = userStats.findById(chatUser1.getUserId());
+            if (user1Stats.getLoverId() != null) {
+                try {
+                    user2 = getUserFromChatMember(chatId, user1Stats.getLoverId());
+                    isTrueLove = true;
+                } catch (NoChatMemberException ignored) {
+                    // leave as is
+                }
+            }
+
+            return new PairData(user1, user2, isTrueLove);
+
         }
-
-        var member1 = getUser(chatId, firstUser.getUserId());
-        var member2 = getUser(chatId, loverId);
-
-        return new PairData(member1, member2, isTrueLove);
-
     }
 
-    private User getUser(long chatId, int userId) {
-        return Methods.getChatMember(chatId, userId).call(telegram).getUser();
+    private User getUserFromChatMember(long chatId, int userId) {
+        var member = Methods.getChatMember(chatId, userId).call(telegram);
+        if (member == null)
+            throw new NoChatMemberException(userId, chatId);
+        return member.getUser();
     }
 
     private void sendRandomShitWithDelay(long chatId, String[] shit, long delay) {
@@ -194,6 +231,32 @@ public class Pair implements CommandExecutor {
                     getPairEmoji(),
                     Html.htmlSafe(second.getFirstName())
             );
+        }
+    }
+
+    private static class NotEnoughUsersException extends RuntimeException {
+        public NotEnoughUsersException(int found, int required) {
+            super("Not enough users, found %d, required %d".formatted(found, required));
+        }
+    }
+
+    private static class NoChatMemberException extends RuntimeException {
+
+        private final int userId;
+        private final long chatId;
+
+        public NoChatMemberException(int userId, long chatId) {
+            super("No userId %d in chatId %d".formatted(userId, chatId));
+            this.userId = userId;
+            this.chatId = chatId;
+        }
+
+        public int getUserId() {
+            return userId;
+        }
+
+        public long getChatId() {
+            return chatId;
         }
     }
 

@@ -28,6 +28,11 @@ public class MongoChatUserService implements ChatUserService {
     }
 
     @Override
+    public long countByChatId(long chatId) {
+        return repository.countByChatId(chatId);
+    }
+
+    @Override
     public void deleteByChatIdAndUserId(long chatId, int userId) {
         repository.deleteByChatIdAndUserId(chatId, userId);
     }
@@ -35,11 +40,6 @@ public class MongoChatUserService implements ChatUserService {
     @Override
     public List<ChatUser> getTwoOrLessUsersOfChat(long chatId) {
         return repository.sampleOfChat(chatId, 2);
-    }
-
-    @Override
-    public boolean chatHasUser(long chatId, int userId) {
-        return repository.existsByChatIdAndUserId(chatId, userId);
     }
 
     @Override

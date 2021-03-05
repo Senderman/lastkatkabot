@@ -9,11 +9,11 @@ public interface ChatUserService {
 
     Stream<ChatUser> findAll();
 
+    long countByChatId(long chatId);
+
     void deleteByChatIdAndUserId(long chatId, int userId);
 
     List<ChatUser> getTwoOrLessUsersOfChat(long chatId);
-
-    boolean chatHasUser(long chatId, int userId);
 
     void deleteInactiveChatUsers(long chatId);
 

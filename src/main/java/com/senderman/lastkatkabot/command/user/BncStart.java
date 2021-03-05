@@ -83,10 +83,12 @@ public class BncStart implements CommandExecutor {
                 .map(e -> String.format("%s: %dБ %dК", e.getNumber(), e.getBulls(), e.getCows()))
                 .collect(Collectors.joining("\n"));
 
-        var textToSend = String.format("Длина числа: %d\n" +
-                        "Тип числа: %s\n" +
-                        "Осталось попыток: %d\n\n" +
-                        "%s",
+        var textToSend = String.format("""
+                        Длина числа: %d
+                        Тип числа: %s
+                        Осталось попыток: %d
+
+                        %s""",
                 state.getLength(),
                 state.isHexadecimal() ? "HEX" : "DEC",
                 state.getAttemptsLeft(),
