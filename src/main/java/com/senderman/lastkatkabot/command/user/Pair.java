@@ -184,7 +184,7 @@ public class Pair implements CommandExecutor {
 
     private User getUserFromChatMember(long chatId, int userId) {
         var member = Methods.getChatMember(chatId, userId).call(telegram);
-        if (member == null)
+        if (member == null || member.getStatus().equals("left") || member.getStatus().equals("kicked"))
             throw new NoChatMemberException(userId, chatId);
         return member.getUser();
     }
