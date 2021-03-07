@@ -16,16 +16,16 @@ import java.util.EnumSet;
 public class AnswerFeedback implements CommandExecutor {
 
     private final CommonAbsSender telegram;
-    private final FeedbackService feedbackRepo;
+    private final FeedbackService feedbackService;
     private final long feedbackChannelId;
 
     public AnswerFeedback(
             CommonAbsSender telegram,
-            FeedbackService feedbackRepo,
+            FeedbackService feedbackService,
             @Value("${feedbackChannelId}") long feedbackChannelId
     ) {
         this.telegram = telegram;
-        this.feedbackRepo = feedbackRepo;
+        this.feedbackService = feedbackService;
         this.feedbackChannelId = feedbackChannelId;
     }
 
@@ -61,7 +61,7 @@ public class AnswerFeedback implements CommandExecutor {
             return;
         }
 
-        var feedbackOptional = feedbackRepo.findById(feedbackId);
+        var feedbackOptional = feedbackService.findById(feedbackId);
         if (feedbackOptional.isEmpty()) {
             Methods.sendMessage(chatId, "Фидбека с таким id не существует!").callAsync(telegram);
             return;
@@ -69,7 +69,7 @@ public class AnswerFeedback implements CommandExecutor {
         // feedbackRepo.deleteById(feedbackId);
         var feedback = feedbackOptional.get();
         feedback.setReplied(true);
-        feedbackRepo.update(feedback);
+        feedbackService.update(feedback);
 
         var answer = args[2];
         Methods.sendMessage()
