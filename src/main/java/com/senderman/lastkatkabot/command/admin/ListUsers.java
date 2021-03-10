@@ -44,7 +44,7 @@ public class ListUsers implements CommandExecutor {
     @Override
     public void execute(Message message, CommonAbsSender telegram) {
 
-        String sb = "<b>Списки пользователей:\n\n" +
+        String sb = "<b>Списки пользователей</b>:\n\n" +
                     "<b>Админы</b>\n\n" +
                     formatUsers(admins) +
                     "\n\n" +
