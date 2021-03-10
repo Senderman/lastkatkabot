@@ -14,12 +14,10 @@ import java.util.List;
 @Component
 public class MarriageCallback implements CallbackExecutor {
 
-    private final CommonAbsSender telegram;
     private final UserStatsService userStats;
     private final MarriageRequestService marriages;
 
-    public MarriageCallback(CommonAbsSender telegram, UserStatsService userStats, MarriageRequestService marriages) {
-        this.telegram = telegram;
+    public MarriageCallback(UserStatsService userStats, MarriageRequestService marriages) {
         this.userStats = userStats;
         this.marriages = marriages;
     }
@@ -30,14 +28,14 @@ public class MarriageCallback implements CallbackExecutor {
     }
 
     @Override
-    public void execute(CallbackQuery query) {
+    public void execute(CallbackQuery query, CommonAbsSender telegram) {
         if (query.getData().endsWith("accept"))
-            acceptMarriage(query);
+            acceptMarriage(query, telegram);
         else
-            declineMarriage(query);
+            declineMarriage(query, telegram);
     }
 
-    private void acceptMarriage(CallbackQuery query) {
+    private void acceptMarriage(CallbackQuery query, CommonAbsSender telegram) {
         var requestOptional = marriages.findById(Integer.parseInt(query.getData().split("\\s+")[1]));
         if (requestOptional.isEmpty()) {
             ApiRequests.answerCallbackQuery(query, "Вашу заявку потеряли в ЗАГСе!", true).callAsync(telegram);
@@ -86,7 +84,7 @@ public class MarriageCallback implements CallbackExecutor {
                 .callAsync(telegram);
     }
 
-    private void declineMarriage(CallbackQuery query) {
+    private void declineMarriage(CallbackQuery query, CommonAbsSender telegram) {
         var requestId = Integer.parseInt(query.getData().split("\\s+")[1]);
         marriages.deleteById(requestId);
         ApiRequests.answerCallbackQuery(query, "Вы отказались от брака!").callAsync(telegram);

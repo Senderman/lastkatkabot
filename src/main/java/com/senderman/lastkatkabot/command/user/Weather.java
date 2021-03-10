@@ -17,11 +17,9 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class Weather implements CommandExecutor {
 
-    private final CommonAbsSender telegram;
     private final UserStatsService userStats;
 
-    public Weather(CommonAbsSender telegram, UserStatsService userStats) {
-        this.telegram = telegram;
+    public Weather(UserStatsService userStats) {
         this.userStats = userStats;
     }
 
@@ -36,7 +34,7 @@ public class Weather implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
+    public void execute(Message message, CommonAbsSender telegram) {
         var chatId = message.getChatId();
         var userId = message.getFrom().getId();
         // extract name of the city from the message

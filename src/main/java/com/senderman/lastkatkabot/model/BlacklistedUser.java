@@ -6,17 +6,19 @@ import org.springframework.data.annotation.TypeAlias;
 import java.util.Objects;
 
 @TypeAlias("blacklist")
-public class BlacklistedUser implements Entity<Integer> {
+public class BlacklistedUser implements IdAndName<Integer> {
 
     @Id
     private int userId;
+    private String name;
 
     public BlacklistedUser() {
 
     }
 
-    public BlacklistedUser(int userId) {
+    public BlacklistedUser(int userId, String name) {
         this.userId = userId;
+        this.name = name;
     }
 
     public int getUserId() {
@@ -39,12 +41,18 @@ public class BlacklistedUser implements Entity<Integer> {
     @Override
     public String toString() {
         return "BlacklistedUser{" +
-                "userId=" + userId +
-                '}';
+               "userId=" + userId +
+               ", name='" + name + '\'' +
+               '}';
     }
 
     @Override
     public Integer getId() {
         return getUserId();
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 }

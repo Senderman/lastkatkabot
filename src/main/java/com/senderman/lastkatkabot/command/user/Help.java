@@ -26,19 +26,16 @@ public class Help implements CommandExecutor {
     private final Set<CommandExecutor> executors;
     private final UserManager<AdminUser> admins;
     private final int mainAdminId;
-    private final CommonAbsSender telegram;
 
     public Help(@Lazy Set<CommandExecutor> executors,
                 UserManager<AdminUser> admins,
-                @Value("${mainAdminId}") int mainAdminId,
-                CommonAbsSender telegram
+                @Value("${mainAdminId}") int mainAdminId
     ) {
         this.executors = executors.stream()
                 .filter(CommandExecutor::showInHelp)
                 .collect(Collectors.toSet());
         this.admins = admins;
         this.mainAdminId = mainAdminId;
-        this.telegram = telegram;
     }
 
     @Override
@@ -57,12 +54,12 @@ public class Help implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
+    public void execute(Message message, CommonAbsSender telegram) {
         var chatId = message.getChatId();
         var userId = message.getFrom().getId();
 
         if (!message.isUserMessage()) {
-            sendHelpToPm(chatId, userId, message.getMessageId());
+            sendHelpToPm(chatId, userId, message.getMessageId(), telegram);
             return;
         }
 
@@ -70,7 +67,7 @@ public class Help implements CommandExecutor {
 
     }
 
-    private void sendHelpToPm(long chatId, int userId, int chatMessageId) {
+    private void sendHelpToPm(long chatId, int userId, int chatMessageId, CommonAbsSender telegram) {
         try {
             var sentMessage = telegram.execute(new SendMessage(String.valueOf(userId), "Подождите..."));
             telegram.execute(EditMessageText

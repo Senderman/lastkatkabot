@@ -12,11 +12,9 @@ import java.lang.management.ManagementFactory;
 @Component
 public class Health implements CommandExecutor {
 
-    private final CommonAbsSender telegram;
     private final CachingUserActivityTrackerService trackerService;
 
-    public Health(CommonAbsSender telegram, CachingUserActivityTrackerService trackerService) {
-        this.telegram = telegram;
+    public Health(CachingUserActivityTrackerService trackerService) {
         this.trackerService = trackerService;
     }
 
@@ -31,7 +29,7 @@ public class Health implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
+    public void execute(Message message, CommonAbsSender telegram) {
         Methods.sendMessage(message.getChatId(), formatHealth()).callAsync(telegram);
     }
 

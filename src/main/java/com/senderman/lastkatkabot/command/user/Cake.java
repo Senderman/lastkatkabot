@@ -13,10 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Component
 public class Cake implements CommandExecutor {
 
-    private final CommonAbsSender telegram;
-
-    public Cake(CommonAbsSender telegram) {
-        this.telegram = telegram;
+    public Cake() {
     }
 
     @Override
@@ -30,7 +27,7 @@ public class Cake implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
+    public void execute(Message message, CommonAbsSender telegram) {
         if (!message.isReply() || message.isUserMessage()) return;
 
 

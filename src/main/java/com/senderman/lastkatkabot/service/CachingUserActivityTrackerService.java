@@ -21,7 +21,7 @@ public class CachingUserActivityTrackerService implements UserActivityTrackerSer
         this.threadPool = threadPool;
     }
 
-    public static UserActivityTrackerService newInstance(
+    public static CachingUserActivityTrackerService newInstance(
             ChatUserService chatUserService,
             ScheduledExecutorService threadPool
     ) {

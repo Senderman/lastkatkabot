@@ -12,10 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Component
 public class PayRespects implements CommandExecutor {
 
-    private final CommonAbsSender telegram;
-
-    public PayRespects(CommonAbsSender telegram) {
-        this.telegram = telegram;
+    public PayRespects() {
     }
 
     @Override
@@ -29,7 +26,7 @@ public class PayRespects implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
+    public void execute(Message message, CommonAbsSender telegram) {
 
         String object;
 

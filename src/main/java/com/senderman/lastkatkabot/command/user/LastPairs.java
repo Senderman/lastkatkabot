@@ -10,11 +10,9 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Component
 public class LastPairs implements CommandExecutor {
 
-    private final CommonAbsSender telegram;
     private final ChatInfoService chats;
 
-    public LastPairs(CommonAbsSender telegram, ChatInfoService chats) {
-        this.telegram = telegram;
+    public LastPairs(ChatInfoService chats) {
         this.chats = chats;
     }
 
@@ -29,7 +27,7 @@ public class LastPairs implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
+    public void execute(Message message, CommonAbsSender telegram) {
         var chatId = message.getChatId();
 
         if (message.isUserMessage()) {

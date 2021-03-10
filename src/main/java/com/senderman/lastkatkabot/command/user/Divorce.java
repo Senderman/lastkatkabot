@@ -11,11 +11,9 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Component
 public class Divorce implements CommandExecutor {
 
-    private final CommonAbsSender telegram;
     private final UserStatsService users;
 
-    public Divorce(CommonAbsSender telegram, UserStatsService users) {
-        this.telegram = telegram;
+    public Divorce(UserStatsService users) {
         this.users = users;
     }
 
@@ -30,7 +28,7 @@ public class Divorce implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
+    public void execute(Message message, CommonAbsSender telegram) {
 
         var userId = message.getFrom().getId();
         var userStats = users.findById(userId);

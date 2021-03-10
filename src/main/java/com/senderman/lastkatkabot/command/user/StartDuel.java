@@ -13,10 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Component
 public class StartDuel implements CommandExecutor {
 
-    private final CommonAbsSender telegram;
-
-    public StartDuel(CommonAbsSender telegram) {
-        this.telegram = telegram;
+    public StartDuel() {
     }
 
     @Override
@@ -30,7 +27,7 @@ public class StartDuel implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
+    public void execute(Message message, CommonAbsSender telegram) {
         var chatId = message.getChatId();
         var user = message.getFrom();
         var name = Html.htmlSafe(user.getFirstName());

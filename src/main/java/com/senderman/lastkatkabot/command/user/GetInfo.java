@@ -10,10 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Component
 public class GetInfo implements CommandExecutor {
 
-    private final CommonAbsSender telegram;
-
-    public GetInfo(CommonAbsSender telegram) {
-        this.telegram = telegram;
+    public GetInfo() {
     }
 
     @Override
@@ -27,7 +24,7 @@ public class GetInfo implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
+    public void execute(Message message, CommonAbsSender telegram) {
         var chatId = message.getChatId();
 
         if (!message.isReply()) {

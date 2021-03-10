@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 @Component
 public class Pair implements CommandExecutor {
 
-    private final CommonAbsSender telegram;
     private final UserStatsService userStats;
     private final ChatUserService chatUsers;
     private final ChatInfoService chatInfoService;
@@ -33,7 +32,6 @@ public class Pair implements CommandExecutor {
     private final ExecutorService threadPool;
 
     public Pair(
-            CommonAbsSender telegram,
             UserStatsService userStats,
             ChatUserService chatUsers,
             ChatInfoService chatInfoService,
@@ -41,7 +39,6 @@ public class Pair implements CommandExecutor {
             CurrentTime currentTime,
             ExecutorService threadPool
     ) {
-        this.telegram = telegram;
         this.userStats = userStats;
         this.chatUsers = chatUsers;
         this.chatInfoService = chatInfoService;
@@ -62,7 +59,7 @@ public class Pair implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
+    public void execute(Message message, CommonAbsSender telegram) {
         var chatId = message.getChatId();
 
         if (message.isUserMessage()) {
@@ -96,15 +93,14 @@ public class Pair implements CommandExecutor {
 
         // start chat flooding to make users wait for pair generation
         String[] loveStrings = love.getRandomLoveStrings();
-        Future<?> floodFuture = threadPool.submit(() -> sendRandomShitWithDelay(chatId, loveStrings, 1000L));
-        ;
+        Future<?> floodFuture = threadPool.submit(() -> sendRandomShitWithDelay(chatId, loveStrings, 1000L, telegram));
 
         threadPool.execute(() -> {
             runningChatPairsGenerations.add(chatId);
             try {
                 PairData pair;
                 try {
-                    pair = generateNewPair(chatId);
+                    pair = generateNewPair(chatId, telegram);
                 } catch (NotEnoughUsersException e) {
                     floodFuture.cancel(true);
                     Methods.sendMessage(chatId,
@@ -135,7 +131,7 @@ public class Pair implements CommandExecutor {
         });
     }
 
-    private PairData generateNewPair(long chatId) throws NotEnoughUsersException {
+    private PairData generateNewPair(long chatId, CommonAbsSender telegram) throws NotEnoughUsersException {
 
         final int USERS_REQUIRED = 2;
 
@@ -152,13 +148,13 @@ public class Pair implements CommandExecutor {
             // if at least one of the users is not available, continue the while loop
             User user1, user2;
             try {
-                user1 = getUserFromChatMember(chatId, chatUser1.getUserId());
+                user1 = getUserFromChatMember(chatId, chatUser1.getUserId(), telegram);
             } catch (NoChatMemberException e) {
                 chatUsers.delete(chatUser1);
                 continue;
             }
             try {
-                user2 = getUserFromChatMember(chatId, chatUser2.getUserId());
+                user2 = getUserFromChatMember(chatId, chatUser2.getUserId(), telegram);
             } catch (NoChatMemberException e) {
                 chatUsers.delete(chatUser2);
                 continue;
@@ -170,7 +166,7 @@ public class Pair implements CommandExecutor {
             var user1Stats = userStats.findById(chatUser1.getUserId());
             if (user1Stats.getLoverId() != null) {
                 try {
-                    user2 = getUserFromChatMember(chatId, user1Stats.getLoverId());
+                    user2 = getUserFromChatMember(chatId, user1Stats.getLoverId(), telegram);
                     isTrueLove = true;
                 } catch (NoChatMemberException ignored) {
                     // leave as is
@@ -182,14 +178,14 @@ public class Pair implements CommandExecutor {
         }
     }
 
-    private User getUserFromChatMember(long chatId, int userId) {
+    private User getUserFromChatMember(long chatId, int userId, CommonAbsSender telegram) {
         var member = Methods.getChatMember(chatId, userId).call(telegram);
         if (member == null || member.getStatus().equals("left") || member.getStatus().equals("kicked"))
             throw new NoChatMemberException(userId, chatId);
         return member.getUser();
     }
 
-    private void sendRandomShitWithDelay(long chatId, String[] shit, long delay) {
+    private void sendRandomShitWithDelay(long chatId, String[] shit, long delay, CommonAbsSender telegram) {
         for (int i = 0; i < shit.length - 1; i++) {
             Methods.sendMessage(chatId, shit[i]).callAsync(telegram);
             try {

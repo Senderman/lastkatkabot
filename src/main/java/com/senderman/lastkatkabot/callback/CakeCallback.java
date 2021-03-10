@@ -8,11 +8,8 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 @Component
 public class CakeCallback implements CallbackExecutor {
 
-    private final CommonAbsSender telegram;
 
-
-    public CakeCallback(CommonAbsSender telegram) {
-        this.telegram = telegram;
+    public CakeCallback() {
     }
 
     @Override
@@ -21,7 +18,7 @@ public class CakeCallback implements CallbackExecutor {
     }
 
     @Override
-    public void execute(CallbackQuery query) {
+    public void execute(CallbackQuery query, CommonAbsSender telegram) {
         var args = query.getData().split("\\s+");
         if (!query.getFrom().getId().equals(Integer.parseInt(args[2]))) {
             ApiRequests.answerCallbackQuery(query, "Этот тортик не вам!", true).callAsync(telegram);
@@ -29,30 +26,30 @@ public class CakeCallback implements CallbackExecutor {
         }
 
         if (query.getMessage().getDate() + 2400 < System.currentTimeMillis() / 1000) {
-            cakeIsRotten(query);
+            cakeIsRotten(query, telegram);
             return;
         }
 
         var action = args[1];
         if (action.equals("accept"))
-            acceptCake(query);
+            acceptCake(query, telegram);
         else if (action.equals("decline"))
-            declineCake(query);
+            declineCake(query, telegram);
     }
 
-    private void acceptCake(CallbackQuery query) {
+    private void acceptCake(CallbackQuery query, CommonAbsSender telegram) {
         ApiRequests.answerCallbackQuery(query, "П p u я т н o г o  a п п e т u т a").callAsync(telegram);
         ApiRequests.editMessage(query, formatEditedMessage(query, "\uD83C\uDF82 %s принял тортик %s")).callAsync(telegram);
     }
 
-    private void declineCake(CallbackQuery query) {
+    private void declineCake(CallbackQuery query, CommonAbsSender telegram) {
         ApiRequests.answerCallbackQuery(query, "Ну и ладно :(").callAsync(telegram);
         ApiRequests.editMessage(query,
                 formatEditedMessage(query, "\uD83D\uDEAB \uD83C\uDF82 %s отказался от тортика %s")
         ).callAsync(telegram);
     }
 
-    private void cakeIsRotten(CallbackQuery query) {
+    private void cakeIsRotten(CallbackQuery query, CommonAbsSender telegram) {
         ApiRequests.answerCallbackQuery(query, "Тортик испортился!").callAsync(telegram);
         ApiRequests.editMessage(query, "\uD83E\uDD22 Тортик попытались взять, но он испортился!").callAsync(telegram);
     }

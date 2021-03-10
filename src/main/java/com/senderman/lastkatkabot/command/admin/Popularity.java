@@ -13,11 +13,9 @@ import java.util.EnumSet;
 @Component
 public class Popularity implements CommandExecutor {
 
-    private final CommonAbsSender telegram;
     private final ChatUserService chatUsers;
 
-    public Popularity(CommonAbsSender telegram, ChatUserService chatUsers) {
-        this.telegram = telegram;
+    public Popularity(ChatUserService chatUsers) {
         this.chatUsers = chatUsers;
     }
 
@@ -37,7 +35,7 @@ public class Popularity implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
+    public void execute(Message message, CommonAbsSender telegram) {
         var text = "📊 <b>Популярность бота:</b>\n\n";
         var chatsWithUsers = chatUsers.getTotalChats();
         text += "👥 Активные чаты: " + chatsWithUsers + "\n\n";

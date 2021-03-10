@@ -15,14 +15,11 @@ import java.util.EnumSet;
 @Component
 public class GrantAdmin implements CommandExecutor {
 
-    private final CommonAbsSender telegram;
     private final UserManager<AdminUser> admins;
 
 
     public GrantAdmin(
-            CommonAbsSender telegram,
             @Qualifier("adminManager") UserManager<AdminUser> admins) {
-        this.telegram = telegram;
         this.admins = admins;
     }
 
@@ -42,7 +39,7 @@ public class GrantAdmin implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
+    public void execute(Message message, CommonAbsSender telegram) {
         if (!message.isReply() || message.isUserMessage()) {
             ApiRequests.answerMessage(message, "Посвящать в админы нужно в группе и реплаем!").callAsync(telegram);
             return;
@@ -51,12 +48,12 @@ public class GrantAdmin implements CommandExecutor {
 
         if (user.getIsBot()) {
             ApiRequests.answerMessage(message, "Но это же просто бот, имитация человека! " +
-                    "Разве может бот написать симфонию, иметь статистику, участвовать в дуэлях, быть админом?")
+                                               "Разве может бот написать симфонию, иметь статистику, участвовать в дуэлях, быть админом?")
                     .callAsync(telegram);
             return;
         }
 
-        if (admins.addUser(new AdminUser(user.getId())))
+        if (admins.addUser(new AdminUser(user.getId(), user.getFirstName())))
             ApiRequests.answerMessage(message, "Пользователь успешно посвящен в админы!").callAsync(telegram);
         else
             ApiRequests.answerMessage(message, "Не следует посвящать в админы дважды!").callAsync(telegram);

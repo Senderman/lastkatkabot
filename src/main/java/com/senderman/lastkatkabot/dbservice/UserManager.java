@@ -1,13 +1,13 @@
 package com.senderman.lastkatkabot.dbservice;
 
-import com.senderman.lastkatkabot.model.Entity;
+import com.senderman.lastkatkabot.model.IdAndName;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public abstract class UserManager<TUserEntity extends Entity<Integer>> {
+public abstract class UserManager<TUserEntity extends IdAndName<Integer>> {
 
     private final CrudRepository<TUserEntity, Integer> repository;
     private final Set<Integer> userIds;
@@ -15,8 +15,12 @@ public abstract class UserManager<TUserEntity extends Entity<Integer>> {
     public UserManager(CrudRepository<TUserEntity, Integer> repository) {
         this.repository = repository;
         this.userIds = StreamSupport.stream(repository.findAll().spliterator(), false)
-                .map(Entity::getId)
+                .map(IdAndName::getId)
                 .collect(Collectors.toSet());
+    }
+
+    public Iterable<TUserEntity> findAll() {
+        return repository.findAll();
     }
 
     public boolean hasUser(int id) {
@@ -30,10 +34,9 @@ public abstract class UserManager<TUserEntity extends Entity<Integer>> {
         return true;
     }
 
-    public boolean deleteUser(TUserEntity entity) {
-        if (!userIds.contains(entity.getId())) return false;
-        userIds.remove(entity.getId());
-        repository.deleteById(entity.getId());
+    public boolean deleteById(int id) {
+        if (!userIds.remove(id)) return false;
+        repository.deleteById(id);
         return true;
     }
 

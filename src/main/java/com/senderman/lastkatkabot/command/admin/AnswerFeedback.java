@@ -15,16 +15,13 @@ import java.util.EnumSet;
 @Component
 public class AnswerFeedback implements CommandExecutor {
 
-    private final CommonAbsSender telegram;
     private final FeedbackService feedbackService;
     private final long feedbackChannelId;
 
     public AnswerFeedback(
-            CommonAbsSender telegram,
             FeedbackService feedbackService,
             @Value("${feedbackChannelId}") long feedbackChannelId
     ) {
-        this.telegram = telegram;
         this.feedbackService = feedbackService;
         this.feedbackChannelId = feedbackChannelId;
     }
@@ -45,7 +42,7 @@ public class AnswerFeedback implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
+    public void execute(Message message, CommonAbsSender telegram) {
         var chatId = message.getChatId();
         var args = message.getText().split("\\s+", 3);
         if (args.length < 3) {

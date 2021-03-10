@@ -15,11 +15,9 @@ import java.util.EnumSet;
 public class ShowFeedbacks implements CommandExecutor {
 
     private static final String feedbackSeparator = "\n\n<code>====================================</code>\n\n";
-    private final CommonAbsSender telegram;
     private final FeedbackService feedbackService;
 
-    public ShowFeedbacks(CommonAbsSender telegram, FeedbackService feedbackService) {
-        this.telegram = telegram;
+    public ShowFeedbacks(FeedbackService feedbackService) {
         this.feedbackService = feedbackService;
     }
 
@@ -39,7 +37,7 @@ public class ShowFeedbacks implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
+    public void execute(Message message, CommonAbsSender telegram) {
         var chatId = message.getChatId();
         Methods.sendMessage(chatId, "Собираем фидбеки...").callAsync(telegram);
         if (feedbackService.count() == 0) {

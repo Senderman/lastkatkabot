@@ -6,17 +6,19 @@ import org.springframework.data.annotation.TypeAlias;
 import java.util.Objects;
 
 @TypeAlias("admin")
-public class AdminUser implements Entity<Integer> {
+public class AdminUser implements IdAndName<Integer> {
 
     @Id
     private int userId;
+    private String name;
 
     public AdminUser() {
 
     }
 
-    public AdminUser(int userId) {
+    public AdminUser(int userId, String name) {
         this.userId = userId;
+        this.name = name;
     }
 
     public int getUserId() {
@@ -39,12 +41,18 @@ public class AdminUser implements Entity<Integer> {
     @Override
     public String toString() {
         return "AdminUser{" +
-                "userId=" + userId +
-                '}';
+               "userId=" + userId +
+               ", name='" + name + '\'' +
+               '}';
     }
 
     @Override
     public Integer getId() {
         return getUserId();
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 }

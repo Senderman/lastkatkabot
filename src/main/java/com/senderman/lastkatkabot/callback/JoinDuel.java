@@ -17,11 +17,9 @@ import java.util.concurrent.ThreadLocalRandom;
 public class JoinDuel implements CallbackExecutor {
 
     private final UserStatsService users;
-    private final CommonAbsSender telegram;
 
-    public JoinDuel(UserStatsService users, CommonAbsSender telegram) {
+    public JoinDuel(UserStatsService users) {
         this.users = users;
-        this.telegram = telegram;
     }
 
     @Override
@@ -30,7 +28,7 @@ public class JoinDuel implements CallbackExecutor {
     }
 
     @Override
-    public void execute(CallbackQuery query) {
+    public void execute(CallbackQuery query, CommonAbsSender telegram) {
         var message = query.getMessage();
         var firstUserId = Integer.parseInt(query.getData().split("\\s+")[1]);
         var secondUser = query.getFrom();
@@ -52,7 +50,7 @@ public class JoinDuel implements CallbackExecutor {
         var firstUser = firstUserMember.getUser();
         var result = calculateResults(firstUser, secondUser);
         processDuelResultToDatabase(result);
-        processDuelResultToMessage(message.getChatId(), message.getMessageId(), result);
+        processDuelResultToMessage(message.getChatId(), message.getMessageId(), result, telegram);
     }
 
     private DuelResult calculateResults(User user1, User user2) {
@@ -63,7 +61,7 @@ public class JoinDuel implements CallbackExecutor {
         return new DuelResult(winner, loser, draw);
     }
 
-    private void processDuelResultToMessage(long chatId, int messageId, DuelResult result) {
+    private void processDuelResultToMessage(long chatId, int messageId, DuelResult result, CommonAbsSender telegram) {
         var method = Methods.editMessageText()
                 .setChatId(chatId)
                 .setMessageId(messageId)

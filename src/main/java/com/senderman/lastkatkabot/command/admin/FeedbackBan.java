@@ -16,12 +16,10 @@ import java.util.EnumSet;
 @Component
 public class FeedbackBan implements CommandExecutor {
 
-    private final CommonAbsSender telegram;
     private final UserManager<BlacklistedUser> blackUsers;
     private final FeedbackService feedbackService;
 
-    public FeedbackBan(CommonAbsSender telegram, UserManager<BlacklistedUser> blackUsers, FeedbackService feedbackService) {
-        this.telegram = telegram;
+    public FeedbackBan(UserManager<BlacklistedUser> blackUsers, FeedbackService feedbackService) {
         this.blackUsers = blackUsers;
         this.feedbackService = feedbackService;
     }
@@ -42,9 +40,7 @@ public class FeedbackBan implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
-        var chatId = message.getChatId();
-
+    public void execute(Message message, CommonAbsSender telegram) {
         var args = message.getText().split("\\s+", 3);
         if (args.length < 2) {
             ApiRequests.answerMessage(message, "Неверное кол-во аргументов!");
@@ -65,7 +61,7 @@ public class FeedbackBan implements CommandExecutor {
         }
         var feedback = feedbackOptional.get();
         var badPersonId = feedback.getUserId();
-        if (!blackUsers.addUser(new BlacklistedUser(badPersonId))) {
+        if (!blackUsers.addUser(new BlacklistedUser(badPersonId, feedback.getUserName()))) {
             ApiRequests.answerMessage(message, "Этот пользователь уже плохая киса!").callAsync(telegram);
             return;
         }

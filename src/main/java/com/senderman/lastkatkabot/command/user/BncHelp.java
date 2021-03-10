@@ -10,11 +10,9 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Component
 public class BncHelp implements CommandExecutor {
 
-    private final CommonAbsSender telegram;
     private final String bncPhotoId;
 
-    public BncHelp(CommonAbsSender telegram, @Value("${bnc-help-picture-id}") String bncPhotoId) {
-        this.telegram = telegram;
+    public BncHelp(@Value("${bnc-help-picture-id}") String bncPhotoId) {
         this.bncPhotoId = bncPhotoId;
     }
 
@@ -29,7 +27,7 @@ public class BncHelp implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
+    public void execute(Message message, CommonAbsSender telegram) {
         Methods.sendPhoto()
                 .setChatId(message.getChatId())
                 .setReplyToMessageId(message.getMessageId())

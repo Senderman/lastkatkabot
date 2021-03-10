@@ -16,14 +16,11 @@ import java.util.EnumSet;
 @Component
 public class GoodNeko implements CommandExecutor {
 
-    private final CommonAbsSender telegram;
     private final UserManager<BlacklistedUser> blackUsers;
 
     public GoodNeko(
-            CommonAbsSender telegram,
             @Qualifier("blacklistManager") UserManager<BlacklistedUser> blackUsers
     ) {
-        this.telegram = telegram;
         this.blackUsers = blackUsers;
     }
 
@@ -43,7 +40,7 @@ public class GoodNeko implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
+    public void execute(Message message, CommonAbsSender telegram) {
         if (!message.isReply() || message.isUserMessage()) {
             ApiRequests.answerMessage(message, "Позвышать до хороших кис нужно в группе и реплаем!")
                     .callAsync(telegram);
@@ -52,12 +49,12 @@ public class GoodNeko implements CommandExecutor {
         var user = message.getReplyToMessage().getFrom();
         if (user.getIsBot()) {
             ApiRequests.answerMessage(message, "Но это же просто бот, имитация человека! " +
-                    "Разве может бот написать симфонию, иметь статистику, участвовать в дуэлях, быть хорошей кисой?")
+                                               "Разве может бот написать симфонию, иметь статистику, участвовать в дуэлях, быть хорошей кисой?")
                     .callAsync(telegram);
             return;
         }
         var userLink = Html.getUserLink(user);
-        if (blackUsers.deleteUser(new BlacklistedUser(user.getId())))
+        if (blackUsers.deleteById(user.getId()))
             ApiRequests.answerMessage(message, "Теперь " + userLink + " -  хорошая киса!").callAsync(telegram);
         else
             ApiRequests.answerMessage(message, userLink + " уже хорошая киса!").callAsync(telegram);

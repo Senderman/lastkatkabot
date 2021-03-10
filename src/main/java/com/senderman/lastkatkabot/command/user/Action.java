@@ -9,10 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Component
 public class Action implements CommandExecutor {
 
-    private final CommonAbsSender telegram;
-
-    public Action(CommonAbsSender telegram) {
-        this.telegram = telegram;
+    public Action() {
     }
 
     @Override
@@ -26,7 +23,7 @@ public class Action implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
+    public void execute(Message message, CommonAbsSender telegram) {
         var chatId = message.getChatId();
         Methods.deleteMessage(chatId, message.getMessageId());
         if (message.getText().split("\\s+").length == 1) return;

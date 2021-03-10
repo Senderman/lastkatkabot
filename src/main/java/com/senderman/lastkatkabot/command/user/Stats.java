@@ -13,12 +13,10 @@ import org.telegram.telegrambots.meta.api.objects.User;
 @Component
 public class Stats implements CommandExecutor {
 
-    private final CommonAbsSender telegram;
     private final UserStatsService users;
 
 
-    public Stats(CommonAbsSender telegram, UserStatsService users) {
-        this.telegram = telegram;
+    public Stats(UserStatsService users) {
         this.users = users;
     }
 
@@ -33,7 +31,7 @@ public class Stats implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
+    public void execute(Message message, CommonAbsSender telegram) {
         long chatId = message.getChatId();
         User user = (message.isReply()) ? message.getReplyToMessage().getFrom() : message.getFrom();
 

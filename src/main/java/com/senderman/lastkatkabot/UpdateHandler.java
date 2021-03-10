@@ -17,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Lazy;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -54,14 +53,14 @@ public class UpdateHandler extends BotHandlerExtension {
             @Value("${login}") String login,
             @Value("${mainAdminId}") int mainAdminId,
             @Value("${notificationChannelId}") int notificationChannelId,
-            @Lazy HandlerExtractor<CommandExecutor> commandExtractor,
-            @Lazy HandlerExtractor<CallbackExecutor> callbacks,
+            HandlerExtractor<CommandExecutor> commandExtractor,
+            HandlerExtractor<CallbackExecutor> callbacks,
             UserManager<AdminUser> admins,
             UserManager<BlacklistedUser> blacklist,
             ChatUserService chatUsers,
             UserActivityTrackerService activityTrackerService,
             DatabaseCleanupService databaseCleanupService,
-            @Lazy BncTelegramHandler bnc,
+            BncTelegramHandler bnc,
             ImageService imageService,
             ExecutorService threadPool
     ) {
@@ -116,7 +115,7 @@ public class UpdateHandler extends BotHandlerExtension {
         if (update.hasCallbackQuery()) {
             var query = update.getCallbackQuery();
             callbacks.findHandler(query.getData().split("\\s+", 2)[0])
-                    .ifPresent(e -> e.execute(query));
+                    .ifPresent(e -> e.execute(query, this));
             return null;
         }
 
@@ -149,7 +148,7 @@ public class UpdateHandler extends BotHandlerExtension {
         var text = message.getText();
 
         if (text.matches("(\\d|[a-fA-F]){4,16}")) {
-            bnc.processBncAnswer(message);
+            bnc.processBncAnswer(message, this);
             return null;
         }
 
@@ -165,7 +164,7 @@ public class UpdateHandler extends BotHandlerExtension {
 
         commands.findHandler(command)
                 .filter(e -> checkAccess(e.getRoles(), message.getFrom().getId()))
-                .ifPresent(e -> e.execute(message));
+                .ifPresent(e -> e.execute(message, this));
 
         return null;
     }

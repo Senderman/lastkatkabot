@@ -14,42 +14,39 @@ import java.util.stream.Collectors;
 @Component
 public class BncTelegramHandler {
 
-    private final CommonAbsSender telegram;
     private final BncGamesManager gamesManager;
     private final UserStatsService usersRepo;
     private final Map<Long, List<Integer>> messagesToDelete;
 
     public BncTelegramHandler(
-            CommonAbsSender telegram,
             @Qualifier("bncDatabaseManager") BncGamesManager gamesManager,
             UserStatsService usersRepo
     ) {
-        this.telegram = telegram;
         this.gamesManager = gamesManager;
         this.usersRepo = usersRepo;
         this.messagesToDelete = new HashMap<>();
     }
 
-    public void processBncAnswer(Message message) {
+    public void processBncAnswer(Message message, CommonAbsSender telegram) {
         var chatId = message.getChatId();
         var number = message.getText().toUpperCase(Locale.ENGLISH);
         try {
             var result = gamesManager.check(chatId, number);
             addMessageToDelete(message);
             if (result.isWin()) {
-                processWin(message, result);
+                processWin(message, result, telegram);
             } else {
-                sendGameMessage(chatId, formatResult(result));
+                sendGameMessage(chatId, formatResult(result), telegram);
             }
         } catch (NumberAlreadyCheckedException e) {
             addMessageToDelete(message);
-            sendGameMessage(chatId, "Уже проверяли! " + formatResult(e.getResult()));
+            sendGameMessage(chatId, "Уже проверяли! " + formatResult(e.getResult()), telegram);
         } catch (RepeatingDigitsException e) {
             addMessageToDelete(message);
-            sendGameMessage(chatId, "Число не должно иметь повторяющихся цифр!");
+            sendGameMessage(chatId, "Число не должно иметь повторяющихся цифр!", telegram);
         } catch (GameOverException e) {
             addMessageToDelete(message);
-            processGameOver(message, e.getAnswer());
+            processGameOver(message, e.getAnswer(), telegram);
         } catch (InvalidLengthException | InvalidCharacterException | NoSuchElementException ignored) {
         }
     }
@@ -63,7 +60,7 @@ public class BncTelegramHandler {
     }
 
     // Send message that will be deleted after game end
-    public void sendGameMessage(long chatId, String text) {
+    public void sendGameMessage(long chatId, String text, CommonAbsSender telegram) {
         var sentMessage = Methods.sendMessage(chatId, text).call(telegram);
         if (sentMessage != null)
             addMessageToDelete(sentMessage);
@@ -76,7 +73,7 @@ public class BncTelegramHandler {
         list.add(messageId);
     }
 
-    private void deleteGameMessages(long chatId) {
+    private void deleteGameMessages(long chatId, CommonAbsSender telegram) {
         var messageIds = messagesToDelete.remove(chatId);
         if (messageIds == null) return;
 
@@ -84,7 +81,7 @@ public class BncTelegramHandler {
             Methods.deleteMessage(chatId, messageId).callAsync(telegram);
     }
 
-    public void processWin(Message message, BncResult result) {
+    public void processWin(Message message, BncResult result, CommonAbsSender telegram) {
         var chatId = message.getChatId();
         var userId = message.getFrom().getId();
         var userStats = usersRepo.findById(userId);
@@ -96,25 +93,25 @@ public class BncTelegramHandler {
 
         var username = Html.htmlSafe(message.getFrom().getFirstName());
         var text = username + " выиграл за " +
-                (BncGame.totalAttempts(gameState.getLength(), gameState.isHexadecimal()) - result.getAttempts()) +
-                " попыток!\n\n" + formatGameEndMessage(gameState);
-        deleteGameMessages(chatId);
+                   (BncGame.totalAttempts(gameState.getLength(), gameState.isHexadecimal()) - result.getAttempts()) +
+                   " попыток!\n\n" + formatGameEndMessage(gameState);
+        deleteGameMessages(chatId, telegram);
         Methods.sendMessage(chatId, text).callAsync(telegram);
     }
 
-    public void processGameOver(Message message, String answer) {
+    public void processGameOver(Message message, String answer, CommonAbsSender telegram) {
         var chatId = message.getChatId();
         var gameState = gamesManager.getGameState(chatId);
         gamesManager.deleteGame(chatId);
-        deleteGameMessages(chatId);
+        deleteGameMessages(chatId, telegram);
         var text = "Вы проиграли! Ответ: " + answer + "\n\n" + formatGameEndMessage(gameState);
         Methods.sendMessage(chatId, text).callAsync(telegram);
     }
 
     private String formatGameEndMessage(BncGameState state) {
         return formatHistory(state.getHistory()) +
-                "\n\nПотрачено времени: " +
-                formatTimeSpent((System.currentTimeMillis() - state.getStartTime()) / 1000);
+               "\n\nПотрачено времени: " +
+               formatTimeSpent((System.currentTimeMillis() - state.getStartTime()) / 1000);
     }
 
     private String formatHistory(List<BncResult> history) {

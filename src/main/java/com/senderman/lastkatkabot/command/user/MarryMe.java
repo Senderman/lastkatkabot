@@ -19,12 +19,10 @@ import java.util.Objects;
 @Component
 public class MarryMe implements CommandExecutor {
 
-    private final CommonAbsSender telegram;
     private final UserStatsService users;
     private final MarriageRequestService marriages;
 
-    public MarryMe(CommonAbsSender telegram, UserStatsService users, MarriageRequestService marriages) {
-        this.telegram = telegram;
+    public MarryMe(UserStatsService users, MarriageRequestService marriages) {
         this.users = users;
         this.marriages = marriages;
     }
@@ -40,7 +38,7 @@ public class MarryMe implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
+    public void execute(Message message, CommonAbsSender telegram) {
         var chatId = message.getChatId();
         if (message.isUserMessage() || !message.isReply()) {
             ApiRequests.answerMessage(message, "Для использования команды необходимо ответить ей на чье-нибудь сообщение!")

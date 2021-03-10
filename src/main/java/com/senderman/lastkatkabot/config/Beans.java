@@ -45,6 +45,12 @@ public class Beans {
 
     @Bean
     public UserActivityTrackerService activityTrackerService() {
+        return cachingUserActivityTrackerService();
+    }
+
+    // TODO implement CachingUserActivityTrackerService as CommandExecutor
+    @Bean
+    public CachingUserActivityTrackerService cachingUserActivityTrackerService() {
         return CachingUserActivityTrackerService.newInstance(chatUserService, threadPool());
     }
 

@@ -16,17 +16,14 @@ import java.util.EnumSet;
 @Component
 public class DeleteFeedback implements CommandExecutor {
 
-    private final CommonAbsSender telegram;
     private final FeedbackService feedbackRepo;
     private final long feedbackChannelId;
 
 
     public DeleteFeedback(
-            CommonAbsSender telegram,
             FeedbackService feedbackRepo,
             @Value("${feedbackChannelId}") long feedbackChannelId
     ) {
-        this.telegram = telegram;
         this.feedbackRepo = feedbackRepo;
         this.feedbackChannelId = feedbackChannelId;
     }
@@ -47,7 +44,7 @@ public class DeleteFeedback implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
+    public void execute(Message message, CommonAbsSender telegram) {
         var args = message.getText().split("\\s+", 2);
         if (args.length < 2) {
             ApiRequests.answerMessage(message, "Неверное количество аргументов!").callAsync(telegram);

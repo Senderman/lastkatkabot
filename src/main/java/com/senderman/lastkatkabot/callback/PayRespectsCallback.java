@@ -10,10 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 @Component
 public class PayRespectsCallback implements CallbackExecutor {
 
-    private final CommonAbsSender telegram;
-
-    public PayRespectsCallback(CommonAbsSender telegram) {
-        this.telegram = telegram;
+    public PayRespectsCallback() {
     }
 
     @Override
@@ -22,7 +19,7 @@ public class PayRespectsCallback implements CallbackExecutor {
     }
 
     @Override
-    public void execute(CallbackQuery query) {
+    public void execute(CallbackQuery query, CommonAbsSender telegram) {
 
         if (query.getMessage().getText().contains(query.getFrom().getFirstName())) {
             ApiRequests.answerCallbackQuery(

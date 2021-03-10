@@ -16,11 +16,9 @@ import java.util.function.Function;
 @Component
 public class BncTop implements CommandExecutor {
 
-    private final CommonAbsSender telegram;
     private final UserStatsService users;
 
-    public BncTop(CommonAbsSender telegram, UserStatsService users) {
-        this.telegram = telegram;
+    public BncTop(UserStatsService users) {
         this.users = users;
     }
 
@@ -35,7 +33,7 @@ public class BncTop implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
+    public void execute(Message message, CommonAbsSender telegram) {
         var chatId = message.getChatId();
 
         int counter = 0;
@@ -44,14 +42,14 @@ public class BncTop implements CommandExecutor {
         for (var user : topUsers) {
             top.append(++counter)
                     .append(": ")
-                    .append(formatUser(user.getUserId(), user.getBncScore(), message.isUserMessage()))
+                    .append(formatUser(user.getUserId(), user.getBncScore(), message.isUserMessage(), telegram))
                     .append("\n");
         }
 
         Methods.sendMessage(chatId, top.toString()).callAsync(telegram);
     }
 
-    private String formatUser(int userId, int score, boolean printLink) {
+    private String formatUser(int userId, int score, boolean printLink, CommonAbsSender telegram) {
         Function<User, String> userPrinter = printLink ? Html::getUserLink : u -> Html.htmlSafe(u.getFirstName());
 
         String user = Optional.ofNullable(Methods.getChatMember(userId, userId).call(telegram))

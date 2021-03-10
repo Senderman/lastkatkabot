@@ -20,12 +20,10 @@ import java.util.stream.StreamSupport;
 @Component
 public class BroadcastMessage implements CommandExecutor {
 
-    private final CommonAbsSender telegram;
     private final ChatUserService chatUsers;
     private final ExecutorService threadPool;
 
-    public BroadcastMessage(CommonAbsSender telegram, ChatUserService chatUsers, ExecutorService threadPool) {
-        this.telegram = telegram;
+    public BroadcastMessage(ChatUserService chatUsers, ExecutorService threadPool) {
         this.chatUsers = chatUsers;
         this.threadPool = threadPool;
     }
@@ -46,14 +44,14 @@ public class BroadcastMessage implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
+    public void execute(Message message, CommonAbsSender telegram) {
         var chatId = message.getChatId();
         if (message.getText().strip().equals(getTrigger())) {
             ApiRequests.answerMessage(message, "Неверное количество аргументов!").call(telegram);
             return;
         }
         var messageToBroadcast = "\uD83D\uDD14 <b>Сообщение от разработчиков</b>\n\n" +
-                message.getText().split("\\s+", 2)[1];
+                                 message.getText().split("\\s+", 2)[1];
         Methods.sendMessage(chatId, "Начало рассылки сообщений...").call(telegram);
         threadPool.execute(() -> {
             int counter = 0;

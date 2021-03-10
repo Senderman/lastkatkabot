@@ -15,11 +15,9 @@ import java.util.stream.Collectors;
 public class BncStart implements CommandExecutor {
 
     private final BncTelegramHandler gamesHandler;
-    private final CommonAbsSender telegram;
 
-    public BncStart(BncTelegramHandler gamesHandler, CommonAbsSender telegram) {
+    public BncStart(BncTelegramHandler gamesHandler) {
         this.gamesHandler = gamesHandler;
-        this.telegram = telegram;
     }
 
     @Override
@@ -35,7 +33,7 @@ public class BncStart implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
+    public void execute(Message message, CommonAbsSender telegram) {
         var chatId = message.getChatId();
 
         int length;
@@ -47,7 +45,7 @@ public class BncStart implements CommandExecutor {
             length = parseLength(isHexadecimal, args);
             int maxLength = isHexadecimal ? 16 : 10;
             if (length < 4 || length > maxLength) {
-                wrongLength(chatId, maxLength);
+                wrongLength(chatId, maxLength, telegram);
                 return;
             }
         } catch (NumberFormatException e) {
@@ -59,10 +57,10 @@ public class BncStart implements CommandExecutor {
         // if there's game in this chat already, send state
         try {
             var gameState = gamesHandler.getGameState(chatId);
-            sendGameState(chatId, gameState);
+            sendGameState(chatId, gameState, telegram);
         } catch (NoSuchElementException e) {
             gamesHandler.createGameIfNotExists(chatId, length, isHexadecimal);
-            gamesHandler.sendGameMessage(chatId, startText(length));
+            gamesHandler.sendGameMessage(chatId, startText(length), telegram);
         }
 
     }
@@ -78,7 +76,7 @@ public class BncStart implements CommandExecutor {
         }
     }
 
-    private void sendGameState(long chatId, BncGameState state) {
+    private void sendGameState(long chatId, BncGameState state, CommonAbsSender telegram) {
         var historyText = state.getHistory().stream()
                 .map(e -> String.format("%s: %dБ %dК", e.getNumber(), e.getBulls(), e.getCows()))
                 .collect(Collectors.joining("\n"));
@@ -94,7 +92,7 @@ public class BncStart implements CommandExecutor {
                 state.getAttemptsLeft(),
                 historyText);
 
-        gamesHandler.sendGameMessage(chatId, textToSend);
+        gamesHandler.sendGameMessage(chatId, textToSend, telegram);
     }
 
     private String startText(int length) {
@@ -105,7 +103,7 @@ public class BncStart implements CommandExecutor {
                 "Длина числа - " + length;
     }
 
-    private void wrongLength(long chatId, int maxLength) {
+    private void wrongLength(long chatId, int maxLength, CommonAbsSender telegram) {
         Methods.sendMessage(chatId, "Неверная длина числа. Допустимое значение от 4 до " + maxLength + "!")
                 .callAsync(telegram);
     }

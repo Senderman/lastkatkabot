@@ -14,16 +14,13 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Component
 public class SendFeedback implements CommandExecutor {
 
-    private final CommonAbsSender telegram;
     private final FeedbackService feedbackRepo;
     private final long feedbackChannelId;
 
     public SendFeedback(
-            CommonAbsSender telegram,
             FeedbackService feedbackRepo,
             @Value("${feedbackChannelId}") long feedbackChannelId
     ) {
-        this.telegram = telegram;
         this.feedbackRepo = feedbackRepo;
         this.feedbackChannelId = feedbackChannelId;
     }
@@ -39,7 +36,7 @@ public class SendFeedback implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message) {
+    public void execute(Message message, CommonAbsSender telegram) {
         var chatId = message.getChatId();
         if (message.getText().strip().equals(getTrigger())) {
             ApiRequests.answerMessage(message, "Неверное кол-во аргументов!").callAsync(telegram);
