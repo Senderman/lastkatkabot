@@ -133,8 +133,8 @@ public class UpdateHandler extends BotHandlerExtension {
             }
         }
 
-        // track users activity in chats
-        if (!message.isUserMessage()) {
+        // track users activity in chats (777000 is userId of attached channel messages)
+        if (!message.isUserMessage() && !message.getFrom().getId().equals(777000)) {
             threadPool.execute(() -> updateUserLastMessageDate(message));
         }
 
