@@ -16,15 +16,15 @@ public interface ChatUserRepository extends CrudRepository<ChatUser, String> {
     })
     List<ChatUser> sampleOfChat(long chatId, int amount);
 
-    List<ChatUser> findByUserId(int userId);
+    List<ChatUser> findByUserId(long userId);
 
     void deleteByChatIdAndLastMessageDateLessThan(long chatId, int lastMessageDate);
 
     long deleteByLastMessageDateLessThan(int lastMessageDate);
 
-    void deleteByChatIdAndUserId(long chatId, int userId);
+    void deleteByChatIdAndUserId(long chatId, long userId);
 
-    boolean existsByChatIdAndUserId(long chatId, int userId);
+    boolean existsByChatIdAndUserId(long chatId, long userId);
 
     long countByChatId(long chatId);
 

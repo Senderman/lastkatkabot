@@ -14,12 +14,12 @@ import java.util.stream.Collectors;
  * Default HandlerExtractor implementation that can be used to get HandlerExecutor by command, using spring context
  */
 @Component
-public class ContextHandlerExtractor<T extends TriggerHandler<?>> implements HandlerExtractor<T> {
+public class ApplicationContextHandlerExtractor<T extends TriggerHandler<?>> implements HandlerExtractor<T> {
 
     private final Map<String, T> executors;
 
     @Autowired
-    public ContextHandlerExtractor(Set<T> executors) {
+    public ApplicationContextHandlerExtractor(Set<T> executors) {
         this.executors = executors.stream().collect(Collectors.toMap(T::getTrigger, Function.identity()));
     }
 

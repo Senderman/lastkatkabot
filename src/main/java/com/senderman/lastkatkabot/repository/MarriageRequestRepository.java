@@ -11,6 +11,6 @@ public interface MarriageRequestRepository extends CrudRepository<MarriageReques
 
     long deleteByRequestDateLessThan(int requestDate);
 
-    void deleteByProposerIdOrProposeeId(int proposerId, int proposeeId);
+    void deleteByProposerIdOrProposeeId(long proposerId, long proposeeId);
 
 }

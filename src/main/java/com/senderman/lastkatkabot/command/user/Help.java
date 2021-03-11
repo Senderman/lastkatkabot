@@ -67,12 +67,12 @@ public class Help implements CommandExecutor {
 
     }
 
-    private void sendHelpToPm(long chatId, int userId, int chatMessageId, CommonAbsSender telegram) {
+    private void sendHelpToPm(long chatId, long userId, int chatMessageId, CommonAbsSender telegram) {
         try {
             var sentMessage = telegram.execute(new SendMessage(String.valueOf(userId), "Подождите..."));
             telegram.execute(EditMessageText
                     .builder()
-                    .chatId(Integer.toString(userId))
+                    .chatId(Long.toString(userId))
                     .text(prepareHelpText(userId))
                     .messageId(sentMessage.getMessageId())
                     .parseMode(ParseMode.HTML)
@@ -89,7 +89,7 @@ public class Help implements CommandExecutor {
         }
     }
 
-    private String prepareHelpText(int userId) {
+    private String prepareHelpText(long userId) {
         var userHelp = new StringBuilder("<b>Основные команды:</b>\n\n");
         var adminHelp = new StringBuilder("<b>Команды админов:</b>\n\n");
         var mainAdminHelp = new StringBuilder("<b>Команды главного админа:</b>\n\n");

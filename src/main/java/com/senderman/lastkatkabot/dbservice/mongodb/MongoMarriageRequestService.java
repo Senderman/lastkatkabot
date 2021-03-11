@@ -32,7 +32,7 @@ public class MongoMarriageRequestService implements MarriageRequestService {
     }
 
     @Override
-    public void deleteByProposerIdOrProposeeId(int proposerId, int proposeeId) {
+    public void deleteByProposerIdOrProposeeId(long proposerId, long proposeeId) {
         repository.deleteByProposerIdOrProposeeId(proposerId, proposeeId);
     }
 

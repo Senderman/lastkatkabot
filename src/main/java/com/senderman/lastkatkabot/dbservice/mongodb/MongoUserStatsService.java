@@ -17,7 +17,7 @@ public class MongoUserStatsService implements UserStatsService {
     }
 
     @Override
-    public Userstats findById(int userId) {
+    public Userstats findById(long userId) {
         return repository.findById(userId).orElseGet(() -> new Userstats(userId));
     }
 

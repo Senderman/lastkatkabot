@@ -6,22 +6,22 @@ import org.springframework.data.annotation.TypeAlias;
 import java.util.Objects;
 
 @TypeAlias("blacklist")
-public class BlacklistedUser implements IdAndName<Integer> {
+public class BlacklistedUser implements IdAndName<Long> {
 
     @Id
-    private int userId;
+    private long userId;
     private String name;
 
     public BlacklistedUser() {
 
     }
 
-    public BlacklistedUser(int userId, String name) {
+    public BlacklistedUser(long userId, String name) {
         this.userId = userId;
         this.name = name;
     }
 
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
@@ -47,7 +47,7 @@ public class BlacklistedUser implements IdAndName<Integer> {
     }
 
     @Override
-    public Integer getId() {
+    public Long getId() {
         return getUserId();
     }
 

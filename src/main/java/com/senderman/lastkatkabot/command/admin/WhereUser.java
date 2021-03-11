@@ -42,10 +42,10 @@ public class WhereUser implements CommandExecutor {
 
     @Override
     public void execute(Message message, CommonAbsSender telegram) {
-        int userId;
+        long userId;
         try {
             var args = message.getText().split("\\s+");
-            userId = args.length > 1 ? Integer.parseInt(args[1]) : message.getReplyToMessage().getFrom().getId();
+            userId = args.length > 1 ? Long.parseLong(args[1]) : message.getReplyToMessage().getFrom().getId();
         } catch (NumberFormatException e) {
             ApiRequests.answerMessage(message, "Id юзера - это число!").callAsync(telegram);
             return;

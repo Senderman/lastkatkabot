@@ -10,30 +10,30 @@ import java.util.Objects;
 public class Userstats {
 
     @Id
-    private int userId;
+    private long userId;
     private int duelsTotal;
     private int duelWins;
     private int bncScore;
     @Nullable
     private String cityLink;
     @Nullable
-    private Integer loverId;
+    private Long loverId;
 
     public Userstats() {
     }
 
-    public Userstats(int userId) {
+    public Userstats(long userId) {
         this.userId = userId;
         this.duelsTotal = 0;
         this.duelWins = 0;
         this.bncScore = 0;
     }
 
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 
@@ -69,11 +69,11 @@ public class Userstats {
         this.cityLink = cityLink;
     }
 
-    public @Nullable Integer getLoverId() {
+    public @Nullable Long getLoverId() {
         return loverId;
     }
 
-    public void setLoverId(@Nullable Integer loverId) {
+    public void setLoverId(@Nullable Long loverId) {
         this.loverId = loverId;
     }
 

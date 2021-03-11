@@ -134,7 +134,7 @@ public class UpdateHandler extends BotHandlerExtension {
         }
 
         // track users activity in chats (777000 is userId of attached channel messages)
-        if (!message.isUserMessage() && !message.getFrom().getId().equals(777000)) {
+        if (!message.isUserMessage() && !message.getFrom().getId().equals(777000L)) {
             threadPool.execute(() -> updateUserLastMessageDate(message));
         }
 
@@ -260,7 +260,7 @@ public class UpdateHandler extends BotHandlerExtension {
     }
 
 
-    private boolean checkAccess(EnumSet<Role> roles, int userId) {
+    private boolean checkAccess(EnumSet<Role> roles, long userId) {
         // allow all commands for the main admin
         if (userId == mainAdminId) return true;
         // do not allow blacklisted users

@@ -178,7 +178,7 @@ public class Pair implements CommandExecutor {
         }
     }
 
-    private User getUserFromChatMember(long chatId, int userId, CommonAbsSender telegram) {
+    private User getUserFromChatMember(long chatId, long userId, CommonAbsSender telegram) {
         var member = Methods.getChatMember(chatId, userId).call(telegram);
         if (member == null || member.getStatus().equals("left") || member.getStatus().equals("kicked"))
             throw new NoChatMemberException(userId, chatId);
@@ -238,16 +238,16 @@ public class Pair implements CommandExecutor {
 
     private static class NoChatMemberException extends RuntimeException {
 
-        private final int userId;
+        private final long userId;
         private final long chatId;
 
-        public NoChatMemberException(int userId, long chatId) {
+        public NoChatMemberException(long userId, long chatId) {
             super("No userId %d in chatId %d".formatted(userId, chatId));
             this.userId = userId;
             this.chatId = chatId;
         }
 
-        public int getUserId() {
+        public long getUserId() {
             return userId;
         }
 

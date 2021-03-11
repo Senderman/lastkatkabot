@@ -11,7 +11,7 @@ public class ChatUser {
     @Id
     private String id;
 
-    private int userId;
+    private long userId;
     private long chatId;
     private int lastMessageDate;
 
@@ -19,18 +19,18 @@ public class ChatUser {
 
     }
 
-    public ChatUser(long chatId, int userId) {
+    public ChatUser(long chatId, long userId) {
         this.id = generateId(chatId, userId);
         this.chatId = chatId;
         this.userId = userId;
     }
 
-    public int getUserId() {
-        return userId;
+    public static String generateId(long chatId, long userId) {
+        return chatId + " " + userId;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public long getUserId() {
+        return userId;
     }
 
     public long getChatId() {
@@ -65,12 +65,12 @@ public class ChatUser {
     @Override
     public String toString() {
         return "ChatUser{" +
-                "userId=" + userId +
-                ", chatId=" + chatId +
-                '}';
+               "userId=" + userId +
+               ", chatId=" + chatId +
+               '}';
     }
 
-    public static String generateId(long chatId, int userId) {
-        return chatId + " " + userId;
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 }

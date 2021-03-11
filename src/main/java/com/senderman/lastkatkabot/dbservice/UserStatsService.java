@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface UserStatsService {
 
-    Userstats findById(int userId);
+    Userstats findById(long userId);
 
     Userstats save(Userstats userstats);
 

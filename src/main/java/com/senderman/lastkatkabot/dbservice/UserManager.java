@@ -7,12 +7,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public abstract class UserManager<TUserEntity extends IdAndName<Integer>> {
+public abstract class UserManager<TUserEntity extends IdAndName<Long>> {
 
-    private final CrudRepository<TUserEntity, Integer> repository;
-    private final Set<Integer> userIds;
+    private final CrudRepository<TUserEntity, Long> repository;
+    private final Set<Long> userIds;
 
-    public UserManager(CrudRepository<TUserEntity, Integer> repository) {
+    public UserManager(CrudRepository<TUserEntity, Long> repository) {
         this.repository = repository;
         this.userIds = StreamSupport.stream(repository.findAll().spliterator(), false)
                 .map(IdAndName::getId)
@@ -23,7 +23,7 @@ public abstract class UserManager<TUserEntity extends IdAndName<Integer>> {
         return repository.findAll();
     }
 
-    public boolean hasUser(int id) {
+    public boolean hasUser(long id) {
         return userIds.contains(id);
     }
 
@@ -34,7 +34,7 @@ public abstract class UserManager<TUserEntity extends IdAndName<Integer>> {
         return true;
     }
 
-    public boolean deleteById(int id) {
+    public boolean deleteById(long id) {
         if (!userIds.remove(id)) return false;
         repository.deleteById(id);
         return true;

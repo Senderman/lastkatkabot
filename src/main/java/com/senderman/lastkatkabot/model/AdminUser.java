@@ -6,22 +6,22 @@ import org.springframework.data.annotation.TypeAlias;
 import java.util.Objects;
 
 @TypeAlias("admin")
-public class AdminUser implements IdAndName<Integer> {
+public class AdminUser implements IdAndName<Long> {
 
     @Id
-    private int userId;
+    private long userId;
     private String name;
 
     public AdminUser() {
 
     }
 
-    public AdminUser(int userId, String name) {
+    public AdminUser(long userId, String name) {
         this.userId = userId;
         this.name = name;
     }
 
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
@@ -47,7 +47,7 @@ public class AdminUser implements IdAndName<Integer> {
     }
 
     @Override
-    public Integer getId() {
+    public Long getId() {
         return getUserId();
     }
 

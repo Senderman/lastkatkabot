@@ -12,7 +12,7 @@ public interface MarriageRequestService {
 
     void deleteById(int id);
 
-    void deleteByProposerIdOrProposeeId(int proposerId, int proposeeId);
+    void deleteByProposerIdOrProposeeId(long proposerId, long proposeeId);
 
     // id could be changed, so use the returned object
     MarriageRequest insert(MarriageRequest marriageRequest);

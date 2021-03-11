@@ -10,7 +10,7 @@ public class Feedback {
     @Id
     private int id;
     private String message;
-    private int userId;
+    private long userId;
     private String userName;
     private long chatId;
     private int messageId;
@@ -19,7 +19,7 @@ public class Feedback {
     public Feedback() {
     }
 
-    public Feedback(String message, int userId, String userName, long chatId, int messageId) {
+    public Feedback(String message, long userId, String userName, long chatId, int messageId) {
         this.message = message;
         this.userId = userId;
         this.userName = userName;
@@ -44,11 +44,11 @@ public class Feedback {
         this.message = message;
     }
 
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 

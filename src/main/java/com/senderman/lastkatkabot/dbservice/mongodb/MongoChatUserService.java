@@ -33,7 +33,7 @@ public class MongoChatUserService implements ChatUserService {
     }
 
     @Override
-    public void deleteByChatIdAndUserId(long chatId, int userId) {
+    public void deleteByChatIdAndUserId(long chatId, long userId) {
         repository.deleteByChatIdAndUserId(chatId, userId);
     }
 
@@ -43,7 +43,7 @@ public class MongoChatUserService implements ChatUserService {
     }
 
     @Override
-    public List<ChatUser> findByUserId(int userId) {
+    public List<ChatUser> findByUserId(long userId) {
         return repository.findByUserId(userId);
     }
 

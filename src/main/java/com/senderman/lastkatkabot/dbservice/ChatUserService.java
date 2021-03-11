@@ -11,11 +11,11 @@ public interface ChatUserService {
 
     long countByChatId(long chatId);
 
-    void deleteByChatIdAndUserId(long chatId, int userId);
+    void deleteByChatIdAndUserId(long chatId, long userId);
 
     List<ChatUser> getTwoOrLessUsersOfChat(long chatId);
 
-    List<ChatUser> findByUserId(int userId);
+    List<ChatUser> findByUserId(long userId);
 
     void deleteInactiveChatUsers(long chatId);
 

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface UserStatsRepository extends CrudRepository<Userstats, Integer> {
+public interface UserStatsRepository extends CrudRepository<Userstats, Long> {
 
     Optional<Userstats> findByLoverId(int loverId);
 

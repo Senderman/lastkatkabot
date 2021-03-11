@@ -10,9 +10,9 @@ public class MarriageRequest {
 
     @Id
     private int id;
-    private int proposerId;
+    private long proposerId;
     private String proposerName;
-    private int proposeeId;
+    private long proposeeId;
     private String proposeeName;
     private int requestDate;
 
@@ -28,11 +28,11 @@ public class MarriageRequest {
         this.id = id;
     }
 
-    public int getProposerId() {
+    public long getProposerId() {
         return proposerId;
     }
 
-    public void setProposerId(int proposerId) {
+    public void setProposerId(long proposerId) {
         this.proposerId = proposerId;
     }
 
@@ -44,11 +44,11 @@ public class MarriageRequest {
         this.proposerName = proposerName;
     }
 
-    public int getProposeeId() {
+    public long getProposeeId() {
         return proposeeId;
     }
 
-    public void setProposeeId(int proposeeId) {
+    public void setProposeeId(long proposeeId) {
         this.proposeeId = proposeeId;
     }
 

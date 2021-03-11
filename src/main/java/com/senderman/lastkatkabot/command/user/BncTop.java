@@ -49,7 +49,7 @@ public class BncTop implements CommandExecutor {
         Methods.sendMessage(chatId, top.toString()).callAsync(telegram);
     }
 
-    private String formatUser(int userId, int score, boolean printLink, CommonAbsSender telegram) {
+    private String formatUser(long userId, int score, boolean printLink, CommonAbsSender telegram) {
         Function<User, String> userPrinter = printLink ? Html::getUserLink : u -> Html.htmlSafe(u.getFirstName());
 
         String user = Optional.ofNullable(Methods.getChatMember(userId, userId).call(telegram))
