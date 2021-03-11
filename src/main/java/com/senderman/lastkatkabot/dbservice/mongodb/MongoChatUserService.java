@@ -43,6 +43,11 @@ public class MongoChatUserService implements ChatUserService {
     }
 
     @Override
+    public List<ChatUser> findByUserId(int userId) {
+        return repository.findByUserId(userId);
+    }
+
+    @Override
     public void deleteInactiveChatUsers(long chatId) {
         repository.deleteByChatIdAndLastMessageDateLessThan(chatId, DatabaseCleanupService.inactivePeriod());
     }

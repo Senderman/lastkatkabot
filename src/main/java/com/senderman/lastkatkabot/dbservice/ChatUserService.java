@@ -15,6 +15,8 @@ public interface ChatUserService {
 
     List<ChatUser> getTwoOrLessUsersOfChat(long chatId);
 
+    List<ChatUser> findByUserId(int userId);
+
     void deleteInactiveChatUsers(long chatId);
 
     void delete(ChatUser chatUser);

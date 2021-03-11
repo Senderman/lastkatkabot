@@ -6,7 +6,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface ChatUserRepository extends CrudRepository<ChatUser, String> {
@@ -17,6 +16,8 @@ public interface ChatUserRepository extends CrudRepository<ChatUser, String> {
     })
     List<ChatUser> sampleOfChat(long chatId, int amount);
 
+    List<ChatUser> findByUserId(int userId);
+
     void deleteByChatIdAndLastMessageDateLessThan(long chatId, int lastMessageDate);
 
     long deleteByLastMessageDateLessThan(int lastMessageDate);
@@ -26,7 +27,5 @@ public interface ChatUserRepository extends CrudRepository<ChatUser, String> {
     boolean existsByChatIdAndUserId(long chatId, int userId);
 
     long countByChatId(long chatId);
-
-    Optional<ChatUser> findByChatIdAndUserId(long chatId, int userId);
 
 }
