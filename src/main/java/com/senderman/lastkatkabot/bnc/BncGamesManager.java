@@ -1,5 +1,6 @@
 package com.senderman.lastkatkabot.bnc;
 
+import com.senderman.lastkatkabot.bnc.exception.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.NoSuchElementException;

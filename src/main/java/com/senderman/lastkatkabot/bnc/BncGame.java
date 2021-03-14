@@ -1,5 +1,7 @@
 package com.senderman.lastkatkabot.bnc;
 
+import com.senderman.lastkatkabot.bnc.exception.*;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

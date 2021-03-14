@@ -1,4 +1,6 @@
-package com.senderman.lastkatkabot.bnc;
+package com.senderman.lastkatkabot.bnc.exception;
+
+import com.senderman.lastkatkabot.bnc.BncResult;
 
 public class GameOverException extends RuntimeException {
 

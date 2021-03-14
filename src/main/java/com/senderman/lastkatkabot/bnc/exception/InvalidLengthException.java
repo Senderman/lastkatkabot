@@ -1,4 +1,4 @@
-package com.senderman.lastkatkabot.bnc;
+package com.senderman.lastkatkabot.bnc.exception;
 
 public class InvalidLengthException extends RuntimeException {
 
