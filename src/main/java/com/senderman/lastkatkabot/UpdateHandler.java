@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -89,6 +90,12 @@ public class UpdateHandler extends BotHandlerExtension {
             var sm = (SendMessage) m;
             sm.enableHtml(true);
             sm.disableWebPagePreview();
+        });
+
+        addMethodPreprocessor(EditMessageText.PATH, m -> {
+            var em = (EditMessageText) m;
+            em.enableHtml(true);
+            em.disableWebPagePreview();
         });
 
         Methods.sendMessage(notificationChannelId, "Инициализация и очистка БД...").callAsync(this);

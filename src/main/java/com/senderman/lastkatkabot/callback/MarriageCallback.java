@@ -4,6 +4,7 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
 import com.senderman.lastkatkabot.dbservice.MarriageRequestService;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
+import com.senderman.lastkatkabot.model.MarriageRequest;
 import com.senderman.lastkatkabot.util.Html;
 import org.springframework.stereotype.Component;
 
@@ -27,25 +28,31 @@ public class MarriageCallback implements CallbackExecutor {
 
     @Override
     public void execute(CallbackQueryContext ctx) {
-        if (ctx.data().endsWith("accept"))
-            acceptMarriage(ctx);
-        else
-            declineMarriage(ctx);
-    }
+        var requestId = Integer.parseInt(ctx.data().split("\\s+")[1]);
+        var requestOptional = marriages.findById(requestId);
 
-    private void acceptMarriage(CallbackQueryContext ctx) {
-        var requestOptional = marriages.findById(Integer.parseInt(ctx.data().split("\\s+")[1]));
         if (requestOptional.isEmpty()) {
             ctx.answerAsAlert("Вашу заявку потеряли в ЗАГСе!").callAsync(ctx.sender);
             ctx.editMessage("К сожалению, в ЗАГСе потеряли вашу запись. Попробуйте еще раз").callAsync(ctx.sender);
             return;
         }
+
         var r = requestOptional.get();
         // query user id should match with proposee id
         if (!ctx.user().getId().equals(r.getProposeeId())) {
             ctx.answerAsAlert("Это не вам!").callAsync(ctx.sender);
             return;
         }
+
+
+        if (ctx.data().endsWith("accept"))
+            acceptMarriage(ctx, r);
+        else
+            declineMarriage(ctx, r);
+    }
+
+    private void acceptMarriage(CallbackQueryContext ctx, MarriageRequest r) {
+
         var proposeeStats = userStats.findById(r.getProposeeId());
         // proposee should not have lover
         if (proposeeStats.hasLover()) {
@@ -82,9 +89,8 @@ public class MarriageCallback implements CallbackExecutor {
                 .callAsync(ctx.sender);
     }
 
-    private void declineMarriage(CallbackQueryContext ctx) {
-        var requestId = Integer.parseInt(ctx.data().split("\\s+")[1]);
-        marriages.deleteById(requestId);
+    private void declineMarriage(CallbackQueryContext ctx, MarriageRequest r) {
+        marriages.delete(r);
         ctx.answer("Вы отказались от брака!").callAsync(ctx.sender);
         ctx.editMessage("Пользователь " + Html.getUserLink(ctx.user()) + " отказался от брака!").callAsync(ctx.sender);
     }
