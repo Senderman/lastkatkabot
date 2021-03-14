@@ -117,12 +117,12 @@ public class Weather implements CommandExecutor {
         @Override
         public String toString() {
             return "<b>" + title + "</b>\n\n" +
-                   feelings + "\n" +
-                   "\uD83C\uDF21: " + temperature + " °C\n" +
-                   "\uD83E\uDD14: Ощущается как " + feelsLike + "\n" +
-                   "\uD83D\uDCA8: " + wind + "\n" +
-                   "\uD83D\uDCA7: " + humidity + "\n" +
-                   "\uD83E\uDDED: " + pressure;
+                    feelings + "\n" +
+                    "\uD83C\uDF21: " + temperature + " °C\n" +
+                    "\uD83E\uDD14: Ощущается как " + feelsLike + "°C\n" +
+                    "\uD83D\uDCA8: " + wind + "\n" +
+                    "\uD83D\uDCA7: " + humidity + "\n" +
+                    "\uD83E\uDDED: " + pressure;
         }
     }
 }
