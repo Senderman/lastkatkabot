@@ -31,7 +31,6 @@ public class BncStart implements CommandExecutor {
 
     @Override
     public void execute(MessageContext ctx) {
-
         // if there's game in this chat already, send state
         if (gamesHandler.hasGame(ctx.chatId())) {
             sendGameState(ctx, gamesHandler.getGameState(ctx.chatId()));
