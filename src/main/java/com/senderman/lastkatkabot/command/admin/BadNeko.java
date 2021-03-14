@@ -1,7 +1,6 @@
 package com.senderman.lastkatkabot.command.admin;
 
-import com.annimon.tgbotsmodule.services.CommonAbsSender;
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.UserManager;
@@ -9,7 +8,6 @@ import com.senderman.lastkatkabot.model.BlacklistedUser;
 import com.senderman.lastkatkabot.util.Html;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.EnumSet;
 
@@ -41,25 +39,26 @@ public class BadNeko implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message, CommonAbsSender telegram) {
+    public void execute(MessageContext ctx) {
+        var message = ctx.message();
         if (!message.isReply() || message.isUserMessage()) {
-            ApiRequests.answerMessage(message, "Опускать в плохие кисы нужно в группе и реплаем!")
-                    .callAsync(telegram);
+            ctx.replyToMessage("Опускать в плохие кисы нужно в группе и реплаем!").callAsync(ctx.sender);
             return;
         }
         var user = message.getReplyToMessage().getFrom();
         var userLink = Html.getUserLink(user);
         if (user.getIsBot()) {
-            ApiRequests.answerMessage(message, "Но это же просто бот, имитация человека! " +
-                                               "Разве может бот написать симфонию, иметь статистику, участвовать в дуэлях, быть плохой кисой?")
-                    .callAsync(telegram);
+            ctx.replyToMessage(
+                    "Но это же просто бот, имитация человека! " +
+                    "Разве может бот написать симфонию, иметь статистику, участвовать в дуэлях, быть плохой кисой?")
+                    .callAsync(ctx.sender);
             return;
         }
 
         if (blackUsers.addUser(new BlacklistedUser(user.getId(), user.getFirstName())))
-            ApiRequests.answerMessage(message, "Теперь " + userLink + " -  плохая киса!").callAsync(telegram);
+            ctx.replyToMessage("Теперь " + userLink + " -  плохая киса!").callAsync(ctx.sender);
         else
-            ApiRequests.answerMessage(message, userLink + " уже плохая киса!").callAsync(telegram);
+            ctx.replyToMessage(userLink + " уже плохая киса!").callAsync(ctx.sender);
 
     }
 }

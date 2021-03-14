@@ -1,11 +1,8 @@
 package com.senderman.lastkatkabot.command.user;
 
-import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.services.CommonAbsSender;
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 @Component
 public class GetInfo implements CommandExecutor {
@@ -24,12 +21,10 @@ public class GetInfo implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message, CommonAbsSender telegram) {
-        var chatId = message.getChatId();
-
+    public void execute(MessageContext ctx) {
+        var message = ctx.message();
         if (!message.isReply()) {
-            ApiRequests.answerMessage(message, "Для использования команды, отправьте ее в ответ на нужное сообщение!")
-                    .callAsync(telegram);
+            ctx.replyToMessage("Для использования команды, отправьте ее в ответ на нужное сообщение!").callAsync(ctx.sender);
             return;
         }
 
@@ -38,6 +33,6 @@ public class GetInfo implements CommandExecutor {
                 .replaceAll("\\w+=null,?\\s*", "")
                 .replaceAll("=([\\w\\d]+)", "=<code>$1</code>");
 
-        Methods.sendMessage(chatId, replyInfo).callAsync(telegram);
+        ctx.reply(replyInfo).callAsync(ctx.sender);
     }
 }

@@ -1,11 +1,11 @@
 package com.senderman.lastkatkabot.service;
 
-import com.annimon.tgbotsmodule.services.CommonAbsSender;
+import com.annimon.tgbotsmodule.commands.context.Context;
 import com.senderman.lastkatkabot.Role;
 
 import java.util.EnumSet;
 
-public interface TriggerHandler<TTrigger> {
+public interface TriggerHandler<TContext extends Context> {
 
     String getTrigger();
 
@@ -13,6 +13,6 @@ public interface TriggerHandler<TTrigger> {
         return EnumSet.of(Role.USER);
     }
 
-    void execute(TTrigger trigger, CommonAbsSender telegram);
+    void execute(TContext ctx);
 
 }

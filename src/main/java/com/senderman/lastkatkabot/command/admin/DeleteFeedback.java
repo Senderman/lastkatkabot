@@ -1,15 +1,13 @@
 package com.senderman.lastkatkabot.command.admin;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.services.CommonAbsSender;
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.FeedbackService;
 import com.senderman.lastkatkabot.util.Html;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.EnumSet;
 
@@ -44,34 +42,32 @@ public class DeleteFeedback implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message, CommonAbsSender telegram) {
-        var args = message.getText().split("\\s+", 2);
-        if (args.length < 2) {
-            ApiRequests.answerMessage(message, "Неверное количество аргументов!").callAsync(telegram);
+    public void execute(MessageContext ctx) {
+        if (ctx.argumentsLength() < 1) {
+            ctx.replyToMessage("Неверное количество аргументов!").callAsync(ctx.sender);
             return;
         }
 
         int feedbackId;
         try {
-            feedbackId = Integer.parseInt(args[1]);
+            feedbackId = Integer.parseInt(ctx.argument(0));
         } catch (NumberFormatException e) {
-            ApiRequests.answerMessage(message, "id фидбека - это число!").callAsync(telegram);
+            ctx.replyToMessage("id фидбека - это число!").callAsync(ctx.sender);
             return;
         }
 
         if (!feedbackRepo.existsById(feedbackId)) {
-            ApiRequests.answerMessage(message, "Фидбека с таким id не существует!").callAsync(telegram);
+            ctx.replyToMessage("Фидбека с таким id не существует!").callAsync(ctx.sender);
             return;
         }
 
         feedbackRepo.deleteById(feedbackId);
-        var chatId = message.getChatId();
         var text = "Фидбек #" + feedbackId + " удален";
-        Methods.sendMessage(chatId, text).callAsync(telegram);
-        if (!chatId.equals(feedbackChannelId))
+        ctx.replyToMessage(text).callAsync(ctx.sender);
+        if (!ctx.chatId().equals(feedbackChannelId))
             Methods.sendMessage()
                     .setChatId(feedbackChannelId)
-                    .setText(text + " пользователем " + Html.getUserLink(message.getFrom()))
-                    .callAsync(telegram);
+                    .setText(text + " пользователем " + Html.getUserLink(ctx.user()))
+                    .callAsync(ctx.sender);
     }
 }

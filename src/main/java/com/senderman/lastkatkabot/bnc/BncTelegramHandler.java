@@ -55,6 +55,10 @@ public class BncTelegramHandler {
         return gamesManager.getGameState(chatId);
     }
 
+    public boolean hasGame(long chatId) {
+        return gamesManager.hasGame(chatId);
+    }
+
     public boolean createGameIfNotExists(long chatId, int length, boolean isHexadecimal) {
         return gamesManager.createGameIfNotExists(chatId, length, isHexadecimal);
     }

@@ -1,15 +1,13 @@
 package com.senderman.lastkatkabot.command.admin;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.services.CommonAbsSender;
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.FeedbackService;
 import com.senderman.lastkatkabot.dbservice.UserManager;
 import com.senderman.lastkatkabot.model.BlacklistedUser;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.EnumSet;
 
@@ -40,37 +38,37 @@ public class FeedbackBan implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message, CommonAbsSender telegram) {
-        var args = message.getText().split("\\s+", 3);
-        if (args.length < 2) {
-            ApiRequests.answerMessage(message, "Неверное кол-во аргументов!");
+    public void execute(MessageContext ctx) {
+        ctx.setArgumentsLimit(2);
+        if (ctx.argumentsLength() < 1) {
+            ctx.replyToMessage("Неверное кол-во аргументов!").callAsync(ctx.sender);
+            return;
         }
 
         int feedbackId;
         try {
-            feedbackId = Integer.parseInt(args[1]);
+            feedbackId = Integer.parseInt(ctx.argument(0));
         } catch (NumberFormatException e) {
-            ApiRequests.answerMessage(message, "id фидбека - это число!").callAsync(telegram);
+            ctx.replyToMessage("id фидбека - это число!").callAsync(ctx.sender);
             return;
         }
 
         var feedbackOptional = feedbackService.findById(feedbackId);
         if (feedbackOptional.isEmpty()) {
-            ApiRequests.answerMessage(message, "Фидбека с таким id не существует!").callAsync(telegram);
+            ctx.replyToMessage("Фидбека с таким id не существует!").callAsync(ctx.sender);
             return;
         }
         var feedback = feedbackOptional.get();
         var badPersonId = feedback.getUserId();
         if (!blackUsers.addUser(new BlacklistedUser(badPersonId, feedback.getUserName()))) {
-            ApiRequests.answerMessage(message, "Этот пользователь уже плохая киса!").callAsync(telegram);
+            ctx.replyToMessage("Этот пользователь уже плохая киса!").callAsync(ctx.sender);
             return;
         }
-        var reason = args.length == 3 ? args[2] : "&lt;причина не указана&gt;";
-        ApiRequests.answerMessage(message,
-                "Теперь %s - плохая киса! Причина: %s".formatted(feedback.getUserName(), reason))
-                .callAsync(telegram);
+        var reason = ctx.argument(1, "&lt;причина не указана&gt;");
+        ctx.replyToMessage("Теперь %s - плохая киса! Причина: %s".formatted(feedback.getUserName(), reason))
+                .callAsync(ctx.sender);
         Methods.sendMessage(feedback.getChatId(), "Разработчики добавили вас в ЧС бота. Причина: " + reason)
                 .setReplyToMessageId(feedback.getMessageId())
-                .callAsync(telegram);
+                .callAsync(ctx.sender);
     }
 }

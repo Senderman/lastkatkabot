@@ -1,12 +1,12 @@
 package com.senderman.lastkatkabot.command;
 
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.service.TriggerHandler;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 /**
  * Subclasses of this interface should process messages with commands
  */
-public interface CommandExecutor extends TriggerHandler<Message> {
+public interface CommandExecutor extends TriggerHandler<MessageContext> {
 
     String getDescription();
 

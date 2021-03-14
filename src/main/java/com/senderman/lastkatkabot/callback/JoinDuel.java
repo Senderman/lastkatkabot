@@ -1,13 +1,11 @@
 package com.senderman.lastkatkabot.callback;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.services.CommonAbsSender;
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.model.Userstats;
 import com.senderman.lastkatkabot.util.Html;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.List;
@@ -28,29 +26,25 @@ public class JoinDuel implements CallbackExecutor {
     }
 
     @Override
-    public void execute(CallbackQuery query, CommonAbsSender telegram) {
-        var message = query.getMessage();
-        var firstUserId = Integer.parseInt(query.getData().split("\\s+")[1]);
-        var secondUser = query.getFrom();
+    public void execute(CallbackQueryContext ctx) {
+        var firstUserId = Long.parseLong(ctx.data().split("\\s+")[1]);
+        var secondUser = ctx.user();
         if (secondUser.getId().equals(firstUserId)) {
-            ApiRequests.answerCallbackQuery(query,
-                    "\uD83D\uDC7A Похоже, вам надо обратиться к психологу! Вы пытаетесь вызвать на дуэль самого себя!",
-                    true).callAsync(telegram);
+            ctx.answer("👺 Похоже, вам надо обратиться к психологу! Вы пытаетесь вызвать на дуэль самого себя!", true)
+                    .callAsync(ctx.sender);
             return;
         }
-        var firstUserMember = Methods.getChatMember(message.getChatId(), firstUserId).call(telegram);
+        var firstUserMember = Methods.getChatMember(ctx.message().getChatId(), firstUserId).call(ctx.sender);
         if (firstUserMember == null) {
-            ApiRequests.answerCallbackQuery(query, "\uD83D\uDE12 Похоже, ваш оппонент ушел из чата!", true)
-                    .callAsync(telegram);
-            ApiRequests.editMessage(query, "\uD83D\uDE12 Дуэль не состоялась, так как один из дуэлянтов покинул чат!")
-                    .callAsync(telegram);
+            ctx.answer("😒 Похоже, ваш оппонент ушел из чата!", true).callAsync(ctx.sender);
+            ctx.editMessage("😒 Дуэль не состоялась, так как один из дуэлянтов покинул чат!").callAsync(ctx.sender);
             return;
         }
-        ApiRequests.answerCallbackQuery(query, "Вы вступили в дуэль!").callAsync(telegram);
+        ctx.answer("Вы вступили в дуэль!").callAsync(ctx.sender);
         var firstUser = firstUserMember.getUser();
         var result = calculateResults(firstUser, secondUser);
         processDuelResultToDatabase(result);
-        processDuelResultToMessage(message.getChatId(), message.getMessageId(), result, telegram);
+        processDuelResultToMessage(ctx, result);
     }
 
     private DuelResult calculateResults(User user1, User user2) {
@@ -61,13 +55,7 @@ public class JoinDuel implements CallbackExecutor {
         return new DuelResult(winner, loser, draw);
     }
 
-    private void processDuelResultToMessage(long chatId, int messageId, DuelResult result, CommonAbsSender telegram) {
-        var method = Methods.editMessageText()
-                .setChatId(chatId)
-                .setMessageId(messageId)
-                .setReplyMarkup(null)
-                .enableHtml();
-
+    private void processDuelResultToMessage(CallbackQueryContext ctx, DuelResult result) {
         var winnerName = Html.htmlSafe(result.getWinner().getFirstName());
         var loserName = Html.htmlSafe(result.getLoser().getFirstName());
         var text = "<b>Итоги дуэли:</b>\n\n";
@@ -77,8 +65,7 @@ public class JoinDuel implements CallbackExecutor {
             text += "\uD83D\uDE0E Победитель: " + winnerName + "\n" +
                     "\uD83D\uDE14 Проигравший: " + loserName;
         }
-        method.setText(text);
-        method.callAsync(telegram);
+        ctx.editMessage(text).callAsync(ctx.sender);
     }
 
     private void processDuelResultToDatabase(DuelResult result) {

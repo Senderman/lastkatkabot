@@ -1,15 +1,13 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.services.CommonAbsSender;
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.FeedbackService;
 import com.senderman.lastkatkabot.model.Feedback;
 import com.senderman.lastkatkabot.util.Html;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 @Component
 public class SendFeedback implements CommandExecutor {
@@ -36,21 +34,22 @@ public class SendFeedback implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message, CommonAbsSender telegram) {
-        var chatId = message.getChatId();
-        if (message.getText().strip().equals(getTrigger())) {
-            ApiRequests.answerMessage(message, "Неверное кол-во аргументов!").callAsync(telegram);
+    public void execute(MessageContext ctx) {
+        ctx.setArgumentsLimit(1);
+        if (ctx.argumentsLength() < 1) {
+            ctx.replyToMessage("Неверное кол-во аргументов!").callAsync(ctx.sender);
             return;
         }
-        var feedbackText = Html.htmlSafe(message.getText().split("\\s+", 2)[1]);
+        var feedbackText = Html.htmlSafe(ctx.argument(0));
         if (feedbackText.length() > 2000) {
-            ApiRequests.answerMessage(message, "Максимальная длина текста - 2000 символов!").callAsync(telegram);
+            ctx.replyToMessage("Максимальная длина текста - 2000 символов!").callAsync(ctx.sender);
             return;
         }
-        var user = message.getFrom();
+        var user = ctx.user();
         var userLink = Html.getUserLink(user);
 
-        var feedback = feedbackRepo.insert(new Feedback(feedbackText, user.getId(), userLink, chatId, message.getMessageId()));
+        var feedback = new Feedback(feedbackText, user.getId(), userLink, ctx.chatId(), ctx.message().getMessageId());
+        feedback = feedbackRepo.insert(feedback);
         var feedbackId = feedback.getId();
 
         var text = ("""
@@ -62,7 +61,7 @@ public class SendFeedback implements CommandExecutor {
 
                 Для ответа, введите /fresp %d &lt;ваш ответ&gt;""")
                 .formatted(feedbackId, userLink, feedbackText, feedbackId);
-        Methods.sendMessage(feedbackChannelId, text).callAsync(telegram);
-        ApiRequests.answerMessage(message, "✅ Сообщение отправлено разработчикам!").callAsync(telegram);
+        Methods.sendMessage(feedbackChannelId, text).callAsync(ctx.sender);
+        ctx.replyToMessage("✅ Сообщение отправлено разработчикам!").callAsync(ctx.sender);
     }
 }

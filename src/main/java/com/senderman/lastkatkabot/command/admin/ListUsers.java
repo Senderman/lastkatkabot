@@ -1,7 +1,6 @@
 package com.senderman.lastkatkabot.command.admin;
 
-import com.annimon.tgbotsmodule.services.CommonAbsSender;
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.UserManager;
@@ -9,7 +8,6 @@ import com.senderman.lastkatkabot.model.AdminUser;
 import com.senderman.lastkatkabot.model.BlacklistedUser;
 import com.senderman.lastkatkabot.util.Html;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.EnumSet;
 import java.util.stream.Collectors;
@@ -42,7 +40,7 @@ public class ListUsers implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message, CommonAbsSender telegram) {
+    public void execute(MessageContext ctx) {
 
         String sb = "<b>Списки пользователей</b>:\n\n" +
                     "<b>Админы</b>\n\n" +
@@ -50,7 +48,7 @@ public class ListUsers implements CommandExecutor {
                     "\n\n" +
                     "<b>Плохие кисы</b>\n\n" +
                     formatUsers(blacklist);
-        ApiRequests.answerMessage(message, sb).callAsync(telegram);
+        ctx.replyToMessage(sb.toString()).callAsync(ctx.sender);
 
     }
 

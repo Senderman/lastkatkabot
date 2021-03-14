@@ -41,6 +41,14 @@ public interface BncGamesManager {
     BncGameState getGameState(long id);
 
     /**
+     * Check if the game with given id is present
+     *
+     * @param id id of the game
+     * @return true if exists
+     */
+    boolean hasGame(long id);
+
+    /**
      * Delete game with given id. If there's no game with given id, do nothing
      *
      * @param id id of the game

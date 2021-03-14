@@ -1,7 +1,6 @@
 package com.senderman.lastkatkabot.command.admin;
 
-import com.annimon.tgbotsmodule.services.CommonAbsSender;
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.UserManager;
@@ -9,7 +8,6 @@ import com.senderman.lastkatkabot.model.BlacklistedUser;
 import com.senderman.lastkatkabot.util.Html;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.EnumSet;
 
@@ -40,24 +38,24 @@ public class GoodNeko implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message, CommonAbsSender telegram) {
-        if (!message.isReply() || message.isUserMessage()) {
-            ApiRequests.answerMessage(message, "Позвышать до хороших кис нужно в группе и реплаем!")
-                    .callAsync(telegram);
+    public void execute(MessageContext ctx) {
+        if (!ctx.message().isReply() || ctx.message().isUserMessage()) {
+            ctx.replyToMessage("Позвышать до хороших кис нужно в группе и реплаем!").callAsync(ctx.sender);
             return;
         }
-        var user = message.getReplyToMessage().getFrom();
+        var user = ctx.message().getReplyToMessage().getFrom();
         if (user.getIsBot()) {
-            ApiRequests.answerMessage(message, "Но это же просто бот, имитация человека! " +
-                                               "Разве может бот написать симфонию, иметь статистику, участвовать в дуэлях, быть хорошей кисой?")
-                    .callAsync(telegram);
+            ctx.replyToMessage(
+                    "Но это же просто бот, имитация человека! " +
+                    "Разве может бот написать симфонию, иметь статистику, участвовать в дуэлях, быть хорошей кисой?")
+                    .callAsync(ctx.sender);
             return;
         }
         var userLink = Html.getUserLink(user);
         if (blackUsers.deleteById(user.getId()))
-            ApiRequests.answerMessage(message, "Теперь " + userLink + " -  хорошая киса!").callAsync(telegram);
+            ctx.replyToMessage("Теперь " + userLink + " -  хорошая киса!").callAsync(ctx.sender);
         else
-            ApiRequests.answerMessage(message, userLink + " уже хорошая киса!").callAsync(telegram);
+            ctx.replyToMessage(userLink + " уже хорошая киса!").callAsync(ctx.sender);
 
     }
 }

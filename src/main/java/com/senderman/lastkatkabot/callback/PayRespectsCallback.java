@@ -1,11 +1,8 @@
 package com.senderman.lastkatkabot.callback;
 
-import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.services.CommonAbsSender;
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
 import com.senderman.lastkatkabot.util.Html;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
 @Component
 public class PayRespectsCallback implements CallbackExecutor {
@@ -19,25 +16,18 @@ public class PayRespectsCallback implements CallbackExecutor {
     }
 
     @Override
-    public void execute(CallbackQuery query, CommonAbsSender telegram) {
+    public void execute(CallbackQueryContext ctx) {
 
-        if (query.getMessage().getText().contains(query.getFrom().getFirstName())) {
-            ApiRequests.answerCallbackQuery(
-                    query,
-                    "You've already payed respects! (or you've tried to pay respects to yourself)",
-                    true)
-                    .callAsync(telegram);
+        if (ctx.message().getText().contains(ctx.user().getFirstName())) {
+            ctx.answer("You've already payed respects! (or you've tried to pay respects to yourself)", true).callAsync(ctx.sender);
             return;
         }
 
-        var message = query.getMessage();
-        ApiRequests.answerCallbackQuery(query, "You've paid respects").callAsync(telegram);
-        Methods.editMessageText()
-                .setChatId(message.getChatId())
-                .setMessageId(message.getMessageId())
+        var message = ctx.message();
+        ctx.answer("You've paid respects").callAsync(ctx.sender);
+        ctx.editMessage(message.getText() + "\n" + Html.htmlSafe(ctx.user().getFirstName()) + " has paid respects")
                 .setReplyMarkup(message.getReplyMarkup())
-                .setText(message.getText() + "\n" + Html.htmlSafe(query.getFrom().getFirstName()) + " has paid respects")
-                .callAsync(telegram);
+                .callAsync(ctx.sender);
 
     }
 }

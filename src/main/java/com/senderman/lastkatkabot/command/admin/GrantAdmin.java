@@ -1,14 +1,12 @@
 package com.senderman.lastkatkabot.command.admin;
 
-import com.annimon.tgbotsmodule.services.CommonAbsSender;
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.UserManager;
 import com.senderman.lastkatkabot.model.AdminUser;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.EnumSet;
 
@@ -39,24 +37,25 @@ public class GrantAdmin implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message, CommonAbsSender telegram) {
-        if (!message.isReply() || message.isUserMessage()) {
-            ApiRequests.answerMessage(message, "Посвящать в админы нужно в группе и реплаем!").callAsync(telegram);
+    public void execute(MessageContext ctx) {
+        if (!ctx.message().isReply() || ctx.message().isUserMessage()) {
+            ctx.replyToMessage("Посвящать в админы нужно в группе и реплаем!").callAsync(ctx.sender);
             return;
         }
-        var user = message.getReplyToMessage().getFrom();
+        var user = ctx.message().getReplyToMessage().getFrom();
 
         if (user.getIsBot()) {
-            ApiRequests.answerMessage(message, "Но это же просто бот, имитация человека! " +
-                                               "Разве может бот написать симфонию, иметь статистику, участвовать в дуэлях, быть админом?")
-                    .callAsync(telegram);
+            ctx.replyToMessage(
+                    "Но это же просто бот, имитация человека! " +
+                    "Разве может бот написать симфонию, иметь статистику, участвовать в дуэлях, быть админом?")
+                    .callAsync(ctx.sender);
             return;
         }
 
         if (admins.addUser(new AdminUser(user.getId(), user.getFirstName())))
-            ApiRequests.answerMessage(message, "Пользователь успешно посвящен в админы!").callAsync(telegram);
+            ctx.replyToMessage("Пользователь успешно посвящен в админы!").callAsync(ctx.sender);
         else
-            ApiRequests.answerMessage(message, "Не следует посвящать в админы дважды!").callAsync(telegram);
+            ctx.replyToMessage("Не следует посвящать в админы дважды!").callAsync(ctx.sender);
     }
 }
 

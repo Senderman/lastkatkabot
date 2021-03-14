@@ -1,11 +1,9 @@
 package com.senderman.lastkatkabot.command.user;
 
-import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.services.CommonAbsSender;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatInfoService;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 @Component
 public class LastPairs implements CommandExecutor {
@@ -27,22 +25,20 @@ public class LastPairs implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message, CommonAbsSender telegram) {
-        var chatId = message.getChatId();
-
-        if (message.isUserMessage()) {
-            Methods.sendMessage(chatId, "Команду нельзя использовать в ЛС!").callAsync(telegram);
+    public void execute(MessageContext ctx) {
+        if (ctx.message().isUserMessage()) {
+            ctx.replyToMessage("Команду нельзя использовать в ЛС!").callAsync(ctx.sender);
             return;
         }
 
-        var chatInfo = chats.findById(chatId);
+        var chatInfo = chats.findById(ctx.chatId());
         var pairs = chatInfo.getLastPairs();
         if (pairs == null || pairs.isEmpty()) {
-            Methods.sendMessage(chatId, "В этом чате еще ни разу не запускали /pair!").callAsync(telegram);
+            ctx.replyToMessage("В этом чате еще ни разу не запускали /pair!").callAsync(ctx.sender);
             return;
         }
 
         var text = "<b>Последние 10 пар:</b>\n\n" + String.join("\n", pairs);
-        Methods.sendMessage(chatId, text).callAsync(telegram);
+        ctx.reply(text).callAsync(ctx.sender);
     }
 }

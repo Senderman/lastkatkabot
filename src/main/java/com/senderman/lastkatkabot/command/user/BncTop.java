@@ -1,13 +1,13 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.ChatMember;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.Optional;
@@ -33,8 +33,7 @@ public class BncTop implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message, CommonAbsSender telegram) {
-        var chatId = message.getChatId();
+    public void execute(MessageContext ctx) {
 
         int counter = 0;
         var top = new StringBuilder("<b>Топ-10 задротов в bnc:</b>\n\n");
@@ -42,11 +41,11 @@ public class BncTop implements CommandExecutor {
         for (var user : topUsers) {
             top.append(++counter)
                     .append(": ")
-                    .append(formatUser(user.getUserId(), user.getBncScore(), message.isUserMessage(), telegram))
+                    .append(formatUser(user.getUserId(), user.getBncScore(), ctx.message().isUserMessage(), ctx.sender))
                     .append("\n");
         }
 
-        Methods.sendMessage(chatId, top.toString()).callAsync(telegram);
+        ctx.reply(top.toString()).callAsync(ctx.sender);
     }
 
     private String formatUser(long userId, int score, boolean printLink, CommonAbsSender telegram) {

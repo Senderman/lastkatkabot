@@ -1,14 +1,12 @@
 package com.senderman.lastkatkabot.command.user;
 
-import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.services.CommonAbsSender;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.callback.Callbacks;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 @Component
 public class Cake implements CommandExecutor {
@@ -27,15 +25,15 @@ public class Cake implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message, CommonAbsSender telegram) {
-        if (!message.isReply() || message.isUserMessage()) return;
+    public void execute(MessageContext ctx) {
+        if (!ctx.message().isReply() || ctx.message().isUserMessage()) return;
 
 
-        var subjectName = Html.htmlSafe(message.getFrom().getFirstName());
-        var target = message.getReplyToMessage().getFrom();
+        var subjectName = Html.htmlSafe(ctx.user().getFirstName());
+        var target = ctx.message().getReplyToMessage().getFrom();
         var targetName = Html.htmlSafe(target.getFirstName());
         var text = String.format("\uD83C\uDF82 %s, пользователь %s подарил вам тортик %s",
-                targetName, subjectName, message.getText().replaceAll("/@\\S*\\s?|/\\S*\\s?", ""));
+                targetName, subjectName, ctx.message().getText().replaceAll("/@\\S*\\s?|/\\S*\\s?", ""));
 
         var markup = new MarkupBuilder()
                 .addButton(ButtonBuilder.callbackButton()
@@ -46,11 +44,10 @@ public class Cake implements CommandExecutor {
                         .payload(Callbacks.CAKE + " decline " + target.getId()))
                 .build();
 
-        Methods.sendMessage(message.getChatId(), text)
-                .setReplyToMessageId(message.getReplyToMessage().getMessageId())
+        ctx.reply(text)
+                .setReplyToMessageId(ctx.message().getReplyToMessage().getMessageId())
                 .setReplyMarkup(markup)
-                .callAsync(telegram);
-
+                .callAsync(ctx.sender);
     }
 
 }

@@ -1,10 +1,9 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.services.CommonAbsSender;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 @Component
 public class Action implements CommandExecutor {
@@ -23,17 +22,16 @@ public class Action implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message, CommonAbsSender telegram) {
-        var chatId = message.getChatId();
-        Methods.deleteMessage(chatId, message.getMessageId());
-        if (message.getText().split("\\s+").length == 1) return;
+    public void execute(MessageContext ctx) {
+        ctx.deleteMessage().callAsync(ctx.sender);
+        ctx.setArgumentsLimit(1);
+        if (ctx.argumentsLength() < 1) return;
 
-        var action = message.getFrom().getFirstName() + " " + message.getText().split("\\s+", 2)[1];
-        var sm = Methods.sendMessage(chatId, action);
-        if (message.isReply()) {
-            sm.setReplyToMessageId(message.getReplyToMessage().getMessageId());
+        var action = ctx.user().getFirstName() + " " + ctx.argument(0);
+        var sm = Methods.sendMessage(ctx.chatId(), action);
+        if (ctx.message().isReply()) {
+            sm.setReplyToMessageId(ctx.message().getReplyToMessage().getMessageId());
         }
-        sm.callAsync(telegram);
-        Methods.deleteMessage(chatId, message.getMessageId()).callAsync(telegram);
+        sm.callAsync(ctx.sender);
     }
 }

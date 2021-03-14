@@ -1,13 +1,11 @@
 package com.senderman.lastkatkabot.command.admin;
 
-import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.services.CommonAbsSender;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.FeedbackService;
 import com.senderman.lastkatkabot.model.Feedback;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.EnumSet;
 
@@ -37,27 +35,27 @@ public class ShowFeedbacks implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message, CommonAbsSender telegram) {
-        var chatId = message.getChatId();
-        Methods.sendMessage(chatId, "Собираем фидбеки...").callAsync(telegram);
+    public void execute(MessageContext ctx) {
         if (feedbackService.count() == 0) {
-            Methods.sendMessage(chatId, "Фидбеков нет!").callAsync(telegram);
+            ctx.replyToMessage("Фидбеков нет!").callAsync(ctx.sender);
             return;
         }
+
+        ctx.replyToMessage("Собираем фидбеки...").callAsync(ctx.sender);
 
         var text = new StringBuilder("<b>Фидбеки от даунов не умеющих юзать бота</b>");
         for (Feedback feedback : feedbackService.findAll()) {
             String formattedFeedback = formatFeedback(feedback);
             // if maximum text length reached
             if (text.length() + feedbackSeparator.length() + formattedFeedback.length() >= 4096) {
-                Methods.sendMessage(chatId, text.toString()).callAsync(telegram);
+                ctx.reply(text.toString()).callAsync(ctx.sender);
                 text.setLength(0);
             }
             text.append(feedbackSeparator).append(formattedFeedback);
         }
         // send remaining feedbacks
         if (text.length() != 0) {
-            Methods.sendMessage(chatId, text.toString()).callAsync(telegram);
+            ctx.reply(text.toString()).callAsync(ctx.sender);
         }
     }
 

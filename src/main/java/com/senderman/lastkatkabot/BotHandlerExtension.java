@@ -15,10 +15,6 @@ public abstract class BotHandlerExtension extends BotHandler {
 
     private final Map<String, Consumer<BotApiMethod<?>>> preprocessors = new HashMap<>();
 
-    public BotHandlerExtension() {
-        super(new FixedDefaultBotOptions());
-    }
-
     @Override
     public <T extends Serializable, Method extends BotApiMethod<T>> T execute(Method method) throws TelegramApiException {
         preprocessMethod(method);

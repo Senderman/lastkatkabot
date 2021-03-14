@@ -53,6 +53,11 @@ public class BncDatabaseManager implements BncGamesManager {
     }
 
     @Override
+    public boolean hasGame(long id) {
+        return database.existsById(id);
+    }
+
+    @Override
     public void deleteGame(long id) {
         database.deleteById(id);
     }

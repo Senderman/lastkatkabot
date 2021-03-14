@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Love;
 import com.senderman.lastkatkabot.command.CommandExecutor;
@@ -11,7 +12,6 @@ import com.senderman.lastkatkabot.model.ChatUser;
 import com.senderman.lastkatkabot.service.CurrentTime;
 import com.senderman.lastkatkabot.util.Html;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.*;
@@ -59,11 +59,11 @@ public class Pair implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message, CommonAbsSender telegram) {
-        var chatId = message.getChatId();
+    public void execute(MessageContext ctx) {
+        long chatId = ctx.chatId();
 
-        if (message.isUserMessage()) {
-            Methods.sendMessage(chatId, "Команду нельзя использовать в лс!").callAsync(telegram);
+        if (ctx.message().isUserMessage()) {
+            ctx.replyToMessage("Команду нельзя использовать в лс!").callAsync(ctx.sender);
             return;
         }
 
@@ -74,12 +74,12 @@ public class Pair implements CommandExecutor {
         int currentDay = Integer.parseInt(currentTime.getCurrentDay());
 
         if (!lastPairs.isEmpty() && lastPairGenerationDate == currentDay) {
-            Methods.sendMessage(chatId, "Пара дня: " + lastPairs.get(0)).callAsync(telegram);
+            ctx.reply("Пара дня: " + lastPairs.get(0)).callAsync(ctx.sender);
             return;
         }
 
         if (runningChatPairsGenerations.contains(chatId)) {
-            Methods.sendMessage(chatId, "Пара дня все еще генерируется, подождите!").callAsync(telegram);
+            ctx.reply("Пара дня все еще генерируется, подождите!").callAsync(ctx.sender);
             return;
         }
 
@@ -87,25 +87,23 @@ public class Pair implements CommandExecutor {
         chatUsers.deleteInactiveChatUsers(chatId);
 
         if (chatUsers.countByChatId(chatId) < 2) {
-            Methods.sendMessage(chatId, "Недостаточно пользователей писало в чат за последние 2 недели!").callAsync(telegram);
+            ctx.reply("Недостаточно пользователей писало в чат за последние 2 недели!").callAsync(ctx.sender);
             return;
         }
 
         // start chat flooding to make users wait for pair generation
         String[] loveStrings = love.getRandomLoveStrings();
-        Future<?> floodFuture = threadPool.submit(() -> sendRandomShitWithDelay(chatId, loveStrings, 1000L, telegram));
+        Future<?> floodFuture = threadPool.submit(() -> sendRandomShitWithDelay(chatId, loveStrings, 1000L, ctx.sender));
 
         threadPool.execute(() -> {
             runningChatPairsGenerations.add(chatId);
             try {
                 PairData pair;
                 try {
-                    pair = generateNewPair(chatId, telegram);
+                    pair = generateNewPair(chatId, ctx.sender);
                 } catch (NotEnoughUsersException e) {
                     floodFuture.cancel(true);
-                    Methods.sendMessage(chatId,
-                            "Ой, а у вас мало пользователей в чате доступно... Придется остановить генерацию пары")
-                            .callAsync(telegram);
+                    ctx.reply("Ой, а у вас мало пользователей в чате доступно... Придется остановить генерацию пары").callAsync(ctx.sender);
                     return;
                 }
 
@@ -120,11 +118,11 @@ public class Pair implements CommandExecutor {
                         Html.getUserLink(pair.getSecond()));
                 // wait while flood ends to prevent race condition
                 floodFuture.get();
-                Methods.sendMessage(chatId, text).callAsync(telegram);
+                ctx.reply(text).callAsync(ctx.sender);
             } catch (InterruptedException | ExecutionException e) {
                 floodFuture.cancel(true);
                 e.printStackTrace();
-                Methods.sendMessage(chatId, "...Упс, произошла ошибка. Попробуйте еще раз").callAsync(telegram);
+                ctx.reply("...Упс, произошла ошибка. Попробуйте еще раз").callAsync(ctx.sender);
             } finally {
                 runningChatPairsGenerations.remove(chatId);
             }

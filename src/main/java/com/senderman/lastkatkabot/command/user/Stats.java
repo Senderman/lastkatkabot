@@ -1,13 +1,11 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.services.CommonAbsSender;
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 @Component
@@ -31,14 +29,13 @@ public class Stats implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message, CommonAbsSender telegram) {
-        long chatId = message.getChatId();
-        User user = (message.isReply()) ? message.getReplyToMessage().getFrom() : message.getFrom();
+    public void execute(MessageContext ctx) {
+        User user = (ctx.message().isReply()) ? ctx.message().getReplyToMessage().getFrom() : ctx.user();
 
         if (user.getIsBot()) {
-            ApiRequests.answerMessage(message, "Но это же просто бот, имитация человека! " +
-                                               "Разве может бот написать симфонию, иметь статистику, играть в BnC, участвовать в дуэлях?")
-                    .callAsync(telegram);
+            ctx.replyToMessage("Но это же просто бот, имитация человека! " +
+                               "Разве может бот написать симфонию, иметь статистику, играть в BnC, участвовать в дуэлях?")
+                    .callAsync(ctx.sender);
             return;
         }
 
@@ -56,12 +53,12 @@ public class Stats implements CommandExecutor {
                 .formatted(name, stats.getDuelWins(), stats.getDuelsTotal(), winRate, stats.getBncScore());
 
         if (stats.getLoverId() != null) {
-            var lover = Methods.getChatMember(stats.getLoverId(), stats.getLoverId()).call(telegram);
+            var lover = Methods.getChatMember(stats.getLoverId(), stats.getLoverId()).call(ctx.sender);
             if (lover != null) {
                 String loverLink = Html.getUserLink(lover.getUser());
                 text += "\n\n❤️ Вторая половинка: " + loverLink;
             }
         }
-        Methods.sendMessage(chatId, text).callAsync(telegram);
+        ctx.reply(text).callAsync(ctx.sender);
     }
 }

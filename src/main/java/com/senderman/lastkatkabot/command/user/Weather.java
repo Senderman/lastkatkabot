@@ -1,13 +1,10 @@
 package com.senderman.lastkatkabot.command.user;
 
-import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.services.CommonAbsSender;
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import org.jsoup.Jsoup;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.io.IOException;
 import java.net.URL;
@@ -34,21 +31,18 @@ public class Weather implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message, CommonAbsSender telegram) {
-        var chatId = message.getChatId();
-        var userId = message.getFrom().getId();
+    public void execute(MessageContext ctx) {
+        var userId = ctx.user().getId();
+        ctx.setArgumentsLimit(1);
         // extract name of the city from the message
-        var city = message
-                .getText()
-                .strip()
-                .replaceAll("/weather(?:@[a-zA-Z0-9_-]*)?\\s*", "");
+        var city = ctx.argument(0, "");
         String cityLink;
 
         if (city.isBlank()) {
             String dbCityLink = userStats.findById(userId).getCityLink();
             if (dbCityLink == null) {
-                Methods.sendMessage(chatId, "Вы не указали город! ( /weather город ). Бот запомнит ваш выбор.")
-                        .callAsync(telegram);
+                ctx.replyToMessage("Вы не указали город! ( /weather город ). Бот запомнит ваш выбор.")
+                        .callAsync(ctx.sender);
                 return;
             }
             cityLink = dbCityLink;
@@ -60,19 +54,19 @@ public class Weather implements CommandExecutor {
                 user.setCityLink(cityLink);
                 userStats.save(user);
             } catch (IOException e) {
-                ApiRequests.answerMessage(message, "Ошибка запроса").callAsync(telegram);
+                ctx.replyToMessage("Ошибка запроса").callAsync(ctx.sender);
                 return;
             } catch (NullPointerException e) {
-                ApiRequests.answerMessage(message, "Город не найден").callAsync(telegram);
+                ctx.replyToMessage("Город не найден").callAsync(ctx.sender);
                 return;
             }
         }
 
         try {
             var text = parseForecast(cityLink).toString();
-            ApiRequests.answerMessage(message, text).callAsync(telegram);
+            ctx.replyToMessage(text).callAsync(ctx.sender);
         } catch (Exception e) {
-            ApiRequests.answerMessage(message, "Внутренняя ошибка").callAsync(telegram);
+            ctx.replyToMessage("Внутренняя ошибка").callAsync(ctx.sender);
         }
     }
 
@@ -123,12 +117,12 @@ public class Weather implements CommandExecutor {
         @Override
         public String toString() {
             return "<b>" + title + "</b>\n\n" +
-                    feelings + "\n" +
-                    "\uD83C\uDF21: " + temperature + " °C\n" +
-                    "\uD83E\uDD14: Ощущается как " + feelsLike + "\n" +
-                    "\uD83D\uDCA8: " + wind + "\n" +
-                    "\uD83D\uDCA7: " + humidity + "\n" +
-                    "\uD83E\uDDED: " + pressure;
+                   feelings + "\n" +
+                   "\uD83C\uDF21: " + temperature + " °C\n" +
+                   "\uD83E\uDD14: Ощущается как " + feelsLike + "\n" +
+                   "\uD83D\uDCA8: " + wind + "\n" +
+                   "\uD83D\uDCA7: " + humidity + "\n" +
+                   "\uD83E\uDDED: " + pressure;
         }
     }
 }

@@ -1,12 +1,10 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.services.CommonAbsSender;
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 @Component
 public class Divorce implements CommandExecutor {
@@ -28,14 +26,14 @@ public class Divorce implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message, CommonAbsSender telegram) {
+    public void execute(MessageContext ctx) {
 
-        var userId = message.getFrom().getId();
+        var userId = ctx.user().getId();
         var userStats = users.findById(userId);
         var loverId = userStats.getLoverId();
 
         if (loverId == null) {
-            ApiRequests.answerMessage(message, "У вас и так никого нет!").callAsync(telegram);
+            ctx.replyToMessage("У вас и так никого нет!").callAsync(ctx.sender);
             return;
         }
 
@@ -46,8 +44,8 @@ public class Divorce implements CommandExecutor {
         users.save(userStats);
         users.save(loverStats);
 
-        ApiRequests.answerMessage(message, "Вы расстались со своей половинкой!").callAsync(telegram);
-        Methods.sendMessage(loverId, "Ваша половинка решила с вами расстаться :(").callAsync(telegram);
+        ctx.replyToMessage("Вы расстались со своей половинкой!").callAsync(ctx.sender);
+        Methods.sendMessage(loverId, "Ваша половинка решила с вами расстаться :(").callAsync(ctx.sender);
 
     }
 }

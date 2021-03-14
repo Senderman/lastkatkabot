@@ -1,6 +1,6 @@
 package com.senderman.lastkatkabot.command.user;
 
-import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
@@ -10,10 +10,8 @@ import com.senderman.lastkatkabot.service.TriggerHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.Comparator;
@@ -54,39 +52,25 @@ public class Help implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message, CommonAbsSender telegram) {
-        var chatId = message.getChatId();
-        var userId = message.getFrom().getId();
-
-        if (!message.isUserMessage()) {
-            sendHelpToPm(chatId, userId, message.getMessageId(), telegram);
-            return;
+    public void execute(MessageContext ctx) {
+        try {
+            trySendHelpToPm(ctx.user().getId(), ctx.sender);
+            if (!ctx.message().isUserMessage())
+                ctx.replyToMessage("✅ Помощь отправлена вам в лс!").callAsync(ctx.sender);
+        } catch (TelegramApiException e) {
+            ctx.replyToMessage("Пожалуйста, начните диалог со мной в лс").callAsync(ctx.sender);
         }
-
-        Methods.sendMessage(chatId, prepareHelpText(userId)).callAsync(telegram);
-
     }
 
-    private void sendHelpToPm(long chatId, long userId, int chatMessageId, CommonAbsSender telegram) {
-        try {
-            var sentMessage = telegram.execute(new SendMessage(String.valueOf(userId), "Подождите..."));
-            telegram.execute(EditMessageText
-                    .builder()
-                    .chatId(Long.toString(userId))
-                    .text(prepareHelpText(userId))
-                    .messageId(sentMessage.getMessageId())
-                    .parseMode(ParseMode.HTML)
-                    .disableWebPagePreview(true)
-                    .build()
-            );
-            Methods.sendMessage(chatId, "✅ Помощь отправлена вам в лс!")
-                    .setReplyToMessageId(chatMessageId)
-                    .callAsync(telegram);
-        } catch (TelegramApiException e) {
-            Methods.sendMessage(chatId, "Пожалуйста, начните диалог со мной в лс")
-                    .setReplyToMessageId(chatMessageId)
-                    .callAsync(telegram);
-        }
+    private void trySendHelpToPm(long userId, CommonAbsSender telegram) throws TelegramApiException {
+        var sentMessage = telegram.execute(new SendMessage(String.valueOf(userId), "Подождите..."));
+        telegram.executeAsync(EditMessageText
+                .builder()
+                .chatId(Long.toString(userId))
+                .text(prepareHelpText(userId))
+                .messageId(sentMessage.getMessageId())
+                .build()
+        );
     }
 
     private String prepareHelpText(long userId) {

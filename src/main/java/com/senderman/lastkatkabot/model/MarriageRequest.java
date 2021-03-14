@@ -20,6 +20,14 @@ public class MarriageRequest {
 
     }
 
+    public MarriageRequest(long proposerId, String proposerName, long proposeeId, String proposeeName, int requestDate) {
+        this.proposerId = proposerId;
+        this.proposerName = proposerName;
+        this.proposeeId = proposeeId;
+        this.proposeeName = proposeeName;
+        this.requestDate = requestDate;
+    }
+
     public int getId() {
         return id;
     }
@@ -79,5 +87,42 @@ public class MarriageRequest {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public static class Builder {
+        private long proposerId;
+        private String proposerName;
+        private long proposeeId;
+        private String proposeeName;
+        private int requestDate;
+
+        public Builder setProposerId(long proposerId) {
+            this.proposerId = proposerId;
+            return this;
+        }
+
+        public Builder setProposerName(String proposerName) {
+            this.proposerName = proposerName;
+            return this;
+        }
+
+        public Builder setProposeeId(long proposeeId) {
+            this.proposeeId = proposeeId;
+            return this;
+        }
+
+        public Builder setProposeeName(String proposeeName) {
+            this.proposeeName = proposeeName;
+            return this;
+        }
+
+        public Builder setRequestDate(int requestDate) {
+            this.requestDate = requestDate;
+            return this;
+        }
+
+        public MarriageRequest createMarriageRequest() {
+            return new MarriageRequest(proposerId, proposerName, proposeeId, proposeeName, requestDate);
+        }
     }
 }

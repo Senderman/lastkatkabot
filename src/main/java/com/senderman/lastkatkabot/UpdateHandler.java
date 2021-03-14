@@ -1,6 +1,10 @@
 package com.senderman.lastkatkabot;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
+import com.annimon.tgbotsmodule.commands.context.CallbackQueryContextBuilder;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.annimon.tgbotsmodule.commands.context.MessageContextBuilder;
 import com.senderman.lastkatkabot.bnc.BncTelegramHandler;
 import com.senderman.lastkatkabot.callback.CallbackExecutor;
 import com.senderman.lastkatkabot.command.CommandExecutor;
@@ -115,7 +119,7 @@ public class UpdateHandler extends BotHandlerExtension {
         if (update.hasCallbackQuery()) {
             var query = update.getCallbackQuery();
             callbacks.findHandler(query.getData().split("\\s+", 2)[0])
-                    .ifPresent(e -> e.execute(query, this));
+                    .ifPresent(e -> e.execute(buildCallbackQueryContext(update)));
             return null;
         }
 
@@ -164,7 +168,7 @@ public class UpdateHandler extends BotHandlerExtension {
 
         commands.findHandler(command)
                 .filter(e -> checkAccess(e.getRoles(), message.getFrom().getId()))
-                .ifPresent(e -> e.execute(message, this));
+                .ifPresent(e -> e.execute(buildMessageContext(update)));
 
         return null;
     }
@@ -230,6 +234,26 @@ public class UpdateHandler extends BotHandlerExtension {
                         .callAsync(this);
             }
         }
+    }
+
+    private MessageContext buildMessageContext(Update update) {
+        var message = update.getMessage();
+        var args = message.getText().split("\\s+", 2);
+        return new MessageContextBuilder()
+                .setUpdate(update)
+                .setSender(this)
+                .setChatId(message.getChatId())
+                .setUser(message.getFrom())
+                .setText(args.length > 1 ? args[1] : "")
+                .createMessageContext();
+    }
+
+    private CallbackQueryContext buildCallbackQueryContext(Update update) {
+        return new CallbackQueryContextBuilder()
+                .setUpdate(update)
+                .setSender(this)
+                .setUser(update.getCallbackQuery().getFrom())
+                .createContext();
     }
 
     private void processLeftChatMember(Message message) {

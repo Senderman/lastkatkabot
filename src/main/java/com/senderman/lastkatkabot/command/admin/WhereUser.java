@@ -1,13 +1,12 @@
 package com.senderman.lastkatkabot.command.admin;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
-import com.senderman.lastkatkabot.ApiRequests;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.EnumSet;
 import java.util.Objects;
@@ -41,26 +40,25 @@ public class WhereUser implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message, CommonAbsSender telegram) {
+    public void execute(MessageContext ctx) {
         long userId;
         try {
-            var args = message.getText().split("\\s+");
-            userId = args.length > 1 ? Long.parseLong(args[1]) : message.getReplyToMessage().getFrom().getId();
+            userId = ctx.argumentsLength() > 0 ? Long.parseLong(ctx.argument(0)) : ctx.message().getReplyToMessage().getFrom().getId();
         } catch (NumberFormatException e) {
-            ApiRequests.answerMessage(message, "Id юзера - это число!").callAsync(telegram);
+            ctx.replyToMessage("Id юзера - это число!").callAsync(ctx.sender);
             return;
         } catch (NullPointerException e) {
-            ApiRequests.answerMessage(message, "Введите Id юзера, либо используйте реплай").callAsync(telegram);
+            ctx.replyToMessage("Введите Id юзера, либо используйте реплай").callAsync(ctx.sender);
             return;
         }
         threadPool.execute(() -> {
             var chatNames = chatUsers.findByUserId(userId)
                     .stream()
-                    .map(chat -> getChatNameOrNull(chat.getChatId(), telegram))
+                    .map(chat -> getChatNameOrNull(chat.getChatId(), ctx.sender))
                     .filter(Objects::nonNull)
                     .collect(Collectors.joining("\n"));
 
-            ApiRequests.answerMessage(message, "🕵️‍♂ Юзер замечен в следующих чатах:\n\n️" + chatNames).callAsync(telegram);
+            ctx.replyToMessage("🕵️‍♂ Юзер замечен в следующих чатах:\n\n️" + chatNames).callAsync(ctx.sender);
         });
     }
 

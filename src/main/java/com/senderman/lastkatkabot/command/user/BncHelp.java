@@ -1,11 +1,9 @@
 package com.senderman.lastkatkabot.command.user;
 
-import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.services.CommonAbsSender;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 @Component
 public class BncHelp implements CommandExecutor {
@@ -27,11 +25,9 @@ public class BncHelp implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message, CommonAbsSender telegram) {
-        Methods.sendPhoto()
-                .setChatId(message.getChatId())
-                .setReplyToMessageId(message.getMessageId())
+    public void execute(MessageContext ctx) {
+        ctx.replyWithPhoto()
                 .setFile(bncPhotoId)
-                .callAsync(telegram);
+                .callAsync(ctx.sender);
     }
 }

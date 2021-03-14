@@ -1,10 +1,8 @@
 package com.senderman.lastkatkabot.command.user;
 
-import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.services.CommonAbsSender;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 @Component
 public class ShortInfo implements CommandExecutor {
@@ -23,9 +21,9 @@ public class ShortInfo implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message, CommonAbsSender telegram) {
-        var chatId = message.getChatId();
-        var userId = message.getFrom().getId();
+    public void execute(MessageContext ctx) {
+        var chatId = ctx.chatId();
+        var userId = ctx.user().getId();
 
         String info = String.format("""
                 ==== Информация ====
@@ -33,6 +31,7 @@ public class ShortInfo implements CommandExecutor {
                 💬 ID чата: <code>%d</code>
                 🙍‍♂️ Ваш ID: <code>%d</code>""", chatId, userId);
 
+        var message = ctx.message();
         if (message.isReply()) {
             var reply = message.getReplyToMessage();
             var replyMessageId = reply.getMessageId();
@@ -48,7 +47,7 @@ public class ShortInfo implements CommandExecutor {
                 info += String.format("\n\uD83D\uDCE2 ID канала: <code>%d</code>", forward.getId());
             }
         }
-        Methods.sendMessage(chatId, info).callAsync(telegram);
+        ctx.reply(info).callAsync(ctx.sender);
 
     }
 }

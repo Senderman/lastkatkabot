@@ -1,12 +1,10 @@
 package com.senderman.lastkatkabot.command.admin;
 
-import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.services.CommonAbsSender;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.EnumSet;
 
@@ -35,12 +33,12 @@ public class Popularity implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message, CommonAbsSender telegram) {
+    public void execute(MessageContext ctx) {
         var text = "📊 <b>Популярность бота:</b>\n\n";
         var chatsWithUsers = chatUsers.getTotalChats();
         text += "👥 Активные чаты: " + chatsWithUsers + "\n\n";
         var users = chatUsers.getTotalUsers();
         text += "👤 Уникальные пользователи: " + users;
-        Methods.sendMessage(message.getChatId(), text).callAsync(telegram);
+        ctx.reply(text).callAsync(ctx.sender);
     }
 }

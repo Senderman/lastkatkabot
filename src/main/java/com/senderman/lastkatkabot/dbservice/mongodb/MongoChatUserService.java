@@ -69,6 +69,11 @@ public class MongoChatUserService implements ChatUserService {
 
     @Override
     public long getTotalChats() {
-        return mongoTemplate.findDistinct("chatId", ChatUser.class, Long.class).size();
+        return getChatIds().size();
+    }
+
+    @Override
+    public List<Long> getChatIds() {
+        return mongoTemplate.findDistinct("chatId", ChatUser.class, Long.class);
     }
 }

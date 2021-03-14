@@ -1,14 +1,12 @@
 package com.senderman.lastkatkabot.command.user;
 
-import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.services.CommonAbsSender;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.callback.Callbacks;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 @Component
 public class StartDuel implements CommandExecutor {
@@ -27,18 +25,15 @@ public class StartDuel implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message, CommonAbsSender telegram) {
-        var chatId = message.getChatId();
-        var user = message.getFrom();
+    public void execute(MessageContext ctx) {
+        var user = ctx.user();
         var name = Html.htmlSafe(user.getFirstName());
-        Methods.sendMessage()
-                .setChatId(chatId)
-                .setText("🎯 Пользователь " + name + " начинает набор на дуэль!")
+        ctx.reply("🎯 Пользователь " + name + " начинает набор на дуэль!")
                 .setReplyMarkup(new MarkupBuilder()
                         .addButton(ButtonBuilder.callbackButton()
                                 .text("Присоединиться")
                                 .payload(Callbacks.DUEL + " " + user.getId()))
                         .build())
-                .callAsync(telegram);
+                .callAsync(ctx.sender);
     }
 }

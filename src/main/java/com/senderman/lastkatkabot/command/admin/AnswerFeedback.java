@@ -1,14 +1,12 @@
 package com.senderman.lastkatkabot.command.admin;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.services.CommonAbsSender;
-import com.senderman.lastkatkabot.ApiRequests;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.FeedbackService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.EnumSet;
 
@@ -42,25 +40,25 @@ public class AnswerFeedback implements CommandExecutor {
     }
 
     @Override
-    public void execute(Message message, CommonAbsSender telegram) {
-        var chatId = message.getChatId();
-        var args = message.getText().split("\\s+", 3);
-        if (args.length < 3) {
-            ApiRequests.answerMessage(message, "Неверное количество аргументов!").callAsync(telegram);
+    public void execute(MessageContext ctx) {
+        ctx.setArgumentsLimit(2);
+
+        if (ctx.argumentsLength() < 2) {
+            ctx.replyToMessage("Неверное количество аргументов!").callAsync(ctx.sender);
             return;
         }
 
         int feedbackId;
         try {
-            feedbackId = Integer.parseInt(args[1]);
+            feedbackId = Integer.parseInt(ctx.argument(0));
         } catch (NumberFormatException e) {
-            ApiRequests.answerMessage(message, "id фидбека - это число!").callAsync(telegram);
+            ctx.replyToMessage("id фидбека - это число!").callAsync(ctx.sender);
             return;
         }
 
         var feedbackOptional = feedbackService.findById(feedbackId);
         if (feedbackOptional.isEmpty()) {
-            Methods.sendMessage(chatId, "Фидбека с таким id не существует!").callAsync(telegram);
+            ctx.replyToMessage("Фидбека с таким id не существует!").callAsync(ctx.sender);
             return;
         }
         // feedbackRepo.deleteById(feedbackId);
@@ -68,20 +66,20 @@ public class AnswerFeedback implements CommandExecutor {
         feedback.setReplied(true);
         feedbackService.update(feedback);
 
-        var answer = args[2];
+        var answer = ctx.argument(1);
         Methods.sendMessage()
                 .setChatId(feedback.getChatId())
                 .setText("\uD83D\uDD14 <b>Ответ разработчика</b>\n\n" + answer)
                 .setReplyToMessageId(feedback.getMessageId())
-                .call(telegram);
-        ApiRequests.answerMessage(message, "Ответ отправлен!").callAsync(telegram);
+                .call(ctx.sender);
+        ctx.replyToMessage("Ответ отправлен!").callAsync(ctx.sender);
 
         // notify others about answer
-        if (!chatId.equals(feedbackChannelId)) {
-            var replierUsername = message.getFrom().getFirstName();
+        if (!ctx.chatId().equals(feedbackChannelId)) {
+            var replierUsername = ctx.user().getFirstName();
             var answerReport = String.format("%s ответил на фидбек #%d:\n\n%s",
                     replierUsername, feedbackId, answer);
-            Methods.sendMessage(feedbackChannelId, answerReport).callAsync(telegram);
+            Methods.sendMessage(feedbackChannelId, answerReport).callAsync(ctx.sender);
         }
     }
 }
