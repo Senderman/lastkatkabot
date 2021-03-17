@@ -27,7 +27,7 @@ import java.util.concurrent.RejectedExecutionException;
 public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
     private final BotConfig config;
-    private final UpdateHandler updateHandler;
+    private final CommandUpdateHandler commandUpdateHandler;
     private final ChatUserService chatUsers;
     private final UserActivityTrackerService activityTrackerService;
     private final DatabaseCleanupService databaseCleanupService;
@@ -37,7 +37,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     @Autowired
     public BotHandler(
             BotConfig config,
-            @Lazy UpdateHandler updateHandler,
+            @Lazy CommandUpdateHandler commandUpdateHandler,
             ChatUserService chatUsers,
             UserActivityTrackerService activityTrackerService,
             DatabaseCleanupService databaseCleanupService,
@@ -45,7 +45,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             ExecutorService threadPool
     ) {
         this.config = config;
-        this.updateHandler = updateHandler;
+        this.commandUpdateHandler = commandUpdateHandler;
         this.chatUsers = chatUsers;
         this.activityTrackerService = activityTrackerService;
         this.databaseCleanupService = databaseCleanupService;
@@ -113,7 +113,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
         }
 
-        updateHandler.handleUpdate(update);
+        commandUpdateHandler.handleUpdate(update);
 
         return null;
     }

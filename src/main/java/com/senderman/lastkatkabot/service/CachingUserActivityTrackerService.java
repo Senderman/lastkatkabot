@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 public class CachingUserActivityTrackerService implements UserActivityTrackerService {
 
-    public final static int FLUSH_INTERVAL = 5;
+    public final static int FLUSH_INTERVAL = 30;
     private final ChatUserService chatUserService;
     private final ScheduledExecutorService threadPool;
     private final Map<String, ChatUser> cache = new HashMap<>();

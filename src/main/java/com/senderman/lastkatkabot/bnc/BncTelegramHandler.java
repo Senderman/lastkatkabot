@@ -13,7 +13,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
-import java.util.*;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -24,7 +27,6 @@ public class BncTelegramHandler implements RegexCommand {
     private final Pattern pattern = Pattern.compile("(\\d|[a-fA-F]){4,16}");
     private final BncGamesManager gamesManager;
     private final UserStatsService usersRepo;
-    private final Map<Long, List<Integer>> messagesToDelete;
 
     public BncTelegramHandler(
             @Qualifier("bncDatabaseManager") BncGamesManager gamesManager,
@@ -32,7 +34,6 @@ public class BncTelegramHandler implements RegexCommand {
     ) {
         this.gamesManager = gamesManager;
         this.usersRepo = usersRepo;
-        this.messagesToDelete = new HashMap<>();
     }
 
     @Override
@@ -91,18 +92,18 @@ public class BncTelegramHandler implements RegexCommand {
     }
 
     private void addMessageToDelete(Message message) {
-        var chatId = message.getChatId();
+        /*var chatId = message.getChatId();
         var messageId = message.getMessageId();
         var list = messagesToDelete.computeIfAbsent(chatId, k -> new ArrayList<>());
-        list.add(messageId);
+        list.add(messageId);*/
     }
 
     private void deleteGameMessages(long chatId, CommonAbsSender telegram) {
-        var messageIds = messagesToDelete.remove(chatId);
+        /*var messageIds = messagesToDelete.remove(chatId);
         if (messageIds == null) return;
 
         for (var messageId : messageIds)
-            Methods.deleteMessage(chatId, messageId).callAsync(telegram);
+            Methods.deleteMessage(chatId, messageId).callAsync(telegram);*/
     }
 
     public void processWin(MessageContext ctx, BncResult result) {
