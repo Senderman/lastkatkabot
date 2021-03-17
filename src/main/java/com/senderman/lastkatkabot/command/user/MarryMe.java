@@ -25,7 +25,7 @@ public class MarryMe implements CommandExecutor {
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/marryme";
     }
 
@@ -35,7 +35,7 @@ public class MarryMe implements CommandExecutor {
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
         var message = ctx.message();
         if (message.isUserMessage() || !message.isReply()) {
             ctx.replyToMessage("Для использования команды необходимо ответить ей на чье-нибудь сообщение!").callAsync(ctx.sender);

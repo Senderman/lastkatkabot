@@ -89,7 +89,7 @@ public class Userstats {
         this.bncScore += amount;
     }
 
-    public boolean hasLover(){
+    public boolean hasLover() {
         return loverId != null;
     }
 
@@ -109,7 +109,7 @@ public class Userstats {
     @Override
     public String toString() {
         return "Userstats{" +
-                "userId=" + userId +
-                '}';
+               "userId=" + userId +
+               '}';
     }
 }

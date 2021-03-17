@@ -15,7 +15,7 @@ public class StartDuel implements CommandExecutor {
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/duel";
     }
 
@@ -25,7 +25,7 @@ public class StartDuel implements CommandExecutor {
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
         var user = ctx.user();
         var name = Html.htmlSafe(user.getFirstName());
         ctx.reply("🎯 Пользователь " + name + " начинает набор на дуэль!")

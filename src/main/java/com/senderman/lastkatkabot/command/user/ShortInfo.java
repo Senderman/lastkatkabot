@@ -11,7 +11,7 @@ public class ShortInfo implements CommandExecutor {
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/shortinfo";
     }
 
@@ -21,7 +21,7 @@ public class ShortInfo implements CommandExecutor {
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
         var chatId = ctx.chatId();
         var userId = ctx.user().getId();
 

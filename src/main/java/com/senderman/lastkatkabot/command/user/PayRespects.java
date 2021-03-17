@@ -14,7 +14,7 @@ public class PayRespects implements CommandExecutor {
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/f";
     }
 
@@ -24,7 +24,7 @@ public class PayRespects implements CommandExecutor {
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
         ctx.setArgumentsLimit(1);
         String object;
 

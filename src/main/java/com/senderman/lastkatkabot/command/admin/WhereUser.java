@@ -26,21 +26,21 @@ public class WhereUser implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "в каких чатах сидит юзер. реплай или " + getTrigger() + " userId";
+        return "в каких чатах сидит юзер. реплай или " + command() + " userId";
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/wru";
     }
 
     @Override
-    public EnumSet<Role> getRoles() {
+    public EnumSet<Role> authority() {
         return EnumSet.of(Role.ADMIN, Role.MAIN_ADMIN);
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
         long userId;
         try {
             userId = ctx.argumentsLength() > 0 ? Long.parseLong(ctx.argument(0)) : ctx.message().getReplyToMessage().getFrom().getId();

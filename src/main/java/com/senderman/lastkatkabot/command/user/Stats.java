@@ -19,7 +19,7 @@ public class Stats implements CommandExecutor {
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/stats";
     }
 
@@ -29,7 +29,7 @@ public class Stats implements CommandExecutor {
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
         User user = (ctx.message().isReply()) ? ctx.message().getReplyToMessage().getFrom() : ctx.user();
 
         if (user.getIsBot()) {

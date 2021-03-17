@@ -11,12 +11,12 @@ public class PayRespectsCallback implements CallbackExecutor {
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return Callbacks.F;
     }
 
     @Override
-    public void execute(CallbackQueryContext ctx) {
+    public void accept(CallbackQueryContext ctx) {
 
         if (ctx.message().getText().contains(ctx.user().getFirstName())) {
             ctx.answer("You've already payed respects! (or you've tried to pay respects to yourself)", true).callAsync(ctx.sender);

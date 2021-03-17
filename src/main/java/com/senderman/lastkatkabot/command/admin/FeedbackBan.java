@@ -24,21 +24,21 @@ public class FeedbackBan implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "бан по фидбеку. " + getTrigger() + " feedbackId причина (opt)";
+        return "бан по фидбеку. " + command() + " feedbackId причина (opt)";
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/fban";
     }
 
     @Override
-    public EnumSet<Role> getRoles() {
+    public EnumSet<Role> authority() {
         return EnumSet.of(Role.MAIN_ADMIN, Role.ADMIN);
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
         ctx.setArgumentsLimit(2);
         if (ctx.argumentsLength() < 1) {
             ctx.replyToMessage("Неверное кол-во аргументов!").callAsync(ctx.sender);

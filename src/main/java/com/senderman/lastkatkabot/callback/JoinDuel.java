@@ -21,12 +21,12 @@ public class JoinDuel implements CallbackExecutor {
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return Callbacks.DUEL;
     }
 
     @Override
-    public void execute(CallbackQueryContext ctx) {
+    public void accept(CallbackQueryContext ctx) {
         var firstUserId = Long.parseLong(ctx.data().split("\\s+")[1]);
         var secondUser = ctx.user();
         if (secondUser.getId().equals(firstUserId)) {

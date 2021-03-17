@@ -4,9 +4,9 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.dbservice.FeedbackService;
 import com.senderman.lastkatkabot.util.Html;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.EnumSet;
@@ -20,29 +20,29 @@ public class DeleteFeedback implements CommandExecutor {
 
     public DeleteFeedback(
             FeedbackService feedbackRepo,
-            @Value("${feedbackChannelId}") long feedbackChannelId
+            BotConfig config
     ) {
         this.feedbackRepo = feedbackRepo;
-        this.feedbackChannelId = feedbackChannelId;
+        this.feedbackChannelId = config.feedbackChannelId();
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/fdel";
     }
 
     @Override
     public String getDescription() {
-        return "удалить фидбек по id. " + getTrigger() + " 3";
+        return "удалить фидбек по id. " + command() + " 3";
     }
 
     @Override
-    public EnumSet<Role> getRoles() {
+    public EnumSet<Role> authority() {
         return EnumSet.of(Role.ADMIN, Role.MAIN_ADMIN);
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
         if (ctx.argumentsLength() < 1) {
             ctx.replyToMessage("Неверное количество аргументов!").callAsync(ctx.sender);
             return;

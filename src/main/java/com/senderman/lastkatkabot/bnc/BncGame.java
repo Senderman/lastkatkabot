@@ -13,9 +13,9 @@ public class BncGame {
     private final int length;
     private final List<BncResult> history;
     private final Set<String> checkedNumbers;
-    private int attemptsLeft;
     private final long startTime;
     private final boolean isHexadecimal;
+    private int attemptsLeft;
 
     public BncGame(long id, int length, boolean isHexadecimal) {
         this.id = id;

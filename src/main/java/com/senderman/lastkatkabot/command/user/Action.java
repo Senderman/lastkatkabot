@@ -12,7 +12,7 @@ public class Action implements CommandExecutor {
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/action";
     }
 
@@ -22,7 +22,7 @@ public class Action implements CommandExecutor {
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
         ctx.deleteMessage().callAsync(ctx.sender);
         ctx.setArgumentsLimit(1);
         if (ctx.argumentsLength() < 1) return;

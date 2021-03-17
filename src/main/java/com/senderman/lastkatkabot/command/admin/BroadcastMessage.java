@@ -21,7 +21,7 @@ public class BroadcastMessage implements CommandExecutor {
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/broadcast";
     }
 
@@ -31,12 +31,12 @@ public class BroadcastMessage implements CommandExecutor {
     }
 
     @Override
-    public EnumSet<Role> getRoles() {
+    public EnumSet<Role> authority() {
         return EnumSet.of(Role.MAIN_ADMIN);
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
         var chatId = ctx.chatId();
         ctx.setArgumentsLimit(1);
         if (ctx.argumentsLength() < 1) {

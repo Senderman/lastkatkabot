@@ -3,10 +3,10 @@ package com.senderman.lastkatkabot.command.user;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.dbservice.FeedbackService;
 import com.senderman.lastkatkabot.model.Feedback;
 import com.senderman.lastkatkabot.util.Html;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,24 +17,24 @@ public class SendFeedback implements CommandExecutor {
 
     public SendFeedback(
             FeedbackService feedbackRepo,
-            @Value("${feedbackChannelId}") long feedbackChannelId
+            BotConfig config
     ) {
         this.feedbackRepo = feedbackRepo;
-        this.feedbackChannelId = feedbackChannelId;
+        this.feedbackChannelId = config.feedbackChannelId();
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/feedback";
     }
 
     @Override
     public String getDescription() {
-        return "отправить сообщение разработчику. Например, " + getTrigger() + " бот не работает";
+        return "отправить сообщение разработчику. Например, " + command() + " бот не работает";
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
         ctx.setArgumentsLimit(1);
         if (ctx.argumentsLength() < 1) {
             ctx.replyToMessage("Неверное кол-во аргументов!").callAsync(ctx.sender);

@@ -1,6 +1,6 @@
 package com.senderman.lastkatkabot.service;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.senderman.lastkatkabot.config.BotConfig;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -16,11 +16,10 @@ public class ImageService {
     private final String leaveStickerId;
 
     public ImageService(
-            @Value("${hello-gif-id}") String helloGifId,
-            @Value("${leave-sticker-id}") String leaveStickerId
+            BotConfig config
     ) {
-        this.helloGifId = helloGifId;
-        this.leaveStickerId = leaveStickerId;
+        this.helloGifId = config.helloGifId();
+        this.leaveStickerId = config.leaveStickerId();
     }
 
     /**

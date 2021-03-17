@@ -16,7 +16,7 @@ public class Divorce implements CommandExecutor {
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/divorce";
     }
 
@@ -26,7 +26,7 @@ public class Divorce implements CommandExecutor {
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
 
         var userId = ctx.user().getId();
         var userStats = users.findById(userId);

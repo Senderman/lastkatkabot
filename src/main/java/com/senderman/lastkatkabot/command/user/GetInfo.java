@@ -11,7 +11,7 @@ public class GetInfo implements CommandExecutor {
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/getinfo";
     }
 
@@ -21,7 +21,7 @@ public class GetInfo implements CommandExecutor {
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
         var message = ctx.message();
         if (!message.isReply()) {
             ctx.replyToMessage("Для использования команды, отправьте ее в ответ на нужное сообщение!").callAsync(ctx.sender);

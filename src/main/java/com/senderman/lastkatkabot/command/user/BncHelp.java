@@ -2,7 +2,7 @@ package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import org.springframework.beans.factory.annotation.Value;
+import com.senderman.lastkatkabot.config.BotConfig;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -10,12 +10,12 @@ public class BncHelp implements CommandExecutor {
 
     private final String bncPhotoId;
 
-    public BncHelp(@Value("${bnc-help-picture-id}") String bncPhotoId) {
-        this.bncPhotoId = bncPhotoId;
+    public BncHelp(BotConfig config) {
+        this.bncPhotoId = config.bncHelpPictureId();
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/bnchelp";
     }
 
@@ -25,7 +25,7 @@ public class BncHelp implements CommandExecutor {
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
         ctx.replyWithPhoto()
                 .setFile(bncPhotoId)
                 .callAsync(ctx.sender);

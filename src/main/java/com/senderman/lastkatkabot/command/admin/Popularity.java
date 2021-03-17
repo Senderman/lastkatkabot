@@ -18,7 +18,7 @@ public class Popularity implements CommandExecutor {
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/popularity";
     }
 
@@ -28,12 +28,12 @@ public class Popularity implements CommandExecutor {
     }
 
     @Override
-    public EnumSet<Role> getRoles() {
+    public EnumSet<Role> authority() {
         return EnumSet.of(Role.MAIN_ADMIN, Role.ADMIN);
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
         var text = "📊 <b>Популярность бота:</b>\n\n";
         var chatsWithUsers = chatUsers.getTotalChats();
         text += "👥 Активные чаты: " + chatsWithUsers + "\n\n";

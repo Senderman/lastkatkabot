@@ -18,19 +18,19 @@ public class BncStart implements CommandExecutor {
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/bnc";
     }
 
     @Override
     public String getDescription() {
         return "начать игру \"Быки и коровы\". Можно указать /bnc x, где x от 4 до 10 - длина числа. " +
-                " А еще можно выбрать режим игры с hexadecimal системой. /bnc hex либо /bnc hex длина. " +
-                "Максимальная длина для hex - 16";
+               " А еще можно выбрать режим игры с hexadecimal системой. /bnc hex либо /bnc hex длина. " +
+               "Максимальная длина для hex - 16";
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
         // if there's game in this chat already, send state
         if (gamesHandler.hasGame(ctx.chatId())) {
             sendGameState(ctx, gamesHandler.getGameState(ctx.chatId()));

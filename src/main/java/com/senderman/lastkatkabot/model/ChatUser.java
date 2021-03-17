@@ -33,6 +33,10 @@ public class ChatUser {
         return userId;
     }
 
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
+
     public long getChatId() {
         return chatId;
     }
@@ -68,9 +72,5 @@ public class ChatUser {
                "userId=" + userId +
                ", chatId=" + chatId +
                '}';
-    }
-
-    public void setUserId(long userId) {
-        this.userId = userId;
     }
 }

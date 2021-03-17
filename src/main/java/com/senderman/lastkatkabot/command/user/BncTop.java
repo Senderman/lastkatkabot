@@ -23,7 +23,7 @@ public class BncTop implements CommandExecutor {
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/bnctop";
     }
 
@@ -33,7 +33,7 @@ public class BncTop implements CommandExecutor {
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
 
         int counter = 0;
         var top = new StringBuilder("<b>Топ-10 задротов в bnc:</b>\n\n");

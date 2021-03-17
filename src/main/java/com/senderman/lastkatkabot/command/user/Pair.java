@@ -49,7 +49,7 @@ public class Pair implements CommandExecutor {
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/pair";
     }
 
@@ -59,7 +59,7 @@ public class Pair implements CommandExecutor {
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
         long chatId = ctx.chatId();
 
         if (ctx.message().isUserMessage()) {

@@ -1,6 +1,6 @@
 package com.senderman.lastkatkabot.service;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.senderman.lastkatkabot.config.BotConfig;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -13,8 +13,8 @@ public class CurrentTime {
     private final TimeZone timeZone;
     private final SimpleDateFormat dayFormat;
 
-    public CurrentTime(@Value("${timezone}") String timezone) {
-        this.timeZone = TimeZone.getTimeZone(timezone);
+    public CurrentTime(BotConfig config) {
+        this.timeZone = TimeZone.getTimeZone(config.timezone());
         this.dayFormat = new SimpleDateFormat("yyyyMMdd");
         dayFormat.setTimeZone(timeZone);
     }

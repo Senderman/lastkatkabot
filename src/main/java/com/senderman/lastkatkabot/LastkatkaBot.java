@@ -1,6 +1,5 @@
 package com.senderman.lastkatkabot;
 
-import com.annimon.tgbotsmodule.BotHandler;
 import com.annimon.tgbotsmodule.BotModule;
 import com.annimon.tgbotsmodule.Runner;
 import com.annimon.tgbotsmodule.beans.Config;
@@ -16,8 +15,8 @@ public class LastkatkaBot implements BotModule {
     }
 
     @Override
-    public @NotNull BotHandler botHandler(@NotNull Config config) {
-        var handlerClass = UpdateHandler.class;
+    public @NotNull com.annimon.tgbotsmodule.BotHandler botHandler(@NotNull Config config) {
+        var handlerClass = BotHandler.class;
         var context = SpringApplication.run(handlerClass);
         return context.getBean(handlerClass);
     }

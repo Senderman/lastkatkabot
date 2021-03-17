@@ -25,7 +25,7 @@ public class ListUsers implements CommandExecutor {
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/ulist";
     }
 
@@ -35,12 +35,12 @@ public class ListUsers implements CommandExecutor {
     }
 
     @Override
-    public EnumSet<Role> getRoles() {
+    public EnumSet<Role> authority() {
         return EnumSet.of(Role.MAIN_ADMIN, Role.ADMIN);
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
 
         String sb = "<b>Списки пользователей</b>:\n\n" +
                     "<b>Админы</b>\n\n" +

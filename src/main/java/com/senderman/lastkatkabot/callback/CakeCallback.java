@@ -12,12 +12,12 @@ public class CakeCallback implements CallbackExecutor {
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return Callbacks.CAKE;
     }
 
     @Override
-    public void execute(CallbackQueryContext ctx) {
+    public void accept(CallbackQueryContext ctx) {
         var query = ctx.callbackQuery();
         var args = query.getData().split("\\s+");
         if (!query.getFrom().getId().equals(Long.parseLong(args[2]))) {

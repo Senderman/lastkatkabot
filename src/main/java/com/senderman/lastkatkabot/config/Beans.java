@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import com.senderman.lastkatkabot.Love;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.service.CachingUserActivityTrackerService;
-import com.senderman.lastkatkabot.service.UserActivityTrackerService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -41,11 +40,6 @@ public class Beans {
     @Bean
     public Gson gson() {
         return new Gson();
-    }
-
-    @Bean
-    public UserActivityTrackerService activityTrackerService() {
-        return cachingUserActivityTrackerService();
     }
 
     // TODO implement CachingUserActivityTrackerService as CommandExecutor

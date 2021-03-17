@@ -15,7 +15,7 @@ public class LastPairs implements CommandExecutor {
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/lastpairs";
     }
 
@@ -25,7 +25,7 @@ public class LastPairs implements CommandExecutor {
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
         if (ctx.message().isUserMessage()) {
             ctx.replyToMessage("Команду нельзя использовать в ЛС!").callAsync(ctx.sender);
             return;

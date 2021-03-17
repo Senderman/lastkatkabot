@@ -4,12 +4,12 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.dbservice.UserManager;
 import com.senderman.lastkatkabot.model.AdminUser;
-import com.senderman.lastkatkabot.service.TriggerHandler;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -23,21 +23,21 @@ public class Help implements CommandExecutor {
 
     private final Set<CommandExecutor> executors;
     private final UserManager<AdminUser> admins;
-    private final int mainAdminId;
+    private final long mainAdminId;
 
     public Help(@Lazy Set<CommandExecutor> executors,
                 UserManager<AdminUser> admins,
-                @Value("${mainAdminId}") int mainAdminId
+                BotConfig config
     ) {
         this.executors = executors.stream()
                 .filter(CommandExecutor::showInHelp)
                 .collect(Collectors.toSet());
         this.admins = admins;
-        this.mainAdminId = mainAdminId;
+        this.mainAdminId = config.mainAdminId();
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/help";
     }
 
@@ -52,7 +52,7 @@ public class Help implements CommandExecutor {
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
         try {
             trySendHelpToPm(ctx.user().getId(), ctx.sender);
             if (!ctx.message().isUserMessage())
@@ -69,6 +69,7 @@ public class Help implements CommandExecutor {
                 .chatId(Long.toString(userId))
                 .text(prepareHelpText(userId))
                 .messageId(sentMessage.getMessageId())
+                .parseMode(ParseMode.HTML)
                 .build()
         );
     }
@@ -80,10 +81,10 @@ public class Help implements CommandExecutor {
         boolean userIsMainAdmin = userId == mainAdminId;
         boolean userIsAdmin = userIsMainAdmin || admins.hasUser(userId);
 
-        var exeIterator = executors.stream().sorted(Comparator.comparing(TriggerHandler::getTrigger)).iterator();
+        var exeIterator = executors.stream().sorted(Comparator.comparing(CommandExecutor::command)).iterator();
         while (exeIterator.hasNext()) {
             var exe = exeIterator.next();
-            var roles = exe.getRoles();
+            var roles = exe.authority();
             if (roles.contains(Role.USER)) {
                 userHelp.append(formatExecutor(exe)).append("\n");
             } else if (userIsAdmin && roles.contains(Role.ADMIN))
@@ -104,6 +105,6 @@ public class Help implements CommandExecutor {
     }
 
     private String formatExecutor(CommandExecutor executor) {
-        return executor.getTrigger() + " - " + executor.getDescription();
+        return executor.command() + " - " + executor.getDescription();
     }
 }

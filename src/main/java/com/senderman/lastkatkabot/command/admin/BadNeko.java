@@ -24,12 +24,12 @@ public class BadNeko implements CommandExecutor {
     }
 
     @Override
-    public EnumSet<Role> getRoles() {
+    public EnumSet<Role> authority() {
         return EnumSet.of(Role.ADMIN, Role.MAIN_ADMIN);
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/badneko";
     }
 
@@ -39,7 +39,7 @@ public class BadNeko implements CommandExecutor {
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
         var message = ctx.message();
         if (!message.isReply() || message.isUserMessage()) {
             ctx.replyToMessage("Опускать в плохие кисы нужно в группе и реплаем!").callAsync(ctx.sender);

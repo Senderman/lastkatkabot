@@ -8,6 +8,10 @@ public interface DatabaseCleanupService {
 
     int INACTIVE_PERIOD = (int) TimeUnit.DAYS.toSeconds(14);
 
+    static int inactivePeriod() {
+        return (int) (System.currentTimeMillis() / 1000 - INACTIVE_PERIOD);
+    }
+
     long cleanInactiveUsers();
 
     long cleanEmptyChats();
@@ -17,9 +21,5 @@ public interface DatabaseCleanupService {
     long cleanOldMarriageRequests();
 
     DbCleanupResults cleanAll();
-
-    static int inactivePeriod() {
-        return (int) (System.currentTimeMillis() / 1000 - INACTIVE_PERIOD);
-    }
 
 }

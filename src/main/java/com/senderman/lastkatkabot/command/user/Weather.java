@@ -21,7 +21,7 @@ public class Weather implements CommandExecutor {
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/weather";
     }
 
@@ -31,7 +31,7 @@ public class Weather implements CommandExecutor {
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
         var userId = ctx.user().getId();
         ctx.setArgumentsLimit(1);
         // extract name of the city from the message

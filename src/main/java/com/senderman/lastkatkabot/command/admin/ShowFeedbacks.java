@@ -20,22 +20,22 @@ public class ShowFeedbacks implements CommandExecutor {
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/feedbacks";
     }
 
     @Override
     public String getDescription() {
-        return "показать первые n фидбеков. Без параметра - первые 10. Напр. " + getTrigger() + " 5";
+        return "показать первые n фидбеков. Без параметра - первые 10. Напр. " + command() + " 5";
     }
 
     @Override
-    public EnumSet<Role> getRoles() {
+    public EnumSet<Role> authority() {
         return EnumSet.of(Role.ADMIN, Role.MAIN_ADMIN);
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
         if (feedbackService.count() == 0) {
             ctx.replyToMessage("Фидбеков нет!").callAsync(ctx.sender);
             return;

@@ -15,7 +15,7 @@ public class Cake implements CommandExecutor {
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/cake";
     }
 
@@ -25,7 +25,7 @@ public class Cake implements CommandExecutor {
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
         if (!ctx.message().isReply() || ctx.message().isUserMessage()) return;
 
 

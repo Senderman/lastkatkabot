@@ -17,7 +17,7 @@ public class Health implements CommandExecutor {
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/health";
     }
 
@@ -27,7 +27,7 @@ public class Health implements CommandExecutor {
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
         ctx.reply(formatHealth()).callAsync(ctx.sender);
     }
 

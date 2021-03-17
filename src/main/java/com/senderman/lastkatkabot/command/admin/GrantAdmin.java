@@ -22,12 +22,12 @@ public class GrantAdmin implements CommandExecutor {
     }
 
     @Override
-    public EnumSet<Role> getRoles() {
+    public EnumSet<Role> authority() {
         return EnumSet.of(Role.MAIN_ADMIN);
     }
 
     @Override
-    public String getTrigger() {
+    public String command() {
         return "/grantadmin";
     }
 
@@ -37,7 +37,7 @@ public class GrantAdmin implements CommandExecutor {
     }
 
     @Override
-    public void execute(MessageContext ctx) {
+    public void accept(MessageContext ctx) {
         if (!ctx.message().isReply() || ctx.message().isUserMessage()) {
             ctx.replyToMessage("Посвящать в админы нужно в группе и реплаем!").callAsync(ctx.sender);
             return;

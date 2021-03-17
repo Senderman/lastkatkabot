@@ -1,26 +1,17 @@
 package com.senderman.lastkatkabot;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
-import com.annimon.tgbotsmodule.commands.context.CallbackQueryContextBuilder;
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
-import com.annimon.tgbotsmodule.commands.context.MessageContextBuilder;
 import com.senderman.lastkatkabot.bnc.BncTelegramHandler;
-import com.senderman.lastkatkabot.callback.CallbackExecutor;
-import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.dbservice.DatabaseCleanupService;
-import com.senderman.lastkatkabot.dbservice.UserManager;
-import com.senderman.lastkatkabot.model.AdminUser;
-import com.senderman.lastkatkabot.model.BlacklistedUser;
-import com.senderman.lastkatkabot.service.HandlerExtractor;
 import com.senderman.lastkatkabot.service.ImageService;
 import com.senderman.lastkatkabot.service.UserActivityTrackerService;
 import com.senderman.lastkatkabot.util.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Lazy;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -29,23 +20,17 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 
 @SpringBootApplication
-public class UpdateHandler extends BotHandlerExtension {
+public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
     private final String username;
     private final String token;
-    private final HandlerExtractor<CommandExecutor> commands;
-    private final HandlerExtractor<CallbackExecutor> callbacks;
-    private final UserManager<AdminUser> admins;
-    private final UserManager<BlacklistedUser> blacklist;
-    private final int mainAdminId;
-    private final int notificationChannelId;
+    private final BotConfig config;
+    private final Commands commands;
     private final ChatUserService chatUsers;
     private final UserActivityTrackerService activityTrackerService;
     private final DatabaseCleanupService databaseCleanupService;
@@ -54,14 +39,9 @@ public class UpdateHandler extends BotHandlerExtension {
     private final ExecutorService threadPool;
 
     @Autowired
-    public UpdateHandler(
-            @Value("${login}") String login,
-            @Value("${mainAdminId}") int mainAdminId,
-            @Value("${notificationChannelId}") int notificationChannelId,
-            HandlerExtractor<CommandExecutor> commandExtractor,
-            HandlerExtractor<CallbackExecutor> callbacks,
-            UserManager<AdminUser> admins,
-            UserManager<BlacklistedUser> blacklist,
+    public BotHandler(
+            BotConfig config,
+            @Lazy Commands commands,
             ChatUserService chatUsers,
             UserActivityTrackerService activityTrackerService,
             DatabaseCleanupService databaseCleanupService,
@@ -69,12 +49,8 @@ public class UpdateHandler extends BotHandlerExtension {
             ImageService imageService,
             ExecutorService threadPool
     ) {
-        this.commands = commandExtractor;
-        this.callbacks = callbacks;
-        this.admins = admins;
-        this.blacklist = blacklist;
-        this.mainAdminId = mainAdminId;
-        this.notificationChannelId = notificationChannelId;
+        this.config = config;
+        this.commands = commands;
         this.chatUsers = chatUsers;
         this.activityTrackerService = activityTrackerService;
         this.databaseCleanupService = databaseCleanupService;
@@ -82,25 +58,23 @@ public class UpdateHandler extends BotHandlerExtension {
         this.imageService = imageService;
         this.threadPool = threadPool;
 
-        var args = login.split("\\s+");
-        username = args[0];
-        token = args[1];
+        var loginArgs = config.login().split("\\s+");
+        username = loginArgs[0];
+        token = loginArgs[1];
 
-        addMethodPreprocessor(SendMessage.PATH, m -> {
-            var sm = (SendMessage) m;
-            sm.enableHtml(true);
-            sm.disableWebPagePreview();
+        addMethodPreprocessor(SendMessage.class, m -> {
+            m.enableHtml(true);
+            m.disableWebPagePreview();
         });
 
-        addMethodPreprocessor(EditMessageText.PATH, m -> {
-            var em = (EditMessageText) m;
-            em.enableHtml(true);
-            em.disableWebPagePreview();
+        addMethodPreprocessor(EditMessageText.class, m -> {
+            m.enableHtml(true);
+            m.disableWebPagePreview();
         });
 
-        Methods.sendMessage(notificationChannelId, "Инициализация и очистка БД...").callAsync(this);
+        Methods.sendMessage(config.notificationChannelId(), "Инициализация и очистка БД...").callAsync(this);
         cleanupDatabase();
-        Methods.sendMessage(notificationChannelId, "Бот запущен!").callAsync(this);
+        Methods.sendMessage(config.notificationChannelId(), "Бот запущен!").callAsync(this);
     }
 
     @Override
@@ -111,7 +85,7 @@ public class UpdateHandler extends BotHandlerExtension {
             } catch (RejectedExecutionException ignored) {
             } catch (Throwable e) {
                 Methods.sendMessage()
-                        .setChatId(notificationChannelId)
+                        .setChatId(config.notificationChannelId())
                         .setText("⚠️ <b>Ошибка обработки апдейта</b>\n\n" + ExceptionUtils.stackTraceAsString(e))
                         .enableHtml()
                         .disableWebPagePreview()
@@ -122,13 +96,6 @@ public class UpdateHandler extends BotHandlerExtension {
 
     @Override
     protected BotApiMethod<?> onUpdate(@NotNull Update update) {
-
-        if (update.hasCallbackQuery()) {
-            var query = update.getCallbackQuery();
-            callbacks.findHandler(query.getData().split("\\s+", 2)[0])
-                    .ifPresent(e -> e.execute(buildCallbackQueryContext(update)));
-            return null;
-        }
 
         if (!update.hasMessage()) return null;
 
@@ -163,19 +130,7 @@ public class UpdateHandler extends BotHandlerExtension {
             return null;
         }
 
-        if (!message.isCommand()) return null;
-
-        /* bot should only trigger on general commands (like /command) or on commands for this bot (/command@mybot),
-         * and NOT on commands for another bots (like /command@notmybot)
-         */
-        var command = text.split("\\s+", 2)[0]
-                .toLowerCase(Locale.ENGLISH)
-                .replace("@" + getBotUsername(), "");
-        if (command.contains("@")) return null;
-
-        commands.findHandler(command)
-                .filter(e -> checkAccess(e.getRoles(), message.getFrom().getId()))
-                .ifPresent(e -> e.execute(buildMessageContext(update)));
+        commands.handleUpdate(update);
 
         return null;
     }
@@ -243,26 +198,6 @@ public class UpdateHandler extends BotHandlerExtension {
         }
     }
 
-    private MessageContext buildMessageContext(Update update) {
-        var message = update.getMessage();
-        var args = message.getText().split("\\s+", 2);
-        return new MessageContextBuilder()
-                .setUpdate(update)
-                .setSender(this)
-                .setChatId(message.getChatId())
-                .setUser(message.getFrom())
-                .setText(args.length > 1 ? args[1] : "")
-                .createMessageContext();
-    }
-
-    private CallbackQueryContext buildCallbackQueryContext(Update update) {
-        return new CallbackQueryContextBuilder()
-                .setUpdate(update)
-                .setSender(this)
-                .setUser(update.getCallbackQuery().getFrom())
-                .createContext();
-    }
-
     private void processLeftChatMember(Message message) {
         chatUsers.deleteByChatIdAndUserId(message.getChatId(), message.getLeftChatMember().getId());
         Methods.sendDocument(message.getChatId())
@@ -290,18 +225,6 @@ public class UpdateHandler extends BotHandlerExtension {
         activityTrackerService.updateLastMessageDate(chatId, userId, date);
     }
 
-
-    private boolean checkAccess(EnumSet<Role> roles, long userId) {
-        // allow all commands for the main admin
-        if (userId == mainAdminId) return true;
-        // do not allow blacklisted users
-        if (blacklist.hasUser(userId)) return false;
-        // allow users to use user commands
-        if (roles.contains(Role.USER)) return true;
-        // check admin permissions
-        return roles.contains(Role.ADMIN) && admins.hasUser(userId);
-    }
-
     private void cleanupDatabase() {
         var r = databaseCleanupService.cleanAll();
         var text = """
@@ -312,6 +235,8 @@ public class UpdateHandler extends BotHandlerExtension {
                 🐮 BnC: %d
                 💒 Запросы в ЗАГС: %d"""
                 .formatted(r.getUsers(), r.getChats(), r.getBncGames(), r.getMarriageRequests());
-        Methods.sendMessage(notificationChannelId, text).callAsync(this);
+        Methods.sendMessage(config.notificationChannelId(), text).callAsync(this);
     }
+
+
 }
