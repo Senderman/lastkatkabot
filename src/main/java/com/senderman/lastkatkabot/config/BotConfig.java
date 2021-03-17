@@ -2,7 +2,9 @@ package com.senderman.lastkatkabot.config;
 
 public interface BotConfig {
 
-    String login();
+    String token();
+
+    String username();
 
     String timezone();
 

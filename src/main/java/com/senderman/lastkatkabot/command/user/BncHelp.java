@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class BncHelp implements CommandExecutor {
 
-    private final String bncPhotoId;
+    private final BotConfig config;
 
     public BncHelp(BotConfig config) {
-        this.bncPhotoId = config.bncHelpPictureId();
+        this.config = config;
     }
 
     @Override
@@ -27,7 +27,7 @@ public class BncHelp implements CommandExecutor {
     @Override
     public void accept(MessageContext ctx) {
         ctx.replyWithPhoto()
-                .setFile(bncPhotoId)
+                .setFile(config.bncHelpPictureId())
                 .callAsync(ctx.sender);
     }
 }

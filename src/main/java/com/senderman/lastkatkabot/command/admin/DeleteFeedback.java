@@ -15,15 +15,15 @@ import java.util.EnumSet;
 public class DeleteFeedback implements CommandExecutor {
 
     private final FeedbackService feedbackRepo;
-    private final long feedbackChannelId;
-
+    ;
+    private final BotConfig config;
 
     public DeleteFeedback(
             FeedbackService feedbackRepo,
             BotConfig config
     ) {
         this.feedbackRepo = feedbackRepo;
-        this.feedbackChannelId = config.feedbackChannelId();
+        this.config = config;
     }
 
     @Override
@@ -64,9 +64,9 @@ public class DeleteFeedback implements CommandExecutor {
         feedbackRepo.deleteById(feedbackId);
         var text = "Фидбек #" + feedbackId + " удален";
         ctx.replyToMessage(text).callAsync(ctx.sender);
-        if (!ctx.chatId().equals(feedbackChannelId))
+        if (!ctx.chatId().equals(config.feedbackChannelId()))
             Methods.sendMessage()
-                    .setChatId(feedbackChannelId)
+                    .setChatId(config.feedbackChannelId())
                     .setText(text + " пользователем " + Html.getUserLink(ctx.user()))
                     .callAsync(ctx.sender);
     }

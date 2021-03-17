@@ -13,14 +13,14 @@ import org.springframework.stereotype.Component;
 public class SendFeedback implements CommandExecutor {
 
     private final FeedbackService feedbackRepo;
-    private final long feedbackChannelId;
+    private final BotConfig config;
 
     public SendFeedback(
             FeedbackService feedbackRepo,
             BotConfig config
     ) {
         this.feedbackRepo = feedbackRepo;
-        this.feedbackChannelId = config.feedbackChannelId();
+        this.config = config;
     }
 
     @Override
@@ -61,7 +61,7 @@ public class SendFeedback implements CommandExecutor {
 
                 Для ответа, введите /fresp %d &lt;ваш ответ&gt;""")
                 .formatted(feedbackId, userLink, feedbackText, feedbackId);
-        Methods.sendMessage(feedbackChannelId, text).callAsync(ctx.sender);
+        Methods.sendMessage(config.feedbackChannelId(), text).callAsync(ctx.sender);
         ctx.replyToMessage("✅ Сообщение отправлено разработчикам!").callAsync(ctx.sender);
     }
 }

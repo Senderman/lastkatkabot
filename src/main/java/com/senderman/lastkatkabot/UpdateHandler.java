@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component;
 import java.util.Set;
 
 @Component
-public class Commands extends CommandRegistry<Role> {
+public class UpdateHandler extends CommandRegistry<Role> {
 
-    public Commands(
+    public UpdateHandler(
             @NotNull BotHandler handler,
             @NotNull Authority<Role> authority,
             Set<CommandExecutor> commands,

@@ -14,14 +14,14 @@ import java.util.EnumSet;
 public class AnswerFeedback implements CommandExecutor {
 
     private final FeedbackService feedbackService;
-    private final long feedbackChannelId;
+    private final BotConfig config;
 
     public AnswerFeedback(
             FeedbackService feedbackService,
             BotConfig config
     ) {
         this.feedbackService = feedbackService;
-        this.feedbackChannelId = config.feedbackChannelId();
+        this.config = config;
     }
 
     @Override
@@ -75,11 +75,11 @@ public class AnswerFeedback implements CommandExecutor {
         ctx.replyToMessage("Ответ отправлен!").callAsync(ctx.sender);
 
         // notify others about answer
-        if (!ctx.chatId().equals(feedbackChannelId)) {
+        if (!ctx.chatId().equals(config.feedbackChannelId())) {
             var replierUsername = ctx.user().getFirstName();
             var answerReport = String.format("%s ответил на фидбек #%d:\n\n%s",
                     replierUsername, feedbackId, answer);
-            Methods.sendMessage(feedbackChannelId, answerReport).callAsync(ctx.sender);
+            Methods.sendMessage(config.feedbackChannelId(), answerReport).callAsync(ctx.sender);
         }
     }
 }

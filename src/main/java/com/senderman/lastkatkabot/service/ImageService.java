@@ -12,14 +12,10 @@ import java.util.UUID;
 @Service
 public class ImageService {
 
-    private final String helloGifId;
-    private final String leaveStickerId;
+    private final BotConfig config;
 
-    public ImageService(
-            BotConfig config
-    ) {
-        this.helloGifId = config.helloGifId();
-        this.leaveStickerId = config.leaveStickerId();
+    public ImageService(BotConfig config) {
+        this.config = config;
     }
 
     /**
@@ -61,11 +57,11 @@ public class ImageService {
     }
 
     public String getHelloGifId() {
-        return helloGifId;
+        return config.helloGifId();
     }
 
     public String getLeaveStickerId() {
-        return leaveStickerId;
+        return config.leaveStickerId();
     }
 
     public static class TooWideNicknameException extends Exception {

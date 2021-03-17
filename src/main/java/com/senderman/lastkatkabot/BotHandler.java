@@ -1,7 +1,6 @@
 package com.senderman.lastkatkabot;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.senderman.lastkatkabot.bnc.BncTelegramHandler;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.dbservice.DatabaseCleanupService;
@@ -27,40 +26,31 @@ import java.util.concurrent.RejectedExecutionException;
 @SpringBootApplication
 public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
-    private final String username;
-    private final String token;
     private final BotConfig config;
-    private final Commands commands;
+    private final UpdateHandler updateHandler;
     private final ChatUserService chatUsers;
     private final UserActivityTrackerService activityTrackerService;
     private final DatabaseCleanupService databaseCleanupService;
-    private final BncTelegramHandler bnc;
     private final ImageService imageService;
     private final ExecutorService threadPool;
 
     @Autowired
     public BotHandler(
             BotConfig config,
-            @Lazy Commands commands,
+            @Lazy UpdateHandler updateHandler,
             ChatUserService chatUsers,
             UserActivityTrackerService activityTrackerService,
             DatabaseCleanupService databaseCleanupService,
-            BncTelegramHandler bnc,
             ImageService imageService,
             ExecutorService threadPool
     ) {
         this.config = config;
-        this.commands = commands;
+        this.updateHandler = updateHandler;
         this.chatUsers = chatUsers;
         this.activityTrackerService = activityTrackerService;
         this.databaseCleanupService = databaseCleanupService;
-        this.bnc = bnc;
         this.imageService = imageService;
         this.threadPool = threadPool;
-
-        var loginArgs = config.login().split("\\s+");
-        username = loginArgs[0];
-        token = loginArgs[1];
 
         addMethodPreprocessor(SendMessage.class, m -> {
             m.enableHtml(true);
@@ -123,7 +113,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
         }
 
-        commands.handleUpdate(update);
+        updateHandler.handleUpdate(update);
 
         return null;
     }
@@ -201,12 +191,12 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
     @Override
     public String getBotToken() {
-        return token;
+        return config.token();
     }
 
     @Override
     public String getBotUsername() {
-        return username;
+        return config.username();
     }
 
 

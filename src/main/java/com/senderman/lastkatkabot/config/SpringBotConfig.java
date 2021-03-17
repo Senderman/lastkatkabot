@@ -6,7 +6,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class SpringBotConfig implements BotConfig {
 
-    private final String login;
+    private final String token;
+    private final String username;
     private final String timezone;
     private final long mainAdminId;
     private final long feedbackChannelId;
@@ -25,7 +26,10 @@ public class SpringBotConfig implements BotConfig {
             @Value("${helloGifId}") String helloGifId,
             @Value("${leaveStickerId}") String leaveStickerId
     ) {
-        this.login = login;
+
+        var loginArgs = login.split("\\s+");
+        this.username = loginArgs[0];
+        this.token = loginArgs[1];
         this.timezone = timezone;
         this.mainAdminId = mainAdminId;
         this.feedbackChannelId = feedbackChannelId;
@@ -36,8 +40,13 @@ public class SpringBotConfig implements BotConfig {
     }
 
     @Override
-    public String login() {
-        return login;
+    public String token() {
+        return token;
+    }
+
+    @Override
+    public String username() {
+        return username;
     }
 
     @Override

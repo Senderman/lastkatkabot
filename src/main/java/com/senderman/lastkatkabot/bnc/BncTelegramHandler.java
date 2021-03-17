@@ -2,6 +2,7 @@ package com.senderman.lastkatkabot.bnc;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.RegexCommand;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.commands.context.RegexMessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
@@ -16,6 +17,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+// TODO replace sender with context
 @Component
 public class BncTelegramHandler implements RegexCommand {
 
@@ -52,9 +54,9 @@ public class BncTelegramHandler implements RegexCommand {
             var result = gamesManager.check(chatId, number);
             addMessageToDelete(message);
             if (result.isWin()) {
-                processWin(message, result, telegram);
+                processWin(ctx, result);
             } else {
-                sendGameMessage(chatId, formatResult(result), telegram);
+                sendGameMessage(ctx.chatId(), formatResult(result), ctx.sender);
             }
         } catch (NumberAlreadyCheckedException e) {
             addMessageToDelete(message);
@@ -64,7 +66,7 @@ public class BncTelegramHandler implements RegexCommand {
             sendGameMessage(chatId, "Число не должно иметь повторяющихся цифр!", telegram);
         } catch (GameOverException e) {
             addMessageToDelete(message);
-            processGameOver(message, e.getAnswer(), telegram);
+            processGameOver(ctx, e.getAnswer());
         } catch (InvalidLengthException | InvalidCharacterException | NoSuchElementException ignored) {
         }
     }
@@ -82,8 +84,8 @@ public class BncTelegramHandler implements RegexCommand {
     }
 
     // Send message that will be deleted after game end
-    public void sendGameMessage(long chatId, String text, CommonAbsSender telegram) {
-        var sentMessage = Methods.sendMessage(chatId, text).call(telegram);
+    public void sendGameMessage(long chatId, String text, CommonAbsSender sender) {
+        var sentMessage = Methods.sendMessage(chatId, text).call(sender);
         if (sentMessage != null)
             addMessageToDelete(sentMessage);
     }
@@ -103,9 +105,9 @@ public class BncTelegramHandler implements RegexCommand {
             Methods.deleteMessage(chatId, messageId).callAsync(telegram);
     }
 
-    public void processWin(Message message, BncResult result, CommonAbsSender telegram) {
-        var chatId = message.getChatId();
-        var userId = message.getFrom().getId();
+    public void processWin(MessageContext ctx, BncResult result) {
+        long chatId = ctx.chatId();
+        var userId = ctx.user().getId();
         var userStats = usersRepo.findById(userId);
         userStats.increaseBncScore(result.getNumber().length());
         usersRepo.save(userStats);
@@ -113,21 +115,21 @@ public class BncTelegramHandler implements RegexCommand {
         var gameState = gamesManager.getGameState(chatId);
         gamesManager.deleteGame(chatId);
 
-        var username = Html.htmlSafe(message.getFrom().getFirstName());
+        var username = Html.htmlSafe(ctx.user().getFirstName());
         var text = username + " выиграл за " +
                    (BncGame.totalAttempts(gameState.getLength(), gameState.isHexadecimal()) - result.getAttempts()) +
                    " попыток!\n\n" + formatGameEndMessage(gameState);
-        deleteGameMessages(chatId, telegram);
-        Methods.sendMessage(chatId, text).callAsync(telegram);
+        deleteGameMessages(chatId, ctx.sender);
+        ctx.reply(text).callAsync(ctx.sender);
     }
 
-    public void processGameOver(Message message, String answer, CommonAbsSender telegram) {
-        var chatId = message.getChatId();
+    public void processGameOver(MessageContext ctx, String answer) {
+        long chatId = ctx.chatId();
         var gameState = gamesManager.getGameState(chatId);
         gamesManager.deleteGame(chatId);
-        deleteGameMessages(chatId, telegram);
+        deleteGameMessages(chatId, ctx.sender);
         var text = "Вы проиграли! Ответ: " + answer + "\n\n" + formatGameEndMessage(gameState);
-        Methods.sendMessage(chatId, text).callAsync(telegram);
+        ctx.reply(text).callAsync(ctx.sender);
     }
 
     private String formatGameEndMessage(BncGameState state) {

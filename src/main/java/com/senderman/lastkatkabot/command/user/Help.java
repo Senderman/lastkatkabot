@@ -23,7 +23,7 @@ public class Help implements CommandExecutor {
 
     private final Set<CommandExecutor> executors;
     private final UserManager<AdminUser> admins;
-    private final long mainAdminId;
+    private final BotConfig config;
 
     public Help(@Lazy Set<CommandExecutor> executors,
                 UserManager<AdminUser> admins,
@@ -33,7 +33,7 @@ public class Help implements CommandExecutor {
                 .filter(CommandExecutor::showInHelp)
                 .collect(Collectors.toSet());
         this.admins = admins;
-        this.mainAdminId = config.mainAdminId();
+        this.config = config;
     }
 
     @Override
@@ -78,7 +78,7 @@ public class Help implements CommandExecutor {
         var userHelp = new StringBuilder("<b>Основные команды:</b>\n\n");
         var adminHelp = new StringBuilder("<b>Команды админов:</b>\n\n");
         var mainAdminHelp = new StringBuilder("<b>Команды главного админа:</b>\n\n");
-        boolean userIsMainAdmin = userId == mainAdminId;
+        boolean userIsMainAdmin = userId == config.mainAdminId();
         boolean userIsAdmin = userIsMainAdmin || admins.hasUser(userId);
 
         var exeIterator = executors.stream().sorted(Comparator.comparing(CommandExecutor::command)).iterator();
