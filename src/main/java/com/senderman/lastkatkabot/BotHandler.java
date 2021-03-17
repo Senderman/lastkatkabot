@@ -121,15 +121,6 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             return null;
         }
 
-        if (!message.hasText()) return null;
-
-        var text = message.getText();
-
-        if (text.matches("(\\d|[a-fA-F]){4,16}")) {
-            bnc.processBncAnswer(message, this);
-            return null;
-        }
-
         commands.handleUpdate(update);
 
         return null;

@@ -1,7 +1,10 @@
 package com.senderman.lastkatkabot.bnc;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.annimon.tgbotsmodule.commands.RegexCommand;
+import com.annimon.tgbotsmodule.commands.context.RegexMessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
+import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.bnc.exception.*;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
@@ -10,11 +13,13 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Component
-public class BncTelegramHandler {
+public class BncTelegramHandler implements RegexCommand {
 
+    private final Pattern pattern = Pattern.compile("(\\d|[a-fA-F]){4,16}");
     private final BncGamesManager gamesManager;
     private final UserStatsService usersRepo;
     private final Map<Long, List<Integer>> messagesToDelete;
@@ -28,8 +33,20 @@ public class BncTelegramHandler {
         this.messagesToDelete = new HashMap<>();
     }
 
-    public void processBncAnswer(Message message, CommonAbsSender telegram) {
-        var chatId = message.getChatId();
+    @Override
+    public Pattern pattern() {
+        return pattern;
+    }
+
+    @Override
+    public EnumSet<Role> authority() {
+        return EnumSet.of(Role.USER);
+    }
+
+    public void accept(RegexMessageContext ctx) {
+        var message = ctx.message();
+        var telegram = ctx.sender;
+        var chatId = ctx.chatId();
         var number = message.getText().toUpperCase(Locale.ENGLISH);
         try {
             var result = gamesManager.check(chatId, number);
