@@ -97,28 +97,30 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     @Override
     protected BotApiMethod<?> onUpdate(@NotNull Update update) {
 
-        if (!update.hasMessage()) return null;
+        if (update.hasMessage()) {
 
-        var message = update.getMessage();
+            var message = update.getMessage();
 
-        if (message.getDate() + 120 < System.currentTimeMillis() / 1000) return null;
+            if (message.getDate() + 120 < System.currentTimeMillis() / 1000) return null;
 
-        {
-            var newMembers = message.getNewChatMembers();
-            if (!newMembers.isEmpty()) {
-                threadPool.execute(() -> processNewChatMembers(message));
+            {
+                var newMembers = message.getNewChatMembers();
+                if (!newMembers.isEmpty()) {
+                    threadPool.execute(() -> processNewChatMembers(message));
+                    return null;
+                }
+            }
+
+            // track users activity in chats (777000 is userId of attached channel messages)
+            if (!message.isUserMessage() && !message.getFrom().getId().equals(777000L)) {
+                threadPool.execute(() -> updateUserLastMessageDate(message));
+            }
+
+            if (message.getLeftChatMember() != null) {
+                processLeftChatMember(message);
                 return null;
             }
-        }
 
-        // track users activity in chats (777000 is userId of attached channel messages)
-        if (!message.isUserMessage() && !message.getFrom().getId().equals(777000L)) {
-            threadPool.execute(() -> updateUserLastMessageDate(message));
-        }
-
-        if (message.getLeftChatMember() != null) {
-            processLeftChatMember(message);
-            return null;
         }
 
         commands.handleUpdate(update);

@@ -22,6 +22,7 @@ public class Commands extends CommandRegistry<Role> {
             BncTelegramHandler bncTelegramHandler
     ) {
         super(handler, authority);
+
         splitCallbackCommandByWhitespace();
         register(bncTelegramHandler);
 
