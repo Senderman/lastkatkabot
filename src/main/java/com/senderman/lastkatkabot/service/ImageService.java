@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -28,7 +29,7 @@ public class ImageService {
      */
     public File generateGreetingSticker(String nickname) throws IOException, TooWideNicknameException {
         var orig = getClass().getResourceAsStream("/greeting.png");
-        var img = ImageIO.read(orig);
+        var img = ImageIO.read(Objects.requireNonNull(orig));
         orig.close();
         var g = img.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

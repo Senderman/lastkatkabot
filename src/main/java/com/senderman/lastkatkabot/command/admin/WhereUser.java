@@ -6,6 +6,7 @@ import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import java.util.EnumSet;
@@ -40,7 +41,7 @@ public class WhereUser implements CommandExecutor {
     }
 
     @Override
-    public void accept(MessageContext ctx) {
+    public void accept(@NotNull MessageContext ctx) {
         long userId;
         try {
             userId = ctx.argumentsLength() > 0 ? Long.parseLong(ctx.argument(0)) : ctx.message().getReplyToMessage().getFrom().getId();

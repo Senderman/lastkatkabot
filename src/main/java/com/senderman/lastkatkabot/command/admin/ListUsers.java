@@ -42,13 +42,13 @@ public class ListUsers implements CommandExecutor {
     @Override
     public void accept(MessageContext ctx) {
 
-        String sb = "<b>Списки пользователей</b>:\n\n" +
+        String text = "<b>Списки пользователей</b>:\n\n" +
                     "<b>Админы</b>\n\n" +
                     formatUsers(admins) +
                     "\n\n" +
                     "<b>Плохие кисы</b>\n\n" +
                     formatUsers(blacklist);
-        ctx.replyToMessage(sb.toString()).callAsync(ctx.sender);
+        ctx.replyToMessage(text).callAsync(ctx.sender);
 
     }
 

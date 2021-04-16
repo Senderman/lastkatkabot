@@ -6,6 +6,7 @@ import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.ChatMember;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -33,7 +34,7 @@ public class BncTop implements CommandExecutor {
     }
 
     @Override
-    public void accept(MessageContext ctx) {
+    public void accept(@NotNull MessageContext ctx) {
 
         int counter = 0;
         var top = new StringBuilder("<b>Топ-10 задротов в bnc:</b>\n\n");

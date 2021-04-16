@@ -49,7 +49,7 @@ public class BncTelegramHandler implements RegexCommand {
     public void accept(RegexMessageContext ctx) {
         var message = ctx.message();
         var telegram = ctx.sender;
-        var chatId = ctx.chatId();
+        long chatId = ctx.chatId();
         var number = message.getText().toUpperCase(Locale.ENGLISH);
         try {
             var result = gamesManager.check(chatId, number);

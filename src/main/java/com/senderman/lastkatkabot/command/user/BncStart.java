@@ -38,9 +38,7 @@ public class BncStart implements CommandExecutor {
         }
 
         int length;
-        boolean isHexadecimal = false;
-        if (ctx.argument(0, "").equalsIgnoreCase("hex"))
-            isHexadecimal = true;
+        boolean isHexadecimal = ctx.argument(0, "").equalsIgnoreCase("hex");
         try {
             int lengthIndex = isHexadecimal ? 1 : 0; // /bnc 5 or /bnc hex 5
             length = Integer.parseInt(ctx.argument(lengthIndex, "4"));

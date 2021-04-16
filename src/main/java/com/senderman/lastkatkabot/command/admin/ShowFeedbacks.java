@@ -5,6 +5,7 @@ import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.FeedbackService;
 import com.senderman.lastkatkabot.model.Feedback;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import java.util.EnumSet;
@@ -35,7 +36,7 @@ public class ShowFeedbacks implements CommandExecutor {
     }
 
     @Override
-    public void accept(MessageContext ctx) {
+    public void accept(@NotNull MessageContext ctx) {
         if (feedbackService.count() == 0) {
             ctx.replyToMessage("Фидбеков нет!").callAsync(ctx.sender);
             return;

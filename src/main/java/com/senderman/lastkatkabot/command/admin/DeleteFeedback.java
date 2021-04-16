@@ -15,7 +15,6 @@ import java.util.EnumSet;
 public class DeleteFeedback implements CommandExecutor {
 
     private final FeedbackService feedbackRepo;
-    ;
     private final BotConfig config;
 
     public DeleteFeedback(

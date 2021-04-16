@@ -32,7 +32,7 @@ public class Weather implements CommandExecutor {
 
     @Override
     public void accept(MessageContext ctx) {
-        var userId = ctx.user().getId();
+        long userId = ctx.user().getId();
         ctx.setArgumentsLimit(1);
         // extract name of the city from the message
         var city = ctx.argument(0, "");
