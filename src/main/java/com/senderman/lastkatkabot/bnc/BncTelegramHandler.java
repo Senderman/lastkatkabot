@@ -12,6 +12,7 @@ import com.senderman.lastkatkabot.util.Html;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -92,18 +93,25 @@ public class BncTelegramHandler implements RegexCommand {
     }
 
     private void addMessageToDelete(Message message) {
-        /*var chatId = message.getChatId();
+        var chatId = message.getChatId();
         var messageId = message.getMessageId();
-        var list = messagesToDelete.computeIfAbsent(chatId, k -> new ArrayList<>());
-        list.add(messageId);*/
+        gamesManager.addFloodMessage(messageId, chatId);
     }
 
     private void deleteGameMessages(long chatId, CommonAbsSender telegram) {
-        /*var messageIds = messagesToDelete.remove(chatId);
-        if (messageIds == null) return;
+        var messages = gamesManager.getFloodMessagesByGameId(chatId);
+        if (messages == null) return;
 
-        for (var messageId : messageIds)
-            Methods.deleteMessage(chatId, messageId).callAsync(telegram);*/
+        FloodDeleteExceptionConsumer exceptionsConsumer = new FloodDeleteExceptionConsumer(
+                telegram, chatId
+        );
+
+        for (var message : messages) {
+            int messageId = message.getMessageId();
+            Methods.deleteMessage(chatId, messageId).callAsync(
+                    telegram, null, exceptionsConsumer::onException, null);
+        }
+        gamesManager.deleteFloodMessagesByGameId(chatId);
     }
 
     public void processWin(MessageContext ctx, BncResult result) {
@@ -159,5 +167,31 @@ public class BncTelegramHandler implements RegexCommand {
                 result.getBulls(),
                 result.getCows(),
                 result.getAttempts());
+    }
+
+    static private class FloodDeleteExceptionConsumer {
+        private int counter;
+        private final CommonAbsSender telegram;
+        private final long chatId;
+
+        public FloodDeleteExceptionConsumer(CommonAbsSender telegram, long chatId) {
+            this.counter = 0;
+            this.telegram = telegram;
+            this.chatId = chatId;
+        }
+
+        public void onException(TelegramApiException e){
+            if (counter > 0) {
+                return;
+            }
+            String message = e.getMessage();
+            if (message.equals("Error deleting message")) {
+                Methods.sendMessage(
+                        chatId,
+                        "Чтобы я удалял ВСЕ сообщения в bnc, выдайте мне права на удаление сообщений в чате!"
+                ).callAsync(telegram);
+            }
+            this.counter = 1;
+        }
     }
 }
