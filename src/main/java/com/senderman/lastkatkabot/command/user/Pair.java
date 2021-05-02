@@ -78,7 +78,7 @@ public class Pair implements CommandExecutor {
             return;
         }
 
-        if (runningChatPairsGenerations.contains(chatId)) {
+        if (!runningChatPairsGenerations.add(chatId)) {
             ctx.reply("Пара дня все еще генерируется, подождите!").callAsync(ctx.sender);
             return;
         }
@@ -88,6 +88,7 @@ public class Pair implements CommandExecutor {
 
         if (chatUsers.countByChatId(chatId) < 2) {
             ctx.reply("Недостаточно пользователей писало в чат за последние 2 недели!").callAsync(ctx.sender);
+            runningChatPairsGenerations.remove(chatId);
             return;
         }
 
@@ -96,7 +97,6 @@ public class Pair implements CommandExecutor {
         Future<?> floodFuture = threadPool.submit(() -> sendRandomShitWithDelay(chatId, loveStrings, 1000L, ctx.sender));
 
         threadPool.execute(() -> {
-            runningChatPairsGenerations.add(chatId);
             try {
                 PairData pair;
                 try {
