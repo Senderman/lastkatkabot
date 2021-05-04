@@ -3,6 +3,7 @@ package com.senderman.lastkatkabot.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+
 @Component
 public class SpringBotConfig implements BotConfig {
 
@@ -26,7 +27,6 @@ public class SpringBotConfig implements BotConfig {
             @Value("${helloGifId}") String helloGifId,
             @Value("${leaveStickerId}") String leaveStickerId
     ) {
-
         var loginArgs = login.split("\\s+");
         this.username = loginArgs[0];
         this.token = loginArgs[1];

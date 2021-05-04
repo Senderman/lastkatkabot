@@ -1,8 +1,10 @@
 package com.senderman.lastkatkabot.bnc;
 
 import com.senderman.lastkatkabot.bnc.exception.*;
+import com.senderman.lastkatkabot.model.BncFloodMessage;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 public interface BncGamesManager {
@@ -74,4 +76,19 @@ public interface BncGamesManager {
      */
     @NotNull
     BncGame getGame(long id);
+
+    /**
+     *
+     */
+    List<BncFloodMessage> getFloodMessagesByGameId(long gameId);
+
+    /**
+     *
+     */
+    void addFloodMessage(int messageId, long gameId);
+
+    /**
+     *
+     */
+    void deleteFloodMessagesByGameId(long gameId);
 }
