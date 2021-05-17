@@ -78,10 +78,7 @@ public class Pair implements CommandExecutor {
             return;
         }
 
-        if (!runningChatPairsGenerations.add(chatId)) {
-            ctx.reply("Пара дня все еще генерируется, подождите!").callAsync(ctx.sender);
-            return;
-        }
+        if (!runningChatPairsGenerations.add(chatId)) return;
 
         // clean inactive chat members
         chatUsers.deleteInactiveChatUsers(chatId);
@@ -94,7 +91,7 @@ public class Pair implements CommandExecutor {
 
         // start chat flooding to make users wait for pair generation
         String[] loveStrings = love.getRandomLoveStrings();
-        Future<?> floodFuture = threadPool.submit(() -> sendRandomShitWithDelay(chatId, loveStrings, 1000L, ctx.sender));
+        Future<?> floodFuture = threadPool.submit(() -> sendRandomShitWithDelay(chatId, loveStrings, ctx.sender));
 
         threadPool.execute(() -> {
             try {
@@ -143,17 +140,20 @@ public class Pair implements CommandExecutor {
             var chatUser1 = usersForPair.get(0);
             var chatUser2 = usersForPair.get(1);
             // check that these users are available through getChatMember method
+            // and that their name is not blank
             // if at least one of the users is not available, continue the while loop
             User user1, user2;
             try {
                 user1 = getUserFromChatMember(chatId, chatUser1.getUserId(), telegram);
-            } catch (NoChatMemberException e) {
+                validateNameIsNotBlank(user1);
+            } catch (NoChatMemberException | BlankNameException e) {
                 chatUsers.delete(chatUser1);
                 continue;
             }
             try {
                 user2 = getUserFromChatMember(chatId, chatUser2.getUserId(), telegram);
-            } catch (NoChatMemberException e) {
+                validateNameIsNotBlank(user2);
+            } catch (NoChatMemberException | BlankNameException e) {
                 chatUsers.delete(chatUser2);
                 continue;
             }
@@ -176,6 +176,12 @@ public class Pair implements CommandExecutor {
         }
     }
 
+    private void validateNameIsNotBlank(User user) throws BlankNameException{
+        if (user.getFirstName().isBlank()){
+            throw new BlankNameException(user.getId());
+        }
+    }
+
     private User getUserFromChatMember(long chatId, long userId, CommonAbsSender telegram) {
         var member = Methods.getChatMember(chatId, userId).call(telegram);
         if (member == null || member.getStatus().equals("left") || member.getStatus().equals("kicked"))
@@ -183,11 +189,11 @@ public class Pair implements CommandExecutor {
         return member.getUser();
     }
 
-    private void sendRandomShitWithDelay(long chatId, String[] shit, long delay, CommonAbsSender telegram) {
+    private void sendRandomShitWithDelay(long chatId, String[] shit, CommonAbsSender telegram) {
         for (int i = 0; i < shit.length - 1; i++) {
             Methods.sendMessage(chatId, shit[i]).callAsync(telegram);
             try {
-                Thread.sleep(delay);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -252,6 +258,14 @@ public class Pair implements CommandExecutor {
         public long getChatId() {
             return chatId;
         }
+    }
+
+    private static class BlankNameException extends RuntimeException {
+
+        public BlankNameException(long userId) {
+            super("User with id " + userId + " has a blank name!");
+        }
+
     }
 
 }
