@@ -6,6 +6,7 @@ import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.dbservice.DatabaseCleanupService;
 import com.senderman.lastkatkabot.service.ImageService;
 import com.senderman.lastkatkabot.service.UserActivityTrackerService;
+import com.senderman.lastkatkabot.util.DbCleanupResults;
 import com.senderman.lastkatkabot.util.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,9 +63,8 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             m.disableWebPagePreview();
         });
 
-        Methods.sendMessage(config.notificationChannelId(), "Инициализация и очистка БД...").callAsync(this);
-        cleanupDatabase();
-        Methods.sendMessage(config.notificationChannelId(), "Бот запущен!").callAsync(this);
+        var launchText = parseCleanupResults(cleanupDatabase()) + "\n\nБот запущен!";
+        Methods.sendMessage(config.notificationChannelId(), launchText).callAsync(this);
     }
 
     @Override
@@ -208,9 +208,12 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         activityTrackerService.updateLastMessageDate(chatId, userId, date);
     }
 
-    private void cleanupDatabase() {
-        var r = databaseCleanupService.cleanAll();
-        var text = """
+    private DbCleanupResults cleanupDatabase() {
+        return databaseCleanupService.cleanAll();
+    }
+
+    private String parseCleanupResults(DbCleanupResults r) {
+        return """
                 ♻️ <b>Результаты очистки БД</b>
 
                 👤 Пользователи: %d
@@ -218,7 +221,6 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
                 🐮 BnC: %d
                 💒 Запросы в ЗАГС: %d"""
                 .formatted(r.getUsers(), r.getChats(), r.getBncGames(), r.getMarriageRequests());
-        Methods.sendMessage(config.notificationChannelId(), text).callAsync(this);
     }
 
 
