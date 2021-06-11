@@ -46,27 +46,49 @@ public class DeleteFeedback implements CommandExecutor {
             ctx.replyToMessage("Неверное количество аргументов!").callAsync(ctx.sender);
             return;
         }
-
-        int feedbackId;
-        try {
-            feedbackId = Integer.parseInt(ctx.argument(0));
-        } catch (NumberFormatException e) {
-            ctx.replyToMessage("id фидбека - это число!").callAsync(ctx.sender);
-            return;
+        var arg = ctx.argument(0);
+        if (arg.matches("\\d+")) {
+            deleteSingleFeedback(ctx, Integer.parseInt(arg));
+        } else if (arg.matches("\\d+-\\d+")) {
+            var args = arg.split("-");
+            int from = Integer.parseInt(args[0]);
+            int to = Integer.parseInt(args[1]);
+            deleteFeedbackInRange(ctx, from, to);
+        } else {
+            ctx.replyToMessage("id фидбека - это число либо интервал!").callAsync(ctx.sender);
         }
+    }
 
+
+    private void deleteSingleFeedback(MessageContext ctx, int feedbackId) {
         if (!feedbackRepo.existsById(feedbackId)) {
-            ctx.replyToMessage("Фидбека с таким id не существует!").callAsync(ctx.sender);
+            notifyNoFeedbacksFound(ctx);
             return;
         }
 
         feedbackRepo.deleteById(feedbackId);
-        var text = "Фидбек #" + feedbackId + " удален";
+        notifySuccess(ctx, "Фидбек #" + feedbackId + " удален");
+    }
+
+    private void deleteFeedbackInRange(MessageContext ctx, int from, int to) {
+        long result = feedbackRepo.deleteByIdBetween(from, to);
+        if (result == 0) {
+            notifyNoFeedbacksFound(ctx);
+            return;
+        }
+        notifySuccess(ctx, "Удалено " + result + " фидбеков (с " + from + " по " + to + ")");
+    }
+
+    private void notifySuccess(MessageContext ctx, String text) {
         ctx.replyToMessage(text).callAsync(ctx.sender);
         if (!ctx.chatId().equals(config.feedbackChannelId()))
             Methods.sendMessage()
                     .setChatId(config.feedbackChannelId())
                     .setText(text + " пользователем " + Html.getUserLink(ctx.user()))
                     .callAsync(ctx.sender);
+    }
+
+    private void notifyNoFeedbacksFound(MessageContext ctx) {
+        ctx.replyToMessage("Ни одного фидбека не найдено").callAsync(ctx.sender);
     }
 }

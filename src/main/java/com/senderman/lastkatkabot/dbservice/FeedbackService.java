@@ -21,4 +21,13 @@ public interface FeedbackService {
 
     Feedback update(Feedback feedback);
 
+    /**
+     * Delete feedbacks in range
+     *
+     * @param from lower bound (inclusive)
+     * @param to   upper bound (inclusive)
+     * @return amount of deleted feedbacks
+     */
+    long deleteByIdBetween(int from, int to);
+
 }

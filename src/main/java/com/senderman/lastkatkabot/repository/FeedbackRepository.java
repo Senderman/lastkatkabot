@@ -9,4 +9,6 @@ public interface FeedbackRepository extends CrudRepository<Feedback, Integer> {
 
     Optional<Feedback> findFirstByOrderByIdDesc();
 
+    long deleteByIdBetween(int from, int to);
+
 }

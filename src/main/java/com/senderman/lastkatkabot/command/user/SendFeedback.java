@@ -4,22 +4,28 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
+import com.senderman.lastkatkabot.dbservice.AdminService;
 import com.senderman.lastkatkabot.dbservice.FeedbackService;
 import com.senderman.lastkatkabot.model.Feedback;
 import com.senderman.lastkatkabot.util.Html;
 import org.springframework.stereotype.Component;
 
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 @Component
 public class SendFeedback implements CommandExecutor {
 
     private final FeedbackService feedbackRepo;
+    private final AdminService adminRepo;
     private final BotConfig config;
 
     public SendFeedback(
             FeedbackService feedbackRepo,
-            BotConfig config
+            AdminService adminRepo, BotConfig config
     ) {
         this.feedbackRepo = feedbackRepo;
+        this.adminRepo = adminRepo;
         this.config = config;
     }
 
@@ -51,7 +57,9 @@ public class SendFeedback implements CommandExecutor {
         var feedback = new Feedback(feedbackText, user.getId(), userLink, ctx.chatId(), ctx.message().getMessageId());
         feedback = feedbackRepo.insert(feedback);
         var feedbackId = feedback.getId();
-
+        var adminPings = StreamSupport.stream(adminRepo.findAll().spliterator(), false)
+                .map(a -> "<a href=\"tg://user?id=" + a.getId() + "\">" + a.getName() + "</a>")
+                .collect(Collectors.joining(", "));
         var text = ("""
                 🔔 <b>Фидбек #%d</b>
 
@@ -59,8 +67,10 @@ public class SendFeedback implements CommandExecutor {
 
                 %s
 
-                Для ответа, введите /fresp %d &lt;ваш ответ&gt;""")
-                .formatted(feedbackId, userLink, feedbackText, feedbackId);
+                Для ответа, введите /fresp %d &lt;ваш ответ&gt;
+                                
+                🚨 %s""")
+                .formatted(feedbackId, userLink, feedbackText, feedbackId, adminPings);
         Methods.sendMessage(config.feedbackChannelId(), text).callAsync(ctx.sender);
         ctx.replyToMessage("✅ Сообщение отправлено разработчикам!").callAsync(ctx.sender);
     }
