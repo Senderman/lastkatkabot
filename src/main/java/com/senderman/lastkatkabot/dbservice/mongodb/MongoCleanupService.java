@@ -62,7 +62,8 @@ public class MongoCleanupService implements DatabaseCleanupService {
     public long cleanOldBncGames() {
         var deletedGames = bncRepo.deleteByEditDateLessThan(DatabaseCleanupService.inactivePeriod());
         var gameIds = deletedGames.stream().map(BncGameMessage::getGameId).collect(Collectors.toList());
-        bncGameMessageService.deleteByGameIdIn(gameIds);
+        if (!gameIds.isEmpty())
+            bncGameMessageService.deleteByGameIdIn(gameIds);
         return deletedGames.size();
     }
 
