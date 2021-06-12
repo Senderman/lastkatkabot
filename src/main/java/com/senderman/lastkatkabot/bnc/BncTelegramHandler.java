@@ -7,7 +7,9 @@ import com.annimon.tgbotsmodule.commands.context.RegexMessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.bnc.exception.*;
+import com.senderman.lastkatkabot.dbservice.BncGameMessageService;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
+import com.senderman.lastkatkabot.model.BncGameMessage;
 import com.senderman.lastkatkabot.util.Html;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -20,20 +22,21 @@ import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-// TODO replace sender with context
 @Component
 public class BncTelegramHandler implements RegexCommand {
 
     private final Pattern pattern = Pattern.compile("(\\d|[a-fA-F]){4,16}");
     private final BncGamesManager gamesManager;
     private final UserStatsService usersRepo;
+    private final BncGameMessageService gameMessageService;
 
     public BncTelegramHandler(
             @Qualifier("bncDatabaseManager") BncGamesManager gamesManager,
-            UserStatsService usersRepo
-    ) {
+            UserStatsService usersRepo,
+            BncGameMessageService gameMessageService) {
         this.gamesManager = gamesManager;
         this.usersRepo = usersRepo;
+        this.gameMessageService = gameMessageService;
     }
 
     @Override
@@ -92,18 +95,19 @@ public class BncTelegramHandler implements RegexCommand {
     }
 
     private void addMessageToDelete(Message message) {
-        /*var chatId = message.getChatId();
+        var chatId = message.getChatId();
         var messageId = message.getMessageId();
-        var list = messagesToDelete.computeIfAbsent(chatId, k -> new ArrayList<>());
-        list.add(messageId);*/
+        gameMessageService.save(new BncGameMessage(chatId, messageId));
     }
 
     private void deleteGameMessages(long chatId, CommonAbsSender telegram) {
-        /*var messageIds = messagesToDelete.remove(chatId);
-        if (messageIds == null) return;
+        var gameMessages = gameMessageService.findByGameId(chatId);
+        if (gameMessages.isEmpty()) return;
 
-        for (var messageId : messageIds)
-            Methods.deleteMessage(chatId, messageId).callAsync(telegram);*/
+        gameMessages.stream()
+                .map(BncGameMessage::getMessageId)
+                .forEach(msgId -> Methods.deleteMessage(chatId, msgId).callAsync(telegram));
+        gameMessageService.deleteByGameId(chatId);
     }
 
     public void processWin(MessageContext ctx, BncResult result) {
