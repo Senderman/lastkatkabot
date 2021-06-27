@@ -125,38 +125,6 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     public void handleTelegramApiException(TelegramApiException ex) {
     }
 
-
-    /*
-    Chat migration on SendMessage by old chat id exception. not needed for now
-    @Override
-    public <T extends Serializable, Method extends BotApiMethod<T>> T execute(Method method) throws TelegramApiException {
-        if (!method.getMethod().equals(SendMessage.PATH))
-            return super.execute(method);
-
-
-        SendMessage sm = (SendMessage) method;
-        try {
-            return super.execute(method);
-        } catch (TelegramApiRequestException e) {
-            // this happens when chatId changes (when converting group to a supergroup)
-            var newChatId = Optional.ofNullable(e.getParameters())
-                    .map(ResponseParameters::getMigrateToChatId);
-            if (newChatId.isEmpty()) {
-                handleTelegramApiException(e);
-                return null;
-            }
-
-            long oldChatId = Long.parseLong(sm.getChatId());
-            chatManagerService.migrateChatIfNeeded(oldChatId, newChatId.get());
-            sm.setChatId(Long.toString(newChatId.get()));
-            return super.execute(method);
-        } catch (TelegramApiException e) {
-            handleTelegramApiException(e);
-            return null;
-        }
-    }*/
-
-
     private void processNewChatMembers(Message message) {
         var chatId = message.getChatId();
         var messageId = message.getMessageId();
