@@ -1,6 +1,5 @@
 package com.senderman.lastkatkabot.repository;
 
-import com.senderman.lastkatkabot.model.BncGameMessage;
 import com.senderman.lastkatkabot.model.BncGameSave;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -10,6 +9,6 @@ import java.util.List;
 @Repository
 public interface BncRepository extends CrudRepository<BncGameSave, Long> {
 
-    List<BncGameMessage> deleteByEditDateLessThan(int editDate);
+    List<BncGameSave> deleteByEditDateLessThan(int editDate);
 
 }

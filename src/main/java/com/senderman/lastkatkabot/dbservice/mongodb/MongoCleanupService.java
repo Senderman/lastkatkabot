@@ -2,7 +2,7 @@ package com.senderman.lastkatkabot.dbservice.mongodb;
 
 import com.senderman.lastkatkabot.dbservice.BncGameMessageService;
 import com.senderman.lastkatkabot.dbservice.DatabaseCleanupService;
-import com.senderman.lastkatkabot.model.BncGameMessage;
+import com.senderman.lastkatkabot.model.BncGameSave;
 import com.senderman.lastkatkabot.model.ChatInfo;
 import com.senderman.lastkatkabot.model.ChatUser;
 import com.senderman.lastkatkabot.repository.BncRepository;
@@ -61,7 +61,7 @@ public class MongoCleanupService implements DatabaseCleanupService {
     @Override
     public long cleanOldBncGames() {
         var deletedGames = bncRepo.deleteByEditDateLessThan(DatabaseCleanupService.inactivePeriod());
-        var gameIds = deletedGames.stream().map(BncGameMessage::getGameId).collect(Collectors.toList());
+        var gameIds = deletedGames.stream().map(BncGameSave::getId).collect(Collectors.toList());
         if (!gameIds.isEmpty())
             bncGameMessageService.deleteByGameIdIn(gameIds);
         return deletedGames.size();
