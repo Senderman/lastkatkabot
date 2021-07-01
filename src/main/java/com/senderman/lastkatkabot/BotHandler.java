@@ -102,7 +102,12 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             }
 
             // track users activity in chats (777000 is userId of attached channel messages)
-            if (!message.isUserMessage() && !message.getFrom().getId().equals(777000L)) {
+            // And 1087968824 is anonymous group admin
+            if (
+                    !message.isUserMessage()
+                    && !message.getFrom().getId().equals(777000L)
+                    && !message.getFrom().getId().equals(1087968824L)
+            ) {
                 threadPool.execute(() -> updateUserLastMessageDate(message));
             }
 

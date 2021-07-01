@@ -56,8 +56,8 @@ public class JoinDuel implements CallbackExecutor {
     }
 
     private void processDuelResultToMessage(CallbackQueryContext ctx, DuelResult result) {
-        var winnerName = Html.htmlSafe(result.getWinner().getFirstName());
-        var loserName = Html.htmlSafe(result.getLoser().getFirstName());
+        var winnerName = Html.htmlSafe(result.winner.getFirstName());
+        var loserName = Html.htmlSafe(result.loser.getFirstName());
         var text = "<b>Итоги дуэли:</b>\n\n";
         if (result.isDraw()) {
             text += String.format("\uD83D\uDFE1 Ничья!\n\nУчастники: %s, %s", winnerName, loserName);
@@ -69,8 +69,8 @@ public class JoinDuel implements CallbackExecutor {
     }
 
     private void processDuelResultToDatabase(DuelResult result) {
-        var winner = result.getWinner();
-        var loser = result.getLoser();
+        var winner = result.winner;
+        var loser = result.loser;
         Userstats winnerStats = users.findById(winner.getId());
         Userstats loserStats = users.findById(loser.getId());
         winnerStats.increaseDuelsTotal();
@@ -81,28 +81,6 @@ public class JoinDuel implements CallbackExecutor {
         users.saveAll(List.of(winnerStats, loserStats));
     }
 
-    private static class DuelResult {
-
-        private final User winner;
-        private final User loser;
-        private final boolean isDraw;
-
-        public DuelResult(User winner, User loser, boolean isDraw) {
-            this.winner = winner;
-            this.loser = loser;
-            this.isDraw = isDraw;
-        }
-
-        public User getWinner() {
-            return winner;
-        }
-
-        public User getLoser() {
-            return loser;
-        }
-
-        public boolean isDraw() {
-            return isDraw;
-        }
+    private record DuelResult(User winner, User loser, boolean isDraw) {
     }
 }

@@ -111,8 +111,8 @@ public class Pair implements CommandExecutor {
                 chatInfoService.save(chatInfo);
 
                 var text = String.format(loveStrings[loveStrings.length - 1],
-                        Html.getUserLink(pair.getFirst()),
-                        Html.getUserLink(pair.getSecond()));
+                        Html.getUserLink(pair.first),
+                        Html.getUserLink(pair.second));
                 // wait while flood ends to prevent race condition
                 floodFuture.get();
                 ctx.reply(text).callAsync(ctx.sender);
@@ -176,8 +176,8 @@ public class Pair implements CommandExecutor {
         }
     }
 
-    private void validateNameIsNotBlank(User user) throws BlankNameException{
-        if (user.getFirstName().isBlank()){
+    private void validateNameIsNotBlank(User user) throws BlankNameException {
+        if (user.getFirstName().isBlank()) {
             throw new BlankNameException(user.getId());
         }
     }
@@ -200,25 +200,7 @@ public class Pair implements CommandExecutor {
         }
     }
 
-    private static class PairData {
-
-        private final User first;
-        private final User second;
-        private final boolean isTrueLove;
-
-        public PairData(User first, User second, boolean isTrueLove) {
-            this.first = first;
-            this.second = second;
-            this.isTrueLove = isTrueLove;
-        }
-
-        public User getFirst() {
-            return first;
-        }
-
-        public User getSecond() {
-            return second;
-        }
+    private record PairData(User first, User second, boolean isTrueLove) {
 
         private String getPairEmoji() {
             return isTrueLove ? "💖" : "❤️";

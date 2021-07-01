@@ -94,25 +94,15 @@ public class Weather implements CommandExecutor {
         return new Forecast(title, temperature, feelsLike, feelings, wind, humidity, pressure);
     }
 
-    private static class Forecast {
-        private final String title;
-        private final String temperature;
-        private final String feelsLike;
-        private final String feelings;
-        private final String wind;
-        private final String humidity;
-        private final String pressure;
-
-        public Forecast(String title, String temperature, String feelsLike,
-                        String feelings, String wind, String humidity, String pressure) {
-            this.title = title;
-            this.temperature = temperature;
-            this.feelsLike = feelsLike;
-            this.feelings = feelings;
-            this.wind = wind;
-            this.humidity = humidity;
-            this.pressure = pressure;
-        }
+    private record Forecast(
+            String title,
+            String temperature,
+            String feelsLike,
+            String feelings,
+            String wind,
+            String humidity,
+            String pressure
+    ) {
 
         @Override
         public String toString() {
