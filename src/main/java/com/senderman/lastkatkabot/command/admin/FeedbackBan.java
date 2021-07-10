@@ -65,7 +65,7 @@ public class FeedbackBan implements CommandExecutor {
             return;
         }
         var reason = ctx.argument(1, "&lt;причина не указана&gt;");
-        ctx.replyToMessage("Теперь %s - плохая киса! Причина: %s".formatted(feedback.getUserName(), reason))
+        ctx.replyToMessage(String.format("Теперь %s - плохая киса! Причина: %s",feedback.getUserName(), reason))
                 .callAsync(ctx.sender);
         Methods.sendMessage(feedback.getChatId(), "Разработчики добавили вас в ЧС бота. Причина: " + reason)
                 .setReplyToMessageId(feedback.getMessageId())

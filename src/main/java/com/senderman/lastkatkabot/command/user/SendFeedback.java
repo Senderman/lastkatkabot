@@ -60,17 +60,13 @@ public class SendFeedback implements CommandExecutor {
         var adminPings = StreamSupport.stream(adminRepo.findAll().spliterator(), false)
                 .map(a -> "<a href=\"tg://user?id=" + a.getId() + "\">" + a.getName() + "</a>")
                 .collect(Collectors.joining(", "));
-        var text = ("""
-                🔔 <b>Фидбек #%d</b>
-
-                От: %s
-
-                %s
-
-                Для ответа, введите /fresp %d &lt;ваш ответ&gt;
-                                
-                🚨 %s""")
-                .formatted(feedbackId, userLink, feedbackText, feedbackId, adminPings);
+        var text = String.format(
+                "🔔 <b>Фидбек #%d</b>\n\n" +
+                "От: %s\n\n" +
+                "%s\n\n" +
+                "Для ответа, введите /fresp %d &lt;ваш ответ&gt;\n\n" +
+                "🚨 %s",
+                feedbackId, userLink, feedbackText, feedbackId, adminPings);
         Methods.sendMessage(config.feedbackChannelId(), text).callAsync(ctx.sender);
         ctx.replyToMessage("✅ Сообщение отправлено разработчикам!").callAsync(ctx.sender);
     }

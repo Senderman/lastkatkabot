@@ -10,8 +10,13 @@ import com.senderman.lastkatkabot.util.DbCleanupResults;
 import com.senderman.lastkatkabot.util.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.nativex.hint.AotProxyHint;
+import org.springframework.nativex.hint.NativeHint;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -25,6 +30,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 
 @SpringBootApplication
+@AotProxyHint(targetClass=com.senderman.lastkatkabot.CommandUpdateHandler.class)
+@NativeHint
 public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
     private final BotConfig config;
@@ -186,14 +193,13 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     }
 
     private String parseCleanupResults(DbCleanupResults r) {
-        return """
-                ♻️ <b>Результаты очистки БД</b>
-
-                👤 Пользователи: %d
-                👥 Чаты: %d
-                🐮 BnC: %d
-                💒 Запросы в ЗАГС: %d"""
-                .formatted(r.getUsers(), r.getChats(), r.getBncGames(), r.getMarriageRequests());
+        return String.format(
+                "♻️ <b>Результаты очистки БД</b>\n\n" +
+                "👤 Пользователи: %d\n" +
+                "👥 Чаты: %d\n" +
+                "🐮 BnC: %d\n" +
+                "💒 Запросы в ЗАГС: %d",
+                r.getUsers(), r.getChats(), r.getBncGames(), r.getMarriageRequests());
     }
 
 

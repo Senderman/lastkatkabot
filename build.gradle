@@ -1,16 +1,19 @@
 plugins {
-    id 'org.springframework.boot' version '2.6.0-SNAPSHOT'
+    id 'org.springframework.boot' version '2.5.2'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+    id 'org.springframework.experimental.aot' version '0.10.1'
+    id 'org.graalvm.buildtools.native' version '0.9.1'
 }
 
 group 'com.senderman'
 version '1.0'
 
-sourceCompatibility = 16
+sourceCompatibility = 11
 
 repositories {
     mavenCentral()
+    maven { url 'https://repo.spring.io/release' }
     maven { url 'https://repo.spring.io/milestone' }
     maven { url 'https://repo.spring.io/snapshot' }
 }
@@ -23,4 +26,12 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.13.1'
     implementation 'org.sejda.webp-imageio:webp-imageio-sejda:0.1.0'
     implementation 'org.apache.commons:commons-lang3:3.11'
+}
+
+bootBuildImage {
+    builder = 'paketobuildpacks/builder:tiny'
+    environment = [
+            'BP_NATIVE_IMAGE': 'true',
+            'BP_NATIVE_IMAGE_BUILD_ARGUMENTS': '-H:IncludeResources=.*/love.yml$'
+    ]
 }

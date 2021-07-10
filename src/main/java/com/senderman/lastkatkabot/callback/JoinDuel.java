@@ -81,6 +81,27 @@ public class JoinDuel implements CallbackExecutor {
         users.saveAll(List.of(winnerStats, loserStats));
     }
 
-    private record DuelResult(User winner, User loser, boolean isDraw) {
+    private static class DuelResult {
+        private final User winner;
+        private final User loser;
+        private final boolean isDraw;
+
+        public DuelResult(User winner, User loser, boolean isDraw) {
+            this.winner = winner;
+            this.loser = loser;
+            this.isDraw = isDraw;
+        }
+
+        public User getWinner() {
+            return winner;
+        }
+
+        public User getLoser() {
+            return loser;
+        }
+
+        public boolean isDraw() {
+            return isDraw;
+        }
     }
 }

@@ -61,18 +61,16 @@ public class ShowFeedbacks implements CommandExecutor {
     }
 
     private String formatFeedback(Feedback feedback) {
-        return """
-                <code>#%d</code>
-                От %s (id<code>%d</code>)
-                Отвечен: %s
-
-                %s"""
-                .formatted(
-                        feedback.getId(),
-                        feedback.getUserName(),
-                        feedback.getUserId(),
-                        feedback.isReplied() ? "✅" : "❌",
-                        feedback.getMessage()
-                );
+        return String.format(
+                "<code>#%d</code>\n" +
+                "От %s (id<code>%d</code>)\n" +
+                "Отвечен: %s\n\n" +
+                "%s",
+                feedback.getId(),
+                feedback.getUserName(),
+                feedback.getUserId(),
+                feedback.isReplied() ? "✅" : "❌",
+                feedback.getMessage()
+        );
     }
 }

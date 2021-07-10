@@ -200,7 +200,17 @@ public class Pair implements CommandExecutor {
         }
     }
 
-    private record PairData(User first, User second, boolean isTrueLove) {
+    private static class PairData {
+
+        private final User first;
+        private final User second;
+        private final boolean isTrueLove;
+
+        public PairData(User first, User second, boolean isTrueLove) {
+            this.first = first;
+            this.second = second;
+            this.isTrueLove = isTrueLove;
+        }
 
         private String getPairEmoji() {
             return isTrueLove ? "💖" : "❤️";
@@ -218,7 +228,7 @@ public class Pair implements CommandExecutor {
 
     private static class NotEnoughUsersException extends RuntimeException {
         public NotEnoughUsersException(int found, int required) {
-            super("Not enough users, found %d, required %d".formatted(found, required));
+            super(String.format("Not enough users, found %d, required %d",found, required));
         }
     }
 
@@ -228,7 +238,7 @@ public class Pair implements CommandExecutor {
         private final long chatId;
 
         public NoChatMemberException(long userId, long chatId) {
-            super("No userId %d in chatId %d".formatted(userId, chatId));
+            super(String.format("No userId %d in chatId %d", userId, chatId));
             this.userId = userId;
             this.chatId = chatId;
         }

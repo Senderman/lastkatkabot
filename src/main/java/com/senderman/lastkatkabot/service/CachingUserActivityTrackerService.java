@@ -26,7 +26,7 @@ public class CachingUserActivityTrackerService implements UserActivityTrackerSer
             ScheduledExecutorService threadPool
     ) {
         var instance = new CachingUserActivityTrackerService(chatUserService, threadPool);
-        instance.runCacheListener();
+        // instance.runCacheListener();
         return instance;
     }
 
@@ -37,7 +37,7 @@ public class CachingUserActivityTrackerService implements UserActivityTrackerSer
         user.setLastMessageDate(messageLastDate);
     }
 
-    private void runCacheListener() {
+    public void runCacheListener() {
         threadPool.scheduleAtFixedRate(this::flush, FLUSH_INTERVAL, FLUSH_INTERVAL, TimeUnit.SECONDS);
     }
 

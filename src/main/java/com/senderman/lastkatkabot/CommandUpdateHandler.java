@@ -7,6 +7,7 @@ import com.senderman.lastkatkabot.bnc.BncTelegramHandler;
 import com.senderman.lastkatkabot.callback.CallbackExecutor;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.nativex.hint.AotProxyHint;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;

@@ -42,15 +42,13 @@ public class Stats implements CommandExecutor {
         var stats = users.findById(user.getId());
         String name = Html.htmlSafe(user.getFirstName());
         int winRate = stats.getDuelsTotal() == 0 ? 0 : 100 * stats.getDuelWins() / stats.getDuelsTotal();
-        String text = """
-                📊 Статистика %s:
-
-                👑 Дуэлей выиграно: %d
-                ⚔️ Всего дуэлей: %d
-                📈 Винрейт: %d
-
-                🐮 Баллов за быки и коровы: %d"""
-                .formatted(name, stats.getDuelWins(), stats.getDuelsTotal(), winRate, stats.getBncScore());
+        String text = String.format(
+                "📊 Статистика %s:\n\n" +
+                "👑 Дуэлей выиграно: %d\n" +
+                "⚔️ Всего дуэлей: %d\n" +
+                "📈 Винрейт: %d\n\n" +
+                "🐮 Баллов за быки и коровы: %d",
+                name, stats.getDuelWins(), stats.getDuelsTotal(), winRate, stats.getBncScore());
 
         if (stats.getLoverId() != null) {
             var lover = Methods.getChatMember(stats.getLoverId(), stats.getLoverId()).call(ctx.sender);

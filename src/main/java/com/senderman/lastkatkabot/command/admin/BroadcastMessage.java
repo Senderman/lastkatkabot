@@ -50,7 +50,7 @@ public class BroadcastMessage implements CommandExecutor {
         var chatIds = chatUsers.getChatIds();
         int total = chatIds.size();
         var counter = new CounterWithCallback(total,
-                i -> ctx.replyToMessage("Сообщение получили %d/%d чатов".formatted(i, total)).callAsync(ctx.sender)
+                i -> ctx.replyToMessage(String.format("Сообщение получили %d/%d чатов",i, total)).callAsync(ctx.sender)
         );
 
         for (var chat : chatIds) {
