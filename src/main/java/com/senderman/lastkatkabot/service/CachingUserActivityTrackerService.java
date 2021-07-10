@@ -5,6 +5,7 @@ import com.senderman.lastkatkabot.model.ChatUser;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -22,12 +23,9 @@ public class CachingUserActivityTrackerService implements UserActivityTrackerSer
     }
 
     public static CachingUserActivityTrackerService newInstance(
-            ChatUserService chatUserService,
-            ScheduledExecutorService threadPool
-    ) {
-        var instance = new CachingUserActivityTrackerService(chatUserService, threadPool);
+            ChatUserService chatUserService) {
         // instance.runCacheListener();
-        return instance;
+        return new CachingUserActivityTrackerService(chatUserService, Executors.newSingleThreadScheduledExecutor());
     }
 
     @Override

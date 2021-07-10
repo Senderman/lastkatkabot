@@ -7,10 +7,7 @@ import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.service.CachingUserActivityTrackerService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.Resource;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -18,7 +15,6 @@ import java.util.concurrent.ScheduledExecutorService;
 public class Beans {
 
     private final ChatUserService chatUserService;
-    private ScheduledExecutorService threadPool;
 
     public Beans(ChatUserService chatUserService) {
         this.chatUserService = chatUserService;
@@ -27,10 +23,8 @@ public class Beans {
 
     @Bean
     public ScheduledExecutorService threadPool() {
-        if (this.threadPool != null) return this.threadPool;
         int cpus = Runtime.getRuntime().availableProcessors() - 1;
-        this.threadPool = Executors.newScheduledThreadPool(Math.max(cpus, 1));
-        return this.threadPool;
+        return Executors.newScheduledThreadPool(Math.max(cpus, 1));
     }
 
     @Bean
@@ -50,8 +44,8 @@ public class Beans {
     // TODO implement CachingUserActivityTrackerService as CommandExecutor
     @Bean
     public CachingUserActivityTrackerService cachingUserActivityTrackerService() {
-        var s =CachingUserActivityTrackerService.newInstance(chatUserService, threadPool);
-        //s.runCacheListener();
+        var s = CachingUserActivityTrackerService.newInstance(chatUserService);
+        s.runCacheListener();
         return s;
     }
 
