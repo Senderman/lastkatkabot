@@ -16,7 +16,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.nativex.hint.AotProxyHint;
-import org.springframework.nativex.hint.NativeHint;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -31,7 +30,6 @@ import java.util.concurrent.RejectedExecutionException;
 
 @SpringBootApplication
 @AotProxyHint(targetClass=com.senderman.lastkatkabot.CommandUpdateHandler.class)
-@NativeHint
 public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
     private final BotConfig config;

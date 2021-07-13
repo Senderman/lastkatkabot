@@ -1,5 +1,6 @@
 package com.senderman.lastkatkabot.bnc;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.senderman.lastkatkabot.bnc.exception.*;
 
 import java.util.*;
@@ -8,14 +9,17 @@ import java.util.stream.Stream;
 
 public class BncGame {
 
-    private final long id;
-    private final String answer;
-    private final int length;
-    private final List<BncResult> history;
-    private final Set<String> checkedNumbers;
-    private final long startTime;
-    private final boolean isHexadecimal;
+    private  long id;
+    private  String answer;
+    private  int length;
+    private  List<BncResult> history;
+    private  Set<String> checkedNumbers;
+    private  long startTime;
+    private  boolean isHexadecimal;
     private int attemptsLeft;
+
+    public BncGame() {
+    }
 
     public BncGame(long id, int length, boolean isHexadecimal) {
         this.id = id;
@@ -84,6 +88,7 @@ public class BncGame {
         return number.chars().distinct().count() < number.length();
     }
 
+    @JsonIgnore
     public BncGameState getGameState() {
         return new BncGameState(id, length, Collections.unmodifiableList(history), attemptsLeft, startTime, isHexadecimal);
     }
@@ -100,5 +105,65 @@ public class BncGame {
 
     public long getId() {
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
+    }
+
+    public List<BncResult> getHistory() {
+        return history;
+    }
+
+    public void setHistory(List<BncResult> history) {
+        this.history = history;
+    }
+
+    public Set<String> getCheckedNumbers() {
+        return checkedNumbers;
+    }
+
+    public void setCheckedNumbers(Set<String> checkedNumbers) {
+        this.checkedNumbers = checkedNumbers;
+    }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+    }
+
+    public boolean isHexadecimal() {
+        return isHexadecimal;
+    }
+
+    public void setHexadecimal(boolean hexadecimal) {
+        isHexadecimal = hexadecimal;
+    }
+
+    public int getAttemptsLeft() {
+        return attemptsLeft;
+    }
+
+    public void setAttemptsLeft(int attemptsLeft) {
+        this.attemptsLeft = attemptsLeft;
     }
 }
