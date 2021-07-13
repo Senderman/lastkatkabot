@@ -1,14 +1,12 @@
 package com.senderman.lastkatkabot.model;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.TypeAlias;
+import org.bson.codecs.pojo.annotations.BsonId;
 
 import java.util.Objects;
 
-@TypeAlias("admin")
 public class AdminUser implements IdAndName<Long> {
 
-    @Id
+    @BsonId
     private long userId;
     private String name;
 

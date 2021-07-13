@@ -15,6 +15,8 @@ public class BotConfigImpl implements BotConfig {
     private final String bncHelpPictureId;
     private final String helloGifId;
     private final String leaveStickerId;
+    private final String databaseConnection;
+    private final String database;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public BotConfigImpl(
@@ -25,7 +27,9 @@ public class BotConfigImpl implements BotConfig {
             @JsonProperty("notificationChannelId") long notificationChannelId,
             @JsonProperty("bncHelpPictureId") String bncHelpPictureId,
             @JsonProperty("helloGifId") String helloGifId,
-            @JsonProperty("leaveStickerId") String leaveStickerId
+            @JsonProperty("leaveStickerId") String leaveStickerId,
+            @JsonProperty("databaseConnection") String databaseConnection,
+            @JsonProperty("database") String database
     ) {
 
         var loginArgs = login.split("\\s+");
@@ -38,6 +42,8 @@ public class BotConfigImpl implements BotConfig {
         this.bncHelpPictureId = bncHelpPictureId;
         this.helloGifId = helloGifId;
         this.leaveStickerId = leaveStickerId;
+        this.databaseConnection = databaseConnection;
+        this.database = database;
     }
 
     @Override
@@ -83,5 +89,15 @@ public class BotConfigImpl implements BotConfig {
     @Override
     public String leaveStickerId() {
         return leaveStickerId;
+    }
+
+    @Override
+    public String databaseConnection() {
+        return databaseConnection;
+    }
+
+    @Override
+    public String database() {
+        return database;
     }
 }

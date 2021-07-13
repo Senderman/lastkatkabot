@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.google.inject.Inject;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.dbservice.DatabaseCleanupService;
@@ -9,9 +10,6 @@ import com.senderman.lastkatkabot.service.UserActivityTrackerService;
 import com.senderman.lastkatkabot.util.DbCleanupResults;
 import com.senderman.lastkatkabot.util.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Lazy;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -24,7 +22,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 
-@SpringBootApplication
 public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
     private final BotConfig config;
@@ -35,10 +32,10 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     private final ImageService imageService;
     private final ExecutorService threadPool;
 
-    @Autowired
+    @Inject
     public BotHandler(
             BotConfig config,
-            @Lazy CommandUpdateHandler commandUpdateHandler,
+            CommandUpdateHandler commandUpdateHandler,
             ChatUserService chatUsers,
             UserActivityTrackerService activityTrackerService,
             DatabaseCleanupService databaseCleanupService,

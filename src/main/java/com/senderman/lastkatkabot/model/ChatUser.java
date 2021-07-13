@@ -1,14 +1,13 @@
 package com.senderman.lastkatkabot.model;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.TypeAlias;
+
+import org.bson.codecs.pojo.annotations.BsonId;
 
 import java.util.Objects;
 
-@TypeAlias("chatuser")
 public class ChatUser {
 
-    @Id
+    @BsonId
     private String id;
 
     private long userId;

@@ -1,15 +1,13 @@
 package com.senderman.lastkatkabot.model;
 
+import org.bson.codecs.pojo.annotations.BsonId;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.TypeAlias;
 
 import java.util.List;
 
-@TypeAlias("chatinfo")
 public class ChatInfo {
 
-    @Id
+    @BsonId
     private long chatId;
     @Nullable
     private List<String> lastPairs;

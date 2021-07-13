@@ -1,10 +1,10 @@
 package com.senderman.lastkatkabot;
 
+import com.annimon.tgbotsmodule.BotHandler;
 import com.annimon.tgbotsmodule.BotModule;
 import com.annimon.tgbotsmodule.Runner;
 import com.annimon.tgbotsmodule.beans.Config;
-import com.annimon.tgbotsmodule.services.YamlConfigLoaderService;
-import com.senderman.lastkatkabot.config.BotConfigImpl;
+import com.google.inject.Guice;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -16,10 +16,8 @@ public class LastkatkaBot implements BotModule {
     }
 
     @Override
-    public @NotNull com.annimon.tgbotsmodule.BotHandler botHandler(@NotNull Config config) {
-        final var configLoader = new YamlConfigLoaderService();
-        final var configFile = configLoader.configFile("lastkatkabot", config.getProfile());
-        final var botConfig = configLoader.loadFile(configFile, BotConfigImpl.class);
-        return new BotHandler(botConfig);
+    public @NotNull BotHandler botHandler(@NotNull Config config) {
+        var injector = Guice.createInjector(new InjectionConfig(config));
+        return injector.getInstance(BotHandler.class);
     }
 }

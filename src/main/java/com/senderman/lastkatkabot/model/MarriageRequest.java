@@ -1,14 +1,12 @@
 package com.senderman.lastkatkabot.model;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.TypeAlias;
+import org.bson.codecs.pojo.annotations.BsonId;
 
 import java.util.Objects;
 
-@TypeAlias("marriageRequest")
 public class MarriageRequest {
 
-    @Id
+    @BsonId
     private int id;
     private long proposerId;
     private String proposerName;

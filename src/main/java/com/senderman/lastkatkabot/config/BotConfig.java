@@ -20,4 +20,8 @@ public interface BotConfig {
 
     String leaveStickerId();
 
+    String databaseConnection();
+
+    String database();
+
 }

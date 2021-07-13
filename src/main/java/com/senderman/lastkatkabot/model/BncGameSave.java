@@ -1,13 +1,12 @@
 package com.senderman.lastkatkabot.model;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.TypeAlias;
+import org.bson.codecs.pojo.annotations.BsonId;
 
 import java.util.Objects;
 
-@TypeAlias("bnc")
 public class BncGameSave {
-    @Id
+
+    @BsonId
     private long id;
     private String game;
     private int editDate;

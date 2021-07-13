@@ -1,15 +1,13 @@
 package com.senderman.lastkatkabot.model;
 
+import org.bson.codecs.pojo.annotations.BsonId;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.TypeAlias;
 
 import java.util.Objects;
 
-@TypeAlias("userstats")
 public class Userstats {
 
-    @Id
+    @BsonId
     private long userId;
     private int duelsTotal;
     private int duelWins;
