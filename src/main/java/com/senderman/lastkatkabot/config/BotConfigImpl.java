@@ -1,10 +1,10 @@
 package com.senderman.lastkatkabot.config;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
-@Component
-public class SpringBotConfig implements BotConfig {
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public class BotConfigImpl implements BotConfig {
 
     private final String token;
     private final String username;
@@ -16,15 +16,16 @@ public class SpringBotConfig implements BotConfig {
     private final String helloGifId;
     private final String leaveStickerId;
 
-    public SpringBotConfig(
-            @Value("${login}") String login,
-            @Value("${timezone}") String timezone,
-            @Value("${mainAdminId}") long mainAdminId,
-            @Value("${feedbackChannelId}") long feedbackChannelId,
-            @Value("${notificationChannelId}") long notificationChannelId,
-            @Value("${bncHelpPictureId}") String bncHelpPictureId,
-            @Value("${helloGifId}") String helloGifId,
-            @Value("${leaveStickerId}") String leaveStickerId
+    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    public BotConfigImpl(
+            @JsonProperty("login") String login,
+            @JsonProperty("timezone") String timezone,
+            @JsonProperty("mainAdminId") long mainAdminId,
+            @JsonProperty("feedbackChannelId") long feedbackChannelId,
+            @JsonProperty("notificationChannelId") long notificationChannelId,
+            @JsonProperty("bncHelpPictureId") String bncHelpPictureId,
+            @JsonProperty("helloGifId") String helloGifId,
+            @JsonProperty("leaveStickerId") String leaveStickerId
     ) {
 
         var loginArgs = login.split("\\s+");

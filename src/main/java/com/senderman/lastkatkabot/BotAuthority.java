@@ -1,23 +1,24 @@
 package com.senderman.lastkatkabot;
 
 import com.annimon.tgbotsmodule.commands.authority.Authority;
+import com.google.inject.Inject;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.dbservice.UserManager;
 import com.senderman.lastkatkabot.model.AdminUser;
 import com.senderman.lastkatkabot.model.BlacklistedUser;
-import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.EnumSet;
 
-@Component
+
 public class BotAuthority implements Authority<Role> {
 
     private final UserManager<AdminUser> admins;
     private final UserManager<BlacklistedUser> blacklist;
     private final BotConfig botConfig;
 
+    @Inject
     public BotAuthority(UserManager<AdminUser> admins, UserManager<BlacklistedUser> blacklist, BotConfig botConfig) {
         this.admins = admins;
         this.blacklist = blacklist;

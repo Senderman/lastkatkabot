@@ -1,6 +1,4 @@
 plugins {
-    id 'org.springframework.boot' version '2.6.0-SNAPSHOT'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
 }
 
@@ -11,16 +9,23 @@ sourceCompatibility = 16
 
 repositories {
     mavenCentral()
-    maven { url 'https://repo.spring.io/milestone' }
-    maven { url 'https://repo.spring.io/snapshot' }
 }
-
 
 dependencies {
     implementation 'com.annimon:tgbots-module:0.15'
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-    implementation 'com.google.code.gson:gson:2.8.7'
     implementation 'org.jsoup:jsoup:1.13.1'
     implementation 'org.sejda.webp-imageio:webp-imageio-sejda:0.1.0'
     implementation 'org.apache.commons:commons-lang3:3.11'
+    implementation 'com.google.inject:guice:5.0.1'
+    implementation 'org.mongodb:mongodb-driver-sync:4.2.3'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.senderman.lastkatkabot.LastkatkaBot'
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }

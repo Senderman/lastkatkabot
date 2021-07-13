@@ -1,5 +1,6 @@
 package com.senderman.lastkatkabot;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
@@ -7,15 +8,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Love {
 
-    @JsonProperty("love-strings")
     private List<String> loveStrings;
 
-
-    public List<String> getLoveStrings() {
-        return loveStrings;
-    }
-
-    public void setLoveStrings(List<String> loveStrings) {
+    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    public Love(@JsonProperty("love-strings") List<String> loveStrings) {
         this.loveStrings = loveStrings;
     }
 

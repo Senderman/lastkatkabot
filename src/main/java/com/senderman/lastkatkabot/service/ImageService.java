@@ -1,7 +1,7 @@
 package com.senderman.lastkatkabot.service;
 
+import com.google.inject.Inject;
 import com.senderman.lastkatkabot.config.BotConfig;
-import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -10,11 +10,12 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
 
-@Service
+
 public class ImageService {
 
     private final BotConfig config;
 
+    @Inject
     public ImageService(BotConfig config) {
         this.config = config;
     }
