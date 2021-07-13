@@ -5,12 +5,16 @@ import com.annimon.tgbotsmodule.services.YamlConfigLoaderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.google.inject.AbstractModule;
+import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.command.admin.*;
+import com.senderman.lastkatkabot.command.user.*;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.config.BotConfigImpl;
 import com.senderman.lastkatkabot.service.CurrentTime;
@@ -76,4 +80,50 @@ public class InjectionConfig extends AbstractModule {
         MongoClient client = MongoClients.create(clientSettings);
         return client.getDatabase(config.database());
     }
+
+    private void bindCommands() {
+        Multibinder<CommandExecutor> binder = Multibinder.newSetBinder(binder(), CommandExecutor.class);
+        addBindings(binder,
+                // admin commands
+                AnswerFeedback.class,
+                BadNeko.class,
+                BroadcastMessage.class,
+                DeleteFeedback.class,
+                FeedbackBan.class,
+                GoodNeko.class,
+                GrantAdmin.class,
+                ListUsers.class,
+                Popularity.class,
+                ShowFeedbacks.class,
+                WhereUser.class,
+
+                //user commands
+                Action.class,
+                BncHelp.class,
+                BncStart.class,
+                BncTop.class,
+                Cake.class,
+                Divorce.class,
+                GetInfo.class,
+                Health.class,
+                //Help.class,
+                LastPairs.class,
+                MarryMe.class,
+                Pair.class,
+                PayRespects.class,
+                SendFeedback.class,
+                ShortInfo.class,
+                StartDuel.class,
+                Stats.class,
+                Weather.class
+        );
+    }
+
+    @SafeVarargs
+    private <T> void addBindings(Multibinder<T> binder, Class<? extends T>... bindings) {
+        for (Class<? extends T> binding : bindings) {
+            binder.addBinding().to(binding);
+        }
+    }
+}
 }
