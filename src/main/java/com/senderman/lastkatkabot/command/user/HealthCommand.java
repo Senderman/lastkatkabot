@@ -8,11 +8,11 @@ import org.springframework.stereotype.Component;
 import java.lang.management.ManagementFactory;
 
 @Component
-public class Health implements CommandExecutor {
+public class HealthCommand implements CommandExecutor {
 
     private final CachingUserActivityTrackerService trackerService;
 
-    public Health(CachingUserActivityTrackerService trackerService) {
+    public HealthCommand(CachingUserActivityTrackerService trackerService) {
         this.trackerService = trackerService;
     }
 

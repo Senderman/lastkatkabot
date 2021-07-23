@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component;
 import java.util.stream.Collectors;
 
 @Component
-public class BncStart implements CommandExecutor {
+public class BncStartCommand implements CommandExecutor {
 
     private final BncTelegramHandler gamesHandler;
 
-    public BncStart(BncTelegramHandler gamesHandler) {
+    public BncStartCommand(BncTelegramHandler gamesHandler) {
         this.gamesHandler = gamesHandler;
     }
 

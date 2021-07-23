@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component;
 import java.util.EnumSet;
 
 @Component
-public class Popularity implements CommandExecutor {
+public class PopularityCommand implements CommandExecutor {
 
     private final ChatUserService chatUsers;
 
-    public Popularity(ChatUserService chatUsers) {
+    public PopularityCommand(ChatUserService chatUsers) {
         this.chatUsers = chatUsers;
     }
 

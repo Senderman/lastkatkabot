@@ -12,11 +12,11 @@ import org.springframework.stereotype.Component;
 import java.util.EnumSet;
 
 @Component
-public class GoodNeko implements CommandExecutor {
+public class GoodNekoCommand implements CommandExecutor {
 
     private final UserManager<BlacklistedUser> blackUsers;
 
-    public GoodNeko(
+    public GoodNekoCommand(
             @Qualifier("blacklistManager") UserManager<BlacklistedUser> blackUsers
     ) {
         this.blackUsers = blackUsers;

@@ -12,12 +12,12 @@ import org.springframework.stereotype.Component;
 import java.util.EnumSet;
 
 @Component
-public class FeedbackBan implements CommandExecutor {
+public class FeedbackBanCommand implements CommandExecutor {
 
     private final UserManager<BlacklistedUser> blackUsers;
     private final FeedbackService feedbackService;
 
-    public FeedbackBan(UserManager<BlacklistedUser> blackUsers, FeedbackService feedbackService) {
+    public FeedbackBanCommand(UserManager<BlacklistedUser> blackUsers, FeedbackService feedbackService) {
         this.blackUsers = blackUsers;
         this.feedbackService = feedbackService;
     }

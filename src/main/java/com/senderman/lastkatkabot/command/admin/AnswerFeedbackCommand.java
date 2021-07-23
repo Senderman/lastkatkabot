@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component;
 import java.util.EnumSet;
 
 @Component
-public class AnswerFeedback implements CommandExecutor {
+public class AnswerFeedbackCommand implements CommandExecutor {
 
     private final FeedbackService feedbackService;
     private final BotConfig config;
 
-    public AnswerFeedback(
+    public AnswerFeedbackCommand(
             FeedbackService feedbackService,
             BotConfig config
     ) {

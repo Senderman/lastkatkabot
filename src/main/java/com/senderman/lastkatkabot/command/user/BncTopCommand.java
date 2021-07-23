@@ -15,11 +15,11 @@ import java.util.Optional;
 import java.util.function.Function;
 
 @Component
-public class BncTop implements CommandExecutor {
+public class BncTopCommand implements CommandExecutor {
 
     private final UserStatsService users;
 
-    public BncTop(UserStatsService users) {
+    public BncTopCommand(UserStatsService users) {
         this.users = users;
     }
 

@@ -12,12 +12,12 @@ import org.springframework.stereotype.Component;
 import java.util.EnumSet;
 
 @Component
-public class DeleteFeedback implements CommandExecutor {
+public class DeleteFeedbackCommand implements CommandExecutor {
 
     private final FeedbackService feedbackRepo;
     private final BotConfig config;
 
-    public DeleteFeedback(
+    public DeleteFeedbackCommand(
             FeedbackService feedbackRepo,
             BotConfig config
     ) {

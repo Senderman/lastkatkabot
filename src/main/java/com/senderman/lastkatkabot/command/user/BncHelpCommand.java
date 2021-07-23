@@ -6,11 +6,11 @@ import com.senderman.lastkatkabot.config.BotConfig;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BncHelp implements CommandExecutor {
+public class BncHelpCommand implements CommandExecutor {
 
     private final BotConfig config;
 
-    public BncHelp(BotConfig config) {
+    public BncHelpCommand(BotConfig config) {
         this.config = config;
     }
 

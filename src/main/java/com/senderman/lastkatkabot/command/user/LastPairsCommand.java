@@ -6,11 +6,11 @@ import com.senderman.lastkatkabot.dbservice.ChatInfoService;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LastPairs implements CommandExecutor {
+public class LastPairsCommand implements CommandExecutor {
 
     private final ChatInfoService chats;
 
-    public LastPairs(ChatInfoService chats) {
+    public LastPairsCommand(ChatInfoService chats) {
         this.chats = chats;
     }
 

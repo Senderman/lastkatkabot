@@ -8,9 +8,9 @@ import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PayRespects implements CommandExecutor {
+public class PayRespectsCommand implements CommandExecutor {
 
-    public PayRespects() {
+    public PayRespectsCommand() {
     }
 
     @Override

@@ -5,9 +5,9 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ShortInfo implements CommandExecutor {
+public class ShortInfoCommand implements CommandExecutor {
 
-    public ShortInfo() {
+    public ShortInfoCommand() {
     }
 
     @Override

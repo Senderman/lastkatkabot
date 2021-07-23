@@ -13,13 +13,13 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 
 @Component
-public class Weather implements CommandExecutor {
+public class WeatherCommand implements CommandExecutor {
 
     private final UserStatsService userStats;
     private final WeatherService weatherService;
     private final ExecutorService threadPool;
 
-    public Weather(UserStatsService userStats, WeatherService weatherService, ExecutorService threadPool) {
+    public WeatherCommand(UserStatsService userStats, WeatherService weatherService, ExecutorService threadPool) {
         this.userStats = userStats;
         this.weatherService = weatherService;
         this.threadPool = threadPool;

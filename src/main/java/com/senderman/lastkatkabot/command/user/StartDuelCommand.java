@@ -9,9 +9,9 @@ import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class StartDuel implements CommandExecutor {
+public class StartDuelCommand implements CommandExecutor {
 
-    public StartDuel() {
+    public StartDuelCommand() {
     }
 
     @Override

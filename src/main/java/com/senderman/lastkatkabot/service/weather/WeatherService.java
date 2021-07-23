@@ -12,7 +12,7 @@ public interface WeatherService {
      * @throws IOException         on connection error
      * @throws NoSuchCityException if there's no city
      */
-    public String getCityLink(String city) throws IOException, NoSuchCityException;
+    String getCityLink(String city) throws IOException, NoSuchCityException;
 
     /**
      * Get weather forecast by city link
@@ -22,6 +22,6 @@ public interface WeatherService {
      * @throws IOException    on connection error
      * @throws ParseException on parse error
      */
-    public Forecast getWeatherByCityLink(String cityLink) throws IOException, ParseException;
+    Forecast getWeatherByCityLink(String cityLink) throws IOException, ParseException;
 
 }

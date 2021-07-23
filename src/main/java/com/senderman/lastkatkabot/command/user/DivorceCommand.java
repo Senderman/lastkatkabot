@@ -7,11 +7,11 @@ import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Divorce implements CommandExecutor {
+public class DivorceCommand implements CommandExecutor {
 
     private final UserStatsService users;
 
-    public Divorce(UserStatsService users) {
+    public DivorceCommand(UserStatsService users) {
         this.users = users;
     }
 

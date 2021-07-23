@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component;
 import java.util.EnumSet;
 
 @Component
-public class GrantAdmin implements CommandExecutor {
+public class GrantAdminCommand implements CommandExecutor {
 
     private final UserManager<AdminUser> admins;
 
 
-    public GrantAdmin(
+    public GrantAdminCommand(
             @Qualifier("adminManager") UserManager<AdminUser> admins) {
         this.admins = admins;
     }

@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 @Component
-public class Stats implements CommandExecutor {
+public class StatsCommand implements CommandExecutor {
 
     private final UserStatsService users;
 
 
-    public Stats(UserStatsService users) {
+    public StatsCommand(UserStatsService users) {
         this.users = users;
     }
 

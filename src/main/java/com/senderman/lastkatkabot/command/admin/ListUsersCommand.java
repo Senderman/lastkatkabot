@@ -14,12 +14,12 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Component
-public class ListUsers implements CommandExecutor {
+public class ListUsersCommand implements CommandExecutor {
 
     private final UserManager<BlacklistedUser> blacklist;
     private final UserManager<AdminUser> admins;
 
-    public ListUsers(UserManager<BlacklistedUser> blacklist, UserManager<AdminUser> admins) {
+    public ListUsersCommand(UserManager<BlacklistedUser> blacklist, UserManager<AdminUser> admins) {
         this.blacklist = blacklist;
         this.admins = admins;
     }

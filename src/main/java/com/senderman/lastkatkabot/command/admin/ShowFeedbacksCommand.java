@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component;
 import java.util.EnumSet;
 
 @Component
-public class ShowFeedbacks implements CommandExecutor {
+public class ShowFeedbacksCommand implements CommandExecutor {
 
     private static final String feedbackSeparator = "\n\n<code>====================================</code>\n\n";
     private final FeedbackService feedbackService;
 
-    public ShowFeedbacks(FeedbackService feedbackService) {
+    public ShowFeedbacksCommand(FeedbackService feedbackService) {
         this.feedbackService = feedbackService;
     }
 

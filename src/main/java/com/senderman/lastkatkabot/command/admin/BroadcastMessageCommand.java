@@ -12,11 +12,11 @@ import java.util.EnumSet;
 import java.util.function.Consumer;
 
 @Component
-public class BroadcastMessage implements CommandExecutor {
+public class BroadcastMessageCommand implements CommandExecutor {
 
     private final ChatUserService chatUsers;
 
-    public BroadcastMessage(ChatUserService chatUsers) {
+    public BroadcastMessageCommand(ChatUserService chatUsers) {
         this.chatUsers = chatUsers;
     }
 

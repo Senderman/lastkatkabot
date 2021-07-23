@@ -6,9 +6,9 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Action implements CommandExecutor {
+public class ActionCommand implements CommandExecutor {
 
-    public Action() {
+    public ActionCommand() {
     }
 
     @Override

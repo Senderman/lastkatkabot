@@ -14,12 +14,12 @@ import org.springframework.stereotype.Component;
 import java.util.Objects;
 
 @Component
-public class MarryMe implements CommandExecutor {
+public class MarryMeCommand implements CommandExecutor {
 
     private final UserStatsService users;
     private final MarriageRequestService marriages;
 
-    public MarryMe(UserStatsService users, MarriageRequestService marriages) {
+    public MarryMeCommand(UserStatsService users, MarriageRequestService marriages) {
         this.users = users;
         this.marriages = marriages;
     }

@@ -14,13 +14,13 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Component
-public class SendFeedback implements CommandExecutor {
+public class SendFeedbackCommand implements CommandExecutor {
 
     private final FeedbackService feedbackRepo;
     private final AdminService adminRepo;
     private final BotConfig config;
 
-    public SendFeedback(
+    public SendFeedbackCommand(
             FeedbackService feedbackRepo,
             AdminService adminRepo, BotConfig config
     ) {

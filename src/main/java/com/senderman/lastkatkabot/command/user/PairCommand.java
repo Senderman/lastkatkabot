@@ -21,7 +21,7 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @Component
-public class Pair implements CommandExecutor {
+public class PairCommand implements CommandExecutor {
 
     private final UserStatsService userStats;
     private final ChatUserService chatUsers;
@@ -31,7 +31,7 @@ public class Pair implements CommandExecutor {
     private final Set<Long> runningChatPairsGenerations;
     private final ExecutorService threadPool;
 
-    public Pair(
+    public PairCommand(
             UserStatsService userStats,
             ChatUserService chatUsers,
             ChatInfoService chatInfoService,

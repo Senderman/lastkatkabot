@@ -19,15 +19,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
-public class Help implements CommandExecutor {
+public class HelpCommand implements CommandExecutor {
 
     private final Set<CommandExecutor> executors;
     private final UserManager<AdminUser> admins;
     private final BotConfig config;
 
-    public Help(@Lazy Set<CommandExecutor> executors,
-                UserManager<AdminUser> admins,
-                BotConfig config
+    public HelpCommand(@Lazy Set<CommandExecutor> executors,
+                       UserManager<AdminUser> admins,
+                       BotConfig config
     ) {
         this.executors = executors.stream()
                 .filter(CommandExecutor::showInHelp)

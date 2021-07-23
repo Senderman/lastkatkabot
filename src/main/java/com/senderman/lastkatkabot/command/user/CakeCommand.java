@@ -9,9 +9,9 @@ import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Cake implements CommandExecutor {
+public class CakeCommand implements CommandExecutor {
 
-    public Cake() {
+    public CakeCommand() {
     }
 
     @Override

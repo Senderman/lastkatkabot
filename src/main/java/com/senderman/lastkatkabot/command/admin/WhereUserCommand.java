@@ -15,12 +15,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 @Component
-public class WhereUser implements CommandExecutor {
+public class WhereUserCommand implements CommandExecutor {
 
     private final ChatUserService chatUsers;
     private final ExecutorService threadPool;
 
-    public WhereUser(ChatUserService chatUsers, ExecutorService threadPool) {
+    public WhereUserCommand(ChatUserService chatUsers, ExecutorService threadPool) {
         this.chatUsers = chatUsers;
         this.threadPool = threadPool;
     }
