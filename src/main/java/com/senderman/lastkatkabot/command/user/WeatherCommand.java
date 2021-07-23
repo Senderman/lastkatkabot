@@ -7,6 +7,8 @@ import com.senderman.lastkatkabot.service.weather.Forecast;
 import com.senderman.lastkatkabot.service.weather.NoSuchCityException;
 import com.senderman.lastkatkabot.service.weather.ParseException;
 import com.senderman.lastkatkabot.service.weather.WeatherService;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -33,40 +35,15 @@ public class WeatherCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(MessageContext ctx) {
-        long userId = ctx.user().getId();
-        ctx.setArgumentsLimit(1);
-        // extract name of the city from the message
-        var city = ctx.argument(0, "");
-        String cityLink;
-
-        if (city.isBlank()) {
-            String dbCityLink = userStats.findById(userId).getCityLink();
-            if (dbCityLink == null) {
-                ctx.replyToMessage("Вы не указали город! ( /weather город ). Бот запомнит ваш выбор.")
-                        .callAsync(ctx.sender);
-                return;
-            }
-            cityLink = dbCityLink;
-        } else { // if city defined in the message
-            try {
-                cityLink = weatherService.getCityLink(city);
-                // save last defined city in db
-                var user = userStats.findById(userId);
-                user.setCityLink(cityLink);
-                userStats.save(user);
-            } catch (IOException e) {
-                ctx.replyToMessage("Ошибка запроса").callAsync(ctx.sender);
-                return;
-            } catch (NoSuchCityException e) {
-                ctx.replyToMessage("Город не найден").callAsync(ctx.sender);
-                return;
-            }
-        }
-
+    public void accept(@NotNull MessageContext ctx) {
         try {
+            String cityLink = getCityLinkFromMessageData(ctx);
             var text = forecastToString(weatherService.getWeatherByCityLink(cityLink));
             ctx.replyToMessage(text).callAsync(ctx.sender);
+        } catch (NoSuchCityException e) {
+            ctx.replyToMessage("Город не найден").callAsync(ctx.sender);
+        } catch (NoCitySpecifiedException e) {
+            ctx.replyToMessage("Вы не указали город! (/weather город). Бот запомнит ваш выбор.").callAsync(ctx.sender);
         } catch (ParseException e) {
             ctx.replyToMessage("Ошибка обработки запроса").callAsync(ctx.sender);
             throw new RuntimeException(e);
@@ -74,6 +51,35 @@ public class WeatherCommand implements CommandExecutor {
             ctx.replyToMessage("Ошибка соединения с сервисом погоды").callAsync(ctx.sender);
             throw new RuntimeException(e);
         }
+    }
+
+    String getCityLinkFromMessageData(MessageContext ctx) throws NoSuchCityException, IOException, NoCitySpecifiedException {
+        var city = ctx.argument(0, "");
+        long userId = ctx.user().getId();
+        String cityLink = getCityLinkFromCityOrDb(city, userId);
+        if (cityLink == null)
+            throw new NoCitySpecifiedException();
+
+        return cityLink;
+    }
+
+    @Nullable
+    String getCityLinkFromCityOrDb(String city, long userId) throws NoSuchCityException, IOException {
+        // if no city specified in message, return city link from DB
+        if (city.isBlank())
+            return userStats.findById(userId).getCityLink();
+
+        // otherwise get link for new city and update db
+        var cityLink = weatherService.getCityLink(city);
+        // save last defined city in db
+        saveCityLinkToDb(cityLink, userId);
+        return cityLink;
+    }
+
+    private void saveCityLinkToDb(String cityLink, long userId) {
+        var user = userStats.findById(userId);
+        user.setCityLink(cityLink);
+        userStats.save(user);
     }
 
     private String forecastToString(Forecast forecast) {
@@ -84,8 +90,10 @@ public class WeatherCommand implements CommandExecutor {
                "💨: " + forecast.wind() + "\n" +
                "💧: " + forecast.humidity() + "\n" +
                "🧭: " + forecast.pressure();
-
     }
 
+    private static class NoCitySpecifiedException extends Exception {
+
+    }
 
 }
