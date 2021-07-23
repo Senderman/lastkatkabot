@@ -3,21 +3,26 @@ package com.senderman.lastkatkabot.command.user;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
-import org.jsoup.Jsoup;
+import com.senderman.lastkatkabot.service.weather.Forecast;
+import com.senderman.lastkatkabot.service.weather.NoSuchCityException;
+import com.senderman.lastkatkabot.service.weather.ParseException;
+import com.senderman.lastkatkabot.service.weather.WeatherService;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutorService;
 
 @Component
 public class Weather implements CommandExecutor {
 
     private final UserStatsService userStats;
+    private final WeatherService weatherService;
+    private final ExecutorService threadPool;
 
-    public Weather(UserStatsService userStats) {
+    public Weather(UserStatsService userStats, WeatherService weatherService, ExecutorService threadPool) {
         this.userStats = userStats;
+        this.weatherService = weatherService;
+        this.threadPool = threadPool;
     }
 
     @Override
@@ -48,7 +53,7 @@ public class Weather implements CommandExecutor {
             cityLink = dbCityLink;
         } else { // if city defined in the message
             try {
-                cityLink = getCityPageLink(city);
+                cityLink = weatherService.getCityLink(city);
                 // save last defined city in db
                 var user = userStats.findById(userId);
                 user.setCityLink(cityLink);
@@ -56,63 +61,34 @@ public class Weather implements CommandExecutor {
             } catch (IOException e) {
                 ctx.replyToMessage("Ошибка запроса").callAsync(ctx.sender);
                 return;
-            } catch (NullPointerException e) {
+            } catch (NoSuchCityException e) {
                 ctx.replyToMessage("Город не найден").callAsync(ctx.sender);
                 return;
             }
         }
 
         try {
-            var text = parseForecast(cityLink).toString();
+            var text = forecastToString(weatherService.getWeatherByCityLink(cityLink));
             ctx.replyToMessage(text).callAsync(ctx.sender);
-        } catch (Exception e) {
-            ctx.replyToMessage("Внутренняя ошибка").callAsync(ctx.sender);
+        } catch (ParseException e) {
+            ctx.replyToMessage("Ошибка обработки запроса").callAsync(ctx.sender);
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            ctx.replyToMessage("Ошибка соединения с сервисом погоды").callAsync(ctx.sender);
+            throw new RuntimeException(e);
         }
     }
 
-    private String getCityPageLink(String city) throws IOException {
-        var searchPage = Jsoup.parse(
-                new URL("https://yandex.ru/pogoda/search?request=" + URLEncoder.encode(city, StandardCharsets.UTF_8)),
-                10000
-        );
-        return searchPage
-                .selectFirst("div.grid")
-                .selectFirst("li.place-list__item")
-                .selectFirst("a").attr("href");
+    private String forecastToString(Forecast forecast) {
+        return "<b>" + forecast.title() + "</b>\n\n" +
+               forecast.feelings() + "\n" +
+               "🌡: " + forecast.temperature() + " °C\n" +
+               "🤔: Ощущается как " + forecast.feelsLike() + "°C\n" +
+               "💨: " + forecast.wind() + "\n" +
+               "💧: " + forecast.humidity() + "\n" +
+               "🧭: " + forecast.pressure();
+
     }
 
-    private Forecast parseForecast(String cityLink) throws IOException {
-        var weatherPage = Jsoup.parse(new URL("https://yandex.ru" + cityLink), 10000);
-        var title = weatherPage.selectFirst("h1.header-title__title").text();
-        var table = weatherPage.selectFirst("div.card_size_big");
-        var temperature = table.selectFirst("div.fact__temp span.temp__value").text();
-        var feelsLike = table.selectFirst("div.fact__feels-like div.term__value").text();
-        var feelings = table.selectFirst("div.fact__feelings div.link__condition").text();
-        var wind = table.selectFirst("div.fact__wind-speed div.term__value").text();
-        var humidity = table.selectFirst("div.fact__humidity div.term__value").text();
-        var pressure = table.selectFirst("div.fact__pressure div.term__value").text();
-        return new Forecast(title, temperature, feelsLike, feelings, wind, humidity, pressure);
-    }
 
-    private record Forecast(
-            String title,
-            String temperature,
-            String feelsLike,
-            String feelings,
-            String wind,
-            String humidity,
-            String pressure
-    ) {
-
-        @Override
-        public String toString() {
-            return "<b>" + title + "</b>\n\n" +
-                   feelings + "\n" +
-                   "🌡: " + temperature + " °C\n" +
-                   "🤔: Ощущается как " + feelsLike + "°C\n" +
-                   "💨: " + wind + "\n" +
-                   "💧: " + humidity + "\n" +
-                   "🧭: " + pressure;
-        }
-    }
 }
