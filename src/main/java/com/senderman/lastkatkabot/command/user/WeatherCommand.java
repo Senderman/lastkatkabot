@@ -10,19 +10,16 @@ import com.senderman.lastkatkabot.service.weather.WeatherService;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
 
 @Component
 public class WeatherCommand implements CommandExecutor {
 
     private final UserStatsService userStats;
     private final WeatherService weatherService;
-    private final ExecutorService threadPool;
 
-    public WeatherCommand(UserStatsService userStats, WeatherService weatherService, ExecutorService threadPool) {
+    public WeatherCommand(UserStatsService userStats, WeatherService weatherService) {
         this.userStats = userStats;
         this.weatherService = weatherService;
-        this.threadPool = threadPool;
     }
 
     @Override
