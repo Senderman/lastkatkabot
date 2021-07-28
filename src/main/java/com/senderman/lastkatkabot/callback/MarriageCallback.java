@@ -72,7 +72,7 @@ public class MarriageCallback implements CallbackExecutor {
         // if everything is ok, proceed to marriage
         proposerStats.setLoverId(r.getProposeeId());
         proposeeStats.setLoverId(r.getProposerId());
-        // all marriage request with these ones are obsolete now
+        // all marriage request with these are obsolete now
         marriages.deleteByProposerIdOrProposeeId(r.getProposerId(), r.getProposeeId());
         userStats.saveAll(List.of(proposerStats, proposeeStats));
         ctx.answer("Вы приняли предложение!").callAsync(ctx.sender);

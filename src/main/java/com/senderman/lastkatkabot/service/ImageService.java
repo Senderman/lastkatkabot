@@ -24,7 +24,7 @@ public class ImageService {
      *
      * @param nickname nickname of the user
      * @return File object which references generated sticker with webp format
-     * @throws IOException              if can't read original template or write a new sticker
+     * @throws IOException              if it can't read original template or write a new sticker
      * @throws TooWideNicknameException if the given nickname is too wide to attach to sticker
      */
     public File generateGreetingSticker(String nickname) throws IOException, TooWideNicknameException {

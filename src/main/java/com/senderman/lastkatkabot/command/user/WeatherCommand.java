@@ -69,7 +69,7 @@ public class WeatherCommand implements CommandExecutor {
         if (city.isBlank())
             return userStats.findById(userId).getCityLink();
 
-        // otherwise get link for new city and update db
+        // otherwise, get link for new city and update db
         var cityLink = weatherService.getCityLink(city);
         // save last defined city in db
         saveCityLinkToDb(cityLink, userId);

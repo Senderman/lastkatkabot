@@ -44,7 +44,7 @@ public class BncGame {
      * @throws GameOverException             if the given number is wrong and no attempts left for future numbers
      * @throws NumberAlreadyCheckedException if the given number is already checked
      * @throws RepeatingDigitsException      if the given number has repeating digits
-     * @throws InvalidLengthException        if the number's length is different from this.length
+     * @throws InvalidLengthException        if the number's length is different from length
      */
     public BncResult check(String number) {
         if (number.length() != length)

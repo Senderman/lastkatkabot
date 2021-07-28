@@ -24,11 +24,9 @@ public class CommandUpdateHandler extends CommandRegistry<Role> {
         super(handler, authority);
 
         splitCallbackCommandByWhitespace();
-        register(bncTelegramHandler);
 
-        for (var cmd : commands)
-            register(cmd);
-        for (var cmd : callbacks)
-            register(cmd);
+        register(bncTelegramHandler);
+        commands.forEach(this::register);
+        callbacks.forEach(this::register);
     }
 }

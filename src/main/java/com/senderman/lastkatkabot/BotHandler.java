@@ -124,7 +124,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     }
 
 
-    // Telegram API exceptions are often the cause of huge logs. If anything will go wrong,
+    // Telegram API exceptions are often the cause of huge logs. If anything goes wrong,
     // we will catch the exception in onUpdatesReceived
     @Override
     public void handleTelegramApiException(TelegramApiException ex) {
