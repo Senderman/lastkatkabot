@@ -15,7 +15,7 @@ public class LastkatkaBot implements BotModule {
     }
 
     @Override
-    public @NotNull com.annimon.tgbotsmodule.BotHandler botHandler(@NotNull Config config) {
+    public @NotNull BotHandler botHandler(@NotNull Config config) {
         var handlerClass = BotHandler.class;
         var context = SpringApplication.run(handlerClass);
         return context.getBean(handlerClass);

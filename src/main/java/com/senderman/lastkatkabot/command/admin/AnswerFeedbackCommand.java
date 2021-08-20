@@ -71,7 +71,7 @@ public class AnswerFeedbackCommand implements CommandExecutor {
                 .setChatId(feedback.getChatId())
                 .setText("\uD83D\uDD14 <b>Ответ разработчика</b>\n\n" + answer)
                 .setReplyToMessageId(feedback.getMessageId())
-                .call(ctx.sender);
+                .callAsync(ctx.sender);
         ctx.replyToMessage("Ответ отправлен!").callAsync(ctx.sender);
 
         // notify others about answer

@@ -54,7 +54,7 @@ public class SendFeedbackCommand implements CommandExecutor {
         var user = ctx.user();
         var userLink = Html.getUserLink(user);
 
-        var feedback = new Feedback(feedbackText, user.getId(), userLink, ctx.chatId(), ctx.message().getMessageId());
+        var feedback = new Feedback(feedbackText, user.getId(), user.getFirstName(), ctx.chatId(), ctx.message().getMessageId());
         feedback = feedbackRepo.insert(feedback);
         var feedbackId = feedback.getId();
         var adminPings = StreamSupport.stream(adminRepo.findAll().spliterator(), false)
