@@ -42,6 +42,11 @@ public class HelpCommand implements CommandExecutor {
     }
 
     @Override
+    public Set<String> aliases() {
+        return Set.of("/start");
+    }
+
+    @Override
     public String getDescription() {
         return "помощь";
     }
