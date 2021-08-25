@@ -30,7 +30,7 @@ public class BncTopCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "топ игроков в Быки и Коровы";
+        return "топ игроков в Быки и Коровы. /bnctop chat для топа чата";
     }
 
     @Override
