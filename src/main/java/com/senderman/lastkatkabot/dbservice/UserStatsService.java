@@ -14,4 +14,6 @@ public interface UserStatsService {
 
     List<Userstats> findTop10BncPlayers();
 
+    List<Userstats> findTop10BncPlayersByChat(long chatId);
+
 }

@@ -17,6 +17,8 @@ public interface ChatUserService {
 
     List<ChatUser> findByUserId(long userId);
 
+    List<ChatUser> findByChatId(long chatId);
+
     void deleteInactiveChatUsers(long chatId);
 
     void delete(ChatUser chatUser);
