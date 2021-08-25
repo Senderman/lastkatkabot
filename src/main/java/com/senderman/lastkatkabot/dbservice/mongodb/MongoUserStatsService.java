@@ -43,6 +43,6 @@ public class MongoUserStatsService implements UserStatsService {
     @Override
     public List<Userstats> findTop10BncPlayersByChat(long chatId) {
         var userIds = chatUserService.findByChatId(chatId).stream().map(ChatUser::getUserId).toList();
-        return repository.findTop10ByOrderByBncScoreDescByUserIdIn(userIds);
+        return repository.findTop10ByOrderByBncScoreDescByIdIn(userIds);
     }
 }
