@@ -15,7 +15,7 @@ public interface UserStatsRepository extends CrudRepository<Userstats, Long> {
 
     List<Userstats> findTop10ByOrderByBncScoreDesc();
 
-    @Query(value = "{ _id: { $in: ?0 } }", sort = "{ bncScore : -1 }")
+    @Query(value = "{ _id: { $in: ?0 }, bncScore: { $ne: 0 } }", sort = "{ bncScore : -1 }")
     List<Userstats> findTop10ByOrderByBncScoreDescByUserIdIn(List<Long> ids);
 
 }
