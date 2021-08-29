@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Lazy;
+import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -37,6 +38,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
     @Autowired
     public BotHandler(
+            DefaultBotOptions botOptions,
             BotConfig config,
             @Lazy CommandUpdateHandler commandUpdateHandler,
             ChatUserService chatUsers,
@@ -45,6 +47,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             ImageService imageService,
             ExecutorService threadPool
     ) {
+        super(botOptions);
         this.config = config;
         this.commandUpdateHandler = commandUpdateHandler;
         this.chatUsers = chatUsers;

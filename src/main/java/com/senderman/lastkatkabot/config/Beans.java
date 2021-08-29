@@ -7,8 +7,10 @@ import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.service.CachingUserActivityTrackerService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.telegram.telegrambots.bots.DefaultBotOptions;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -19,6 +21,13 @@ public class Beans {
 
     public Beans(ChatUserService chatUserService) {
         this.chatUserService = chatUserService;
+    }
+
+    @Bean
+    public DefaultBotOptions botOptions() {
+        var options = new DefaultBotOptions();
+        options.setAllowedUpdates(List.of("message", "callback_query"));
+        return options;
     }
 
 
