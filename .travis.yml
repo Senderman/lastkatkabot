@@ -2,7 +2,7 @@ language: java
 os: linux
 install: true
 jdk:
-  - oraclejdk15
+  - oraclejdk16
 cache:
   directories:
     - "$HOME/.m2"
