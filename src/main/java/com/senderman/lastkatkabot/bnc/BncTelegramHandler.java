@@ -70,7 +70,7 @@ public class BncTelegramHandler implements RegexCommand {
             sendGameMessage(chatId, "Число не должно иметь повторяющихся цифр!", telegram);
         } catch (GameOverException e) {
             addMessageToDelete(message);
-            processGameOver(ctx, e.getAnswer());
+            processGameOver(ctx);
         } catch (InvalidLengthException | InvalidCharacterException | NoSuchElementException ignored) {
         }
     }
@@ -123,21 +123,34 @@ public class BncTelegramHandler implements RegexCommand {
         var username = Html.htmlSafe(ctx.user().getFirstName());
         var text = username + " выиграл за " +
                    (BncGame.totalAttempts(gameState.getLength(), gameState.isHexadecimal()) - result.getAttempts()) +
-                   " попыток!\n\n" + formatGameEndMessage(gameState);
+                   " попыток!\n\n" + formatGameStateStats(gameState);
         deleteGameMessages(chatId, ctx.sender);
         ctx.reply(text).callAsync(ctx.sender);
     }
 
-    public void processGameOver(MessageContext ctx, String answer) {
+    public void processGameOver(MessageContext ctx) {
         long chatId = ctx.chatId();
         var gameState = gamesManager.getGameState(chatId);
         gamesManager.deleteGame(chatId);
         deleteGameMessages(chatId, ctx.sender);
-        var text = "Вы проиграли! Ответ: " + answer + "\n\n" + formatGameEndMessage(gameState);
+        var text = "Вы проиграли! Ответ: " + gameState.getAnswer() + "\n\n" + formatGameStateStats(gameState);
         ctx.reply(text).callAsync(ctx.sender);
     }
 
-    private String formatGameEndMessage(BncGameState state) {
+    public void forceFinishGame(CommonAbsSender sender, long chatId) {
+        if (gamesManager.hasGame(chatId))
+            return;
+
+        var gameState = gamesManager.getGameState(chatId);
+        gamesManager.deleteGame(chatId);
+        deleteGameMessages(chatId, sender);
+
+        var text = "Игра \"Быки и коровы\" в этом чате досрочно завершена! Ответ: "
+                   + gameState.getAnswer() + "\n\n" + formatGameStateStats(gameState);
+        Methods.sendMessage(chatId, text).callAsync(sender);
+    }
+
+    private String formatGameStateStats(BncGameState state) {
         return formatHistory(state.getHistory()) +
                "\n\nПотрачено времени: " +
                formatTimeSpent((System.currentTimeMillis() - state.getStartTime()) / 1000);

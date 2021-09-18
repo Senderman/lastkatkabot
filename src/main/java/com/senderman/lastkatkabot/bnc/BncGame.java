@@ -85,7 +85,7 @@ public class BncGame {
     }
 
     public BncGameState getGameState() {
-        return new BncGameState(id, length, Collections.unmodifiableList(history), attemptsLeft, startTime, isHexadecimal);
+        return new BncGameState(id, length, Collections.unmodifiableList(history), attemptsLeft, startTime, isHexadecimal, answer);
     }
 
     private String generateAnswer(int length) {
@@ -100,5 +100,9 @@ public class BncGame {
 
     public long getId() {
         return id;
+    }
+
+    public String getAnswer() {
+        return answer;
     }
 }

@@ -9,14 +9,24 @@ public class BncGameState {
     private final int attemptsLeft;
     private final long startTime;
     private final boolean isHexadecimal;
+    private final String answer;
 
-    public BncGameState(long id, int length, List<BncResult> history, int attemptsLeft, long startTime, boolean isHexadecimal) {
+    public BncGameState(
+            long id,
+            int length,
+            List<BncResult> history,
+            int attemptsLeft,
+            long startTime,
+            boolean isHexadecimal,
+            String answer
+    ) {
         this.id = id;
         this.length = length;
         this.history = history;
         this.attemptsLeft = attemptsLeft;
         this.startTime = startTime;
         this.isHexadecimal = isHexadecimal;
+        this.answer = answer;
     }
 
     public long getId() {
@@ -41,5 +51,9 @@ public class BncGameState {
 
     public boolean isHexadecimal() {
         return isHexadecimal;
+    }
+
+    public String getAnswer() {
+        return answer;
     }
 }

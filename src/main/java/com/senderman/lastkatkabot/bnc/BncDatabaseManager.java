@@ -26,7 +26,8 @@ public class BncDatabaseManager implements BncGamesManager {
     @Override
     public BncResult check(long id, String number) {
         var gameSave = database.findById(id);
-        if (gameSave.isEmpty()) throw new NoSuchElementException();
+        if (gameSave.isEmpty())
+            throw new NoSuchElementException();
         var game = deserialize(gameSave.get());
         var result = game.check(number);
         saveToDb(game);
