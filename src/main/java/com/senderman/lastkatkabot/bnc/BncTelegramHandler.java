@@ -138,7 +138,7 @@ public class BncTelegramHandler implements RegexCommand {
     }
 
     public void forceFinishGame(CommonAbsSender sender, long chatId) {
-        if (gamesManager.hasGame(chatId))
+        if (!gamesManager.hasGame(chatId))
             return;
 
         var gameState = gamesManager.getGameState(chatId);
