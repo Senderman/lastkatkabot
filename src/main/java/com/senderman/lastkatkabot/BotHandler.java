@@ -146,7 +146,8 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
                 Methods.sendDocument(chatId)
                         .setReplyToMessageId(messageId)
                         .setFile(file)
-                        .callAsync(this, m -> file.delete());
+                        // file should be deleted on both success/failure
+                        .callAsync(this, m -> file.delete(), e -> file.delete());
             } catch (ImageService.TooWideNicknameException | IOException e) {
                 // fallback with greeting gif
                 Methods.sendDocument(chatId)
