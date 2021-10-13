@@ -52,7 +52,7 @@ public class BncStartCommand implements CommandExecutor {
             return;
         }
 
-        gamesHandler.createGameIfNotExists(ctx.chatId(), length, isHexadecimal);
+        gamesHandler.createGameIfNotExists(ctx.chatId(), ctx.message().getFrom().getId(), length, isHexadecimal);
         gamesHandler.sendGameMessage(ctx.chatId(), startText(length), ctx.sender);
 
     }

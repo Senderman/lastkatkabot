@@ -4,6 +4,7 @@ import java.util.List;
 
 public class BncGameState {
     private final long id;
+    private final long creatorId;
     private final int length;
     private final List<BncResult> history;
     private final int attemptsLeft;
@@ -13,6 +14,7 @@ public class BncGameState {
 
     public BncGameState(
             long id,
+            long creatorId,
             int length,
             List<BncResult> history,
             int attemptsLeft,
@@ -21,6 +23,7 @@ public class BncGameState {
             String answer
     ) {
         this.id = id;
+        this.creatorId = creatorId;
         this.length = length;
         this.history = history;
         this.attemptsLeft = attemptsLeft;
@@ -55,5 +58,9 @@ public class BncGameState {
 
     public String getAnswer() {
         return answer;
+    }
+
+    public long getCreatorId() {
+        return creatorId;
     }
 }

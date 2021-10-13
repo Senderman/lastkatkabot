@@ -83,8 +83,8 @@ public class BncTelegramHandler implements RegexCommand {
         return gamesManager.hasGame(chatId);
     }
 
-    public boolean createGameIfNotExists(long chatId, int length, boolean isHexadecimal) {
-        return gamesManager.createGameIfNotExists(chatId, length, isHexadecimal);
+    public boolean createGameIfNotExists(long chatId, long userId, int length, boolean isHexadecimal) {
+        return gamesManager.createGameIfNotExists(chatId, userId, length, isHexadecimal);
     }
 
     // Send message that will be deleted after game end

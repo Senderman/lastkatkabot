@@ -35,10 +35,10 @@ public class BncDatabaseManager implements BncGamesManager {
     }
 
     @Override
-    public boolean createGameIfNotExists(long id, int length, boolean isHexadecimal) {
+    public boolean createGameIfNotExists(long id, long creatorId, int length, boolean isHexadecimal) {
         if (database.existsById(id)) return false;
 
-        var game = new BncGame(id, length, isHexadecimal);
+        var game = new BncGame(id, creatorId, length, isHexadecimal);
         addGame(game);
         return true;
     }

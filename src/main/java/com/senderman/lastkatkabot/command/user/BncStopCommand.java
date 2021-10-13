@@ -39,11 +39,16 @@ public class BncStopCommand implements CommandExecutor {
         var gameState = gameHandler.getGameState(chatId);
         var startTime = gameState.getStartTime();
 
-        if (!ctx.message().isUserMessage() && System.currentTimeMillis() - startTime < period) {
-            ctx.replyToMessage("Для остановки игры в группе, должен пройти хотя бы 1 час с момента начала игры!")
+        boolean isCreator = ctx.message().getFrom().getId().equals(gameState.getCreatorId());
+        boolean isOneHourPassed = System.currentTimeMillis() - startTime > period;
+
+        if (!isCreator && !isOneHourPassed) {
+            ctx.replyToMessage("Для остановки игры в группе, вы должны быть создателем игры, либо " +
+                               "с момента создания игры должно пройти не менее 1 часа!")
                     .callAsync(ctx.sender);
             return;
         }
+
         gameHandler.forceFinishGame(ctx.sender, chatId);
     }
 }

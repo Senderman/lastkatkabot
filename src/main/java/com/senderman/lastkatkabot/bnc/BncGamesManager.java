@@ -25,11 +25,12 @@ public interface BncGamesManager {
     /**
      * Creates new game with given id and answer's length. If there's already game with given id, do nothing
      *
-     * @param id     id of the game
-     * @param length length of the answer
+     * @param id        id of the game
+     * @param creatorId id of the creator (e.g. tg userId)
+     * @param length    length of the answer
      * @return true if the game was created, else false
      */
-    boolean createGameIfNotExists(long id, int length, boolean isHexadecimal);
+    boolean createGameIfNotExists(long id, long creatorId, int length, boolean isHexadecimal);
 
     /**
      * Return Immutable information about game

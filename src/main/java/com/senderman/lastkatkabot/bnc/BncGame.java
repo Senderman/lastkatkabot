@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 public class BncGame {
 
     private final long id;
+    private final long creatorId;
     private final String answer;
     private final int length;
     private final List<BncResult> history;
@@ -17,8 +18,9 @@ public class BncGame {
     private final boolean isHexadecimal;
     private int attemptsLeft;
 
-    public BncGame(long id, int length, boolean isHexadecimal) {
+    public BncGame(long id, long creatorId, int length, boolean isHexadecimal) {
         this.id = id;
+        this.creatorId = creatorId;
         if (length < 4 || length > (isHexadecimal ? 16 : 10)) {
             throw new IllegalArgumentException("Wrong length " + length + ". 4..10 for DEC and 4..16 for HEX");
         }
@@ -85,7 +87,7 @@ public class BncGame {
     }
 
     public BncGameState getGameState() {
-        return new BncGameState(id, length, Collections.unmodifiableList(history), attemptsLeft, startTime, isHexadecimal, answer);
+        return new BncGameState(id, creatorId, length, Collections.unmodifiableList(history), attemptsLeft, startTime, isHexadecimal, answer);
     }
 
     private String generateAnswer(int length) {
