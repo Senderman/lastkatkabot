@@ -27,7 +27,10 @@ public class YandexWeather implements WeatherService {
      */
     @Override
     public String getCityLink(String city) throws IOException, NoSuchCityException {
-        var searchPage = Jsoup.parse(new URL(yandexWeatherSearchUrl + URLEncoder.encode(city, utf8)), TIMEOUT);
+        var url = yandexWeatherSearchUrl + URLEncoder.encode(city, utf8);
+        var conn = Jsoup.connect(url);
+        var searchPage = conn.get();
+        var respUrl = conn.response().url().toString();
         try {
             return searchPage
                     .selectFirst("div.grid")
@@ -35,7 +38,10 @@ public class YandexWeather implements WeatherService {
                     .selectFirst("a")
                     .attr("href");
         } catch (NullPointerException e) {
-            throw new NoSuchCityException(city);
+            if (respUrl.matches(".*/pogoda/\\d+"))
+                return respUrl.replaceFirst(yandexUrl, "");
+            else
+                throw new NoSuchCityException(city);
         }
     }
 
