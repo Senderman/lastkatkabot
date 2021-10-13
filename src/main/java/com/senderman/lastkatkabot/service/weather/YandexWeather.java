@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.service.weather;
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -31,17 +32,16 @@ public class YandexWeather implements WeatherService {
         var conn = Jsoup.connect(url);
         var searchPage = conn.get();
         var respUrl = conn.response().url().toString();
-        try {
-            return searchPage
-                    .selectFirst("div.grid")
-                    .selectFirst("li.place-list__item")
-                    .selectFirst("a")
-                    .attr("href");
-        } catch (NullPointerException e) {
-            if (respUrl.matches(".*/pogoda/\\d+"))
-                return respUrl.replaceFirst(yandexUrl, "");
-            else
+        // if yandex weather has redirected us to the city page
+        if (respUrl.matches(".*/pogoda/\\d+.*")) {
+            return respUrl.replaceFirst(yandexUrl, "");
+        } else {
+            try {
+                // we got a search results page
+                return extractFirstSearchResult(searchPage);
+            } catch (NullPointerException e) {
                 throw new NoSuchCityException(city);
+            }
         }
     }
 
@@ -60,6 +60,14 @@ public class YandexWeather implements WeatherService {
         } catch (NullPointerException e) {
             throw new ParseException(e);
         }
+    }
+
+    private String extractFirstSearchResult(Document document) throws NullPointerException {
+        return document
+                .selectFirst("div.grid")
+                .selectFirst("li.place-list__item")
+                .selectFirst("a")
+                .attr("href");
     }
 
     /**
