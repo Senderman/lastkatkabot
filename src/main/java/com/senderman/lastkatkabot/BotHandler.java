@@ -20,7 +20,6 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
@@ -140,7 +139,11 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             if (user.getIsBot()) {
                 continue;
             }
-            try {
+            Methods.sendDocument(chatId)
+                    .setReplyToMessageId(messageId)
+                    .setFile(imageService.getHelloGifId())
+                    .callAsync(this);
+            /* try {
                 var file = imageService.generateGreetingSticker(user.getFirstName());
                 //noinspection ResultOfMethodCallIgnored
                 Methods.sendDocument(chatId)
@@ -150,11 +153,8 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
                         .callAsync(this, m -> file.delete(), e -> file.delete());
             } catch (ImageService.TooWideNicknameException | IOException e) {
                 // fallback with greeting gif
-                Methods.sendDocument(chatId)
-                        .setReplyToMessageId(messageId)
-                        .setFile(imageService.getHelloGifId())
-                        .callAsync(this);
-            }
+
+            }*/
         }
     }
 
