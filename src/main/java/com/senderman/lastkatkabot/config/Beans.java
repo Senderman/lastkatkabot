@@ -1,10 +1,11 @@
 package com.senderman.lastkatkabot.config;
 
+import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.google.gson.Gson;
+import com.senderman.lastkatkabot.BotHandler;
 import com.senderman.lastkatkabot.Love;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
-import com.senderman.lastkatkabot.service.CachingUserActivityTrackerService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Consumer;
 
 @Configuration
 public class Beans {
@@ -51,10 +53,9 @@ public class Beans {
         return new Gson();
     }
 
-    // TODO implement CachingUserActivityTrackerService as CommandExecutor
     @Bean
-    public CachingUserActivityTrackerService cachingUserActivityTrackerService() {
-        return CachingUserActivityTrackerService.newInstance(chatUserService, threadPool());
+    public Consumer<Long> chatPolicyViolationConsumer(BotHandler handler) {
+        return (chatId) -> Methods.leaveChat(chatId).callAsync(handler);
     }
 
 }

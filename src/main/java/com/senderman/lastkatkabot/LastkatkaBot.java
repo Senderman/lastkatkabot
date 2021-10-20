@@ -18,6 +18,8 @@ public class LastkatkaBot implements BotModule {
     public @NotNull BotHandler botHandler(@NotNull Config config) {
         var handlerClass = BotHandler.class;
         var context = SpringApplication.run(handlerClass);
+        var serviceLauncher = context.getBean(BackgoundServiceLauncher.class);
+        serviceLauncher.runServices();
         return context.getBean(handlerClass);
     }
 }

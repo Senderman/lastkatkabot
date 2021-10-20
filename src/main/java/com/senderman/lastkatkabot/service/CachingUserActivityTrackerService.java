@@ -2,12 +2,14 @@ package com.senderman.lastkatkabot.service;
 
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.model.ChatUser;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+@Component
 public class CachingUserActivityTrackerService implements UserActivityTrackerService {
 
     public final static int FLUSH_INTERVAL = 30;
@@ -16,18 +18,9 @@ public class CachingUserActivityTrackerService implements UserActivityTrackerSer
     private final Map<String, ChatUser> cache = new HashMap<>();
     private int avgCacheFlushingSize = -1;
 
-    private CachingUserActivityTrackerService(ChatUserService chatUserService, ScheduledExecutorService threadPool) {
+    public CachingUserActivityTrackerService(ChatUserService chatUserService, ScheduledExecutorService threadPool) {
         this.chatUserService = chatUserService;
         this.threadPool = threadPool;
-    }
-
-    public static CachingUserActivityTrackerService newInstance(
-            ChatUserService chatUserService,
-            ScheduledExecutorService threadPool
-    ) {
-        var instance = new CachingUserActivityTrackerService(chatUserService, threadPool);
-        instance.runCacheListener();
-        return instance;
     }
 
     @Override
@@ -37,7 +30,7 @@ public class CachingUserActivityTrackerService implements UserActivityTrackerSer
         user.setLastMessageDate(messageLastDate);
     }
 
-    private void runCacheListener() {
+    public void runCacheListener() {
         threadPool.scheduleAtFixedRate(this::flush, FLUSH_INTERVAL, FLUSH_INTERVAL, TimeUnit.SECONDS);
     }
 

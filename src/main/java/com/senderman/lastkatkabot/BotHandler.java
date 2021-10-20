@@ -4,6 +4,7 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.dbservice.DatabaseCleanupService;
+import com.senderman.lastkatkabot.service.ChatPolicyEnsuringService;
 import com.senderman.lastkatkabot.service.ImageService;
 import com.senderman.lastkatkabot.service.UserActivityTrackerService;
 import com.senderman.lastkatkabot.util.DbCleanupResults;
@@ -31,6 +32,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     private final CommandUpdateHandler commandUpdateHandler;
     private final ChatUserService chatUsers;
     private final UserActivityTrackerService activityTrackerService;
+    private final ChatPolicyEnsuringService chatPolicy;
     private final DatabaseCleanupService databaseCleanupService;
     private final ImageService imageService;
     private final ExecutorService threadPool;
@@ -42,6 +44,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             @Lazy CommandUpdateHandler commandUpdateHandler,
             ChatUserService chatUsers,
             UserActivityTrackerService activityTrackerService,
+            @Lazy ChatPolicyEnsuringService chatPolicy,
             DatabaseCleanupService databaseCleanupService,
             ImageService imageService,
             ExecutorService threadPool
@@ -51,6 +54,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         this.commandUpdateHandler = commandUpdateHandler;
         this.chatUsers = chatUsers;
         this.activityTrackerService = activityTrackerService;
+        this.chatPolicy = chatPolicy;
         this.databaseCleanupService = databaseCleanupService;
         this.imageService = imageService;
         this.threadPool = threadPool;
@@ -95,6 +99,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
             if (message.getDate() + 120 < System.currentTimeMillis() / 1000) return null;
 
+            chatPolicy.queueViolationCheck(message.getChatId());
             {
                 var newMembers = message.getNewChatMembers();
                 if (!newMembers.isEmpty()) {
