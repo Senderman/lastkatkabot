@@ -55,7 +55,10 @@ public class Beans {
 
     @Bean
     public Consumer<Long> chatPolicyViolationConsumer(BotHandler handler) {
-        return (chatId) -> Methods.leaveChat(chatId).callAsync(handler);
+        return (chatId) -> {
+            Methods.sendMessage(chatId, "📛 Ваш чат в списке спамеров! Бот не хочет здесь работать!").callAsync(handler);
+            Methods.leaveChat(chatId).callAsync(handler);
+        };
     }
 
 }
