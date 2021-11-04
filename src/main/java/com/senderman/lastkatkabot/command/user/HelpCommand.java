@@ -7,6 +7,7 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.dbservice.UserManager;
 import com.senderman.lastkatkabot.model.AdminUser;
+import com.senderman.lastkatkabot.util.Html;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -110,6 +111,6 @@ public class HelpCommand implements CommandExecutor {
     }
 
     private String formatExecutor(CommandExecutor executor) {
-        return executor.command() + " - " + executor.getDescription();
+        return executor.command() + " - " + Html.htmlSafe(executor.getDescription());
     }
 }
