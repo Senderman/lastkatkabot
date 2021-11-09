@@ -8,7 +8,8 @@ logging:
   level:
     root: ERROR
 
-login: ${lastkatka} # username token
+username: ${username} # bot username without @
+token: ${token} # telegram bot token
 
 timezone: "Europe/Moscow"
 

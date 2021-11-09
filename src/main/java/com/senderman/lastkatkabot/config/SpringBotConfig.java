@@ -17,7 +17,8 @@ public class SpringBotConfig implements BotConfig {
     private final String leaveStickerId;
 
     public SpringBotConfig(
-            @Value("${login}") String login,
+            @Value("${username}") String username,
+            @Value("${token}") String token,
             @Value("${timezone}") String timezone,
             @Value("${mainAdminId}") long mainAdminId,
             @Value("${feedbackChannelId}") long feedbackChannelId,
@@ -27,9 +28,8 @@ public class SpringBotConfig implements BotConfig {
             @Value("${leaveStickerId}") String leaveStickerId
     ) {
 
-        var loginArgs = login.split("\\s+");
-        this.username = loginArgs[0];
-        this.token = loginArgs[1];
+        this.username = username;
+        this.token = token;
         this.timezone = timezone;
         this.mainAdminId = mainAdminId;
         this.feedbackChannelId = feedbackChannelId;
