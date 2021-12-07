@@ -17,10 +17,10 @@ repositories {
 
 
 dependencies {
-    implementation 'com.annimon:tgbots-module:0.15'
+    implementation 'com.annimon:tgbots-module:5.4.0'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-    implementation 'com.google.code.gson:gson:2.8.7'
-    implementation 'org.jsoup:jsoup:1.13.1'
+    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'org.jsoup:jsoup:1.14.3'
     implementation 'org.sejda.webp-imageio:webp-imageio-sejda:0.1.0'
-    implementation 'org.apache.commons:commons-lang3:3.11'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
 }

@@ -9,6 +9,7 @@ import com.senderman.lastkatkabot.service.ImageService;
 import com.senderman.lastkatkabot.service.UserActivityTrackerService;
 import com.senderman.lastkatkabot.util.DbCleanupResults;
 import com.senderman.lastkatkabot.util.ExceptionUtils;
+import com.senderman.lastkatkabot.util.Html;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -82,7 +83,9 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             } catch (Throwable e) {
                 Methods.sendMessage()
                         .setChatId(config.notificationChannelId())
-                        .setText("⚠️ <b>Ошибка обработки апдейта</b>\n\n" + ExceptionUtils.stackTraceAsString(e))
+                        .setText("⚠️ <b>Ошибка обработки апдейта</b>\n\n" +
+                                Html.htmlSafe(ExceptionUtils.stackTraceAsString(e))
+                        )
                         .enableHtml()
                         .disableWebPagePreview()
                         .callAsync(this);
@@ -112,8 +115,8 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             // And 1087968824 is anonymous group admin
             if (
                     !message.isUserMessage()
-                    && !message.getFrom().getId().equals(777000L)
-                    && !message.getFrom().getId().equals(1087968824L)
+                            && !message.getFrom().getId().equals(777000L)
+                            && !message.getFrom().getId().equals(1087968824L)
             ) {
                 threadPool.execute(() -> updateUserLastMessageDate(message));
             }

@@ -11,7 +11,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 @Service
-public class YandexWeather implements WeatherService {
+public class YandexWeatherService implements WeatherService {
 
     private static final int TIMEOUT = 10000;
     private static final Charset utf8 = StandardCharsets.UTF_8;
@@ -62,6 +62,7 @@ public class YandexWeather implements WeatherService {
         }
     }
 
+    // TODO make better
     private String extractFirstSearchResult(Document document) throws NullPointerException {
         return document
                 .selectFirst("div.grid")
