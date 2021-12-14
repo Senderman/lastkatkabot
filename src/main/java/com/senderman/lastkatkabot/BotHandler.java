@@ -8,8 +8,6 @@ import com.senderman.lastkatkabot.service.ChatPolicyEnsuringService;
 import com.senderman.lastkatkabot.service.ImageService;
 import com.senderman.lastkatkabot.service.UserActivityTrackerService;
 import com.senderman.lastkatkabot.util.DbCleanupResults;
-import com.senderman.lastkatkabot.util.ExceptionUtils;
-import com.senderman.lastkatkabot.util.Html;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,6 +20,13 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
@@ -81,15 +86,25 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
                 onUpdate(update);
             } catch (RejectedExecutionException ignored) {
             } catch (Throwable e) {
-                Methods.sendMessage()
-                        .setChatId(config.notificationChannelId())
-                        .setText("⚠️ <b>Ошибка обработки апдейта</b>\n\n" +
-                                Html.htmlSafe(ExceptionUtils.stackTraceAsString(e))
-                        )
-                        .enableHtml()
-                        .disableWebPagePreview()
-                        .callAsync(this);
+                sendExceptionAsFile(config.notificationChannelId(), e);
             }
+        }
+    }
+
+    private void sendExceptionAsFile(long chatId, Throwable e) {
+        try (var baos = new ByteArrayOutputStream()) {
+            var pw = new PrintWriter(baos);
+            e.printStackTrace(pw);
+            var bais = new ByteArrayInputStream(baos.toByteArray());
+            var date = ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT);
+            Methods.sendDocument()
+                    .setChatId(chatId)
+                    .setFile("lastkatka-" + date + ".log", bais)
+                    .setCaption("⚠️ <b>Ошибка обработки апдейта</b>")
+                    .enableHtml()
+                    .callAsync(this);
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -147,22 +162,20 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             if (user.getIsBot()) {
                 continue;
             }
-            Methods.sendDocument(chatId)
-                    .setReplyToMessageId(messageId)
-                    .setFile(imageService.getHelloGifId())
-                    .callAsync(this);
-            /* try {
-                var file = imageService.generateGreetingSticker(user.getFirstName());
-                //noinspection ResultOfMethodCallIgnored
+            try {
+                var stickerStream = imageService.generateGreetingSticker(user.getFirstName());
                 Methods.sendDocument(chatId)
                         .setReplyToMessageId(messageId)
-                        .setFile(file)
-                        // file should be deleted on both success/failure
-                        .callAsync(this, m -> file.delete(), e -> file.delete());
+                        .setFile(messageId + ".webp", stickerStream)
+                        .callAsync(this);
+                stickerStream.close();
             } catch (ImageService.TooWideNicknameException | IOException e) {
                 // fallback with greeting gif
-
-            }*/
+                Methods.sendDocument(chatId)
+                        .setReplyToMessageId(messageId)
+                        .setFile(imageService.getHelloGifId())
+                        .callAsync(this);
+            }
         }
     }
 

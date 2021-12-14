@@ -5,10 +5,11 @@ import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.io.File;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Objects;
-import java.util.UUID;
 
 @Service
 public class ImageService {
@@ -27,7 +28,7 @@ public class ImageService {
      * @throws IOException              if it can't read original template or write a new sticker
      * @throws TooWideNicknameException if the given nickname is too wide to attach to sticker
      */
-    public File generateGreetingSticker(String nickname) throws IOException, TooWideNicknameException {
+    public InputStream generateGreetingSticker(String nickname) throws IOException, TooWideNicknameException {
         var orig = getClass().getResourceAsStream("/greeting.png");
         var img = ImageIO.read(Objects.requireNonNull(orig));
         orig.close();
@@ -52,9 +53,10 @@ public class ImageService {
         g.setColor(Color.white);
         g.fill(textOutline);
         g.dispose();
-        var out = new File(UUID.randomUUID() + ".webp");
+        var out = new ByteArrayOutputStream();
         ImageIO.write(img, "webp", out);
-        return out;
+        out.close();
+        return new ByteArrayInputStream(out.toByteArray());
     }
 
     public String getHelloGifId() {
