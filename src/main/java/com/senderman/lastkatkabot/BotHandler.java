@@ -161,7 +161,8 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
     @Override
     public void handleTelegramApiException(TelegramApiException ex) {
-        sendUpdateErrorAsFile(null, ex, config.notificationChannelId());
+        // TODO buy elastic search for that, too many exceptions
+        // sendUpdateErrorAsFile(null, ex, config.notificationChannelId());
     }
 
     private void processNewChatMembers(Message message) {
