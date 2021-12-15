@@ -9,6 +9,7 @@ import com.senderman.lastkatkabot.service.ImageService;
 import com.senderman.lastkatkabot.service.UserActivityTrackerService;
 import com.senderman.lastkatkabot.util.DbCleanupResults;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Lazy;
@@ -86,21 +87,31 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
                 onUpdate(update);
             } catch (RejectedExecutionException ignored) {
             } catch (Throwable e) {
-                sendExceptionAsFile(config.notificationChannelId(), e);
+                sendUpdateErrorAsFile(update, e, config.notificationChannelId());
             }
         }
     }
 
-    private void sendExceptionAsFile(long chatId, Throwable e) {
+    /**
+     * Send error stacktrace and the update that caused it somewhere, as file
+     *
+     * @param update update that causes the error. Maybe be null, so it won't be shown in the sent logs
+     * @param e      the error
+     * @param chatId where to send
+     */
+    private void sendUpdateErrorAsFile(@Nullable Update update, Throwable e, long chatId) {
         try (var baos = new ByteArrayOutputStream()) {
             var pw = new PrintWriter(baos);
             e.printStackTrace(pw);
+            if (update != null)
+                pw.print("\n\n" + update);
+            pw.close();
             var bais = new ByteArrayInputStream(baos.toByteArray());
             var date = ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT);
             Methods.sendDocument()
                     .setChatId(chatId)
-                    .setFile("lastkatka-" + date + ".log", bais)
-                    .setCaption("⚠️ <b>Ошибка обработки апдейта</b>")
+                    .setFile(config.username() + "-" + date + ".log", bais)
+                    .setCaption("⚠️ <b>Ошибка обработки апдейта</b>\n" + e.getMessage())
                     .enableHtml()
                     .callAsync(this);
         } catch (IOException ex) {
@@ -148,11 +159,9 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         return null;
     }
 
-
-    // Telegram API exceptions are often the cause of huge logs. If anything goes wrong,
-    // we will catch the exception in onUpdatesReceived
     @Override
     public void handleTelegramApiException(TelegramApiException ex) {
+        sendUpdateErrorAsFile(null, ex, config.notificationChannelId());
     }
 
     private void processNewChatMembers(Message message) {
