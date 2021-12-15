@@ -114,6 +114,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
                     .setCaption("⚠️ <b>Ошибка обработки апдейта</b>\n" + e.getMessage())
                     .enableHtml()
                     .callAsync(this);
+            bais.close();
         } catch (IOException ex) {
             ex.printStackTrace();
         }
