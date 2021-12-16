@@ -106,15 +106,15 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             if (update != null)
                 pw.print("\n\n" + update);
             pw.close();
-            var bais = new ByteArrayInputStream(baos.toByteArray());
-            var date = ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT);
-            Methods.sendDocument()
-                    .setChatId(chatId)
-                    .setFile(config.username() + "-" + date + ".log", bais)
-                    .setCaption("⚠️ <b>Ошибка обработки апдейта</b>\n" + e.getMessage())
-                    .enableHtml()
-                    .callAsync(this);
-            bais.close();
+            try (var bais = new ByteArrayInputStream(baos.toByteArray())) {
+                var date = ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT);
+                Methods.sendDocument()
+                        .setChatId(chatId)
+                        .setFile(config.username() + "-" + date + ".log", bais)
+                        .setCaption("⚠️ <b>Ошибка обработки апдейта</b>\n" + e.getMessage())
+                        .enableHtml()
+                        .call(this);
+            }
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -173,13 +173,11 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             if (user.getIsBot()) {
                 continue;
             }
-            try {
-                var stickerStream = imageService.generateGreetingSticker(user.getFirstName());
+            try (var stickerStream = imageService.generateGreetingSticker(user.getFirstName())) {
                 Methods.sendDocument(chatId)
                         .setReplyToMessageId(messageId)
                         .setFile(messageId + ".webp", stickerStream)
-                        .callAsync(this);
-                stickerStream.close();
+                        .call(this);
             } catch (ImageService.TooWideNicknameException | IOException e) {
                 // fallback with greeting gif
                 Methods.sendDocument(chatId)

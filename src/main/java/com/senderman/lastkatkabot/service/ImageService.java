@@ -53,10 +53,10 @@ public class ImageService {
         g.setColor(Color.white);
         g.fill(textOutline);
         g.dispose();
-        var out = new ByteArrayOutputStream();
-        ImageIO.write(img, "webp", out);
-        out.close();
-        return new ByteArrayInputStream(out.toByteArray());
+        try (var out = new ByteArrayOutputStream()) {
+            ImageIO.write(img, "webp", out);
+            return new ByteArrayInputStream(out.toByteArray());
+        }
     }
 
     public String getHelloGifId() {
