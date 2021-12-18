@@ -29,6 +29,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -43,6 +44,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     private final DatabaseCleanupService databaseCleanupService;
     private final ImageService imageService;
     private final ExecutorService threadPool;
+    private final Set<Long> telegramServiceUserIds;
 
     @Autowired
     public BotHandler(
@@ -65,6 +67,12 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         this.databaseCleanupService = databaseCleanupService;
         this.imageService = imageService;
         this.threadPool = threadPool;
+
+        this.telegramServiceUserIds = Set.of(
+                777000L, // attached channel's messages
+                1087968824L, // anonymous group admin @GroupAnonymousBot
+                136817688L // Channel message, @Channel_Bot
+        );
 
         addMethodPreprocessor(SendMessage.class, m -> {
             m.enableHtml(true);
@@ -127,7 +135,11 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
             var message = update.getMessage();
 
-            if (message.getDate() + 120 < System.currentTimeMillis() / 1000) return null;
+            if (message.getDate() + 120 < System.currentTimeMillis() / 1000)
+                return null;
+
+            if (telegramServiceUserIds.contains(message.getFrom().getId()))
+                return null;
 
             chatPolicy.queueViolationCheck(message.getChatId());
             {
@@ -138,21 +150,14 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
                 }
             }
 
-            // track users activity in chats (777000 is userId of attached channel messages)
-            // And 1087968824 is anonymous group admin
-            if (
-                    !message.isUserMessage()
-                            && !message.getFrom().getId().equals(777000L)
-                            && !message.getFrom().getId().equals(1087968824L)
-            ) {
-                threadPool.execute(() -> updateUserLastMessageDate(message));
-            }
-
             if (message.getLeftChatMember() != null) {
                 processLeftChatMember(message);
                 return null;
             }
 
+            if (!message.isUserMessage()) {
+                threadPool.execute(() -> updateUserLastMessageDate(message));
+            }
         }
 
         commandUpdateHandler.handleUpdate(update);
