@@ -82,15 +82,17 @@ public class YandexWeatherService implements WeatherService {
      * @throws NullPointerException if jsoup fails to parse weather
      */
     private Forecast parseForecast(String cityLink) throws IOException, NullPointerException {
-        var weatherPage = Jsoup.parse(new URL(yandexUrl + cityLink), 10000);
+        var weatherPage = Jsoup.parse(new URL(yandexUrl + cityLink), TIMEOUT);
         var title = weatherPage.selectFirst("h1.header-title__title").text();
         var table = weatherPage.selectFirst("div.card_size_big");
         var temperature = table.selectFirst("div.fact__temp span.temp__value").text();
-        var feelings = table.selectFirst("div.fact__feelings div.link__condition").text();
         var wind = table.selectFirst("div.fact__wind-speed div.term__value").text();
         var humidity = table.selectFirst("div.fact__humidity div.term__value").text();
         var pressure = table.selectFirst("div.fact__pressure div.term__value").text();
 
+        var feelings = Optional.ofNullable(table.selectFirst("div.fact__feelings div.link__condition"))
+                .map(Element::text)
+                .orElse("");
         var feelsLike = Optional.ofNullable(table.selectFirst("div.fact__feels-like div.term__value"))
                 .map(Element::text)
                 .orElse("<нет данных>");
