@@ -2,6 +2,7 @@ package com.senderman.lastkatkabot.service.weather;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -9,6 +10,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 @Service
 public class YandexWeatherService implements WeatherService {
@@ -84,11 +86,15 @@ public class YandexWeatherService implements WeatherService {
         var title = weatherPage.selectFirst("h1.header-title__title").text();
         var table = weatherPage.selectFirst("div.card_size_big");
         var temperature = table.selectFirst("div.fact__temp span.temp__value").text();
-        var feelsLike = table.selectFirst("div.fact__feels-like div.term__value").text();
         var feelings = table.selectFirst("div.fact__feelings div.link__condition").text();
         var wind = table.selectFirst("div.fact__wind-speed div.term__value").text();
         var humidity = table.selectFirst("div.fact__humidity div.term__value").text();
         var pressure = table.selectFirst("div.fact__pressure div.term__value").text();
+
+        var feelsLike = Optional.ofNullable(table.selectFirst("div.fact__feels-like div.term__value"))
+                .map(Element::text)
+                .orElse("<нет данных>");
+
         return new Forecast(title, temperature, feelsLike, feelings, wind, humidity, pressure);
     }
 }
