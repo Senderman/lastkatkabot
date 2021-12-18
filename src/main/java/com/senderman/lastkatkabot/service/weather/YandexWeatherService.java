@@ -92,10 +92,10 @@ public class YandexWeatherService implements WeatherService {
 
         var feelings = Optional.ofNullable(table.selectFirst("div.fact__feelings div.link__condition"))
                 .map(Element::text)
-                .orElse("");
+                .orElse("=====");
         var feelsLike = Optional.ofNullable(table.selectFirst("div.fact__feels-like div.term__value"))
                 .map(Element::text)
-                .orElse("<нет данных>");
+                .orElse(temperature);
 
         return new Forecast(title, temperature, feelsLike, feelings, wind, humidity, pressure);
     }
