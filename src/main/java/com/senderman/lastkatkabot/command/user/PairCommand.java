@@ -23,8 +23,10 @@ import java.util.stream.Collectors;
 @Component
 public class PairCommand implements CommandExecutor {
 
-    private final UserStatsService userStats;
-    private final ChatUserService chatUsers;
+    private static final String EMPTY_NAME_REPLACEMENT = "Без имени";
+    private static final int USERS_REQUIRED_FOR_PAIR = 2;
+    private final UserStatsService userStatsService;
+    private final ChatUserService chatUsersService;
     private final ChatInfoService chatInfoService;
     private final Love love;
     private final CurrentTime currentTime;
@@ -32,15 +34,15 @@ public class PairCommand implements CommandExecutor {
     private final ExecutorService threadPool;
 
     public PairCommand(
-            UserStatsService userStats,
-            ChatUserService chatUsers,
+            UserStatsService userStatsService,
+            ChatUserService chatUsersService,
             ChatInfoService chatInfoService,
             Love love,
             CurrentTime currentTime,
             ExecutorService threadPool
     ) {
-        this.userStats = userStats;
-        this.chatUsers = chatUsers;
+        this.userStatsService = userStatsService;
+        this.chatUsersService = chatUsersService;
         this.chatInfoService = chatInfoService;
         this.love = love;
         this.currentTime = currentTime;
@@ -69,10 +71,12 @@ public class PairCommand implements CommandExecutor {
 
         // check if pair was generated today
         var chatInfo = chatInfoService.findById(chatId);
+        // ArrayList::new because we will use this list below
         List<String> lastPairs = Objects.requireNonNullElseGet(chatInfo.getLastPairs(), ArrayList::new);
         var lastPairGenerationDate = Objects.requireNonNullElse(chatInfo.getLastPairDate(), -1);
         int currentDay = Integer.parseInt(currentTime.getCurrentDay());
 
+        // pair of today already exists
         if (!lastPairs.isEmpty() && lastPairGenerationDate == currentDay) {
             ctx.reply("Пара дня: " + lastPairs.get(0)).callAsync(ctx.sender);
             return;
@@ -81,9 +85,10 @@ public class PairCommand implements CommandExecutor {
         if (!runningChatPairsGenerations.add(chatId)) return;
 
         // clean inactive chat members
-        chatUsers.deleteInactiveChatUsers(chatId);
+        chatUsersService.deleteInactiveChatUsers(chatId);
 
-        if (chatUsers.countByChatId(chatId) < 2) {
+        final var usersForPair = chatUsersService.getTwoOrLessUsersOfChat(chatId);
+        if (usersForPair.size() < USERS_REQUIRED_FOR_PAIR) {
             ctx.reply("Недостаточно пользователей писало в чат за последние 2 недели!").callAsync(ctx.sender);
             runningChatPairsGenerations.remove(chatId);
             return;
@@ -95,15 +100,7 @@ public class PairCommand implements CommandExecutor {
 
         threadPool.execute(() -> {
             try {
-                PairData pair;
-                try {
-                    pair = generateNewPair(chatId, ctx.sender);
-                } catch (NotEnoughUsersException e) {
-                    floodFuture.cancel(true);
-                    ctx.reply("Ой, а у вас мало пользователей в чате доступно... Придется остановить генерацию пары").callAsync(ctx.sender);
-                    return;
-                }
-
+                PairData pair = generateNewPair(chatId, usersForPair);
                 // save new generated pair and date to DB
                 chatInfo.setLastPairDate(currentDay);
                 lastPairs.add(0, pair.toString());
@@ -118,75 +115,51 @@ public class PairCommand implements CommandExecutor {
                 ctx.reply(text).callAsync(ctx.sender);
             } catch (InterruptedException | ExecutionException e) {
                 floodFuture.cancel(true);
-                e.printStackTrace();
                 ctx.reply("...Упс, произошла ошибка. Попробуйте еще раз").callAsync(ctx.sender);
+                throw new RuntimeException(e);
             } finally {
                 runningChatPairsGenerations.remove(chatId);
             }
         });
     }
 
-    private PairData generateNewPair(long chatId, CommonAbsSender telegram) throws NotEnoughUsersException {
 
-        final int USERS_REQUIRED = 2;
+    // usersForPair should contain 2 or more users, otherwise this method will fail
+    private PairData generateNewPair(long chatId, List<ChatUser> usersForPair) {
+        var chatUser1 = usersForPair.get(0);
+        var chatUser2 = usersForPair.get(1);
+        var user1 = userFromChatUser(chatUser1);
+        replaceNameIfBlank(user1);
+        var user2 = userFromChatUser(chatUser2);
+        replaceNameIfBlank(user2);
 
-        List<ChatUser> usersForPair;
-        while (true) {
-            // request two random users from db
-            usersForPair = chatUsers.getTwoOrLessUsersOfChat(chatId);
-            if (usersForPair.size() < USERS_REQUIRED)
-                throw new NotEnoughUsersException(usersForPair.size(), USERS_REQUIRED);
+        // at this point, we can be sure that user1 and user2 are present in chat.
+        // now we have to change user2 to user1's lover if needed and if lover is present in chat
+        var user1Stats = userStatsService.findById(chatUser1.getUserId());
+        if (user1Stats.getLoverId() == null)
+            return new PairData(user1, user2, false);
 
-            var chatUser1 = usersForPair.get(0);
-            var chatUser2 = usersForPair.get(1);
-            // check that these users are available through getChatMember method
-            // and that their name is not blank
-            // if at least one of the users is not available, continue the while loop
-            User user1, user2;
-            try {
-                user1 = getUserFromChatMember(chatId, chatUser1.getUserId(), telegram);
-                validateNameIsNotBlank(user1);
-            } catch (NoChatMemberException | BlankNameException e) {
-                chatUsers.delete(chatUser1);
-                continue;
-            }
-            try {
-                user2 = getUserFromChatMember(chatId, chatUser2.getUserId(), telegram);
-                validateNameIsNotBlank(user2);
-            } catch (NoChatMemberException | BlankNameException e) {
-                chatUsers.delete(chatUser2);
-                continue;
-            }
-
-            // at this point, we can be sure that user1 and user2 are present in chat.
-            // now we have to change user2 to user1's lover if needed and if lover available as ChatMember
-            boolean isTrueLove = false;
-            var user1Stats = userStats.findById(chatUser1.getUserId());
-            if (user1Stats.getLoverId() != null) {
-                try {
-                    user2 = getUserFromChatMember(chatId, user1Stats.getLoverId(), telegram);
-                    isTrueLove = true;
-                } catch (NoChatMemberException ignored) {
-                    // leave as is
-                }
-            }
-
-            return new PairData(user1, user2, isTrueLove);
-
+        var loverOptional = chatUsersService.findByChatIdAndUserId(chatId, user1Stats.getLoverId());
+        if (loverOptional.isEmpty()) {
+            return new PairData(user1, user2, false);
+        } else {
+            // lover is found
+            chatUser2 = loverOptional.get();
+            user2 = userFromChatUser(chatUser2);
+            replaceNameIfBlank(user2);
+            return new PairData(user1, user2, true);
         }
+
     }
 
-    private void validateNameIsNotBlank(User user) throws BlankNameException {
+    private User userFromChatUser(ChatUser chatUser) {
+        return new User(chatUser.getUserId(), chatUser.getName(), false);
+    }
+
+    private void replaceNameIfBlank(User user) {
         if (user.getFirstName().isBlank()) {
-            throw new BlankNameException(user.getId());
+            user.setFirstName(EMPTY_NAME_REPLACEMENT);
         }
-    }
-
-    private User getUserFromChatMember(long chatId, long userId, CommonAbsSender telegram) {
-        var member = Methods.getChatMember(chatId, userId).call(telegram);
-        if (member == null || member.getStatus().equals("left") || member.getStatus().equals("kicked"))
-            throw new NoChatMemberException(userId, chatId);
-        return member.getUser();
     }
 
     private void sendRandomShitWithDelay(long chatId, String[] shit, CommonAbsSender telegram) {
@@ -214,40 +187,6 @@ public class PairCommand implements CommandExecutor {
                     Html.htmlSafe(second.getFirstName())
             );
         }
-    }
-
-    private static class NotEnoughUsersException extends RuntimeException {
-        public NotEnoughUsersException(int found, int required) {
-            super("Not enough users, found %d, required %d".formatted(found, required));
-        }
-    }
-
-    private static class NoChatMemberException extends RuntimeException {
-
-        private final long userId;
-        private final long chatId;
-
-        public NoChatMemberException(long userId, long chatId) {
-            super("No userId %d in chatId %d".formatted(userId, chatId));
-            this.userId = userId;
-            this.chatId = chatId;
-        }
-
-        public long getUserId() {
-            return userId;
-        }
-
-        public long getChatId() {
-            return chatId;
-        }
-    }
-
-    private static class BlankNameException extends RuntimeException {
-
-        public BlankNameException(long userId) {
-            super("User with id " + userId + " has a blank name!");
-        }
-
     }
 
 }

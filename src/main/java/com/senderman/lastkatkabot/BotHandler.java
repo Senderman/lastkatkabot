@@ -214,10 +214,13 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
     private void updateUserLastMessageDate(Message message) {
         var chatId = message.getChatId();
-        var userId = message.getFrom().getId();
+        var user = message.getFrom();
+        var userId = user.getId();
+        var name = user.getFirstName();
         var date = message.getDate();
 
-        activityTrackerService.updateLastMessageDate(chatId, userId, date);
+
+        activityTrackerService.updateLastMessageDate(chatId, userId, name, date);
     }
 
     private DbCleanupResults cleanupDatabase() {

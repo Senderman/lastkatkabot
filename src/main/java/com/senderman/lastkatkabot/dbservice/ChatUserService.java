@@ -3,6 +3,7 @@ package com.senderman.lastkatkabot.dbservice;
 import com.senderman.lastkatkabot.model.ChatUser;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public interface ChatUserService {
@@ -19,6 +20,9 @@ public interface ChatUserService {
 
     List<ChatUser> findByChatId(long chatId);
 
+    Optional<ChatUser> findByChatIdAndUserId(long chatId, long userId);
+
+    // TODO move period here
     void deleteInactiveChatUsers(long chatId);
 
     void delete(ChatUser chatUser);

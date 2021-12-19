@@ -19,6 +19,11 @@ public class CurrentTime {
         dayFormat.setTimeZone(timeZone);
     }
 
+    /**
+     * Get current day as String in format yyyyMMdd
+     *
+     * @return current day as String in format yyyyMMdd
+     */
     public String getCurrentDay() {
         var date = Calendar.getInstance(timeZone).getTime();
         return dayFormat.format(date);

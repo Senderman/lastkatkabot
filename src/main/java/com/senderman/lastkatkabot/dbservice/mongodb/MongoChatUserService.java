@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -50,6 +51,11 @@ public class MongoChatUserService implements ChatUserService {
     @Override
     public List<ChatUser> findByChatId(long chatId) {
         return repository.findByChatId(chatId);
+    }
+
+    @Override
+    public Optional<ChatUser> findByChatIdAndUserId(long chatId, long userId) {
+        return repository.findByChatIdAndUserId(chatId, userId);
     }
 
     @Override

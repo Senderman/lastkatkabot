@@ -24,10 +24,9 @@ public class CachingUserActivityTrackerService implements UserActivityTrackerSer
     }
 
     @Override
-    public synchronized void updateLastMessageDate(long chatId, long userId, int messageLastDate) {
+    public synchronized void updateLastMessageDate(long chatId, long userId, String name, int lastMessageDate) {
         String id = ChatUser.generateId(chatId, userId);
-        var user = cache.computeIfAbsent(id, k -> new ChatUser(chatId, userId));
-        user.setLastMessageDate(messageLastDate);
+        var user = cache.computeIfAbsent(id, k -> new ChatUser(chatId, userId, name, lastMessageDate));
     }
 
     public void runCacheListener() {
