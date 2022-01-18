@@ -18,13 +18,13 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
 @Component
 public class PairCommand implements CommandExecutor {
 
     private static final String EMPTY_NAME_REPLACEMENT = "Без имени";
-    private static final int USERS_REQUIRED_FOR_PAIR = 2;
     private final UserStatsService userStatsService;
     private final ChatUserService chatUsersService;
     private final ChatInfoService chatInfoService;
@@ -39,7 +39,7 @@ public class PairCommand implements CommandExecutor {
             ChatInfoService chatInfoService,
             Love love,
             CurrentTime currentTime,
-            ExecutorService threadPool
+            ScheduledExecutorService threadPool
     ) {
         this.userStatsService = userStatsService;
         this.chatUsersService = chatUsersService;
@@ -88,7 +88,7 @@ public class PairCommand implements CommandExecutor {
         chatUsersService.deleteInactiveChatUsers(chatId);
 
         final var usersForPair = chatUsersService.getTwoOrLessUsersOfChat(chatId);
-        if (usersForPair.size() < USERS_REQUIRED_FOR_PAIR) {
+        if (usersForPair.size() < 2) {
             ctx.reply("Недостаточно пользователей писало в чат за последние 2 недели!").callAsync(ctx.sender);
             runningChatPairsGenerations.remove(chatId);
             return;
