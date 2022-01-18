@@ -17,8 +17,8 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
 @Component
@@ -38,8 +38,7 @@ public class PairCommand implements CommandExecutor {
             ChatUserService chatUsersService,
             ChatInfoService chatInfoService,
             Love love,
-            CurrentTime currentTime,
-            ScheduledExecutorService threadPool
+            CurrentTime currentTime
     ) {
         this.userStatsService = userStatsService;
         this.chatUsersService = chatUsersService;
@@ -47,7 +46,8 @@ public class PairCommand implements CommandExecutor {
         this.love = love;
         this.currentTime = currentTime;
         this.runningChatPairsGenerations = Collections.synchronizedSet(new HashSet<>());
-        this.threadPool = threadPool;
+        // I don't use pool from BotConfig, because it's already overloaded. /pair needs its own pool
+        this.threadPool = Executors.newScheduledThreadPool(2);
     }
 
     @Override
