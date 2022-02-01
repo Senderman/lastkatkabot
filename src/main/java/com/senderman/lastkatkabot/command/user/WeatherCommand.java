@@ -40,6 +40,8 @@ public class WeatherCommand implements CommandExecutor {
             String cityLink = getCityLinkFromMessageData(ctx);
             var text = forecastToString(weatherService.getWeatherByCityLink(cityLink));
             ctx.replyToMessage(text).callAsync(ctx.sender);
+            // save last defined city in db (we won't get here if exception is occurred)
+            saveCityLinkToDb(cityLink, ctx.user().getId());
         } catch (NoSuchCityException e) {
             ctx.replyToMessage("Город не найден").callAsync(ctx.sender);
         } catch (NoCitySpecifiedException e) {
@@ -68,12 +70,8 @@ public class WeatherCommand implements CommandExecutor {
         // if no city specified in message, return city link from DB
         if (city.isBlank())
             return userStats.findById(userId).getCityLink();
-
         // otherwise, get link for new city and update db
-        var cityLink = weatherService.getCityLink(city);
-        // save last defined city in db
-        saveCityLinkToDb(cityLink, userId);
-        return cityLink;
+        return weatherService.getCityLink(city);
     }
 
     private void saveCityLinkToDb(String cityLink, long userId) {
