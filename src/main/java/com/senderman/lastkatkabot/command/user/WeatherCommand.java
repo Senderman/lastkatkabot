@@ -3,10 +3,7 @@ package com.senderman.lastkatkabot.command.user;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
-import com.senderman.lastkatkabot.service.weather.Forecast;
-import com.senderman.lastkatkabot.service.weather.NoSuchCityException;
-import com.senderman.lastkatkabot.service.weather.ParseException;
-import com.senderman.lastkatkabot.service.weather.WeatherService;
+import com.senderman.lastkatkabot.service.weather.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Component;
@@ -44,6 +41,8 @@ public class WeatherCommand implements CommandExecutor {
             saveCityLinkToDb(cityLink, ctx.user().getId());
         } catch (NoSuchCityException e) {
             ctx.replyToMessage("Город не найден").callAsync(ctx.sender);
+        } catch (CountriesAreNotSupportedException e) {
+            ctx.replyToMessage("Страны не поддерживаются!").callAsync(ctx.sender);
         } catch (NoCitySpecifiedException e) {
             ctx.replyToMessage("Вы не указали город! (/weather город). Бот запомнит ваш выбор.").callAsync(ctx.sender);
         } catch (ParseException e) {
@@ -55,7 +54,7 @@ public class WeatherCommand implements CommandExecutor {
         }
     }
 
-    String getCityLinkFromMessageData(MessageContext ctx) throws NoSuchCityException, IOException, NoCitySpecifiedException {
+    String getCityLinkFromMessageData(MessageContext ctx) throws NoSuchCityException, IOException, NoCitySpecifiedException, CountriesAreNotSupportedException {
         var city = ctx.argument(0, "");
         long userId = ctx.user().getId();
         String cityLink = getCityLinkFromCityOrDb(city, userId);
@@ -66,7 +65,7 @@ public class WeatherCommand implements CommandExecutor {
     }
 
     @Nullable
-    String getCityLinkFromCityOrDb(String city, long userId) throws NoSuchCityException, IOException {
+    String getCityLinkFromCityOrDb(String city, long userId) throws NoSuchCityException, IOException, CountriesAreNotSupportedException {
         // if no city specified in message, return city link from DB
         if (city.isBlank())
             return userStats.findById(userId).getCityLink();
@@ -82,12 +81,12 @@ public class WeatherCommand implements CommandExecutor {
 
     private String forecastToString(Forecast forecast) {
         return "<b>" + forecast.title() + "</b>\n\n" +
-               forecast.feelings() + "\n" +
-               "🌡: " + forecast.temperature() + " °C\n" +
-               "🤔: Ощущается как " + forecast.feelsLike() + "°C\n" +
-               "💨: " + forecast.wind() + "\n" +
-               "💧: " + forecast.humidity() + "\n" +
-               "🧭: " + forecast.pressure();
+                forecast.feelings() + "\n" +
+                "🌡: " + forecast.temperature() + " °C\n" +
+                "🤔: Ощущается как " + forecast.feelsLike() + "°C\n" +
+                "💨: " + forecast.wind() + "\n" +
+                "💧: " + forecast.humidity() + "\n" +
+                "🧭: " + forecast.pressure();
     }
 
     private static class NoCitySpecifiedException extends Exception {

@@ -29,21 +29,30 @@ public class YandexWeatherService implements WeatherService {
      * @throws NoSuchCityException if there's no city
      */
     @Override
-    public String getCityLink(String city) throws IOException, NoSuchCityException {
+    public String getCityLink(String city) throws IOException, NoSuchCityException, CountriesAreNotSupportedException {
         var url = yandexWeatherSearchUrl + URLEncoder.encode(city, utf8);
         var conn = Jsoup.connect(url);
         var searchPage = conn.get();
         var respUrl = conn.response().url().toString();
+        checkIsCountryUrl(respUrl);
         // if yandex weather has redirected us to the city page
         if (respUrl.matches(".*/pogoda/\\d+.*")) {
             return respUrl.replaceFirst(yandexUrl, "");
-        } else {
-            try {
-                // we got a search results page
-                return extractFirstSearchResult(searchPage);
-            } catch (NullPointerException e) {
-                throw new NoSuchCityException(city);
-            }
+        }
+        // we get here if we have list of results
+        try {
+            var result = extractFirstSearchResultUrl(searchPage);
+            checkIsCountryUrl(result);
+            return result;
+        } catch (NullPointerException e) {
+            throw new NoSuchCityException(city);
+        }
+    }
+
+    // We do not provide weather for countries. Only for cities
+    private void checkIsCountryUrl(String url) throws CountriesAreNotSupportedException {
+        if (url.contains("/region/")) {
+            throw new CountriesAreNotSupportedException();
         }
     }
 
@@ -65,7 +74,7 @@ public class YandexWeatherService implements WeatherService {
     }
 
     // TODO make better
-    private String extractFirstSearchResult(Document document) throws NullPointerException {
+    private String extractFirstSearchResultUrl(Document document) throws NullPointerException {
         return document
                 .selectFirst("div.grid")
                 .selectFirst("li.place-list__item")
