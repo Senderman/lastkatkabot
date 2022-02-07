@@ -22,7 +22,7 @@ public class ChatPolicyEnsuringService {
     public ChatPolicyEnsuringService(
             @Qualifier("chatPolicyViolationConsumer") Consumer<Long> chatPolicyViolationConsumer,
             BlacklistedChatService database,
-            ScheduledExecutorService threadPool
+            @Qualifier("chatPolicyPool") ScheduledExecutorService threadPool
     ) {
         this.chatPolicyViolationConsumer = chatPolicyViolationConsumer;
         this.database = database;

@@ -12,17 +12,12 @@ import org.telegram.telegrambots.bots.DefaultBotOptions;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 
 @Configuration
 public class Beans {
 
-    private final ChatUserService chatUserService;
-
     public Beans(ChatUserService chatUserService) {
-        this.chatUserService = chatUserService;
     }
 
     @Bean
@@ -30,13 +25,6 @@ public class Beans {
         var options = new DefaultBotOptions();
         options.setAllowedUpdates(List.of("message", "callback_query"));
         return options;
-    }
-
-
-    @Bean
-    public ScheduledExecutorService threadPool() {
-        int cpus = Runtime.getRuntime().availableProcessors() - 1;
-        return Executors.newScheduledThreadPool(Math.max(cpus, 1));
     }
 
     @Bean

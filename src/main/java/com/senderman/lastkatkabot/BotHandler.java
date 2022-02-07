@@ -11,6 +11,7 @@ import com.senderman.lastkatkabot.util.DbCleanupResults;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Lazy;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
@@ -56,7 +57,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             @Lazy ChatPolicyEnsuringService chatPolicy,
             DatabaseCleanupService databaseCleanupService,
             ImageService imageService,
-            ExecutorService threadPool
+            @Qualifier("generalNeedsPool") ExecutorService threadPool
     ) {
         super(botOptions);
         this.config = config;

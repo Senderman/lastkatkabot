@@ -2,6 +2,7 @@ package com.senderman.lastkatkabot.service;
 
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.model.ChatUser;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -18,7 +19,10 @@ public class CachingUserActivityTrackerService implements UserActivityTrackerSer
     private final Map<String, ChatUser> cache = new HashMap<>();
     private int avgCacheFlushingSize = -1;
 
-    public CachingUserActivityTrackerService(ChatUserService chatUserService, ScheduledExecutorService threadPool) {
+    public CachingUserActivityTrackerService(
+            ChatUserService chatUserService,
+            @Qualifier("userActivityTrackerPool") ScheduledExecutorService threadPool
+    ) {
         this.chatUserService = chatUserService;
         this.threadPool = threadPool;
     }

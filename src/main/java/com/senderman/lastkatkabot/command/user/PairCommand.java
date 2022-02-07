@@ -11,13 +11,13 @@ import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.model.ChatUser;
 import com.senderman.lastkatkabot.service.CurrentTime;
 import com.senderman.lastkatkabot.util.Html;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
@@ -38,7 +38,8 @@ public class PairCommand implements CommandExecutor {
             ChatUserService chatUsersService,
             ChatInfoService chatInfoService,
             Love love,
-            CurrentTime currentTime
+            CurrentTime currentTime,
+            @Qualifier("pairPool") ExecutorService threadPool
     ) {
         this.userStatsService = userStatsService;
         this.chatUsersService = chatUsersService;
@@ -47,7 +48,7 @@ public class PairCommand implements CommandExecutor {
         this.currentTime = currentTime;
         this.runningChatPairsGenerations = Collections.synchronizedSet(new HashSet<>());
         // I don't use pool from BotConfig, because it's already overloaded. /pair needs its own pool
-        this.threadPool = Executors.newScheduledThreadPool(2);
+        this.threadPool = threadPool;
     }
 
     @Override
