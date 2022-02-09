@@ -2,12 +2,11 @@ package com.senderman.lastkatkabot.service;
 
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.model.ChatUser;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -15,16 +14,11 @@ public class CachingUserActivityTrackerService implements UserActivityTrackerSer
 
     public final static int FLUSH_INTERVAL = 30;
     private final ChatUserService chatUserService;
-    private final ScheduledExecutorService threadPool;
     private final Map<String, ChatUser> cache = new HashMap<>();
     private int avgCacheFlushingSize = -1;
 
-    public CachingUserActivityTrackerService(
-            ChatUserService chatUserService,
-            @Qualifier("userActivityTrackerPool") ScheduledExecutorService threadPool
-    ) {
+    public CachingUserActivityTrackerService(ChatUserService chatUserService) {
         this.chatUserService = chatUserService;
-        this.threadPool = threadPool;
     }
 
     @Override
@@ -33,14 +27,11 @@ public class CachingUserActivityTrackerService implements UserActivityTrackerSer
         var user = cache.computeIfAbsent(id, k -> new ChatUser(chatId, userId, name, lastMessageDate));
     }
 
-    public void runCacheListener() {
-        threadPool.scheduleAtFixedRate(this::flush, FLUSH_INTERVAL, FLUSH_INTERVAL, TimeUnit.SECONDS);
-    }
-
     public int getAvgCacheFlushingSize() {
         return avgCacheFlushingSize;
     }
 
+    @Scheduled(fixedDelay = FLUSH_INTERVAL, timeUnit = TimeUnit.SECONDS)
     private synchronized void flush() {
         if (cache.isEmpty()) return;
         var data = cache.values();
