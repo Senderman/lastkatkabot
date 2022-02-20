@@ -33,6 +33,7 @@ public class WeatherCommand implements CommandExecutor {
 
     @Override
     public void accept(@NotNull MessageContext ctx) {
+        ctx.setArgumentsLimit(1);
         try {
             String cityLink = getCityLinkFromMessageData(ctx);
             var text = forecastToString(weatherService.getWeatherByCityLink(cityLink));
