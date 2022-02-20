@@ -9,23 +9,23 @@ import java.net.URL;
 @Service
 public class WttrWeatherService implements WeatherService {
 
-    private static final String domain = "https://wttr.in";
-    private static final String wttrOptions = "?m0AFTq&lang=ru&format=%l\\n%t\\n%f\\n%C\\n%w\\n%h\\n%P";
+    private static final String domain = "https://wttr.in/";
+    private static final String wttrOptions = "?m0AFTq&lang=ru&format=%l\\n%t\\n%f\\n%c%20%C\\n%w\\n%h\\n%P";
 
+    // in the current implementation, city link is just the city
     @Override
     public String getCityLink(String city) throws IOException, NoSuchCityException, CountriesAreNotSupportedException {
         if (!city.matches("\\p{L}+")) {
             throw new NoSuchCityException(city);
         }
-        var link = "/" + city + wttrOptions;
-        if (checkResponse(domain + link) != 200)
+        if (checkResponse(domain +city+ wttrOptions) != 200)
             throw new NoSuchCityException(city);
-        return link;
+        return city;
     }
 
     @Override
     public Forecast getWeatherByCityLink(String cityLink) throws IOException, ParseException {
-        String[] content = getContent(domain + cityLink).split("\n");
+        String[] content = getContent(domain + cityLink + wttrOptions).split("\n");
         var title = content[0];
         var temperature = content[1];
         var feelsLike = content[2];
