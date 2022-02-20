@@ -17,7 +17,7 @@ public interface WeatherService {
     /**
      * Get weather forecast by city link
      *
-     * @param cityLink link to the city, starting with / (you can get it from {@link #getCityLink(String)}
+     * @param cityLink part of the link to the city, after domain starting with / (you can get it from {@link #getCityLink(String)}
      * @return Forecast object
      * @throws IOException    on connection error
      * @throws ParseException on parse error

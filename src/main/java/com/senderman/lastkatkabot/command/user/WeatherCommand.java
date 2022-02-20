@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-//@Component
+@Component
 public class WeatherCommand implements CommandExecutor {
 
     private final UserStatsService userStats;
@@ -82,8 +82,8 @@ public class WeatherCommand implements CommandExecutor {
     private String forecastToString(Forecast forecast) {
         return "<b>" + forecast.title() + "</b>\n\n" +
                 forecast.feelings() + "\n" +
-                "🌡: " + forecast.temperature() + " °C\n" +
-                "🤔: Ощущается как " + forecast.feelsLike() + "°C\n" +
+                "🌡: " + forecast.temperature() + "\n" +
+                "🤔: Ощущается как " + forecast.feelsLike() + "\n" +
                 "💨: " + forecast.wind() + "\n" +
                 "💧: " + forecast.humidity() + "\n" +
                 "🧭: " + forecast.pressure();
