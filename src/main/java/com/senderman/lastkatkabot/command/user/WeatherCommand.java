@@ -47,7 +47,7 @@ public class WeatherCommand implements CommandExecutor {
         } catch (NoCitySpecifiedException e) {
             ctx.replyToMessage("Вы не указали город! (/weather город). Бот запомнит ваш выбор.").callAsync(ctx.sender);
         } catch (ParseException e) {
-            ctx.replyToMessage("Ошибка обработки запроса").callAsync(ctx.sender);
+            ctx.replyToMessage("Ошибка обработки запроса: " + e.getMessage()).callAsync(ctx.sender);
             throw new RuntimeException(e);
         } catch (IOException e) {
             ctx.replyToMessage("Ошибка соединения с сервисом погоды").callAsync(ctx.sender);
