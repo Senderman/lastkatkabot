@@ -10,4 +10,7 @@ public class ParseException extends Exception {
         super(t);
     }
 
+    public ParseException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

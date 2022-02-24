@@ -26,14 +26,20 @@ public class WttrWeatherService implements WeatherService {
     @Override
     public Forecast getWeatherByCityLink(String cityLink) throws IOException, ParseException {
         String[] content = getContent(domain + cityLink + wttrOptions).split("\n");
-        var title = content[0];
-        var temperature = content[1];
-        var feelsLike = content[2];
-        var feelings = content[3];
-        var wind = content[4];
-        var humidity = content[5];
-        var pressure = content[6];
-        return new Forecast(title, temperature, feelsLike, feelings, wind, humidity, pressure);
+        try {
+            var title = content[0];
+            var temperature = content[1];
+            var feelsLike = content[2];
+            var feelings = content[3];
+            var wind = content[4];
+            var humidity = content[5];
+            var pressure = content[6];
+            return new Forecast(title, temperature, feelsLike, feelings, wind, humidity, pressure);
+        } catch (Exception e) {
+            String response = String.join("\n", content);
+            throw new ParseException("Error while parsing content: " + response, e);
+        }
+
     }
 
     private String getContent(String link) throws IOException {
