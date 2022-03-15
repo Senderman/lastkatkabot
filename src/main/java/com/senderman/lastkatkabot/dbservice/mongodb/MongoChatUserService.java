@@ -49,6 +49,11 @@ public class MongoChatUserService implements ChatUserService {
     }
 
     @Override
+    public Optional<ChatUser> findNewestUserData(long userId) {
+        return repository.findNewestUserData(userId);
+    }
+
+    @Override
     public List<ChatUser> findByChatId(long chatId) {
         return repository.findByChatId(chatId);
     }

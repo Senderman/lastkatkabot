@@ -18,6 +18,8 @@ public interface ChatUserService {
 
     List<ChatUser> findByUserId(long userId);
 
+    Optional<ChatUser> findNewestUserData(long userId);
+
     List<ChatUser> findByChatId(long chatId);
 
     Optional<ChatUser> findByChatIdAndUserId(long chatId, long userId);

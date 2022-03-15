@@ -12,7 +12,7 @@ public interface WeatherService {
      * @throws IOException         on connection error
      * @throws NoSuchCityException if there's no city
      */
-    String getCityLink(String city) throws IOException, NoSuchCityException, CountriesAreNotSupportedException;
+    String getCityLink(String city) throws IOException, NoSuchCityException;
 
     /**
      * Get weather forecast by city link

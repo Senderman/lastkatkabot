@@ -14,7 +14,7 @@ public class WttrWeatherService implements WeatherService {
 
     // in the current implementation, city link is just the city
     @Override
-    public String getCityLink(String city) throws IOException, NoSuchCityException, CountriesAreNotSupportedException {
+    public String getCityLink(String city) throws IOException, NoSuchCityException {
         if (!city.matches("^~?[\\p{L}\\d\\s-,.+]+")) {
             throw new NoSuchCityException(city);
         }
