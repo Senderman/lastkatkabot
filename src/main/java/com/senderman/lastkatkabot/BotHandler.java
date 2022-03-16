@@ -98,8 +98,26 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
                 onUpdate(update);
             } catch (RejectedExecutionException ignored) {
             } catch (Throwable e) {
+                notifyUserAboutError(update);
                 sendUpdateErrorAsFile(update, e, config.notificationChannelId());
             }
+        }
+    }
+
+    private void notifyUserAboutError(Update update) {
+        final String errorText = "Произошла какая-то ошибка. Информация отправлена разработчикам";
+        if (update.hasCallbackQuery()) {
+            var query = update.getCallbackQuery();
+            Methods.answerCallbackQuery(query.getId())
+                    .setText(errorText)
+                    .setShowAlert(true)
+                    .callAsync(this);
+        } else if (update.hasMessage()) {
+            var messageId = update.getMessage().getMessageId();
+            var chatId = update.getMessage().getChatId();
+            Methods.sendMessage(chatId, errorText)
+                    .setReplyToMessageId(messageId)
+                    .callAsync(this);
         }
     }
 
