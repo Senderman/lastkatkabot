@@ -4,6 +4,7 @@ import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.dbservice.DatabaseCleanupService;
 import com.senderman.lastkatkabot.model.ChatUser;
 import com.senderman.lastkatkabot.repository.ChatUserRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
@@ -50,7 +51,7 @@ public class MongoChatUserService implements ChatUserService {
 
     @Override
     public Optional<ChatUser> findNewestUserData(long userId) {
-        return repository.findNewestUserData(userId);
+        return repository.findFirstByUserId(userId, Sort.by(Sort.Direction.DESC, "lastMessageDate"));
     }
 
     @Override

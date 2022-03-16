@@ -1,8 +1,8 @@
 package com.senderman.lastkatkabot.repository;
 
 import com.senderman.lastkatkabot.model.ChatUser;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.Aggregation;
-import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -20,8 +20,8 @@ public interface ChatUserRepository extends CrudRepository<ChatUser, String> {
 
     List<ChatUser> findByUserId(long userId);
 
-    @Query(value = "{ userId: ?0 }", sort = "{ lastMessageDate: -1} ")
-    Optional<ChatUser> findNewestUserData(long userId);
+    //@Query(value = "{ userId: ?0 }", sort = "{ lastMessageDate: -1} ")
+    Optional<ChatUser> findFirstByUserId(long userId, Sort sort);
 
     List<ChatUser> findByChatId(long chatId);
 
