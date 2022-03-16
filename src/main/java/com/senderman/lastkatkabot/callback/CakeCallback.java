@@ -19,8 +19,7 @@ public class CakeCallback implements CallbackExecutor {
     @Override
     public void accept(CallbackQueryContext ctx) {
         var query = ctx.callbackQuery();
-        var args = query.getData().split("\\s+");
-        if (!query.getFrom().getId().equals(Long.parseLong(args[2]))) {
+        if (!query.getFrom().getId().equals(Long.parseLong(ctx.argument(1)))) {
             ctx.answer("Этот тортик не вам!", true).callAsync(ctx.sender);
             return;
         }
@@ -30,7 +29,7 @@ public class CakeCallback implements CallbackExecutor {
             return;
         }
 
-        var action = args[1];
+        var action = ctx.argument(0);
         if (action.equals("accept"))
             acceptCake(ctx);
         else if (action.equals("decline"))

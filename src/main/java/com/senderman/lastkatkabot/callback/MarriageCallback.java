@@ -28,7 +28,7 @@ public class MarriageCallback implements CallbackExecutor {
 
     @Override
     public void accept(CallbackQueryContext ctx) {
-        var requestId = Integer.parseInt(ctx.data().split("\\s+")[1]);
+        var requestId = Integer.parseInt(ctx.argument(1));
         var requestOptional = marriages.findById(requestId);
 
         if (requestOptional.isEmpty()) {
@@ -45,7 +45,7 @@ public class MarriageCallback implements CallbackExecutor {
         }
 
 
-        if (ctx.data().endsWith("accept"))
+        if (ctx.argument(0).equals("accept"))
             acceptMarriage(ctx, r);
         else
             declineMarriage(ctx, r);

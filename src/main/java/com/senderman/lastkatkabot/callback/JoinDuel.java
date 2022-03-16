@@ -27,7 +27,7 @@ public class JoinDuel implements CallbackExecutor {
 
     @Override
     public void accept(CallbackQueryContext ctx) {
-        var firstUserId = Long.parseLong(ctx.data().split("\\s+")[1]);
+        var firstUserId = Long.parseLong(ctx.argument(0));
         var secondUser = ctx.user();
         if (secondUser.getId().equals(firstUserId)) {
             ctx.answer("👺 Похоже, вам надо обратиться к психологу! Вы пытаетесь вызвать на дуэль самого себя!", true)

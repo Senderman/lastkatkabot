@@ -1,9 +1,11 @@
 package com.senderman.lastkatkabot.command.user;
 
-import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.callback.Callbacks;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
+import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
+import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -37,15 +39,18 @@ public class DivorceCommand implements CommandExecutor {
             return;
         }
 
-        var loverStats = users.findById(loverId);
+        var markup = new MarkupBuilder()
+                .addButton(ButtonBuilder.callbackButton()
+                        .text("Развестись")
+                        .payload(Callbacks.DIVORCE + " a " + userId + " " + loverId)) // accept button
+                .addButton(ButtonBuilder.callbackButton()
+                        .text("Отмена")
+                        .payload(Callbacks.DIVORCE + " d " + userId)) // decline button
+                .build();
 
-        userStats.setLoverId(null);
-        loverStats.setLoverId(null);
-        users.save(userStats);
-        users.save(loverStats);
-
-        ctx.replyToMessage("Вы расстались со своей половинкой!").callAsync(ctx.sender);
-        Methods.sendMessage(loverId, "Ваша половинка решила с вами расстаться :(").callAsync(ctx.sender);
+        ctx.replyToMessage("Вы точно уверены, что хотите развестись со своей половинкой?")
+                .setReplyMarkup(markup)
+                .callAsync(ctx.sender);
 
     }
 }

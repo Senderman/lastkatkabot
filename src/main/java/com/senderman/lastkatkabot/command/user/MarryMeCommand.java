@@ -84,10 +84,10 @@ public class MarryMeCommand implements CommandExecutor {
         var markup = new MarkupBuilder()
                 .addButton(ButtonBuilder.callbackButton()
                         .text("Принять")
-                        .payload(Callbacks.MARRIAGE + " " + request.getId() + " accept"))
+                        .payload(Callbacks.MARRIAGE + " accept " + request.getId()))
                 .addButton(ButtonBuilder.callbackButton()
                         .text("Отказаться")
-                        .payload(Callbacks.MARRIAGE + " " + request.getId() + " decline"))
+                        .payload(Callbacks.MARRIAGE + " decline " + request.getId()))
                 .build();
 
         ctx.reply(text)
