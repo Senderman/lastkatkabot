@@ -1,5 +1,6 @@
 package com.senderman.lastkatkabot.command.user;
 
+import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
@@ -8,11 +9,12 @@ import com.senderman.lastkatkabot.service.weather.NoSuchCityException;
 import com.senderman.lastkatkabot.service.weather.ParseException;
 import com.senderman.lastkatkabot.service.weather.WeatherService;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Consumer;
 
 @Component
 public class WeatherCommand implements CommandExecutor {
@@ -21,7 +23,10 @@ public class WeatherCommand implements CommandExecutor {
     private final WeatherService weatherService;
     private final ExecutorService threadPool;
 
-    public WeatherCommand(UserStatsService userStats, WeatherService weatherService, ExecutorService threadPool) {
+    public WeatherCommand(
+            UserStatsService userStats,
+            WeatherService weatherService,
+            @Qualifier("generalNeedsPool") ExecutorService threadPool) {
         this.userStats = userStats;
         this.weatherService = weatherService;
         this.threadPool = threadPool;
@@ -39,52 +44,61 @@ public class WeatherCommand implements CommandExecutor {
 
     @Override
     public void accept(@NotNull MessageContext ctx) {
+        var messageToEdit = ctx.replyToMessage("\uD83C\uDF10 Соединение...").call(ctx.sender);
+        final Consumer<String> responseConsumer = s -> Methods.editMessageText(
+                messageToEdit.getChatId(),
+                messageToEdit.getMessageId(),
+                s
+        ).callAsync(ctx.sender);
+
         threadPool.execute(() -> {
-            ctx.setArgumentsLimit(1);
             try {
-                String cityLink = getCityLinkFromMessageData(ctx);
+                String city = getCityFromMessageOrDb(ctx);
+                String cityLink = getCityLink(city);
                 var text = forecastToString(weatherService.getWeatherByCityLink(cityLink));
-                ctx.replyToMessage(text).callAsync(ctx.sender);
+                responseConsumer.accept(text);
                 // save last defined city in db (we won't get here if exception is occurred)
-                saveCityLinkToDb(cityLink, ctx.user().getId());
-            } catch (NoSuchCityException e) {
-                ctx.replyToMessage("Город не найден").callAsync(ctx.sender);
+                updateUserCityLink(ctx.user().getId(), city);
             } catch (NoCitySpecifiedException e) {
-                ctx.replyToMessage("Вы не указали город! (/weather город). Бот запомнит ваш выбор.").callAsync(ctx.sender);
+                responseConsumer.accept("Вы не указали город! (/weather город). Бот запомнит ваш выбор.");
+            } catch (NoSuchCityException e) {
+                responseConsumer.accept("Город не найден - " + e.getCity());
             } catch (ParseException e) {
-                ctx.replyToMessage("Ошибка обработки запроса: " + e.getMessage()).callAsync(ctx.sender);
+                responseConsumer.accept("Ошибка обработки запроса: " + e.getMessage());
                 throw new RuntimeException(e);
             } catch (IOException e) {
-                ctx.replyToMessage("Ошибка соединения с сервисом погоды").callAsync(ctx.sender);
+                responseConsumer.accept("Ошибка соединения с сервисом погоды");
                 throw new RuntimeException(e);
             }
         });
     }
 
-    String getCityLinkFromMessageData(MessageContext ctx) throws NoSuchCityException, IOException, NoCitySpecifiedException {
-        var city = ctx.argument(0, "");
-        long userId = ctx.user().getId();
-        String cityLink = getCityLinkFromCityOrDb(city, userId);
-        if (cityLink == null)
-            throw new NoCitySpecifiedException();
+    /**
+     * Get city from message text. If it's empty, query db for it
+     *
+     * @param ctx message context
+     * @return user's city
+     * @throws NoCitySpecifiedException if the city is found neither in message text, neither in db
+     */
+    private String getCityFromMessageOrDb(MessageContext ctx) throws NoCitySpecifiedException {
+        if (ctx.argumentsLength() != 0)
+            return ctx.argument(0);
 
-        return cityLink;
+        var city = userStats.findById(ctx.user().getId()).getCityLink();
+        if (city != null) return city;
+        throw new NoCitySpecifiedException();
     }
 
-    @Nullable
-    String getCityLinkFromCityOrDb(String city, long userId) throws NoSuchCityException, IOException {
-        // if no city specified in message, return city link from DB
-        if (city.isBlank())
-            return userStats.findById(userId).getCityLink();
-        // otherwise, get link for new city and update db
+    private String getCityLink(String city) throws NoSuchCityException, IOException {
         return weatherService.getCityLink(city);
     }
 
-    private void saveCityLinkToDb(String cityLink, long userId) {
+    private void updateUserCityLink(long userId, String cityLink) {
         var user = userStats.findById(userId);
         user.setCityLink(cityLink);
         userStats.save(user);
     }
+
 
     private String forecastToString(Forecast forecast) {
         return "<b>" + forecast.title() + "</b>\n\n" +

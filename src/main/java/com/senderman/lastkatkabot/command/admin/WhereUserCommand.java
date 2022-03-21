@@ -7,6 +7,7 @@ import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.EnumSet;
@@ -20,7 +21,7 @@ public class WhereUserCommand implements CommandExecutor {
     private final ChatUserService chatUsers;
     private final ExecutorService threadPool;
 
-    public WhereUserCommand(ChatUserService chatUsers, ExecutorService threadPool) {
+    public WhereUserCommand(ChatUserService chatUsers, @Qualifier("generalNeedsPool") ExecutorService threadPool) {
         this.chatUsers = chatUsers;
         this.threadPool = threadPool;
     }

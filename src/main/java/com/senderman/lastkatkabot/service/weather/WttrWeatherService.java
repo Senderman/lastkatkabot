@@ -12,7 +12,8 @@ public class WttrWeatherService implements WeatherService {
     private static final String domain = "https://wttr.in/";
     private static final String wttrOptions = "?m0AFTq&lang=ru&format=%l\\n%t\\n%f\\n%c%20%C\\n%w\\n%h\\n%P";
 
-    // in the current implementation, city link is just the city
+    // In the current implementation, city link is just the city
+    // But we can validate city string here to throw NoSuchCityException
     @Override
     public String getCityLink(String city) throws IOException, NoSuchCityException {
         if (!city.matches("^~?[\\p{L}\\d\\s-,.+]+")) {
