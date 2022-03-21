@@ -19,7 +19,7 @@ public class WttrWeatherService implements WeatherService {
         if (!city.matches("^~?[\\p{L}\\d\\s-,.+]+")) {
             throw new NoSuchCityException(city);
         }
-        if (checkResponse(domain + city + wttrOptions) != 200)
+        if (checkResponse(domain + city + wttrOptions) == 404)
             throw new NoSuchCityException(city);
         return city;
     }
