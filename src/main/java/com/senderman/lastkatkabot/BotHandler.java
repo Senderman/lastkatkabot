@@ -4,7 +4,6 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.dbservice.DatabaseCleanupService;
-import com.senderman.lastkatkabot.service.ChatPolicyEnsuringService;
 import com.senderman.lastkatkabot.service.ImageService;
 import com.senderman.lastkatkabot.service.UserActivityTrackerService;
 import com.senderman.lastkatkabot.service.fileupload.TelegramFileUploader;
@@ -32,7 +31,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -44,11 +42,9 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     private final CommandUpdateHandler commandUpdateHandler;
     private final ChatUserService chatUsers;
     private final UserActivityTrackerService activityTrackerService;
-    private final ChatPolicyEnsuringService chatPolicy;
     private final DatabaseCleanupService databaseCleanupService;
     private final ImageService imageService;
     private final ExecutorService threadPool;
-    private final Set<Long> telegramServiceUserIds;
     private final TelegramFileUploader fileUploader;
 
     @Autowired
@@ -58,7 +54,6 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             @Lazy CommandUpdateHandler commandUpdateHandler,
             ChatUserService chatUsers,
             UserActivityTrackerService activityTrackerService,
-            @Lazy ChatPolicyEnsuringService chatPolicy,
             DatabaseCleanupService databaseCleanupService,
             ImageService imageService,
             @Qualifier("generalNeedsPool") ExecutorService threadPool,
@@ -69,17 +64,10 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         this.commandUpdateHandler = commandUpdateHandler;
         this.chatUsers = chatUsers;
         this.activityTrackerService = activityTrackerService;
-        this.chatPolicy = chatPolicy;
         this.databaseCleanupService = databaseCleanupService;
         this.imageService = imageService;
         this.threadPool = threadPool;
         this.fileUploader = fileUploader;
-
-        this.telegramServiceUserIds = Set.of(
-                777000L, // attached channel's messages
-                1087968824L, // anonymous group admin @GroupAnonymousBot
-                136817688L // Channel message, @Channel_Bot
-        );
 
         addMethodPreprocessor(SendMessage.class, m -> {
             m.enableHtml(true);
@@ -160,13 +148,6 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
             var message = update.getMessage();
 
-            if (message.getDate() + 120 < System.currentTimeMillis() / 1000)
-                return null;
-
-            if (telegramServiceUserIds.contains(message.getFrom().getId()))
-                return null;
-
-            chatPolicy.queueViolationCheck(message.getChatId());
             {
                 var newMembers = message.getNewChatMembers();
                 if (!newMembers.isEmpty()) {
