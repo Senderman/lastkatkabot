@@ -3,7 +3,6 @@ package com.senderman.lastkatkabot.command.user;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
-import com.senderman.lastkatkabot.Love;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatInfoService;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
@@ -19,6 +18,7 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Component
@@ -28,7 +28,7 @@ public class PairCommand implements CommandExecutor {
     private final UserStatsService userStatsService;
     private final ChatUserService chatUsersService;
     private final ChatInfoService chatInfoService;
-    private final Love love;
+    private final List<String> love;
     private final CurrentTime currentTime;
     private final Set<Long> runningChatPairsGenerations;
     private final ExecutorService threadPool;
@@ -37,7 +37,7 @@ public class PairCommand implements CommandExecutor {
             UserStatsService userStatsService,
             ChatUserService chatUsersService,
             ChatInfoService chatInfoService,
-            Love love,
+            List<String> love,
             CurrentTime currentTime,
             @Qualifier("pairPool") ExecutorService threadPool
     ) {
@@ -96,7 +96,7 @@ public class PairCommand implements CommandExecutor {
         }
 
         // start chat flooding to make users wait for pair generation
-        String[] loveStrings = love.getRandomLoveStrings();
+        String[] loveStrings = love.get(ThreadLocalRandom.current().nextInt(love.size())).split("\n");
         Future<?> floodFuture = threadPool.submit(() -> sendRandomShitWithDelay(chatId, loveStrings, ctx.sender));
 
         threadPool.execute(() -> {
