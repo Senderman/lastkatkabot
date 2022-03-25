@@ -31,6 +31,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -46,6 +47,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     private final ImageService imageService;
     private final ExecutorService threadPool;
     private final TelegramFileUploader fileUploader;
+    private final Set<Long> telegramServiceUserIds;
 
     @Autowired
     public BotHandler(
@@ -68,6 +70,12 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         this.imageService = imageService;
         this.threadPool = threadPool;
         this.fileUploader = fileUploader;
+
+        this.telegramServiceUserIds = Set.of(
+                777000L, // attached channel's messages
+                1087968824L, // anonymous group admin @GroupAnonymousBot
+                136817688L // Channel message, @Channel_Bot
+        );
 
         addMethodPreprocessor(SendMessage.class, m -> {
             m.enableHtml(true);
@@ -147,6 +155,9 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         if (update.hasMessage()) {
 
             var message = update.getMessage();
+
+            if (telegramServiceUserIds.contains(message.getFrom().getId()))
+                return null;
 
             {
                 var newMembers = message.getNewChatMembers();

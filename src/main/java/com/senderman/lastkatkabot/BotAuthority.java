@@ -12,7 +12,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.EnumSet;
-import java.util.Set;
 
 @Component
 public class BotAuthority implements Authority<Role> {
@@ -20,7 +19,7 @@ public class BotAuthority implements Authority<Role> {
     private final UserManager<AdminUser> admins;
     private final UserManager<BlacklistedUser> blacklist;
     private final BotConfig botConfig;
-    private final Set<Long> telegramServiceUserIds;
+
     private final ChatPolicyEnsuringService chatPolicy;
 
     public BotAuthority(
@@ -33,11 +32,6 @@ public class BotAuthority implements Authority<Role> {
         this.blacklist = blacklist;
         this.botConfig = botConfig;
         this.chatPolicy = chatPolicy;
-        this.telegramServiceUserIds = Set.of(
-                777000L, // attached channel's messages
-                1087968824L, // anonymous group admin @GroupAnonymousBot
-                136817688L // Channel message, @Channel_Bot
-        );
     }
 
     @Override
@@ -45,8 +39,6 @@ public class BotAuthority implements Authority<Role> {
         var userId = user.getId();
 
         if (update.hasMessage() && !checkMessage(update.getMessage())) return false;
-
-        if (telegramServiceUserIds.contains(userId)) return false;
 
         if (userId.equals(botConfig.mainAdminId())) return true;
 
