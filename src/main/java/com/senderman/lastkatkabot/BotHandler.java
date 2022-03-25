@@ -7,6 +7,7 @@ import com.senderman.lastkatkabot.dbservice.DatabaseCleanupService;
 import com.senderman.lastkatkabot.service.ChatPolicyEnsuringService;
 import com.senderman.lastkatkabot.service.ImageService;
 import com.senderman.lastkatkabot.service.UserActivityTrackerService;
+import com.senderman.lastkatkabot.service.fileupload.TelegramFileUploader;
 import com.senderman.lastkatkabot.util.DbCleanupResults;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -48,6 +49,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     private final ImageService imageService;
     private final ExecutorService threadPool;
     private final Set<Long> telegramServiceUserIds;
+    private final TelegramFileUploader fileUploader;
 
     @Autowired
     public BotHandler(
@@ -59,7 +61,8 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             @Lazy ChatPolicyEnsuringService chatPolicy,
             DatabaseCleanupService databaseCleanupService,
             ImageService imageService,
-            @Qualifier("generalNeedsPool") ExecutorService threadPool
+            @Qualifier("generalNeedsPool") ExecutorService threadPool,
+            TelegramFileUploader fileUploader
     ) {
         super(botOptions);
         this.config = config;
@@ -70,6 +73,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         this.databaseCleanupService = databaseCleanupService;
         this.imageService = imageService;
         this.threadPool = threadPool;
+        this.fileUploader = fileUploader;
 
         this.telegramServiceUserIds = Set.of(
                 777000L, // attached channel's messages
@@ -200,10 +204,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
                 continue;
             }
             try (var stickerStream = imageService.generateGreetingSticker(user.getFirstName())) {
-                Methods.sendDocument(chatId)
-                        .setReplyToMessageId(messageId)
-                        .setFile(messageId + ".webp", stickerStream)
-                        .call(this);
+                fileUploader.sendDocument(chatId, messageId, stickerStream, "sticker.webp");
             } catch (ImageService.TooWideNicknameException | IOException e) {
                 // fallback with greeting gif
                 Methods.sendDocument(chatId)
