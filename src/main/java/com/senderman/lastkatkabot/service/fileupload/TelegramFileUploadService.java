@@ -11,6 +11,15 @@ import javax.annotation.Nullable;
 
 public interface TelegramFileUploadService {
 
+    @POST("sendPhoto")
+    @Multipart
+    Call<Void> sendPhoto(
+            @Query("chat_id") long chatId,
+            @Nullable @Query("reply_to_message_id") Integer replyToMessageId,
+            @Nullable @Query("caption") String caption,
+            @Part MultipartBody.Part document
+    );
+
     @POST("sendDocument")
     @Multipart
     Call<Void> sendDocument(
