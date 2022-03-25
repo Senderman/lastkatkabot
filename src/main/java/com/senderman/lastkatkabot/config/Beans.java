@@ -1,14 +1,17 @@
 package com.senderman.lastkatkabot.config;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.google.gson.Gson;
 import com.senderman.lastkatkabot.BotHandler;
 import com.senderman.lastkatkabot.Love;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
+import com.senderman.lastkatkabot.genshin.Item;
 import com.senderman.lastkatkabot.service.fileupload.TelegramFileUploadService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import retrofit2.Retrofit;
 
@@ -33,6 +36,17 @@ public class Beans {
     public Love love() {
         try {
             return new YAMLMapper().readValue(getClass().getResourceAsStream("/love.yml"), Love.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Bean
+    @Scope("prototype")
+    public List<Item> genshinItems() {
+        try {
+            return new YAMLMapper().readValue(getClass().getResourceAsStream("/genshin/items.yml"), new TypeReference<>() {
+            });
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
