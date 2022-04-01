@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.google.gson.Gson;
 import com.senderman.lastkatkabot.BotHandler;
-import com.senderman.lastkatkabot.Love;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.genshin.Item;
 import com.senderman.lastkatkabot.service.fileupload.TelegramFileUploadService;
@@ -33,9 +32,10 @@ public class Beans {
     }
 
     @Bean
-    public Love love() {
+    public List<String> love() {
         try {
-            return new YAMLMapper().readValue(getClass().getResourceAsStream("/love.yml"), Love.class);
+            return new YAMLMapper().readValue(getClass().getResourceAsStream("/love.yml"), new TypeReference<>() {
+            });
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

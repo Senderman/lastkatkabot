@@ -156,9 +156,6 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
             var message = update.getMessage();
 
-            if (telegramServiceUserIds.contains(message.getFrom().getId()))
-                return null;
-
             {
                 var newMembers = message.getNewChatMembers();
                 if (!newMembers.isEmpty()) {
@@ -169,6 +166,10 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
             if (message.getLeftChatMember() != null) {
                 processLeftChatMember(message);
+                return null;
+            }
+            
+            if (telegramServiceUserIds.contains(message.getFrom().getId())) {
                 return null;
             }
 
