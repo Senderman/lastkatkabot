@@ -35,4 +35,19 @@ public class TelegramFileUploader {
             return;
         }
     }
+
+    public void sendPhoto(long chatId, @Nullable Integer replyToMessageId, String caption, InputStream file, String filename) {
+        RequestBody requestBody = null;
+        try (file) {
+            requestBody = RequestBody.create(file.readAllBytes(), MediaType.parse("multipart/form-data"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        var document = MultipartBody.Part.createFormData("photo", filename, requestBody);
+        try {
+            uploadService.sendPhoto(chatId, replyToMessageId, caption, "HTML", document).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

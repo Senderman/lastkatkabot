@@ -1,4 +1,4 @@
-package com.senderman.lastkatkabot.model;
+package com.senderman.lastkatkabot.genshin.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.TypeAlias;
@@ -9,15 +9,21 @@ public class GenshinChatUser {
     @Id
     private String id;
     private long chatId;
-    private long userid;
-    private String lastRollDate;
+    private long userId;
+    private int lastRollDate;
     private int fourPity;
     private int fivePity;
 
-    public GenshinChatUser(long chatId, long userid) {
-        this.id = generateId(chatId, userid);
+    public GenshinChatUser() {
+    }
+
+    public GenshinChatUser(long chatId, long userId) {
+        this.id = generateId(chatId, userId);
         this.chatId = chatId;
-        this.userid = userid;
+        this.userId = userId;
+        this.lastRollDate = 0;
+        this.fourPity = 0;
+        this.fivePity = 0;
 
     }
 
@@ -41,19 +47,19 @@ public class GenshinChatUser {
         this.chatId = chatId;
     }
 
-    public long getUserid() {
-        return userid;
+    public long getUserId() {
+        return userId;
     }
 
-    public void setUserid(long userid) {
-        this.userid = userid;
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
-    public String getLastRollDate() {
+    public int getLastRollDate() {
         return lastRollDate;
     }
 
-    public void setLastRollDate(String lastRollDate) {
+    public void setLastRollDate(int lastRollDate) {
         this.lastRollDate = lastRollDate;
     }
 

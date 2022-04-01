@@ -17,6 +17,7 @@ public interface TelegramFileUploadService {
             @Query("chat_id") long chatId,
             @Nullable @Query("reply_to_message_id") Integer replyToMessageId,
             @Nullable @Query("caption") String caption,
+            @Query("parse_mode") String parseMode,
             @Part MultipartBody.Part document
     );
 
