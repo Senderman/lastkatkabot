@@ -48,7 +48,7 @@ public class InvCommand implements CommandExecutor {
 
         var items = inventoryItemService.findByChatIdAndUserId(chatId, userId);
         if (items.size() == 0) {
-            ctx.replyToMessage("Ваш инвентарь пуст! Используйте /wish чтобы начать его наполнять!");
+            ctx.replyToMessage("Ваш инвентарь пуст! Используйте /wish чтобы начать его наполнять!").callAsync(ctx.sender);
             return;
         }
 
