@@ -81,6 +81,7 @@ public class WeatherCommand implements CommandExecutor {
      * @throws NoCitySpecifiedException if the city is found neither in message text, neither in db
      */
     private String getCityFromMessageOrDb(MessageContext ctx) throws NoCitySpecifiedException {
+        ctx.setArgumentsLimit(1);
         if (ctx.argumentsLength() != 0)
             return ctx.argument(0);
 
