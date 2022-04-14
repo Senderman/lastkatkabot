@@ -20,7 +20,6 @@ public class InvCommand implements CommandExecutor {
 
     private final GenshinUserInventoryItemService inventoryItemService;
     private final Map<String, Item> genshinItems;
-    private final List<InventoryItem> emptyList = List.of();
 
     public InvCommand(
             GenshinUserInventoryItemService inventoryItemService,
@@ -60,10 +59,12 @@ public class InvCommand implements CommandExecutor {
 
         var text = new StringBuilder("<b>Ваш инвентарь:</b>\n\n");
         for (int i = 5; i > 2; i--) {
+            if (!itemsByStars.containsKey(i))
+                continue;
             text
                     .append(getStarsEmoji(i))
                     .append(":\n")
-                    .append(formatStarSection(itemsByStars.getOrDefault(i, emptyList)))
+                    .append(formatStarSection(itemsByStars.get(i)))
                     .append("\n\n");
         }
 
@@ -80,17 +81,31 @@ public class InvCommand implements CommandExecutor {
     private String formatStarSection(List<InventoryItem> items) {
         var itemsByType = items.stream()
                 .collect(Collectors.groupingBy(i -> i.item.getType()));
-        var characterString = itemsByType.getOrDefault(Item.Type.CHARACTER, emptyList)
+        var result = new StringBuilder();
+        if (itemsByType.containsKey(Item.Type.CHARACTER)) {
+            result
+                    .append("👤")
+                    .append(formatInventoryItemLine(itemsByType.get(Item.Type.CHARACTER)))
+                    .append("\n");
+        }
+        if (itemsByType.containsKey(Item.Type.WEAPON)) {
+            result
+                    .append("⚔️")
+                    .append(formatInventoryItemLine(itemsByType.get(Item.Type.WEAPON)))
+                    .append("\n");
+        }
+
+        // remove trailing \n
+        return result.deleteCharAt(result.length() - 1).toString();
+
+    }
+
+    // just join elements of the given list to the single line, separated by comma
+    private String formatInventoryItemLine(List<InventoryItem> items) {
+        return items
                 .stream()
                 .map(InventoryItem::toString)
                 .collect(Collectors.joining(", "));
-        var weaponsString = itemsByType.getOrDefault(Item.Type.WEAPON, emptyList)
-                .stream()
-                .map(InventoryItem::toString)
-                .collect(Collectors.joining(", "));
-
-        return "👤: %s\n⚔️: %s".formatted(characterString, weaponsString);
-
     }
 
     private String getStarsEmoji(int amount) {
@@ -101,7 +116,7 @@ public class InvCommand implements CommandExecutor {
 
         @Override
         public String toString() {
-            return "%d %s".formatted(dbItem.getAmount(), item.getName());
+            return "%s x%d".formatted(item.getName(), dbItem.getAmount());
         }
     }
 
