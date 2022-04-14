@@ -13,12 +13,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class InvCommand implements CommandExecutor {
 
     private final GenshinUserInventoryItemService inventoryItemService;
     private final Map<String, Item> genshinItems;
+    private final List<InventoryItem> emptyList = List.of();
 
     public InvCommand(
             GenshinUserInventoryItemService inventoryItemService,
@@ -52,18 +54,55 @@ public class InvCommand implements CommandExecutor {
             return;
         }
 
-        String text = "<b>Ваш инвентарь:</b>\n\n" +
-                items.stream()
-                        .map(this::formatItem)
-                        .collect(Collectors.joining(", "));
+        var itemsByStars = items.stream()
+                .map(i -> new InventoryItem(genshinItems.get(i.getItemId()), i))
+                .collect(Collectors.groupingBy(i -> i.item.getStars()));
 
-        ctx.replyToMessage(text).callAsync(ctx.sender);
+        var text = new StringBuilder("<b>Ваш инвентарь:</b>\n\n");
+        for (int i = 5; i > 2; i--) {
+            text
+                    .append(getStarsEmoji(i))
+                    .append(":\n")
+                    .append(formatStarSection(itemsByStars.getOrDefault(i, emptyList)))
+                    .append("\n\n");
+        }
+
+        ctx.replyToMessage(text.toString()).callAsync(ctx.sender);
 
 
     }
 
-    private String formatItem(GenshinUserInventoryItem invItem) {
-        var item = genshinItems.get(invItem.getItemId());
-        return "%d⭐ ️<b>%s</b> (%d)".formatted(item.getStars(), item.getName(), invItem.getAmount());
+    /* format every star section to make it look like:
+    👤: p1, p2, p3
+    ⚔️: w1, w2, w3
+    this methods accepts list of inventory items of the same rate
+     */
+    private String formatStarSection(List<InventoryItem> items) {
+        var itemsByType = items.stream()
+                .collect(Collectors.groupingBy(i -> i.item.getType()));
+        var characterString = itemsByType.getOrDefault(Item.Type.CHARACTER, emptyList)
+                .stream()
+                .map(InventoryItem::toString)
+                .collect(Collectors.joining(", "));
+        var weaponsString = itemsByType.getOrDefault(Item.Type.WEAPON, emptyList)
+                .stream()
+                .map(InventoryItem::toString)
+                .collect(Collectors.joining(", "));
+
+        return "👤: %s\n⚔️: %s".formatted(characterString, weaponsString);
+
     }
+
+    private String getStarsEmoji(int amount) {
+        return Stream.generate(() -> "⭐️").limit(amount).collect(Collectors.joining());
+    }
+
+    private record InventoryItem(Item item, GenshinUserInventoryItem dbItem) {
+
+        @Override
+        public String toString() {
+            return "%d %s".formatted(dbItem.getAmount(), item.getName());
+        }
+    }
+
 }
