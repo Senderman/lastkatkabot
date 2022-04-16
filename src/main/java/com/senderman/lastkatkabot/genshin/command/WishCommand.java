@@ -18,7 +18,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-@Component
+// @Component
 public class WishCommand implements CommandExecutor {
 
     private final GenshinChatUserService userService;
