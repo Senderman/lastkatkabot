@@ -76,7 +76,7 @@ public class InvCommand implements CommandExecutor {
     /* format every star section to make it look like:
     👤: p1, p2, p3
     ⚔️: w1, w2, w3
-    this methods accepts list of inventory items of the same rate
+    this method accepts list of inventory items of the same rate
      */
     private String formatStarSection(List<InventoryItem> items) {
         var itemsByType = items.stream()
