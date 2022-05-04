@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-// @Component
+@Component
 public class InvCommand implements CommandExecutor {
 
     private final GenshinUserInventoryItemService inventoryItemService;
