@@ -53,6 +53,11 @@ public class WishCommand implements CommandExecutor {
 
     @Override
     public void accept(@NotNull MessageContext ctx) {
+        if (ctx.message().isUserMessage()) {
+            ctx.replyToMessage("Команду нельзя использовать в ЛС!").callAsync(ctx.sender);
+            return;
+        }
+
         long chatId = ctx.chatId();
         long userId = ctx.user().getId();
 
