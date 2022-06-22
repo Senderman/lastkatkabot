@@ -16,10 +16,6 @@ public class ChatInfo {
     @Nullable
     private Integer lastPairDate;
 
-    public ChatInfo() {
-
-    }
-
     public ChatInfo(long chatId) {
         this.chatId = chatId;
     }

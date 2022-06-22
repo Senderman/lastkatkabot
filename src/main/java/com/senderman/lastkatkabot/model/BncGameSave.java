@@ -12,8 +12,6 @@ public class BncGameSave {
     private String game;
     private int editDate;
 
-    public BncGameSave() {
-    }
 
     public BncGameSave(long id, String game, int editDate) {
         this.id = id;

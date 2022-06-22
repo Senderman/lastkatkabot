@@ -5,12 +5,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.google.gson.Gson;
 import com.senderman.lastkatkabot.BotHandler;
-import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.genshin.Item;
 import com.senderman.lastkatkabot.service.fileupload.TelegramFileUploadService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import retrofit2.Retrofit;
 
@@ -19,10 +19,8 @@ import java.util.List;
 import java.util.function.Consumer;
 
 @Configuration
+@EnableScheduling
 public class Beans {
-
-    public Beans(ChatUserService chatUserService) {
-    }
 
     @Bean
     public DefaultBotOptions botOptions() {

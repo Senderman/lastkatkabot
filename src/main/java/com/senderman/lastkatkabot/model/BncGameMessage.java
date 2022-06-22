@@ -8,10 +8,10 @@ import java.util.Objects;
 @TypeAlias("bncGameMessage")
 public class BncGameMessage {
 
-    private final long gameId;
-    private final int messageId;
     @Id
     private String id;
+    private final long gameId;
+    private final int messageId;
 
     public BncGameMessage(long gameId, int messageId) {
         this.gameId = gameId;

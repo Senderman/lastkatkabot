@@ -13,6 +13,8 @@ import java.util.function.Consumer;
 @Service
 public class ChatPolicyEnsuringService {
 
+    public final static int FLUSH_INTERVAL = 30;
+    public final static int MAX_CACHE_SIZE = 500;
     private final Consumer<Long> chatPolicyViolationConsumer;
     private final BlacklistedChatService database;
     private final Set<Long> cache;
@@ -28,9 +30,11 @@ public class ChatPolicyEnsuringService {
 
     public synchronized void queueViolationCheck(long chatId) {
         cache.add(chatId);
+        if (cache.size() >= MAX_CACHE_SIZE)
+            checkViolations();
     }
 
-    @Scheduled(fixedDelay = 30, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(fixedDelay = FLUSH_INTERVAL, timeUnit = TimeUnit.SECONDS)
     private synchronized void checkViolations() {
         if (cache.isEmpty()) return;
         var violations = database.findByChatIdIn(cache);

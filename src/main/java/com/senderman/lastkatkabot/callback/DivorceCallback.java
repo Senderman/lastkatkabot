@@ -40,7 +40,6 @@ public class DivorceCallback implements CallbackExecutor {
     }
 
     private void acceptDivorce(CallbackQueryContext ctx) {
-        ;
         var userId = ctx.user().getId();
         var userStats = users.findById(userId);
         var loverId = userStats.getLoverId();

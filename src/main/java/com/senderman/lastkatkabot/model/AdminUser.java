@@ -12,10 +12,6 @@ public class AdminUser implements IdAndName<Long> {
     private long userId;
     private String name;
 
-    public AdminUser() {
-
-    }
-
     public AdminUser(long userId, String name) {
         this.userId = userId;
         this.name = name;
@@ -41,9 +37,9 @@ public class AdminUser implements IdAndName<Long> {
     @Override
     public String toString() {
         return "AdminUser{" +
-               "userId=" + userId +
-               ", name='" + name + '\'' +
-               '}';
+                "userId=" + userId +
+                ", name='" + name + '\'' +
+                '}';
     }
 
     @Override

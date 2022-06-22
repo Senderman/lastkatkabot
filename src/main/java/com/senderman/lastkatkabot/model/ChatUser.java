@@ -16,10 +16,6 @@ public class ChatUser {
     private String name;
     private int lastMessageDate;
 
-    public ChatUser() {
-
-    }
-
     public ChatUser(long chatId, long userId, String name, int lastMessageDate) {
         this.id = generateId(chatId, userId);
         this.chatId = chatId;

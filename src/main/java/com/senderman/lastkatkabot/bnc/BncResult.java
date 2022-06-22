@@ -1,5 +1,6 @@
 package com.senderman.lastkatkabot.bnc;
 
+// TODO make record
 public class BncResult {
 
     private final String number;

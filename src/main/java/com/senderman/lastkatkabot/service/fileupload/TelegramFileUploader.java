@@ -22,7 +22,7 @@ public class TelegramFileUploader {
     }
 
     public void sendDocument(long chatId, @Nullable Integer replyToMessageId, InputStream file, String filename) {
-        RequestBody requestBody = null;
+        RequestBody requestBody;
         try (file) {
             requestBody = RequestBody.create(file.readAllBytes(), MediaType.parse("multipart/form-data"));
         } catch (IOException e) {
@@ -31,13 +31,12 @@ public class TelegramFileUploader {
         var document = MultipartBody.Part.createFormData("document", filename, requestBody);
         try {
             uploadService.sendDocument(chatId, replyToMessageId, document).execute();
-        } catch (IOException e) {
-            return;
+        } catch (IOException ignored) {
         }
     }
 
     public void sendPhoto(long chatId, @Nullable Integer replyToMessageId, String caption, InputStream file, String filename) {
-        RequestBody requestBody = null;
+        RequestBody requestBody;
         try (file) {
             requestBody = RequestBody.create(file.readAllBytes(), MediaType.parse("multipart/form-data"));
         } catch (IOException e) {

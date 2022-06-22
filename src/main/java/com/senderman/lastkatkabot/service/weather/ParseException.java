@@ -1,5 +1,6 @@
 package com.senderman.lastkatkabot.service.weather;
 
+// TODO make sane
 public class ParseException extends Exception {
 
     public ParseException(String text) {

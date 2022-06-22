@@ -8,9 +8,6 @@ public class BlacklistedChat {
     @Id
     private long chatId;
 
-    public BlacklistedChat() {
-    }
-
     public BlacklistedChat(long chatId) {
         this.chatId = chatId;
     }

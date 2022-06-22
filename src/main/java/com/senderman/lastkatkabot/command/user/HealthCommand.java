@@ -2,7 +2,7 @@ package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import com.senderman.lastkatkabot.service.CachingUserActivityTrackerService;
+import com.senderman.lastkatkabot.service.UserActivityTrackerService;
 import org.springframework.stereotype.Component;
 
 import java.lang.management.ManagementFactory;
@@ -10,9 +10,9 @@ import java.lang.management.ManagementFactory;
 @Component
 public class HealthCommand implements CommandExecutor {
 
-    private final CachingUserActivityTrackerService trackerService;
+    private final UserActivityTrackerService trackerService;
 
-    public HealthCommand(CachingUserActivityTrackerService trackerService) {
+    public HealthCommand(UserActivityTrackerService trackerService) {
         this.trackerService = trackerService;
     }
 
@@ -54,7 +54,7 @@ public class HealthCommand implements CommandExecutor {
                         ManagementFactory.getThreadMXBean().getThreadCount(),
                         ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors(),
                         trackerService.getAvgCacheFlushingSize(),
-                        CachingUserActivityTrackerService.FLUSH_INTERVAL
+                        UserActivityTrackerService.FLUSH_INTERVAL
                 );
     }
 }

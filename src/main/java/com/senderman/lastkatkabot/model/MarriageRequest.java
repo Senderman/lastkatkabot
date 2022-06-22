@@ -16,10 +16,6 @@ public class MarriageRequest {
     private String proposeeName;
     private int requestDate;
 
-    public MarriageRequest() {
-
-    }
-
     public MarriageRequest(long proposerId, String proposerName, long proposeeId, String proposeeName, int requestDate) {
         this.proposerId = proposerId;
         this.proposerName = proposerName;

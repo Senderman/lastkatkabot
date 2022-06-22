@@ -16,9 +16,6 @@ public class Feedback {
     private int messageId;
     private boolean replied;
 
-    public Feedback() {
-    }
-
     public Feedback(String message, long userId, String userName, long chatId, int messageId) {
         this.message = message;
         this.userId = userId;

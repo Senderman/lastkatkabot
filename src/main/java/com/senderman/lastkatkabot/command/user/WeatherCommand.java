@@ -44,8 +44,8 @@ public class WeatherCommand implements CommandExecutor {
 
     @Override
     public void accept(@NotNull MessageContext ctx) {
-        var messageToEdit = ctx.replyToMessage("\uD83C\uDF10 Соединение...").call(ctx.sender);
-        final Consumer<String> responseConsumer = s -> Methods.editMessageText(
+        final var messageToEdit = ctx.replyToMessage("\uD83C\uDF10 Запрос в очереди...").call(ctx.sender);
+        final Consumer<String> editMessageConsumer = s -> Methods.editMessageText(
                 messageToEdit.getChatId(),
                 messageToEdit.getMessageId(),
                 s
@@ -53,21 +53,22 @@ public class WeatherCommand implements CommandExecutor {
 
         threadPool.execute(() -> {
             try {
+                editMessageConsumer.accept("\uD83C\uDF10 Соединение...");
                 String city = getCityFromMessageOrDb(ctx);
                 String cityLink = getCityLink(city);
                 var text = forecastToString(weatherService.getWeatherByCityLink(cityLink));
-                responseConsumer.accept(text);
+                editMessageConsumer.accept(text);
                 // save last defined city in db (we won't get here if exception is occurred)
                 updateUserCityLink(ctx.user().getId(), city);
             } catch (NoCitySpecifiedException e) {
-                responseConsumer.accept("Вы не указали город! (/weather город). Бот запомнит ваш выбор.");
+                editMessageConsumer.accept("Вы не указали город! (/weather город). Бот запомнит ваш выбор.");
             } catch (NoSuchCityException e) {
-                responseConsumer.accept("Город не найден - " + e.getCity());
+                editMessageConsumer.accept("Город не найден - " + e.getCity());
             } catch (ParseException e) {
-                responseConsumer.accept("Ошибка обработки запроса: " + e.getMessage());
+                editMessageConsumer.accept("Ошибка обработки запроса: " + e.getMessage());
                 throw new RuntimeException(e);
             } catch (IOException e) {
-                responseConsumer.accept("Ошибка соединения с сервисом погоды");
+                editMessageConsumer.accept("Ошибка соединения с сервисом погоды");
                 throw new RuntimeException(e);
             }
         });

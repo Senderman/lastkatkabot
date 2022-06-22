@@ -12,10 +12,6 @@ public class BlacklistedUser implements IdAndName<Long> {
     private long userId;
     private String name;
 
-    public BlacklistedUser() {
-
-    }
-
     public BlacklistedUser(long userId, String name) {
         this.userId = userId;
         this.name = name;

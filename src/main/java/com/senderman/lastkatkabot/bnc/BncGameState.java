@@ -2,6 +2,7 @@ package com.senderman.lastkatkabot.bnc;
 
 import java.util.List;
 
+// TODO make record
 public class BncGameState {
     private final long id;
     private final long creatorId;

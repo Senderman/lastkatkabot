@@ -14,9 +14,6 @@ public class GenshinChatUser {
     private int fourPity;
     private int fivePity;
 
-    public GenshinChatUser() {
-    }
-
     public GenshinChatUser(long chatId, long userId) {
         this.id = generateId(chatId, userId);
         this.chatId = chatId;

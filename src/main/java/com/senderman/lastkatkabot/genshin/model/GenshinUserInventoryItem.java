@@ -13,9 +13,6 @@ public class GenshinUserInventoryItem {
     private String itemId;
     private int amount;
 
-    public GenshinUserInventoryItem() {
-    }
-
     public GenshinUserInventoryItem(long chatId, long userId, String itemId, int amount) {
         this.id = generateId(chatId, userId, itemId);
         this.chatId = chatId;
