@@ -17,7 +17,10 @@ repositories {
 
 
 dependencies {
-    implementation 'com.annimon:tgbots-module:5.7.0'
+    implementation('com.annimon:tgbots-module:5.7.0') {
+        exclude group: 'org.telegram', module: 'telegrambots'
+    }
+    implementation 'org.telegram:telegrambots:6.1.0'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
     implementation 'com.google.code.gson:gson:2.9.0'
     implementation 'org.sejda.webp-imageio:webp-imageio-sejda:0.1.0'
