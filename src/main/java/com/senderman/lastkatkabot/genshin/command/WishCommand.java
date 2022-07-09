@@ -87,8 +87,13 @@ public class WishCommand implements CommandExecutor {
         inventoryItemService.save(inventoryItem);
 
         String text = getFormattedItemReceiveMessage(ctx.user(), receivedItem);
-        var itemPicture = getItemPictureById(itemId);
-        uploader.sendPhoto(chatId, ctx.messageId(), text, itemPicture, itemId + ".webp");
+        if (receivedItem.getStars() == 3) {
+            // do not show picture for 3*
+            ctx.replyToMessage(text).callAsync(ctx.sender);
+        } else {
+            var itemPicture = getItemPictureById(itemId);
+            uploader.sendPhoto(chatId, ctx.messageId(), text, itemPicture, itemId + ".webp");
+        }
 
     }
 
