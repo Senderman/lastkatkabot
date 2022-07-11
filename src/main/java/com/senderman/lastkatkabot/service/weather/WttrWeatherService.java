@@ -17,11 +17,13 @@ public class WttrWeatherService implements WeatherService {
         if (!city.matches("^~?[\\p{L}\\d\\s-,.+]+"))
             throw new NoSuchCityException(city);
 
-        var response = makeRequest(domain + city + wttrOptions);
-        if (response.responseCode == 404)
-            throw new NoSuchCityException(city);
+        var response = requestWeather(city);
+        return parseResponse(response);
+    }
 
-        String[] content = response.content.split("\n");
+
+    private Forecast parseResponse(String response) throws ParseException {
+        String[] content = response.split("\n");
         try {
             var title = content[0];
             var temperature = content[1];
@@ -32,29 +34,20 @@ public class WttrWeatherService implements WeatherService {
             var pressure = content[6];
             return new Forecast(title, temperature, feelsLike, feelings, wind, humidity, pressure);
         } catch (Exception e) {
-            String error = String.join("\n", content);
-            throw new ParseException("Error while parsing content: " + error, e);
+            throw new ParseException("Error while parsing content: " + response, e);
         }
-
     }
 
-    private WttrResponse makeRequest(String link) throws IOException {
-        var url = new URL(link);
+    private String requestWeather(String city) throws IOException, NoSuchCityException {
+        var url = new URL(domain + city + wttrOptions);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         conn.connect();
+        if (conn.getResponseCode() == 404)
+            throw new NoSuchCityException(city);
+
         var out = conn.getInputStream();
-        return new WttrResponse(conn.getResponseCode(), new String(out.readAllBytes()));
+        return new String(out.readAllBytes());
     }
 
-    private int checkResponse(String link) throws IOException {
-        var url = new URL(link);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
-        connection.connect();
-        return connection.getResponseCode();
-    }
-
-    private record WttrResponse(int responseCode, String content) {
-    }
 }
