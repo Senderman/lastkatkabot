@@ -55,11 +55,10 @@ public class WeatherCommand implements CommandExecutor {
             try {
                 editMessageConsumer.accept("\uD83C\uDF10 Соединение...");
                 String city = getCityFromMessageOrDb(ctx);
-                String cityLink = getCityLink(city);
-                var text = forecastToString(weatherService.getWeatherByCityLink(cityLink));
+                var text = forecastToString(weatherService.getWeatherByCity(city));
                 editMessageConsumer.accept(text);
                 // save last defined city in db (we won't get here if exception is occurred)
-                updateUserCityLink(ctx.user().getId(), city);
+                updateUserCity(ctx.user().getId(), city);
             } catch (NoCitySpecifiedException e) {
                 editMessageConsumer.accept("Вы не указали город! (/weather город). Бот запомнит ваш выбор.");
             } catch (NoSuchCityException e) {
@@ -91,13 +90,9 @@ public class WeatherCommand implements CommandExecutor {
         throw new NoCitySpecifiedException();
     }
 
-    private String getCityLink(String city) throws NoSuchCityException, IOException {
-        return weatherService.getCityLink(city);
-    }
-
-    private void updateUserCityLink(long userId, String cityLink) {
+    private void updateUserCity(long userId, String city) {
         var user = userStats.findById(userId);
-        user.setCityLink(cityLink);
+        user.setCityLink(city);
         userStats.save(user);
     }
 

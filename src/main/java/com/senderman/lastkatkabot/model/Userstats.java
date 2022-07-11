@@ -15,7 +15,7 @@ public class Userstats {
     private int duelWins;
     private int bncScore;
     @Nullable
-    private String cityLink;
+    private String cityLink; // TODO rename to City
     @Nullable
     private Long loverId;
 

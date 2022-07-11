@@ -5,23 +5,14 @@ import java.io.IOException;
 public interface WeatherService {
 
     /**
-     * Get link to the page with city weather
+     * Get weather forecast by city name
      *
-     * @param city city name
-     * @return link to the city, starting with /
-     * @throws IOException         on connection error
-     * @throws NoSuchCityException if there's no city
-     */
-    String getCityLink(String city) throws IOException, NoSuchCityException;
-
-    /**
-     * Get weather forecast by city link
-     *
-     * @param cityLink link to the city. you can get it from {@link #getCityLink(String)}
+     * @param city name of city
      * @return Forecast object
-     * @throws IOException    on connection error
-     * @throws ParseException on parse error
+     * @throws IOException         on connection error
+     * @throws NoSuchCityException if there's no such city
+     * @throws ParseException      on parse error
      */
-    Forecast getWeatherByCityLink(String cityLink) throws IOException, ParseException;
+    Forecast getWeatherByCity(String city) throws IOException, NoSuchCityException, ParseException;
 
 }
