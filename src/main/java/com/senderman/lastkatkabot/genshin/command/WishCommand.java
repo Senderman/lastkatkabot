@@ -95,14 +95,14 @@ public class WishCommand implements CommandExecutor {
     private int getRandomRate(GenshinChatUser user) {
         if (user.getFourPity() >= 9)
             return 4;
-        else if (user.getFivePity() >= 74) {
+        else if (user.getFivePity() >= 50) {
             return 5;
         }
 
         var random = ThreadLocalRandom.current().nextInt(1, 1000);
-        if (random < 12)
+        if (random < 70)
             return 5;
-        else if (random < 141)
+        else if (random < 300)
             return 4;
         else
             return 3;
