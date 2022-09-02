@@ -70,21 +70,21 @@ public class WishCommand implements CommandExecutor {
         }
 
         final int rate = getRandomRate(genshinUser);
-        updatePity(genshinUser, rate);
+        //updatePity(genshinUser, rate);
 
         var possibleItems = genshinItems.stream()
-                .filter(i -> i.getStars() == rate)
+                .filter(i -> i.getId().equals("shufu"))
                 .toList();
-        var receivedItem = possibleItems.get(ThreadLocalRandom.current().nextInt(possibleItems.size()));
+        var receivedItem = possibleItems.get(0);
 
         genshinUser.setLastRollDate(currentDay);
         userService.save(genshinUser);
 
         var itemId = receivedItem.getId();
-        var inventoryItem = inventoryItemService.findByChatIdAndUserIdAndItemId(chatId, userId, itemId);
+        //var inventoryItem = inventoryItemService.findByChatIdAndUserIdAndItemId(chatId, userId, itemId);
 
-        inventoryItem.incAmount();
-        inventoryItemService.save(inventoryItem);
+        //inventoryItem.incAmount();
+        //inventoryItemService.save(inventoryItem);
 
         String text = getFormattedItemReceiveMessage(ctx.user(), receivedItem);
         var itemPicture = getItemPictureById(itemId);
