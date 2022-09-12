@@ -38,10 +38,3 @@ out/
 kotlin
 /src/main/resources/application-*.yml
 
-# S6 / S6-RC
-run
-event
-supervise
-notification-fd
-type
-producer-for
