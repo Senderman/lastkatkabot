@@ -1,6 +1,8 @@
 package com.senderman.lastkatkabot.service;
 
 import com.senderman.lastkatkabot.config.BotConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -15,9 +17,11 @@ import java.util.Objects;
 public class ImageService {
 
     private final BotConfig config;
+    private final Logger logger;
 
     public ImageService(BotConfig config) {
         this.config = config;
+        this.logger = LoggerFactory.getLogger(ImageService.class);
     }
 
     /**
@@ -29,6 +33,7 @@ public class ImageService {
      * @throws TooWideNicknameException if the given nickname is too wide to attach to sticker
      */
     public InputStream generateGreetingSticker(String nickname) throws IOException, TooWideNicknameException {
+        logger.error("Attempt to create image with text -- " + nickname + " --");
         var orig = getClass().getResourceAsStream("/greeting.png");
         var img = ImageIO.read(Objects.requireNonNull(orig));
         orig.close();
