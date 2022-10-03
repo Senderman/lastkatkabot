@@ -2,6 +2,7 @@ package com.senderman.lastkatkabot;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.config.BotConfig;
+import com.senderman.lastkatkabot.dbservice.BlacklistedChatService;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.dbservice.DatabaseCleanupService;
 import com.senderman.lastkatkabot.service.ImageService;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.function.Consumer;
 
 @SpringBootApplication
 public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
@@ -41,6 +43,8 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     private final CommandUpdateHandler commandUpdateHandler;
     private final ChatUserService chatUsers;
     private final UserActivityTrackerService activityTrackerService;
+    private final BlacklistedChatService blacklistedChatService;
+    private final Consumer<Long> chatPolicyViolationConsumer;
     private final DatabaseCleanupService databaseCleanupService;
     private final ImageService imageService;
     private final ExecutorService threadPool;
@@ -54,6 +58,8 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             @Lazy CommandUpdateHandler commandUpdateHandler,
             ChatUserService chatUsers,
             UserActivityTrackerService activityTrackerService,
+            BlacklistedChatService blacklistedChatService,
+            @Lazy Consumer<Long> chatPolicyViolationConsumer,
             DatabaseCleanupService databaseCleanupService,
             ImageService imageService,
             @Qualifier("generalNeedsPool") ExecutorService threadPool,
@@ -64,6 +70,8 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         this.commandUpdateHandler = commandUpdateHandler;
         this.chatUsers = chatUsers;
         this.activityTrackerService = activityTrackerService;
+        this.blacklistedChatService = blacklistedChatService;
+        this.chatPolicyViolationConsumer = chatPolicyViolationConsumer;
         this.databaseCleanupService = databaseCleanupService;
         this.imageService = imageService;
         this.threadPool = threadPool;
@@ -189,6 +197,11 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
     private void processNewChatMembers(Message message) {
         var chatId = message.getChatId();
+        // if bot is added to the blacklisted chat, leave
+        if (blacklistedChatService.existsById(chatId)) {
+            chatPolicyViolationConsumer.accept(chatId);
+            return;
+        }
         var messageId = message.getMessageId();
         for (var user : message.getNewChatMembers()) {
             if (user.getIsBot()) {

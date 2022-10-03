@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.TypeAlias;
 
 import java.util.List;
+import java.util.Set;
 
 @TypeAlias("chatinfo")
 public class ChatInfo {
@@ -15,6 +16,8 @@ public class ChatInfo {
     private List<String> lastPairs;
     @Nullable
     private Integer lastPairDate;
+    @Nullable
+    private Set<String> forbiddenCommands;
 
     public ChatInfo(long chatId) {
         this.chatId = chatId;
@@ -42,5 +45,13 @@ public class ChatInfo {
 
     public void setLastPairDate(@Nullable Integer lastPairDate) {
         this.lastPairDate = lastPairDate;
+    }
+
+    public @Nullable Set<String> getForbiddenCommands() {
+        return forbiddenCommands;
+    }
+
+    public void setForbiddenCommands(@Nullable Set<String> forbiddenCommands) {
+        this.forbiddenCommands = forbiddenCommands;
     }
 }

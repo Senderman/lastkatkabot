@@ -13,4 +13,6 @@ public interface BlacklistedChatService {
 
     List<BlacklistedChat> findByChatIdIn(Collection<Long> ids);
 
+    boolean existsById(long chatId);
+
 }

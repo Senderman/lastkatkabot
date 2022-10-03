@@ -31,4 +31,9 @@ public class MongoBlacklistedChatService implements BlacklistedChatService {
     public List<BlacklistedChat> findByChatIdIn(Collection<Long> ids) {
         return repo.findByChatIdIn(ids);
     }
+
+    @Override
+    public boolean existsById(long chatId) {
+        return repo.existsById(chatId);
+    }
 }

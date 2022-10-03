@@ -6,17 +6,24 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.BlacklistedChatService;
 import com.senderman.lastkatkabot.model.BlacklistedChat;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.EnumSet;
+import java.util.function.Consumer;
 
 @Component
 public class BadChatCommand implements CommandExecutor {
 
     private final BlacklistedChatService database;
+    private final Consumer<Long> chatPolicyViolationConsumer;
 
-    public BadChatCommand(BlacklistedChatService blacklistedChatService) {
+    public BadChatCommand(
+            BlacklistedChatService blacklistedChatService,
+            @Qualifier("chatPolicyViolationConsumer") Consumer<Long> chatPolicyViolationConsumer
+    ) {
         this.database = blacklistedChatService;
+        this.chatPolicyViolationConsumer = chatPolicyViolationConsumer;
     }
 
     @Override
@@ -50,6 +57,7 @@ public class BadChatCommand implements CommandExecutor {
         }
 
         database.save(new BlacklistedChat(chatId));
+        chatPolicyViolationConsumer.accept(chatId);
         ctx.replyToMessage("✅ Чат успешно добавлен в чс!").callAsync(ctx.sender);
     }
 }
