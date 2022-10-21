@@ -208,6 +208,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
                 continue;
             }
             try (var stickerStream = imageService.generateGreetingSticker(user.getFirstName())) {
+                // if we send a png file with the webp extension, telegram will show it as sticker
                 fileUploader.sendDocument(chatId, messageId, stickerStream, "sticker.webp");
             } catch (ImageService.TooWideNicknameException | IOException e) {
                 // fallback with greeting gif
