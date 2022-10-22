@@ -45,6 +45,10 @@ public class WeatherCommand implements CommandExecutor {
     @Override
     public void accept(@NotNull MessageContext ctx) {
         final var messageToEdit = ctx.replyToMessage("\uD83C\uDF10 Запрос в очереди...").call(ctx.sender);
+        // if bot failed to send the message
+        if (messageToEdit == null) {
+            return;
+        }
         final Consumer<String> editMessageConsumer = s -> Methods.editMessageText(
                 messageToEdit.getChatId(),
                 messageToEdit.getMessageId(),
