@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
-import java.util.stream.Collectors;
 
 @Component
 public class WhereUserCommand implements CommandExecutor {
@@ -58,9 +57,14 @@ public class WhereUserCommand implements CommandExecutor {
                     .stream()
                     .map(chat -> getChatNameOrNull(chat.getChatId(), ctx.sender))
                     .filter(Objects::nonNull)
-                    .collect(Collectors.joining("\n"));
+                    .toList();
 
-            ctx.replyToMessage("🕵️‍♂ Юзер замечен в следующих чатах:\n\n️" + chatNames).callAsync(ctx.sender);
+            if (chatNames.isEmpty()) {
+                ctx.replyToMessage("\uD83D\uDD75️\u200D♂ Юзера нет ни в одном чате с ботом!️").callAsync(ctx.sender);
+                return;
+            }
+
+            ctx.replyToMessage("🕵️‍♂ Юзер замечен в следующих чатах:\n\n️" + String.join("\n", chatNames)).callAsync(ctx.sender);
         });
     }
 
