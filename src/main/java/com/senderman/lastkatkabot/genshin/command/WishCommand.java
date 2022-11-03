@@ -7,11 +7,11 @@ import com.senderman.lastkatkabot.genshin.dbservice.GenshinChatUserService;
 import com.senderman.lastkatkabot.genshin.dbservice.GenshinUserInventoryItemService;
 import com.senderman.lastkatkabot.genshin.model.GenshinChatUser;
 import com.senderman.lastkatkabot.service.CurrentTime;
-import com.senderman.lastkatkabot.service.fileupload.TelegramFileUploader;
 import com.senderman.lastkatkabot.util.Html;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.io.InputStream;
@@ -25,20 +25,17 @@ public class WishCommand implements CommandExecutor {
     private final GenshinUserInventoryItemService inventoryItemService;
     private final CurrentTime currentTime;
     private final List<Item> genshinItems;
-    private final TelegramFileUploader uploader;
 
     public WishCommand(
             GenshinChatUserService userService,
             GenshinUserInventoryItemService inventoryItemService,
             CurrentTime currentTime,
-            @Qualifier("genshinItems") List<Item> genshinItems,
-            TelegramFileUploader uploader
+            @Qualifier("genshinItems") List<Item> genshinItems
     ) {
         this.userService = userService;
         this.inventoryItemService = inventoryItemService;
         this.currentTime = currentTime;
         this.genshinItems = genshinItems;
-        this.uploader = uploader;
     }
 
     @Override
@@ -88,7 +85,11 @@ public class WishCommand implements CommandExecutor {
 
         String text = getFormattedItemReceiveMessage(ctx.user(), receivedItem);
         var itemPicture = getItemPictureById(itemId);
-        uploader.sendPhoto(chatId, ctx.messageId(), text, itemPicture, itemId + ".webp");
+        ctx.replyToMessageWithPhoto()
+                .setCaption(text)
+                .setFile(itemId + ".webp", itemPicture)
+                .setParseMode(ParseMode.HTML)
+                .callAsync(ctx.sender);
 
     }
 

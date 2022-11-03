@@ -7,7 +7,6 @@ import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.dbservice.DatabaseCleanupService;
 import com.senderman.lastkatkabot.service.ImageService;
 import com.senderman.lastkatkabot.service.UserActivityTrackerService;
-import com.senderman.lastkatkabot.service.fileupload.TelegramFileUploader;
 import com.senderman.lastkatkabot.util.DbCleanupResults;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -48,7 +47,6 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     private final DatabaseCleanupService databaseCleanupService;
     private final ImageService imageService;
     private final ExecutorService threadPool;
-    private final TelegramFileUploader fileUploader;
     private final Set<Long> telegramServiceUserIds;
 
     @Autowired
@@ -62,8 +60,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             @Lazy Consumer<Long> chatPolicyViolationConsumer,
             DatabaseCleanupService databaseCleanupService,
             ImageService imageService,
-            @Qualifier("generalNeedsPool") ExecutorService threadPool,
-            TelegramFileUploader fileUploader
+            @Qualifier("generalNeedsPool") ExecutorService threadPool
     ) {
         super(botOptions);
         this.config = config;
@@ -75,7 +72,6 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         this.databaseCleanupService = databaseCleanupService;
         this.imageService = imageService;
         this.threadPool = threadPool;
-        this.fileUploader = fileUploader;
 
         this.telegramServiceUserIds = Set.of(
                 777000L, // attached channel's messages
@@ -209,7 +205,10 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             }
             try (var stickerStream = imageService.generateGreetingSticker(user.getFirstName())) {
                 // if we send a png file with the webp extension, telegram will show it as sticker
-                fileUploader.sendDocument(chatId, messageId, stickerStream, "sticker.webp");
+                Methods.sendDocument(chatId)
+                        .setReplyToMessageId(messageId)
+                        .setFile("sticker.webp", stickerStream)
+                        .callAsync(this);
             } catch (ImageService.TooWideNicknameException | IOException e) {
                 // fallback with greeting gif
                 Methods.sendDocument(chatId)

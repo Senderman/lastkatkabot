@@ -6,13 +6,11 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.google.gson.Gson;
 import com.senderman.lastkatkabot.BotHandler;
 import com.senderman.lastkatkabot.genshin.Item;
-import com.senderman.lastkatkabot.service.fileupload.TelegramFileUploadService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
-import retrofit2.Retrofit;
 
 import java.io.IOException;
 import java.util.List;
@@ -61,14 +59,6 @@ public class Beans {
             Methods.sendMessage(chatId, "📛 Ваш чат в списке спамеров! Бот не хочет здесь работать!").callAsync(handler);
             Methods.leaveChat(chatId).callAsync(handler);
         };
-    }
-
-    @Bean
-    public TelegramFileUploadService telegramFileUploadService(BotConfig config) {
-        return new Retrofit.Builder()
-                .baseUrl("https://api.telegram.org/bot" + config.token() + "/")
-                .build()
-                .create(TelegramFileUploadService.class);
     }
 
 }
