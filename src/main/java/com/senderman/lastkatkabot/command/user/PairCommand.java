@@ -86,6 +86,7 @@ public class PairCommand implements CommandExecutor {
         if (!runningChatPairsGenerations.add(chatId)) return;
 
         // clean inactive chat members
+        // TODO clean ALL inactive users
         chatUsersService.deleteInactiveChatUsers(chatId);
 
         final var usersForPair = chatUsersService.getTwoOrLessUsersOfChat(chatId);
