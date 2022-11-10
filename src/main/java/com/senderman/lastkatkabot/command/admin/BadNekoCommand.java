@@ -49,8 +49,8 @@ public class BadNekoCommand implements CommandExecutor {
         var userLink = Html.getUserLink(user);
         if (user.getIsBot()) {
             ctx.replyToMessage(
-                    "Но это же просто бот, имитация человека! " +
-                    "Разве может бот написать симфонию, иметь статистику, участвовать в дуэлях, быть плохой кисой?")
+                            "Но это же просто бот, имитация человека! " +
+                                    "Разве может бот написать симфонию, иметь статистику, участвовать в дуэлях, быть плохой кисой?")
                     .callAsync(ctx.sender);
             return;
         }

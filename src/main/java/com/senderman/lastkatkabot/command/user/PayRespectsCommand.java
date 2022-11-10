@@ -38,7 +38,7 @@ public class PayRespectsCommand implements CommandExecutor {
 
         ctx.deleteMessage().callAsync(ctx.sender);
         var text = "🕯 Press F to pay respects " + object +
-                   "\n" + ctx.user().getFirstName() + " has paid respects";
+                "\n" + ctx.user().getFirstName() + " has paid respects";
 
         var markup = new MarkupBuilder()
                 .addButton(ButtonBuilder.callbackButton()

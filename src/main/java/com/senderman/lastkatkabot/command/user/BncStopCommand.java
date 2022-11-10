@@ -44,7 +44,7 @@ public class BncStopCommand implements CommandExecutor {
 
         if (!isCreator && !isOneHourPassed) {
             ctx.replyToMessage("Для остановки игры в группе, вы должны быть создателем игры, либо " +
-                               "с момента создания игры должно пройти не менее 1 часа!")
+                            "с момента создания игры должно пройти не менее 1 часа!")
                     .callAsync(ctx.sender);
             return;
         }

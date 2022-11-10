@@ -43,11 +43,11 @@ public class ListUsersCommand implements CommandExecutor {
     public void accept(MessageContext ctx) {
 
         String text = "<b>Списки пользователей</b>:\n\n" +
-                    "<b>Админы</b>\n\n" +
-                    formatUsers(admins) +
-                    "\n\n" +
-                    "<b>Плохие кисы</b>\n\n" +
-                    formatUsers(blacklist);
+                "<b>Админы</b>\n\n" +
+                formatUsers(admins) +
+                "\n\n" +
+                "<b>Плохие кисы</b>\n\n" +
+                formatUsers(blacklist);
         ctx.replyToMessage(text).callAsync(ctx.sender);
 
     }

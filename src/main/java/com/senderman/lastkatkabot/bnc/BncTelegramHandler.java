@@ -122,8 +122,8 @@ public class BncTelegramHandler implements RegexCommand {
 
         var username = Html.htmlSafe(ctx.user().getFirstName());
         var text = username + " выиграл за " +
-                   (BncGame.totalAttempts(gameState.length(), gameState.isHexadecimal()) - result.attempts()) +
-                   " попыток!\n\n" + formatGameStateStats(gameState);
+                (BncGame.totalAttempts(gameState.length(), gameState.isHexadecimal()) - result.attempts()) +
+                " попыток!\n\n" + formatGameStateStats(gameState);
         deleteGameMessages(chatId, ctx.sender);
         ctx.reply(text).callAsync(ctx.sender);
     }
@@ -146,14 +146,14 @@ public class BncTelegramHandler implements RegexCommand {
         deleteGameMessages(chatId, sender);
 
         var text = "Игра \"Быки и коровы\" в этом чате досрочно завершена! Ответ: "
-                   + gameState.answer() + "\n\n" + formatGameStateStats(gameState);
+                + gameState.answer() + "\n\n" + formatGameStateStats(gameState);
         Methods.sendMessage(chatId, text).callAsync(sender);
     }
 
     private String formatGameStateStats(BncGameState state) {
         return formatHistory(state.history()) +
-               "\n\nПотрачено времени: " +
-               formatTimeSpent((System.currentTimeMillis() - state.startTime()) / 1000);
+                "\n\nПотрачено времени: " +
+                formatTimeSpent((System.currentTimeMillis() - state.startTime()) / 1000);
     }
 
     private String formatHistory(List<BncResult> history) {

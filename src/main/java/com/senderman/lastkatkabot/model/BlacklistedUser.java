@@ -37,9 +37,9 @@ public class BlacklistedUser implements IdAndName<Long> {
     @Override
     public String toString() {
         return "BlacklistedUser{" +
-               "userId=" + userId +
-               ", name='" + name + '\'' +
-               '}';
+                "userId=" + userId +
+                ", name='" + name + '\'' +
+                '}';
     }
 
     @Override

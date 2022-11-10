@@ -46,8 +46,8 @@ public class GoodNekoCommand implements CommandExecutor {
         var user = ctx.message().getReplyToMessage().getFrom();
         if (user.getIsBot()) {
             ctx.replyToMessage(
-                    "Но это же просто бот, имитация человека! " +
-                    "Разве может бот написать симфонию, иметь статистику, участвовать в дуэлях, быть хорошей кисой?")
+                            "Но это же просто бот, имитация человека! " +
+                                    "Разве может бот написать симфонию, иметь статистику, участвовать в дуэлях, быть хорошей кисой?")
                     .callAsync(ctx.sender);
             return;
         }
