@@ -31,7 +31,7 @@ public class GetInfoCommand implements CommandExecutor {
         var replyInfo = message.getReplyToMessage()
                 .toString()
                 .replaceAll("\\w+=null,?\\s*", "")
-                .replaceAll("=([\\w\\d]+)", "=<code>$1</code>");
+                .replaceAll("=(\\w+)", "=<code>$1</code>");
 
         ctx.reply(replyInfo).callAsync(ctx.sender);
     }

@@ -114,7 +114,7 @@ public class BncTelegramHandler implements RegexCommand {
         long chatId = ctx.chatId();
         var userId = ctx.user().getId();
         var userStats = usersRepo.findById(userId);
-        userStats.increaseBncScore(result.getNumber().length());
+        userStats.increaseBncScore(result.number().length());
         usersRepo.save(userStats);
 
         var gameState = gamesManager.getGameState(chatId);
@@ -122,7 +122,7 @@ public class BncTelegramHandler implements RegexCommand {
 
         var username = Html.htmlSafe(ctx.user().getFirstName());
         var text = username + " выиграл за " +
-                   (BncGame.totalAttempts(gameState.getLength(), gameState.isHexadecimal()) - result.getAttempts()) +
+                   (BncGame.totalAttempts(gameState.length(), gameState.isHexadecimal()) - result.attempts()) +
                    " попыток!\n\n" + formatGameStateStats(gameState);
         deleteGameMessages(chatId, ctx.sender);
         ctx.reply(text).callAsync(ctx.sender);
@@ -133,7 +133,7 @@ public class BncTelegramHandler implements RegexCommand {
         var gameState = gamesManager.getGameState(chatId);
         gamesManager.deleteGame(chatId);
         deleteGameMessages(chatId, ctx.sender);
-        var text = "Вы проиграли! Ответ: " + gameState.getAnswer() + "\n\n" + formatGameStateStats(gameState);
+        var text = "Вы проиграли! Ответ: " + gameState.answer() + "\n\n" + formatGameStateStats(gameState);
         ctx.reply(text).callAsync(ctx.sender);
     }
 
@@ -146,19 +146,19 @@ public class BncTelegramHandler implements RegexCommand {
         deleteGameMessages(chatId, sender);
 
         var text = "Игра \"Быки и коровы\" в этом чате досрочно завершена! Ответ: "
-                   + gameState.getAnswer() + "\n\n" + formatGameStateStats(gameState);
+                   + gameState.answer() + "\n\n" + formatGameStateStats(gameState);
         Methods.sendMessage(chatId, text).callAsync(sender);
     }
 
     private String formatGameStateStats(BncGameState state) {
-        return formatHistory(state.getHistory()) +
+        return formatHistory(state.history()) +
                "\n\nПотрачено времени: " +
-               formatTimeSpent((System.currentTimeMillis() - state.getStartTime()) / 1000);
+               formatTimeSpent((System.currentTimeMillis() - state.startTime()) / 1000);
     }
 
     private String formatHistory(List<BncResult> history) {
         return history.stream()
-                .map(e -> String.format("%s: %dБ %dК", e.getNumber(), e.getBulls(), e.getCows()))
+                .map(e -> String.format("%s: %dБ %dК", e.number(), e.bulls(), e.cows()))
                 .collect(Collectors.joining("\n"));
     }
 
@@ -172,9 +172,9 @@ public class BncTelegramHandler implements RegexCommand {
     }
 
     private String formatResult(BncResult result) {
-        return String.format("%s: %dБ %dК, попыток: %d", result.getNumber(),
-                result.getBulls(),
-                result.getCows(),
-                result.getAttempts());
+        return String.format("%s: %dБ %dК, попыток: %d", result.number(),
+                result.bulls(),
+                result.cows(),
+                result.attempts());
     }
 }

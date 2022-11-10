@@ -25,8 +25,8 @@ public class BncStartCommand implements CommandExecutor {
     @Override
     public String getDescription() {
         return "начать игру \"Быки и коровы\". Можно указать /bnc x, где x от 4 до 10 - длина числа. " +
-               " А еще можно выбрать режим игры с hexadecimal системой. /bnc hex либо /bnc hex длина. " +
-               "Максимальная длина для hex - 16";
+                " А еще можно выбрать режим игры с hexadecimal системой. /bnc hex либо /bnc hex длина. " +
+                "Максимальная длина для hex - 16";
     }
 
     @Override
@@ -40,7 +40,7 @@ public class BncStartCommand implements CommandExecutor {
         int length;
         boolean isHexadecimal = ctx.argument(0, "").equalsIgnoreCase("hex");
         try {
-            int lengthIndex = isHexadecimal ? 1 : 0; // /bnc 5 or /bnc hex 5
+            int lengthIndex = isHexadecimal ? 1 : 0; // /bnc hex 5 or /bnc 5
             length = Integer.parseInt(ctx.argument(lengthIndex, "4"));
             int maxLength = isHexadecimal ? 16 : 10;
             if (length < 4 || length > maxLength) {
@@ -58,8 +58,8 @@ public class BncStartCommand implements CommandExecutor {
     }
 
     private void sendGameState(MessageContext ctx, BncGameState state) {
-        var historyText = state.getHistory().stream()
-                .map(e -> String.format("%s: %dБ %dК", e.getNumber(), e.getBulls(), e.getCows()))
+        var historyText = state.history().stream()
+                .map(e -> String.format("%s: %dБ %dК", e.number(), e.bulls(), e.cows()))
                 .collect(Collectors.joining("\n"));
 
         var textToSend = String.format("""
@@ -68,20 +68,23 @@ public class BncStartCommand implements CommandExecutor {
                         Осталось попыток: %d
 
                         %s""",
-                state.getLength(),
+                state.length(),
                 state.isHexadecimal() ? "HEX" : "DEC",
-                state.getAttemptsLeft(),
+                state.attemptsLeft(),
                 historyText);
 
         gamesHandler.sendGameMessage(ctx.chatId(), textToSend, ctx.sender);
     }
 
     private String startText(int length) {
-        return "Число загадано!\n" +
-               "Отправляйте в чат ваши варианты, они должны состоять только из неповторяющихся чисел!\n" +
-               "Правила игры - /bnchelp.\n" +
-               //"Остановить игру (голосование) - /bncstop)\n" +
-               "Длина числа - " + length;
+        return """
+                Число загадано!
+                Отправляйте в чат ваши варианты, они должны состоять только из неповторяющихся чисел!
+                Правила игры - /bnchelp
+                Статус текущей игры - /bnc
+                Остановить игру - /bncstop
+                Длина числа - %d
+                """.formatted(length);
     }
 
     private void wrongLength(MessageContext ctx, int maxLength) {

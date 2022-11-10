@@ -10,6 +10,7 @@ import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.model.ChatUser;
 import com.senderman.lastkatkabot.service.CurrentTime;
 import com.senderman.lastkatkabot.util.Html;
+import com.senderman.lastkatkabot.util.Threads;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -85,8 +86,6 @@ public class PairCommand implements CommandExecutor {
 
         if (!runningChatPairsGenerations.add(chatId)) return;
 
-        // clean inactive chat members
-        // TODO clean ALL inactive users
         chatUsersService.deleteInactiveChatUsers(chatId);
 
         final var usersForPair = chatUsersService.getTwoOrLessUsersOfChat(chatId);
@@ -167,11 +166,7 @@ public class PairCommand implements CommandExecutor {
     private void sendRandomShitWithDelay(long chatId, String[] shit, CommonAbsSender telegram) {
         for (int i = 0; i < shit.length - 1; i++) {
             Methods.sendMessage(chatId, shit[i]).callAsync(telegram);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            Threads.sleep(1000);
         }
     }
 

@@ -52,17 +52,19 @@ public class BotAuthority implements Authority<Role> {
             threadPool.execute(() -> chatPolicy.queueViolationCheck(message.getChatId()));
             // do not process messages older than 2 minutes
             if (message.getDate() + 120 < System.currentTimeMillis() / 1000)
-                return true;
+                return false;
             if (message.isCommand()) {
                 if (!isCommandAllowed(message))
                     return false;
             }
         }
 
+        // always allow main admin to execute commands
         if (userId.equals(botConfig.mainAdminId())) return true;
 
         if (blacklist.hasUser(userId)) return false;
 
+        // allow command to be executed if it is user command
         if (roles.contains(Role.USER)) return true;
 
         return roles.contains(Role.ADMIN) && admins.hasUser(userId);

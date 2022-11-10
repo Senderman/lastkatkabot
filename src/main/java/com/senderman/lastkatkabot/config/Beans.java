@@ -8,8 +8,6 @@ import com.senderman.lastkatkabot.BotHandler;
 import com.senderman.lastkatkabot.genshin.Item;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 
 import java.io.IOException;
@@ -17,7 +15,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 @Configuration
-@EnableScheduling
 public class Beans {
 
     @Bean
@@ -28,24 +25,15 @@ public class Beans {
     }
 
     @Bean
-    public List<String> love() {
-        try {
-            return new YAMLMapper().readValue(getClass().getResourceAsStream("/love.yml"), new TypeReference<>() {
-            });
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public List<String> love() throws IOException {
+        return new YAMLMapper().readValue(getClass().getResourceAsStream("/love.yml"), new TypeReference<>() {
+        });
     }
 
     @Bean
-    @Scope("prototype")
-    public List<Item> genshinItems() {
-        try {
-            return new YAMLMapper().readValue(getClass().getResourceAsStream("/genshin/items.yml"), new TypeReference<>() {
-            });
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public List<Item> genshinItems() throws IOException {
+        return new YAMLMapper().readValue(getClass().getResourceAsStream("/genshin/items.yml"), new TypeReference<>() {
+        });
     }
 
     @Bean

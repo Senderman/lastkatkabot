@@ -6,27 +6,26 @@ import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
-import org.springframework.beans.factory.annotation.Qualifier;
+import com.senderman.lastkatkabot.util.Threads;
+import org.apache.http.HttpStatus;
+import org.json.HTTP;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
 import java.util.EnumSet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Component
 public class BroadcastMessageCommand implements CommandExecutor {
 
     private final ChatUserService chatUsers;
-    private final ExecutorService threadPool;
 
-    public BroadcastMessageCommand(
-            ChatUserService chatUsers,
-            @Qualifier("generalNeedsPool") ExecutorService threadPool
-    ) {
+    public BroadcastMessageCommand(ChatUserService chatUsers) {
         this.chatUsers = chatUsers;
-        this.threadPool = threadPool;
     }
 
     @Override
@@ -62,32 +61,50 @@ public class BroadcastMessageCommand implements CommandExecutor {
                 .formatted(0, 0, 0, total)
         ).call(ctx.sender);
 
-        var counter = new CounterWithCallback(total, ctx.sender, counterMessage);
+        var counter = new CounterMessage(total, ctx.sender, counterMessage);
 
-        threadPool.execute(() -> {
+        // no need to use thread pool, since the /broadcast command is used rarely
+        new Thread(() -> {
             for (int i = 0; i < total; i++) {
-                var m = new SendMessage(Long.toString(chatIds.get(i)), messageToBroadcast);
-                ctx.sender.callAsync(m, msg -> counter.incSuccessful(), e -> counter.incDone());
+                var m = new SendMessage();
+                m.setChatId(chatIds.get(i));
+                m.setText(messageToBroadcast);
+                try {
+                    ctx.sender.execute(m);
+                    // on success, increase successful counter
+                    counter.incSuccessful();
+                } catch (TelegramApiException e) {
+                    // if we hit telegram's limits, just wait and try again
+                    if (is429TooManyRequests(e)) {
+                        i--;
+                        Threads.sleep(SECONDS.toMillis(30));
+                    } else // failed to send message my some other reason, do not retry
+                        counter.incDone();
+                }
 
                 if (i % 20 == 0) {
-                    try {
-                        Thread.sleep(TimeUnit.SECONDS.toMillis(10));
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
+                    Threads.sleep(SECONDS.toMillis(5));
                 }
             }
-        });
+            ctx.replyToMessage("✅ Рассылка завершена!").callAsync(ctx.sender);
+        }).start();
     }
 
-    private static class CounterWithCallback {
+    private boolean is429TooManyRequests(TelegramApiException e) {
+        if (e instanceof TelegramApiRequestException ex)
+            return ex.getErrorCode() == 429;
+        return false;
+    }
+
+    // A message that holds information about current broadcast status and updates it
+    private static class CounterMessage {
         private final int total;
         private final CommonAbsSender sender;
         private final Message messageToEdit;
         private int successful = 0;
         private int done = 0;
 
-        public CounterWithCallback(int total, CommonAbsSender sender, Message messageToEdit) {
+        public CounterMessage(int total, CommonAbsSender sender, Message messageToEdit) {
             this.total = total;
             this.sender = sender;
             this.messageToEdit = messageToEdit;

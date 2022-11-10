@@ -37,9 +37,9 @@ public class BncStopCommand implements CommandExecutor {
         }
 
         var gameState = gameHandler.getGameState(chatId);
-        var startTime = gameState.getStartTime();
+        var startTime = gameState.startTime();
 
-        boolean isCreator = ctx.message().getFrom().getId().equals(gameState.getCreatorId());
+        boolean isCreator = ctx.message().getFrom().getId().equals(gameState.creatorId());
         boolean isOneHourPassed = System.currentTimeMillis() - startTime > period;
 
         if (!isCreator && !isOneHourPassed) {
