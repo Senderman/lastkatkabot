@@ -18,6 +18,8 @@ public class ChatInfo {
     private Integer lastPairDate;
     @Nullable
     private Set<String> forbiddenCommands;
+    @Nullable
+    private String greetingStickerId;
 
     public ChatInfo(long chatId) {
         this.chatId = chatId;
@@ -53,5 +55,13 @@ public class ChatInfo {
 
     public void setForbiddenCommands(@Nullable Set<String> forbiddenCommands) {
         this.forbiddenCommands = forbiddenCommands;
+    }
+
+    public String getGreetingStickerId() {
+        return greetingStickerId;
+    }
+
+    public void setGreetingStickerId(String greetingStickerId) {
+        this.greetingStickerId = greetingStickerId;
     }
 }
