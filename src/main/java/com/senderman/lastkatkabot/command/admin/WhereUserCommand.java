@@ -4,18 +4,21 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 
-import java.util.EnumSet;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
-@Component
-public class WhereUserCommand implements CommandExecutor {
+@Command(
+        command = "/wru",
+        description = "в каких чатах сидит юзер. реплай или /wru userId",
+        authority = {Role.ADMIN, Role.MAIN_ADMIN}
+)
+public class WhereUserCommand extends CommandExecutor {
 
     private final ChatUserService chatUsers;
     private final ExecutorService threadPool;
@@ -23,21 +26,6 @@ public class WhereUserCommand implements CommandExecutor {
     public WhereUserCommand(ChatUserService chatUsers, @Qualifier("generalNeedsPool") ExecutorService threadPool) {
         this.chatUsers = chatUsers;
         this.threadPool = threadPool;
-    }
-
-    @Override
-    public String getDescription() {
-        return "в каких чатах сидит юзер. реплай или " + command() + " userId";
-    }
-
-    @Override
-    public String command() {
-        return "/wru";
-    }
-
-    @Override
-    public EnumSet<Role> authority() {
-        return EnumSet.of(Role.ADMIN, Role.MAIN_ADMIN);
     }
 
     @Override

@@ -1,24 +1,14 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import org.springframework.stereotype.Component;
 
-@Component
-public class ShortInfoCommand implements CommandExecutor {
-
-    public ShortInfoCommand() {
-    }
-
-    @Override
-    public String command() {
-        return "/shortinfo";
-    }
-
-    @Override
-    public String getDescription() {
-        return "краткая инфа о сообщении. Поддерживается реплай";
-    }
+@Command(
+        command = "/shortinfo",
+        description = "краткая инфа о сообщении. Поддерживается реплай"
+)
+public class ShortInfoCommand extends CommandExecutor {
 
     @Override
     public void accept(MessageContext ctx) {

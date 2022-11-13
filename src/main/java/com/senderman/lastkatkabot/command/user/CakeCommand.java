@@ -1,28 +1,18 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.callback.Callbacks;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
-import org.springframework.stereotype.Component;
 
-@Component
-public class CakeCommand implements CommandExecutor {
-
-    public CakeCommand() {
-    }
-
-    @Override
-    public String command() {
-        return "/cake";
-    }
-
-    @Override
-    public String getDescription() {
-        return "(reply) подарить тортик. Можно указать начинку, напр. /cake с вишней";
-    }
+@Command(
+        command = "/cake",
+        description = "(reply) подарить тортик. Можно указать начинку, напр. /cake с вишней"
+)
+public class CakeCommand extends CommandExecutor {
 
     @Override
     public void accept(MessageContext ctx) {

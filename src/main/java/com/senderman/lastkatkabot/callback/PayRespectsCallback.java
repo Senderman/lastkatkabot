@@ -1,19 +1,11 @@
 package com.senderman.lastkatkabot.callback;
 
 import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
+import com.senderman.lastkatkabot.annotation.Callback;
 import com.senderman.lastkatkabot.util.Html;
-import org.springframework.stereotype.Component;
 
-@Component
-public class PayRespectsCallback implements CallbackExecutor {
-
-    public PayRespectsCallback() {
-    }
-
-    @Override
-    public String command() {
-        return Callbacks.F;
-    }
+@Callback(Callbacks.F)
+public class PayRespectsCallback extends CallbackExecutor {
 
     @Override
     public void accept(CallbackQueryContext ctx) {

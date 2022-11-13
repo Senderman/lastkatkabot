@@ -57,11 +57,11 @@ public class ChatInfo {
         this.forbiddenCommands = forbiddenCommands;
     }
 
-    public String getGreetingStickerId() {
+    public @Nullable String getGreetingStickerId() {
         return greetingStickerId;
     }
 
-    public void setGreetingStickerId(String greetingStickerId) {
+    public void setGreetingStickerId(@Nullable String greetingStickerId) {
         this.greetingStickerId = greetingStickerId;
     }
 }

@@ -1,27 +1,20 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.callback.Callbacks;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
-import org.springframework.stereotype.Component;
 
-@Component
-public class StartDuelCommand implements CommandExecutor {
+@Command(
+        command = "/duel",
+        description = "Начать дуэль"
+)
+public class StartDuelCommand extends CommandExecutor {
 
     public StartDuelCommand() {
-    }
-
-    @Override
-    public String command() {
-        return "/duel";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Начать дуэль";
     }
 
     @Override

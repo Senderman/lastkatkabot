@@ -1,13 +1,13 @@
 package com.senderman.lastkatkabot.genshin.command;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.genshin.Item;
 import com.senderman.lastkatkabot.genshin.dbservice.GenshinUserInventoryItemService;
 import com.senderman.lastkatkabot.genshin.model.GenshinUserInventoryItem;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,8 +15,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Component
-public class InvCommand implements CommandExecutor {
+@Command(
+        command = "/inv",
+        description = "инвентарь (Genshin)"
+)
+public class InvCommand extends CommandExecutor {
 
     private final GenshinUserInventoryItemService inventoryItemService;
     private final Map<String, Item> genshinItems;
@@ -30,16 +33,6 @@ public class InvCommand implements CommandExecutor {
         for (var item : genshinItems) {
             this.genshinItems.put(item.getId(), item);
         }
-    }
-
-    @Override
-    public String command() {
-        return "/inv";
-    }
-
-    @Override
-    public String getDescription() {
-        return "инвентарь (Genshin)";
     }
 
     @Override

@@ -1,31 +1,24 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.bnc.BncTelegramHandler;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
-@Component
-public class BncStopCommand implements CommandExecutor {
+@Command(
+        command = "/bncstop",
+        description = "остановить игру \"быки и коровы\" в текущем чате"
+)
+public class BncStopCommand extends CommandExecutor {
 
     private final BncTelegramHandler gameHandler;
     private final long period = TimeUnit.HOURS.toMillis(1);
 
     public BncStopCommand(BncTelegramHandler bncTelegramHandler) {
         this.gameHandler = bncTelegramHandler;
-    }
-
-    @Override
-    public String command() {
-        return "/bncstop";
-    }
-
-    @Override
-    public String getDescription() {
-        return "остановить игру \"быки и коровы\" в текущем чате";
     }
 
     @Override

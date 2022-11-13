@@ -5,10 +5,26 @@ import com.senderman.lastkatkabot.Role;
 
 import java.util.EnumSet;
 
-public interface CallbackExecutor extends CallbackQueryCommand {
+public abstract class CallbackExecutor implements CallbackQueryCommand {
+
+    private String command;
+    private EnumSet<Role> authority;
+
+    public CallbackExecutor() {
+    }
+
+    public CallbackExecutor(String command, EnumSet<Role> authority) {
+        this.command = command;
+        this.authority = authority;
+    }
 
     @Override
-    default EnumSet<Role> authority() {
-        return EnumSet.of(Role.USER);
+    public String command() {
+        return command;
+    }
+
+    @Override
+    public EnumSet<Role> authority() {
+        return authority;
     }
 }

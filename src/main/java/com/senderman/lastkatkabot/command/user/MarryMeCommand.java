@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.callback.Callbacks;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.MarriageRequestService;
@@ -9,12 +10,14 @@ import com.senderman.lastkatkabot.model.MarriageRequest;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
-import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
-@Component
-public class MarryMeCommand implements CommandExecutor {
+@Command(
+        command = "/marryme",
+        description = "(reply) пожениться на ком-нибудь"
+)
+public class MarryMeCommand extends CommandExecutor {
 
     private final UserStatsService users;
     private final MarriageRequestService marriages;
@@ -22,16 +25,6 @@ public class MarryMeCommand implements CommandExecutor {
     public MarryMeCommand(UserStatsService users, MarriageRequestService marriages) {
         this.users = users;
         this.marriages = marriages;
-    }
-
-    @Override
-    public String command() {
-        return "/marryme";
-    }
-
-    @Override
-    public String getDescription() {
-        return "(reply) пожениться на ком-нибудь";
     }
 
     @Override

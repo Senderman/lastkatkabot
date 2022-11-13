@@ -4,41 +4,28 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.util.Threads;
-import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
-import java.util.EnumSet;
-
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-@Component
-public class BroadcastMessageCommand implements CommandExecutor {
+@Command(
+        command = "/broadcast",
+        description = "разослать всем сообщение",
+        authority = Role.MAIN_ADMIN
+)
+public class BroadcastMessageCommand extends CommandExecutor {
 
     private final ChatUserService chatUsers;
 
     public BroadcastMessageCommand(ChatUserService chatUsers) {
         this.chatUsers = chatUsers;
-    }
-
-    @Override
-    public String command() {
-        return "/broadcast";
-    }
-
-    @Override
-    public String getDescription() {
-        return "разослать всем сообщение";
-    }
-
-    @Override
-    public EnumSet<Role> authority() {
-        return EnumSet.of(Role.MAIN_ADMIN);
     }
 
     @Override

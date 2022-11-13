@@ -3,16 +3,18 @@ package com.senderman.lastkatkabot.command.admin;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.FeedbackService;
 import com.senderman.lastkatkabot.dbservice.UserManager;
 import com.senderman.lastkatkabot.model.BlacklistedUser;
-import org.springframework.stereotype.Component;
 
-import java.util.EnumSet;
-
-@Component
-public class FeedbackBanCommand implements CommandExecutor {
+@Command(
+        command = "/fban",
+        description = "бан по фидбеку. /fban feedbackId причина (opt)",
+        authority = {Role.ADMIN, Role.MAIN_ADMIN}
+)
+public class FeedbackBanCommand extends CommandExecutor {
 
     private final UserManager<BlacklistedUser> blackUsers;
     private final FeedbackService feedbackService;
@@ -20,21 +22,6 @@ public class FeedbackBanCommand implements CommandExecutor {
     public FeedbackBanCommand(UserManager<BlacklistedUser> blackUsers, FeedbackService feedbackService) {
         this.blackUsers = blackUsers;
         this.feedbackService = feedbackService;
-    }
-
-    @Override
-    public String getDescription() {
-        return "бан по фидбеку. " + command() + " feedbackId причина (opt)";
-    }
-
-    @Override
-    public String command() {
-        return "/fban";
-    }
-
-    @Override
-    public EnumSet<Role> authority() {
-        return EnumSet.of(Role.MAIN_ADMIN, Role.ADMIN);
     }
 
     @Override

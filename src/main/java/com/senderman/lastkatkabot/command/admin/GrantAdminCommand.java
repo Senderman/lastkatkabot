@@ -2,38 +2,24 @@ package com.senderman.lastkatkabot.command.admin;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.UserManager;
 import com.senderman.lastkatkabot.model.AdminUser;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 
-import java.util.EnumSet;
-
-@Component
-public class GrantAdminCommand implements CommandExecutor {
+@Command(
+        command = "/grantadmin",
+        description = "выдача админа реплаем.",
+        authority = Role.MAIN_ADMIN
+)
+public class GrantAdminCommand extends CommandExecutor {
 
     private final UserManager<AdminUser> admins;
-
 
     public GrantAdminCommand(
             @Qualifier("adminManager") UserManager<AdminUser> admins) {
         this.admins = admins;
-    }
-
-    @Override
-    public EnumSet<Role> authority() {
-        return EnumSet.of(Role.MAIN_ADMIN);
-    }
-
-    @Override
-    public String command() {
-        return "/grantadmin";
-    }
-
-    @Override
-    public String getDescription() {
-        return "выдача админа реплаем.";
     }
 
     @Override

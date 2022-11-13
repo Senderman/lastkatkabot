@@ -3,15 +3,17 @@ package com.senderman.lastkatkabot.command.admin;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.dbservice.FeedbackService;
-import org.springframework.stereotype.Component;
 
-import java.util.EnumSet;
-
-@Component
-public class AnswerFeedbackCommand implements CommandExecutor {
+@Command(
+        command = "/fresp",
+        description = "ответить на фидбек. /fresp id ответ. /fresp 4 хорошо, починим",
+        authority = {Role.ADMIN, Role.MAIN_ADMIN}
+)
+public class AnswerFeedbackCommand extends CommandExecutor {
 
     private final FeedbackService feedbackService;
     private final BotConfig config;
@@ -22,21 +24,6 @@ public class AnswerFeedbackCommand implements CommandExecutor {
     ) {
         this.feedbackService = feedbackService;
         this.config = config;
-    }
-
-    @Override
-    public String command() {
-        return "/fresp";
-    }
-
-    @Override
-    public String getDescription() {
-        return "ответить на фидбек. " + command() + " id ответ. " + command() + " 4 хорошо, починим";
-    }
-
-    @Override
-    public EnumSet<Role> authority() {
-        return EnumSet.of(Role.ADMIN, Role.MAIN_ADMIN);
     }
 
     @Override

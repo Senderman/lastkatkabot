@@ -1,20 +1,11 @@
 package com.senderman.lastkatkabot.callback;
 
 import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
-import org.springframework.stereotype.Component;
+import com.senderman.lastkatkabot.annotation.Callback;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
-@Component
-public class CakeCallback implements CallbackExecutor {
-
-
-    public CakeCallback() {
-    }
-
-    @Override
-    public String command() {
-        return Callbacks.CAKE;
-    }
+@Callback(value = Callbacks.CAKE)
+public class CakeCallback extends CallbackExecutor {
 
     @Override
     public void accept(CallbackQueryContext ctx) {

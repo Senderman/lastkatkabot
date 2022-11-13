@@ -1,23 +1,16 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import org.springframework.stereotype.Component;
 
-@Component
-public class GetInfoCommand implements CommandExecutor {
+@Command(
+        command = "/getinfo",
+        description = "(reply) инфа о сообщении в формате JSON"
+)
+public class GetInfoCommand extends CommandExecutor {
 
     public GetInfoCommand() {
-    }
-
-    @Override
-    public String command() {
-        return "/getinfo";
-    }
-
-    @Override
-    public String getDescription() {
-        return "(reply) инфа о сообщении в формате JSON";
     }
 
     @Override

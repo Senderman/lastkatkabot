@@ -2,34 +2,21 @@ package com.senderman.lastkatkabot.command.admin;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
-import org.springframework.stereotype.Component;
 
-import java.util.EnumSet;
-
-@Component
-public class PopularityCommand implements CommandExecutor {
+@Command(
+        command = "/popularity",
+        description = "популярность бота",
+        authority = {Role.ADMIN, Role.MAIN_ADMIN}
+)
+public class PopularityCommand extends CommandExecutor {
 
     private final ChatUserService chatUsers;
 
     public PopularityCommand(ChatUserService chatUsers) {
         this.chatUsers = chatUsers;
-    }
-
-    @Override
-    public String command() {
-        return "/popularity";
-    }
-
-    @Override
-    public String getDescription() {
-        return "популярность бота";
-    }
-
-    @Override
-    public EnumSet<Role> authority() {
-        return EnumSet.of(Role.MAIN_ADMIN, Role.ADMIN);
     }
 
     @Override

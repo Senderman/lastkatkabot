@@ -2,19 +2,22 @@ package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.dbservice.AdminService;
 import com.senderman.lastkatkabot.dbservice.FeedbackService;
 import com.senderman.lastkatkabot.model.Feedback;
 import com.senderman.lastkatkabot.util.Html;
-import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-@Component
-public class SendFeedbackCommand implements CommandExecutor {
+@Command(
+        command = "/feedback",
+        description = "отправить сообщение разработчику. Например, /feedback бот не работает"
+)
+public class SendFeedbackCommand extends CommandExecutor {
 
     private final FeedbackService feedbackRepo;
     private final AdminService adminRepo;
@@ -27,16 +30,6 @@ public class SendFeedbackCommand implements CommandExecutor {
         this.feedbackRepo = feedbackRepo;
         this.adminRepo = adminRepo;
         this.config = config;
-    }
-
-    @Override
-    public String command() {
-        return "/feedback";
-    }
-
-    @Override
-    public String getDescription() {
-        return "отправить сообщение разработчику. Например, " + command() + " бот не работает";
     }
 
     @Override

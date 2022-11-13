@@ -1,29 +1,22 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.service.UserActivityTrackerService;
-import org.springframework.stereotype.Component;
 
 import java.lang.management.ManagementFactory;
 
-@Component
-public class HealthCommand implements CommandExecutor {
+@Command(
+        command = "/health",
+        description = "здоровье бота"
+)
+public class HealthCommand extends CommandExecutor {
 
     private final UserActivityTrackerService trackerService;
 
     public HealthCommand(UserActivityTrackerService trackerService) {
         this.trackerService = trackerService;
-    }
-
-    @Override
-    public String command() {
-        return "/health";
-    }
-
-    @Override
-    public String getDescription() {
-        return "здоровье бота";
     }
 
     @Override

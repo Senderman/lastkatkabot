@@ -1,30 +1,23 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.callback.Callbacks;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
-import org.springframework.stereotype.Component;
 
-@Component
-public class DivorceCommand implements CommandExecutor {
+@Command(
+        command = "/divorce",
+        description = "подать на развод"
+)
+public class DivorceCommand extends CommandExecutor {
 
     private final UserStatsService users;
 
     public DivorceCommand(UserStatsService users) {
         this.users = users;
-    }
-
-    @Override
-    public String command() {
-        return "/divorce";
-    }
-
-    @Override
-    public String getDescription() {
-        return "подать на развод";
     }
 
     @Override

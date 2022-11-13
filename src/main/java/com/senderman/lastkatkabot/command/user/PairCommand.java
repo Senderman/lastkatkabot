@@ -3,6 +3,7 @@ package com.senderman.lastkatkabot.command.user;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatInfoService;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
@@ -12,7 +13,6 @@ import com.senderman.lastkatkabot.service.CurrentTime;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.Threads;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.*;
@@ -22,8 +22,11 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-@Component
-public class PairCommand implements CommandExecutor {
+@Command(
+        command = "/pair",
+        description = "пара дня"
+)
+public class PairCommand extends CommandExecutor {
 
     private static final String EMPTY_NAME_REPLACEMENT = "Без имени";
     private final UserStatsService userStatsService;
@@ -50,16 +53,6 @@ public class PairCommand implements CommandExecutor {
         this.runningChatPairsGenerations = Collections.synchronizedSet(new HashSet<>());
         // I don't use pool from BotConfig, because it's already overloaded. /pair needs its own pool
         this.threadPool = threadPool;
-    }
-
-    @Override
-    public String command() {
-        return "/pair";
-    }
-
-    @Override
-    public String getDescription() {
-        return "пара дня";
     }
 
     @Override

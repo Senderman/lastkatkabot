@@ -2,24 +2,14 @@ package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import org.springframework.stereotype.Component;
 
-@Component
-public class ActionCommand implements CommandExecutor {
-
-    public ActionCommand() {
-    }
-
-    @Override
-    public String command() {
-        return "/action";
-    }
-
-    @Override
-    public String getDescription() {
-        return "сделать действие. Действие указывать через пробел, можно реплаем";
-    }
+@Command(
+        command = "/action",
+        description = "сделать действие. Действие указывать через пробел, можно реплаем"
+)
+public class ActionCommand extends CommandExecutor {
 
     @Override
     public void accept(MessageContext ctx) {

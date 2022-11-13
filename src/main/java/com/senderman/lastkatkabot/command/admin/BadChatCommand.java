@@ -2,18 +2,21 @@ package com.senderman.lastkatkabot.command.admin;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.BlacklistedChatService;
 import com.senderman.lastkatkabot.model.BlacklistedChat;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 
-import java.util.EnumSet;
 import java.util.function.Consumer;
 
-@Component
-public class BadChatCommand implements CommandExecutor {
+@Command(
+        command = "/badchat",
+        description = "добавить чат в чс. /badchat <chatId>",
+        authority = {Role.ADMIN, Role.MAIN_ADMIN}
+)
+public class BadChatCommand extends CommandExecutor {
 
     private final BlacklistedChatService database;
     private final Consumer<Long> chatPolicyViolationConsumer;
@@ -24,21 +27,6 @@ public class BadChatCommand implements CommandExecutor {
     ) {
         this.database = blacklistedChatService;
         this.chatPolicyViolationConsumer = chatPolicyViolationConsumer;
-    }
-
-    @Override
-    public String command() {
-        return "/badchat";
-    }
-
-    @Override
-    public String getDescription() {
-        return "добавить чат в чс. " + command() + " <chatId>";
-    }
-
-    @Override
-    public EnumSet<Role> authority() {
-        return EnumSet.of(Role.ADMIN, Role.MAIN_ADMIN);
     }
 
     @Override

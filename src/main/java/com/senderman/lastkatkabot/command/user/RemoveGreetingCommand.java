@@ -2,30 +2,23 @@ package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatInfoService;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
-@Component
-public class RemoveGreetingCommand implements CommandExecutor {
+@Command(
+        command = "/resetgreeting",
+        description = "удалить стикер приветствия из бота"
+)
+public class RemoveGreetingCommand extends CommandExecutor {
 
     private final ChatInfoService chatInfoService;
 
     public RemoveGreetingCommand(ChatInfoService chatInfoService) {
         this.chatInfoService = chatInfoService;
-    }
-
-    @Override
-    public String command() {
-        return "/removegreeting";
-    }
-
-    @Override
-    public String getDescription() {
-        return "удалить стикер приветствия из бота";
     }
 
     @Override

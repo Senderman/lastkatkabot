@@ -3,18 +3,21 @@ package com.senderman.lastkatkabot.command.user;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
-import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
 
 import java.util.Optional;
 
-@Component
-public class StatsCommand implements CommandExecutor {
+@Command(
+        command = "/stats",
+        description = "статистика. Реплаем можно узнать статистику реплайнутого"
+)
+public class StatsCommand extends CommandExecutor {
 
     private final UserStatsService users;
     private final ChatUserService chatUsers;
@@ -23,16 +26,6 @@ public class StatsCommand implements CommandExecutor {
     public StatsCommand(UserStatsService users, ChatUserService chatUsers) {
         this.users = users;
         this.chatUsers = chatUsers;
-    }
-
-    @Override
-    public String command() {
-        return "/stats";
-    }
-
-    @Override
-    public String getDescription() {
-        return "статистика. Реплаем можно узнать статистику реплайнутого";
     }
 
     @Override

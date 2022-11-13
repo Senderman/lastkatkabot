@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.genshin.command;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.genshin.Item;
 import com.senderman.lastkatkabot.genshin.dbservice.GenshinChatUserService;
@@ -10,7 +11,6 @@ import com.senderman.lastkatkabot.service.CurrentTime;
 import com.senderman.lastkatkabot.util.Html;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.objects.User;
 
@@ -18,8 +18,11 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-@Component
-public class WishCommand implements CommandExecutor {
+@Command(
+        command = "/wish",
+        description = "Молитва (Genshin). Можно раз в день"
+)
+public class WishCommand extends CommandExecutor {
 
     private final GenshinChatUserService userService;
     private final GenshinUserInventoryItemService inventoryItemService;
@@ -36,16 +39,6 @@ public class WishCommand implements CommandExecutor {
         this.inventoryItemService = inventoryItemService;
         this.currentTime = currentTime;
         this.genshinItems = genshinItems;
-    }
-
-    @Override
-    public String command() {
-        return "/wish";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Молитва (Genshin). Можно раз в день";
     }
 
     @Override

@@ -1,31 +1,24 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatInfoService;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.Objects;
 
-@Component
-public class ChatSettingsCommand implements CommandExecutor {
+@Command(
+        command = "/settings",
+        description = "настройки чата"
+)
+public class ChatSettingsCommand extends CommandExecutor {
 
     private final ChatInfoService chatInfoService;
 
     public ChatSettingsCommand(ChatInfoService chatInfoService) {
         this.chatInfoService = chatInfoService;
-    }
-
-    @Override
-    public String command() {
-        return "/settings";
-    }
-
-    @Override
-    public String getDescription() {
-        return "настройки чата";
     }
 
     @Override

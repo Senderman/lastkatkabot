@@ -2,32 +2,25 @@ package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.service.CommandAccessManager;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.Set;
 
-@Component
-public class ForbidCommand implements CommandExecutor {
+@Command(
+        command = "/cforbid",
+        description = "запретить команды. Использование: /cforbid /command1 command2"
+)
+public class ForbidCommand extends CommandExecutor {
 
     private final CommandAccessManager commandAccessManager;
 
     public ForbidCommand(@Lazy CommandAccessManager commandAccessManager) {
         this.commandAccessManager = commandAccessManager;
-    }
-
-    @Override
-    public String command() {
-        return "/cforbid";
-    }
-
-    @Override
-    public String getDescription() {
-        return "запретить команды. Использование: " + command() + " /command1 command2";
     }
 
     @Override
