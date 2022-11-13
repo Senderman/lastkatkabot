@@ -1,8 +1,9 @@
-package com.senderman.lastkatkabot;
+package com.senderman.lastkatkabot.handler;
 
 import com.annimon.tgbotsmodule.BotHandler;
 import com.annimon.tgbotsmodule.commands.CommandRegistry;
 import com.annimon.tgbotsmodule.commands.authority.Authority;
+import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.bnc.BncTelegramHandler;
 import com.senderman.lastkatkabot.callback.CallbackExecutor;
 import com.senderman.lastkatkabot.command.CommandExecutor;

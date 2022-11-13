@@ -1,4 +1,4 @@
-package com.senderman.lastkatkabot.command.user;
+package com.senderman.lastkatkabot.command.user.settings;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;

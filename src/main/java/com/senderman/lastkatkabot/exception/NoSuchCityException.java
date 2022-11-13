@@ -1,4 +1,4 @@
-package com.senderman.lastkatkabot.service.weather;
+package com.senderman.lastkatkabot.exception;
 
 public class NoSuchCityException extends Exception {
 

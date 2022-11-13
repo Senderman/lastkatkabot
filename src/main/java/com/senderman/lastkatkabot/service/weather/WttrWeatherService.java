@@ -1,5 +1,7 @@
 package com.senderman.lastkatkabot.service.weather;
 
+import com.senderman.lastkatkabot.exception.NoSuchCityException;
+import com.senderman.lastkatkabot.exception.WeatherParseException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -13,7 +15,7 @@ public class WttrWeatherService implements WeatherService {
     private static final String wttrOptions = "?m0AFTq&lang=ru&format=%l\\n%t\\n%f\\n%c%20%C\\n%w\\n%h\\n%P";
 
     @Override
-    public Forecast getWeatherByCity(String city) throws IOException, NoSuchCityException, ParseException {
+    public Forecast getWeatherByCity(String city) throws IOException, NoSuchCityException, WeatherParseException {
         if (!city.matches("^~?[\\p{L}\\d\\s-,.+]+"))
             throw new NoSuchCityException(city);
 
@@ -22,7 +24,7 @@ public class WttrWeatherService implements WeatherService {
     }
 
 
-    private Forecast parseResponse(String response) throws ParseException {
+    private Forecast parseResponse(String response) throws WeatherParseException {
         String[] content = response.split("\n");
         try {
             var title = content[0];
@@ -34,7 +36,7 @@ public class WttrWeatherService implements WeatherService {
             var pressure = content[6];
             return new Forecast(title, temperature, feelsLike, feelings, wind, humidity, pressure);
         } catch (Exception e) {
-            throw new ParseException("Error while parsing content: " + response, e);
+            throw new WeatherParseException("Error while parsing content: " + response, e);
         }
     }
 

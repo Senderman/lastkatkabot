@@ -1,4 +1,4 @@
-package com.senderman.lastkatkabot.command.user;
+package com.senderman.lastkatkabot.command.user.settings;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
@@ -13,11 +13,11 @@ import java.util.Set;
         command = "/resetgreeting",
         description = "удалить стикер приветствия из бота"
 )
-public class RemoveGreetingCommand extends CommandExecutor {
+public class ResetGreetingCommand extends CommandExecutor {
 
     private final ChatInfoService chatInfoService;
 
-    public RemoveGreetingCommand(ChatInfoService chatInfoService) {
+    public ResetGreetingCommand(ChatInfoService chatInfoService) {
         this.chatInfoService = chatInfoService;
     }
 

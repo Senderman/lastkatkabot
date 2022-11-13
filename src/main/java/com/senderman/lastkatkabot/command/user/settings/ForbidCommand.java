@@ -1,4 +1,4 @@
-package com.senderman.lastkatkabot.command.user;
+package com.senderman.lastkatkabot.command.user.settings;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
@@ -12,14 +12,14 @@ import java.util.Arrays;
 import java.util.Set;
 
 @Command(
-        command = "/callow",
-        description = "разрешить команды. Использование: /callow /command1 command2"
+        command = "/cforbid",
+        description = "запретить команды. Использование: /cforbid /command1 command2"
 )
-public class AllowCommand extends CommandExecutor {
+public class ForbidCommand extends CommandExecutor {
 
     private final CommandAccessManager commandAccessManager;
 
-    public AllowCommand(@Lazy CommandAccessManager commandAccessManager) {
+    public ForbidCommand(@Lazy CommandAccessManager commandAccessManager) {
         this.commandAccessManager = commandAccessManager;
     }
 
@@ -37,13 +37,18 @@ public class AllowCommand extends CommandExecutor {
             return;
         }
 
+        var commandList = Arrays.asList(ctx.arguments());
+        if (commandList.contains("/callow")) {
+            ctx.replyToMessage("❌ Команду /callow нельзя запретить!").callAsync(ctx.sender);
+            return;
+        }
+
         try {
-            commandAccessManager.allowCommands(chatId, Arrays.asList(ctx.arguments()));
-            ctx.replyToMessage("✅ Указанные команды успешно разрешены!").callAsync(ctx.sender);
+            commandAccessManager.forbidCommands(chatId, commandList);
+            ctx.replyToMessage("✅ Указанные команды успешно запрещены!").callAsync(ctx.sender);
         } catch (CommandAccessManager.CommandsNotExistsException e) {
             ctx.replyToMessage("❌ Ошибка! Следующие команды не существуют:\n\n" + String.join("\n", e.getCommands()))
                     .callAsync(ctx.sender);
         }
     }
-
 }

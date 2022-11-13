@@ -5,9 +5,9 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
+import com.senderman.lastkatkabot.exception.NoSuchCityException;
+import com.senderman.lastkatkabot.exception.WeatherParseException;
 import com.senderman.lastkatkabot.service.weather.Forecast;
-import com.senderman.lastkatkabot.service.weather.NoSuchCityException;
-import com.senderman.lastkatkabot.service.weather.ParseException;
 import com.senderman.lastkatkabot.service.weather.WeatherService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -60,7 +60,7 @@ public class WeatherCommand extends CommandExecutor {
                 editMessageConsumer.accept("Вы не указали город! (/weather город). Бот запомнит ваш выбор.");
             } catch (NoSuchCityException e) {
                 editMessageConsumer.accept("Город не найден - " + e.getCity());
-            } catch (ParseException e) {
+            } catch (WeatherParseException e) {
                 editMessageConsumer.accept("Ошибка обработки запроса: " + e.getMessage());
                 throw new RuntimeException(e);
             } catch (IOException e) {

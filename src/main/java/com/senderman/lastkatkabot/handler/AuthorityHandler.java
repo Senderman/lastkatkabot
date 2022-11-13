@@ -1,6 +1,7 @@
-package com.senderman.lastkatkabot;
+package com.senderman.lastkatkabot.handler;
 
 import com.annimon.tgbotsmodule.commands.authority.Authority;
+import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.dbservice.ChatInfoService;
 import com.senderman.lastkatkabot.dbservice.UserManager;
@@ -18,7 +19,7 @@ import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 
 @Component
-public class BotAuthority implements Authority<Role> {
+public class AuthorityHandler implements Authority<Role> {
 
     private final UserManager<AdminUser> admins;
     private final UserManager<BlacklistedUser> blacklist;
@@ -28,7 +29,7 @@ public class BotAuthority implements Authority<Role> {
     private final ChatPolicyEnsuringService chatPolicy;
     private final ChatInfoService chatInfoService;
 
-    public BotAuthority(
+    public AuthorityHandler(
             UserManager<AdminUser> admins,
             UserManager<BlacklistedUser> blacklist,
             BotConfig botConfig,

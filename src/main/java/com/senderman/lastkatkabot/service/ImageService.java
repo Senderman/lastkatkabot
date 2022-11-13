@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.service;
 
 import com.senderman.lastkatkabot.config.BotConfig;
+import com.senderman.lastkatkabot.exception.TooWideNicknameException;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -62,15 +63,5 @@ public class ImageService {
 
     public String getHelloGifId() {
         return config.helloGifId();
-    }
-
-    public String getLeaveStickerId() {
-        return config.leaveStickerId();
-    }
-
-    public static class TooWideNicknameException extends Exception {
-        public TooWideNicknameException(String nickname) {
-            super("Nickname " + nickname + " is too wide!");
-        }
     }
 }

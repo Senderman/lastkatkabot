@@ -1,17 +1,14 @@
 package com.senderman.lastkatkabot;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.senderman.lastkatkabot.callback.Callbacks;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.config.BotConfig;
-import com.senderman.lastkatkabot.dbservice.BlacklistedChatService;
-import com.senderman.lastkatkabot.dbservice.ChatInfoService;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.dbservice.DatabaseCleanupService;
-import com.senderman.lastkatkabot.service.ImageService;
+import com.senderman.lastkatkabot.handler.CommandUpdateHandler;
+import com.senderman.lastkatkabot.handler.NewMemberHandler;
 import com.senderman.lastkatkabot.service.UserActivityTrackerService;
 import com.senderman.lastkatkabot.util.DbCleanupResults;
-import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
-import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +34,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.function.Consumer;
 
 @SpringBootApplication
 public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
@@ -45,12 +41,9 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     private final BotConfig config;
     private final CommandUpdateHandler commandUpdateHandler;
     private final ChatUserService chatUsers;
-    private final ChatInfoService chatInfoService;
     private final UserActivityTrackerService activityTrackerService;
-    private final BlacklistedChatService blacklistedChatService;
-    private final Consumer<Long> chatPolicyViolationConsumer;
     private final DatabaseCleanupService databaseCleanupService;
-    private final ImageService imageService;
+    private final NewMemberHandler newMemberHandler;
     private final ExecutorService threadPool;
     private final Set<Long> telegramServiceUserIds;
 
@@ -60,24 +53,18 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             BotConfig config,
             @Lazy CommandUpdateHandler commandUpdateHandler,
             ChatUserService chatUsers,
-            ChatInfoService chatInfoService,
             UserActivityTrackerService activityTrackerService,
-            BlacklistedChatService blacklistedChatService,
-            @Lazy Consumer<Long> chatPolicyViolationConsumer,
             DatabaseCleanupService databaseCleanupService,
-            ImageService imageService,
+            @Lazy NewMemberHandler newMemberHandler,
             @Qualifier("generalNeedsPool") ExecutorService threadPool
     ) {
         super(botOptions);
         this.config = config;
         this.commandUpdateHandler = commandUpdateHandler;
         this.chatUsers = chatUsers;
-        this.chatInfoService = chatInfoService;
         this.activityTrackerService = activityTrackerService;
-        this.blacklistedChatService = blacklistedChatService;
-        this.chatPolicyViolationConsumer = chatPolicyViolationConsumer;
         this.databaseCleanupService = databaseCleanupService;
-        this.imageService = imageService;
+        this.newMemberHandler = newMemberHandler;
         this.threadPool = threadPool;
 
         this.telegramServiceUserIds = Set.of(
@@ -89,7 +76,6 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         addMethodPreprocessor(SendMessage.class, m -> {
             m.enableHtml(true);
             m.disableWebPagePreview();
-            m.setMessageThreadId(null);
         });
 
         addMethodPreprocessor(EditMessageText.class, m -> {
@@ -169,7 +155,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             {
                 var newMembers = message.getNewChatMembers();
                 if (!newMembers.isEmpty()) {
-                    threadPool.execute(() -> processNewChatMembers(message));
+                    threadPool.execute(() -> newMemberHandler.accept(new MessageContext(this, update, "")));
                     return null;
                 }
             }
@@ -199,53 +185,11 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         // sendUpdateErrorAsFile(null, ex, config.notificationChannelId());
     }
 
-    private void processNewChatMembers(Message message) {
-        var chatId = message.getChatId();
-        // if bot is added to the blacklisted chat, leave
-        if (blacklistedChatService.existsById(chatId)) {
-            chatPolicyViolationConsumer.accept(chatId);
-            return;
-        }
-        var stickerId = chatInfoService.findById(chatId).getGreetingStickerId();
-        var messageId = message.getMessageId();
-        for (var user : message.getNewChatMembers()) {
-            if (user.getIsBot()) {
-                continue;
-            }
-            if (stickerId != null) {
-                var markup = new MarkupBuilder()
-                        .addButton(ButtonBuilder.callbackButton()
-                                .text("Привет, " + user.getFirstName() + "!")
-                                .payload(Callbacks.GREETING)
-                                .create())
-                        .build();
-                Methods.Stickers.sendSticker(chatId)
-                        .setFile(stickerId)
-                        .setReplyMarkup(markup)
-                        .callAsync(this);
-            } else {
-                try (var stickerStream = imageService.generateGreetingSticker(user.getFirstName())) {
-                    // if we send a png file with the webp extension, telegram will show it as sticker
-                    Methods.sendDocument(chatId)
-                            .setReplyToMessageId(messageId)
-                            .setFile("sticker.webp", stickerStream)
-                            .callAsync(this);
-                } catch (ImageService.TooWideNicknameException | IOException e) {
-                    // fallback with greeting gif
-                    Methods.sendDocument(chatId)
-                            .setReplyToMessageId(messageId)
-                            .setFile(imageService.getHelloGifId())
-                            .callAsync(this);
-                }
-            }
-        }
-    }
-
     private void processLeftChatMember(Message message) {
         chatUsers.deleteByChatIdAndUserId(message.getChatId(), message.getLeftChatMember().getId());
         Methods.sendDocument(message.getChatId())
                 .setReplyToMessageId(message.getMessageId())
-                .setFile(imageService.getLeaveStickerId())
+                .setFile(config.leaveStickerId())
                 .callAsync(this);
     }
 
