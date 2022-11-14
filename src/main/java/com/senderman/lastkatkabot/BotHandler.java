@@ -148,6 +148,12 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     @Override
     protected BotApiMethod<?> onUpdate(@NotNull Update update) {
 
+        if (update.hasCallbackQuery()) {
+            if (update.getCallbackQuery().getData() == null) {
+                return null;
+            }
+        }
+
         if (update.hasMessage()) {
 
             var message = update.getMessage();
