@@ -31,7 +31,7 @@ public class WttrWeatherService implements WeatherService {
             var temperature = content[1];
             var feelsLike = content[2];
             var feelings = content[3];
-            var wind = content[4];
+            var wind = content[4].replaceAll("←", "⬅️").replaceAll("→", "➡️");
             var humidity = content[5];
             var pressure = content[6];
             return new Forecast(title, temperature, feelsLike, feelings, wind, humidity, pressure);
