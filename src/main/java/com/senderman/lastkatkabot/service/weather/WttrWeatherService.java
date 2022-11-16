@@ -28,7 +28,7 @@ public class WttrWeatherService implements WeatherService {
         String[] content = response.split("\n");
         try {
             var title = content[0];
-            var temperature = content[1];
+            var temperature = content[1].replaceAll("[+-]0", "0");
             var feelsLike = content[2];
             var feelings = content[3].replaceAll("\\s+", ": ");
             ;
