@@ -12,7 +12,7 @@ import java.net.URL;
 public class WttrWeatherService implements WeatherService {
 
     private static final String domain = "https://wttr.in/";
-    private static final String wttrOptions = "?m0AFTq&lang=ru&format=%l\\n%t\\n%f\\n%c%20%C\\n%w\\n%h\\n%P";
+    private static final String wttrOptions = "?m0AFTq&lang=ru&format=%l\\n%t\\n%f\\n%c%C\\n%w\\n%h\\n%P";
 
     @Override
     public Forecast getWeatherByCity(String city) throws IOException, NoSuchCityException, WeatherParseException {
@@ -30,12 +30,13 @@ public class WttrWeatherService implements WeatherService {
             var title = content[0];
             var temperature = content[1];
             var feelsLike = content[2];
-            var feelings = content[3];
+            var feelings = content[3].replaceAll("\\s+", ": ");
+            ;
             var wind = content[4]
-                    .replaceAll("←", "⬅️")
-                    .replaceAll("→", "➡️")
-                    .replaceAll("↑", "⬆️")
-                    .replaceAll("↓", "⬇️");
+                    .replace("←", "⬅️")
+                    .replace("→", "➡️")
+                    .replace("↑", "⬆️")
+                    .replace("↓", "⬇️");
             var humidity = content[5];
             var pressure = content[6];
             return new Forecast(title, temperature, feelsLike, feelings, wind, humidity, pressure);
