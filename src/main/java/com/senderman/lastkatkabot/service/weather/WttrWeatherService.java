@@ -30,8 +30,7 @@ public class WttrWeatherService implements WeatherService {
             var title = content[0];
             var temperature = content[1].replaceAll("[+-]0", "0");
             var feelsLike = content[2];
-            var feelings = content[3].replaceAll("\\s+", ": ");
-            ;
+            var feelings = content[3].replaceFirst("\\s+", ": ");
             var wind = content[4]
                     .replace("←", "⬅️")
                     .replace("→", "➡️")
