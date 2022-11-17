@@ -7,12 +7,15 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class WttrWeatherService implements WeatherService {
 
     private static final String domain = "https://wttr.in/";
     private static final String wttrOptions = "?m0AFTq&lang=ru&format=%l\\n%t\\n%f\\n%c%C\\n%w\\n%h\\n%P";
+    private static final Pattern windPattern = Pattern.compile("(\\D+)(\\d+)\\D+");
 
     @Override
     public Forecast getWeatherByCity(String city) throws IOException, NoSuchCityException, WeatherParseException {
@@ -31,17 +34,35 @@ public class WttrWeatherService implements WeatherService {
             var temperature = content[1].replaceAll("[+-]0", "0");
             var feelsLike = content[2];
             var feelings = content[3].replaceFirst("\\s+", ": ");
-            var wind = content[4]
-                    .replace("←", "⬅️")
-                    .replace("→", "➡️")
-                    .replace("↑", "⬆️")
-                    .replace("↓", "⬇️");
+            var wind = formatWind(content[4]);
             var humidity = content[5];
-            var pressure = content[6];
+            var pressure = formatPressure(content[6]);
             return new Forecast(title, temperature, feelsLike, feelings, wind, humidity, pressure);
         } catch (Exception e) {
             throw new WeatherParseException("Error while parsing content: " + response, e);
         }
+    }
+
+    private String formatWind(String line) {
+        final Matcher m = windPattern.matcher(line);
+        if (!m.find()) return normalizeWindArrows(line);
+
+        final var windDir = normalizeWindArrows(m.group(1));
+        final var windSpeed = Integer.parseInt(m.group(2));
+        return "%s%dкм/ч (%.0fм/с)".formatted(windDir, windSpeed, windSpeed / 3.6);
+    }
+
+    private String normalizeWindArrows(String line) {
+        return line.replace("←", "⬅️")
+                .replace("→", "➡️")
+                .replace("↑", "⬆️")
+                .replace("↓", "⬇️");
+    }
+
+    private String formatPressure(String line) {
+        int hPa = Integer.parseInt(line.replaceAll("\\D*(\\d+)\\D+", "$1"));
+        int mmHg = (int) (hPa * 0.7500615758456601);
+        return "%dгПа (%dмм.рт.ст.)".formatted(hPa, mmHg);
     }
 
     private String requestWeather(String city) throws IOException, NoSuchCityException {
@@ -51,9 +72,9 @@ public class WttrWeatherService implements WeatherService {
         conn.connect();
         if (conn.getResponseCode() == 404)
             throw new NoSuchCityException(city);
-
-        var out = conn.getInputStream();
-        return new String(out.readAllBytes());
+        try (var out = conn.getInputStream()) {
+            return new String(out.readAllBytes());
+        }
     }
 
 }
