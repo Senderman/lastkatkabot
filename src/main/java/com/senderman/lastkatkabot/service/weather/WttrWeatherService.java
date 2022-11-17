@@ -49,7 +49,7 @@ public class WttrWeatherService implements WeatherService {
 
         final var windDir = normalizeWindArrows(m.group(1));
         final var windSpeed = Integer.parseInt(m.group(2));
-        return "%s%dкм/ч (%.0fм/с)".formatted(windDir, windSpeed, windSpeed / 3.6);
+        return "%s%d км/ч (%.0f м/с)".formatted(windDir, windSpeed, windSpeed / 3.6);
     }
 
     private String normalizeWindArrows(String line) {
@@ -62,7 +62,7 @@ public class WttrWeatherService implements WeatherService {
     private String formatPressure(String line) {
         int hPa = Integer.parseInt(line.replaceAll("\\D*(\\d+)\\D+", "$1"));
         int mmHg = (int) (hPa * 0.7500615758456601);
-        return "%dгПа (%dмм.рт.ст.)".formatted(hPa, mmHg);
+        return "%d гПа (%d мм.рт.ст.)".formatted(hPa, mmHg);
     }
 
     private String requestWeather(String city) throws IOException, NoSuchCityException {
