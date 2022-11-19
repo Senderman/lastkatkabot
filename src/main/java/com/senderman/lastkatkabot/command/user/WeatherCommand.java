@@ -94,14 +94,15 @@ public class WeatherCommand extends CommandExecutor {
     }
 
 
-    private String forecastToString(Forecast forecast) {
-        return "<b>" + forecast.title() + "</b>\n\n" +
-                forecast.feelings() + "\n" +
-                "🌡: " + forecast.temperature() + "\n" +
-                "🤔: Ощущается как " + forecast.feelsLike() + "\n" +
-                "💨: " + forecast.wind() + "\n" +
-                "💧: " + forecast.humidity() + "\n" +
-                "🧭: " + forecast.pressure();
+    private String forecastToString(Forecast f) {
+        return "<b>" + f.title() + "</b>\n\n" +
+                f.feelings() + "\n" +
+                "🌡: " + f.temperature() + "\n" +
+                "🤔: Ощущается как " + f.feelsLike() + "\n" +
+                "💨: " + f.wind() + "\n" +
+                "💧: " + f.humidity() + "\n" +
+                "🧭: " + f.pressure() + "\n" +
+                "🌚: " + f.moonPhase();
     }
 
     private static class NoCitySpecifiedException extends Exception {

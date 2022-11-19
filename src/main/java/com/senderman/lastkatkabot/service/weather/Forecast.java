@@ -7,6 +7,7 @@ public record Forecast(
         String feelings,
         String wind,
         String humidity,
-        String pressure
+        String pressure,
+        String moonPhase
 ) {
 }

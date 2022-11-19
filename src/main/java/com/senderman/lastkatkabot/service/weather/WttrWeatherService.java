@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 public class WttrWeatherService implements WeatherService {
 
     private static final String domain = "https://wttr.in/";
-    private static final String wttrOptions = "?m0AFTq&lang=ru&format=%l\\n%t\\n%f\\n%c%C\\n%w\\n%h\\n%P";
+    private static final String wttrOptions = "?m0AFTq&lang=ru&format=%l\\n%t\\n%f\\n%c%C\\n%w\\n%h\\n%P\\n%m";
     private static final Pattern windPattern = Pattern.compile("(\\D+)(\\d+)\\D+");
 
     @Override
@@ -37,7 +37,8 @@ public class WttrWeatherService implements WeatherService {
             var wind = formatWind(content[4]);
             var humidity = content[5];
             var pressure = formatPressure(content[6]);
-            return new Forecast(title, temperature, feelsLike, feelings, wind, humidity, pressure);
+            var moonPhase = content[7];
+            return new Forecast(title, temperature, feelsLike, feelings, wind, humidity, pressure, moonPhase);
         } catch (Exception e) {
             throw new WeatherParseException("Error while parsing content: " + response, e);
         }
