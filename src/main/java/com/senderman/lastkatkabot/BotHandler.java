@@ -11,6 +11,7 @@ import com.senderman.lastkatkabot.service.UserActivityTrackerService;
 import com.senderman.lastkatkabot.util.DbCleanupResults;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.BeanCreationNotAllowedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -92,7 +93,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         for (var update : updates) {
             try {
                 onUpdate(update);
-            } catch (RejectedExecutionException ignored) {
+            } catch (RejectedExecutionException | BeanCreationNotAllowedException ignored) { // may occur on reboot
             } catch (Throwable e) {
                 notifyUserAboutError(update);
                 sendUpdateErrorAsFile(update, e, config.notificationChannelId());
