@@ -32,7 +32,7 @@ public class WttrWeatherService implements WeatherService {
         try {
             var title = content[0];
             var temperature = content[1].replaceAll("[+-]0", "0");
-            var feelsLike = content[2];
+            var feelsLike = content[2].replaceAll("[+-]0", "0");
             var feelings = content[3].replaceFirst("\\s+", ": ");
             var wind = formatWind(content[4]);
             var humidity = content[5];
@@ -67,7 +67,7 @@ public class WttrWeatherService implements WeatherService {
     }
 
     private String requestWeather(String city) throws IOException, NoSuchCityException {
-        var url = new URL(domain + city + wttrOptions);
+        var url = new URL(domain + city.replaceAll("\\s", "%20") + wttrOptions);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         conn.connect();
