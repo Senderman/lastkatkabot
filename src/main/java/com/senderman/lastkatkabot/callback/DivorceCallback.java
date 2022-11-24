@@ -51,12 +51,16 @@ public class DivorceCallback extends CallbackExecutor {
         users.saveAll(List.of(userStats, loverStats));
 
         ctx.answerAsAlert("Вы расстались со своей половинкой!").callAsync(ctx.sender);
-        ctx.editMessage("\uD83D\uDE1E Вы расстались со своей половинкой!").callAsync(ctx.sender);
+        ctx.editMessage("\uD83D\uDE1E Вы расстались со своей половинкой!")
+                .disableWebPagePreview()
+                .callAsync(ctx.sender);
         Methods.sendMessage(loverId, "Ваша половинка решила с вами расстаться :(").callAsync(ctx.sender);
     }
 
     private void declineDivorce(CallbackQueryContext ctx) {
         ctx.answer("Вы отменили развод!").callAsync(ctx.sender);
-        ctx.editMessage("\uD83D\uDE04 Развод отменен, расходимся!").callAsync(ctx.sender);
+        ctx.editMessage("\uD83D\uDE04 Развод отменен, расходимся!")
+                .disableWebPagePreview()
+                .callAsync(ctx.sender);
     }
 }

@@ -38,7 +38,7 @@ public class WttrWeatherService implements WeatherService {
             var humidity = content[5];
             var pressure = formatPressure(content[6]);
             var moonPhase = content[7];
-            return new Forecast(title, temperature, feelsLike, feelings, wind, humidity, pressure, moonPhase);
+            return new Forecast(title, temperature, feelsLike, feelings, wind, humidity, pressure, moonPhase, getImageLink(title));
         } catch (Exception e) {
             throw new WeatherParseException("Error while parsing content: " + response, e);
         }
@@ -67,7 +67,7 @@ public class WttrWeatherService implements WeatherService {
     }
 
     private String requestWeather(String city) throws IOException, NoSuchCityException {
-        var url = new URL(domain + city.replaceAll("\\s", "%20") + wttrOptions);
+        var url = new URL(domain + urlEncodeCity(city) + wttrOptions);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         conn.connect();
@@ -76,6 +76,14 @@ public class WttrWeatherService implements WeatherService {
         try (var out = conn.getInputStream()) {
             return new String(out.readAllBytes());
         }
+    }
+
+    private String urlEncodeCity(String city) {
+        return city.replaceAll("\\s", "%20");
+    }
+
+    private String getImageLink(String city) {
+        return domain + urlEncodeCity(city) + ".png?lang=ru";
     }
 
 }

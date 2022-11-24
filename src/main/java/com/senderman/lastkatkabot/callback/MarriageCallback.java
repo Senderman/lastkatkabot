@@ -28,7 +28,9 @@ public class MarriageCallback extends CallbackExecutor {
 
         if (requestOptional.isEmpty()) {
             ctx.answerAsAlert("Вашу заявку потеряли в ЗАГСе!").callAsync(ctx.sender);
-            ctx.editMessage("К сожалению, в ЗАГСе потеряли вашу запись. Попробуйте еще раз").callAsync(ctx.sender);
+            ctx.editMessage("К сожалению, в ЗАГСе потеряли вашу запись. Попробуйте еще раз")
+                    .disableWebPagePreview()
+                    .callAsync(ctx.sender);
             return;
         }
 
@@ -52,7 +54,9 @@ public class MarriageCallback extends CallbackExecutor {
         // proposee should not have lover
         if (proposeeStats.hasLover()) {
             ctx.answerAsAlert("Вы уже имеете вторую половинку!").callAsync(ctx.sender);
-            ctx.editMessage("Пользователь " + r.getProposeeName() + " уже имеет вторую половинку!").callAsync(ctx.sender);
+            ctx.editMessage("Пользователь " + r.getProposeeName() + " уже имеет вторую половинку!")
+                    .disableWebPagePreview()
+                    .callAsync(ctx.sender);
             marriages.delete(r);
             return;
         }
@@ -71,7 +75,9 @@ public class MarriageCallback extends CallbackExecutor {
         marriages.deleteByProposerIdOrProposeeId(r.getProposerId(), r.getProposeeId());
         userStats.saveAll(List.of(proposerStats, proposeeStats));
         ctx.answer("Вы приняли предложение!").callAsync(ctx.sender);
-        ctx.editMessage("Пользователь " + r.getProposeeName() + " принял предложение!").callAsync(ctx.sender);
+        ctx.editMessage("Пользователь " + r.getProposeeName() + " принял предложение!")
+                .disableWebPagePreview()
+                .callAsync(ctx.sender);
         Methods.sendMessage()
                 .setChatId(r.getProposerId())
                 .setText("Пользователь " + r.getProposeeName() + " принял предложение!")
@@ -87,6 +93,8 @@ public class MarriageCallback extends CallbackExecutor {
     private void declineMarriage(CallbackQueryContext ctx, MarriageRequest r) {
         marriages.delete(r);
         ctx.answer("Вы отказались от брака!").callAsync(ctx.sender);
-        ctx.editMessage("Пользователь " + Html.getUserLink(ctx.user()) + " отказался от брака!").callAsync(ctx.sender);
+        ctx.editMessage("Пользователь " + Html.getUserLink(ctx.user()) + " отказался от брака!")
+                .disableWebPagePreview()
+                .callAsync(ctx.sender);
     }
 }

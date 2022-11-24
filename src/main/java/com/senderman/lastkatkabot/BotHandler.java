@@ -81,7 +81,6 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
         addMethodPreprocessor(EditMessageText.class, m -> {
             m.enableHtml(true);
-            m.disableWebPagePreview();
         });
 
         var launchText = parseCleanupResults(cleanupDatabase()) + "\n\nБот запущен!";

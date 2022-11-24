@@ -32,7 +32,9 @@ public class JoinDuel extends CallbackExecutor {
         var firstUserMember = Methods.getChatMember(ctx.message().getChatId(), firstUserId).call(ctx.sender);
         if (firstUserMember == null) {
             ctx.answer("😒 Похоже, ваш оппонент ушел из чата!", true).callAsync(ctx.sender);
-            ctx.editMessage("😒 Дуэль не состоялась, так как один из дуэлянтов покинул чат!").callAsync(ctx.sender);
+            ctx.editMessage("😒 Дуэль не состоялась, так как один из дуэлянтов покинул чат!")
+                    .disableWebPagePreview()
+                    .callAsync(ctx.sender);
             return;
         }
         ctx.answer("Вы вступили в дуэль!").callAsync(ctx.sender);
@@ -60,7 +62,9 @@ public class JoinDuel extends CallbackExecutor {
             text += "\uD83D\uDE0E Победитель: " + winnerName + "\n" +
                     "\uD83D\uDE14 Проигравший: " + loserName;
         }
-        ctx.editMessage(text).callAsync(ctx.sender);
+        ctx.editMessage(text)
+                .disableWebPagePreview()
+                .callAsync(ctx.sender);
     }
 
     private void processDuelResultToDatabase(DuelResult result) {

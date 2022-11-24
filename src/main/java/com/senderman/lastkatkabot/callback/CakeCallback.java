@@ -29,17 +29,23 @@ public class CakeCallback extends CallbackExecutor {
 
     private void acceptCake(CallbackQueryContext ctx) {
         ctx.answer("П p u я т н o г o  a п п e т u т a").callAsync(ctx.sender);
-        ctx.editMessage(formatEditedMessage(ctx.callbackQuery(), "🎂 %s принял тортик %s")).callAsync(ctx.sender);
+        ctx.editMessage(formatEditedMessage(ctx.callbackQuery(), "🎂 %s принял тортик %s"))
+                .disableWebPagePreview()
+                .callAsync(ctx.sender);
     }
 
     private void declineCake(CallbackQueryContext ctx) {
         ctx.answer("Ну и ладно :(").callAsync(ctx.sender);
-        ctx.editMessage(formatEditedMessage(ctx.callbackQuery(), "🚫 🎂 %s отказался от тортика %s")).callAsync(ctx.sender);
+        ctx.editMessage(formatEditedMessage(ctx.callbackQuery(), "🚫 🎂 %s отказался от тортика %s"))
+                .disableWebPagePreview()
+                .callAsync(ctx.sender);
     }
 
     private void cakeIsRotten(CallbackQueryContext ctx) {
         ctx.answer("Тортик испортился!", true).callAsync(ctx.sender);
-        ctx.editMessage("🤢 Тортик попытались взять, но он испортился!").callAsync(ctx.sender);
+        ctx.editMessage("🤢 Тортик попытались взять, но он испортился!")
+                .disableWebPagePreview()
+                .callAsync(ctx.sender);
     }
 
     private String formatEditedMessage(CallbackQuery query, String format) {

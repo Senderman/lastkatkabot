@@ -43,10 +43,11 @@ public class WeatherCommand extends CommandExecutor {
             return;
         }
         final Consumer<String> editMessageConsumer = s -> Methods.editMessageText(
-                messageToEdit.getChatId(),
-                messageToEdit.getMessageId(),
-                s
-        ).callAsync(ctx.sender);
+                        messageToEdit.getChatId(),
+                        messageToEdit.getMessageId(),
+                        s)
+                .enableWebPagePreview()
+                .callAsync(ctx.sender);
 
         threadPool.execute(() -> {
             try {
@@ -102,7 +103,8 @@ public class WeatherCommand extends CommandExecutor {
                 "💨: " + f.wind() + "\n" +
                 "💧: " + f.humidity() + "\n" +
                 "🧭: " + f.pressure() + "\n" +
-                "🌚: " + f.moonPhase();
+                "🌚: " + f.moonPhase() + "\n" +
+                "<a href=\"" + f.imageLink() + "\">\u200B</a>";
     }
 
     private static class NoCitySpecifiedException extends Exception {

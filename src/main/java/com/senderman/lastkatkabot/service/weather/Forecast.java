@@ -8,6 +8,7 @@ public record Forecast(
         String wind,
         String humidity,
         String pressure,
-        String moonPhase
+        String moonPhase,
+        String imageLink
 ) {
 }

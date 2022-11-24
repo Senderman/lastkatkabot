@@ -19,6 +19,7 @@ public class PayRespectsCallback extends CallbackExecutor {
         ctx.answer("You've paid respects").callAsync(ctx.sender);
         ctx.editMessage(message.getText() + "\n" + Html.htmlSafe(ctx.user().getFirstName()) + " has paid respects")
                 .setReplyMarkup(message.getReplyMarkup())
+                .disableWebPagePreview()
                 .callAsync(ctx.sender);
 
     }
