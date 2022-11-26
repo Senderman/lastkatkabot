@@ -83,7 +83,9 @@ public class WttrWeatherService implements WeatherService {
     }
 
     private String getImageLink(String city) {
-        return domain + urlEncodeCity(city) + ".png?lang=ru&" + System.currentTimeMillis(); // prevent telegram caching
+        // prevent telegram caching
+        long tsHours = System.currentTimeMillis() / 3600000;
+        return domain + urlEncodeCity(city) + ".png?lang=ru&ts=" + tsHours;
     }
 
 }
