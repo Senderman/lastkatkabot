@@ -4,11 +4,10 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
-import com.senderman.lastkatkabot.dbservice.DatabaseCleanupService;
 import com.senderman.lastkatkabot.handler.CommandUpdateHandler;
 import com.senderman.lastkatkabot.handler.NewMemberHandler;
+import com.senderman.lastkatkabot.service.ChatPolicyEnsuringService;
 import com.senderman.lastkatkabot.service.UserActivityTrackerService;
-import com.senderman.lastkatkabot.util.DbCleanupResults;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.BeanCreationNotAllowedException;
@@ -28,7 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -43,7 +42,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     private final CommandUpdateHandler commandUpdateHandler;
     private final ChatUserService chatUsers;
     private final UserActivityTrackerService activityTrackerService;
-    private final DatabaseCleanupService databaseCleanupService;
+    private final ChatPolicyEnsuringService chatPolicyEnsuringService;
     private final NewMemberHandler newMemberHandler;
     private final ExecutorService threadPool;
     private final Set<Long> telegramServiceUserIds;
@@ -55,7 +54,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             @Lazy CommandUpdateHandler commandUpdateHandler,
             ChatUserService chatUsers,
             UserActivityTrackerService activityTrackerService,
-            DatabaseCleanupService databaseCleanupService,
+            @Lazy ChatPolicyEnsuringService chatPolicyEnsuringService,
             @Lazy NewMemberHandler newMemberHandler,
             @Qualifier("generalNeedsPool") ExecutorService threadPool
     ) {
@@ -64,7 +63,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         this.commandUpdateHandler = commandUpdateHandler;
         this.chatUsers = chatUsers;
         this.activityTrackerService = activityTrackerService;
-        this.databaseCleanupService = databaseCleanupService;
+        this.chatPolicyEnsuringService = chatPolicyEnsuringService;
         this.newMemberHandler = newMemberHandler;
         this.threadPool = threadPool;
 
@@ -83,8 +82,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             m.enableHtml(true);
         });
 
-        var launchText = parseCleanupResults(cleanupDatabase()) + "\n\nБот запущен!";
-        Methods.sendMessage(config.notificationChannelId(), launchText).callAsync(this);
+        Methods.sendMessage(config.notificationChannelId(), "\n\nБот запущен!").callAsync(this);
     }
 
     @Override
@@ -92,7 +90,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         for (var update : updates) {
             try {
                 onUpdate(update);
-            } catch (RejectedExecutionException | BeanCreationNotAllowedException ignored) { // may occur on reboot
+            } catch (RejectedExecutionException | BeanCreationNotAllowedException ignored) { // may occur on restart
             } catch (Throwable e) {
                 notifyUserAboutError(update);
                 sendUpdateErrorAsFile(update, e, config.notificationChannelId());
@@ -132,7 +130,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
                 pw.print("\n\n" + update);
             pw.close();
             try (var bais = new ByteArrayInputStream(baos.toByteArray())) {
-                var date = ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT);
+                var date = ZonedDateTime.now(ZoneId.of(config.timezone())).format(DateTimeFormatter.ISO_INSTANT);
                 Methods.sendDocument()
                         .setChatId(chatId)
                         .setFile(config.username() + "-" + date + ".log", bais)
@@ -157,6 +155,13 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         if (update.hasMessage()) {
 
             var message = update.getMessage();
+
+            // do not process messages older than 2 minutes
+            if (message.getDate() + 120 < System.currentTimeMillis() / 1000)
+                return null;
+
+            threadPool.execute(() -> chatPolicyEnsuringService.queueViolationCheck(message.getChatId()));
+
 
             {
                 var newMembers = message.getNewChatMembers();
@@ -216,25 +221,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         var userId = user.getId();
         var name = user.getFirstName();
         var date = message.getDate();
-
-
         activityTrackerService.updateLastMessageDate(chatId, userId, name, date);
     }
-
-    private DbCleanupResults cleanupDatabase() {
-        return databaseCleanupService.cleanAll();
-    }
-
-    private String parseCleanupResults(DbCleanupResults r) {
-        return """
-                ♻️ <b>Результаты очистки БД</b>
-
-                👤 Пользователи: %d
-                👥 Чаты: %d
-                🐮 BnC: %d
-                💒 Запросы в ЗАГС: %d"""
-                .formatted(r.users(), r.chats(), r.bncGames(), r.marriageRequests());
-    }
-
 
 }

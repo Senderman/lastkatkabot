@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.function.Consumer;
 
 @Component
-public class NewMemberHandler {
+public class NewMemberHandler implements Consumer<MessageContext> {
 
     private final BlacklistedChatService blacklistedChatService;
     private final Consumer<Long> chatPolicyViolationConsumer;
@@ -35,6 +35,7 @@ public class NewMemberHandler {
         this.imageService = imageService;
     }
 
+    @Override
     public void accept(MessageContext ctx) {
         var chatId = ctx.chatId();
         // if bot is added to the blacklisted chat, leave
