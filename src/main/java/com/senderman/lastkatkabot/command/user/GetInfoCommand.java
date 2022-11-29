@@ -31,7 +31,8 @@ public class GetInfoCommand extends CommandExecutor {
         String serializedMessage;
         try {
             serializedMessage = Html.htmlSafe(objectMapper.writeValueAsString(message.getReplyToMessage()))
-                    .replaceAll(":\\s(\"?)([^{\\[].+)(\")?", ": $1<code>$2</code>$3");
+                    .replaceAll(":\\s(\"?)([^{\\[\\n]*)(\"?)", ": $1<code>$2</code>$3")
+                    .replaceAll("(,|\"|\",)</code>", "</code>$1");
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
