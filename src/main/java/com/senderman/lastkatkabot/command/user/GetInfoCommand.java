@@ -1,8 +1,12 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.util.Html;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 @Command(
         command = "/getinfo",
@@ -10,7 +14,10 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 )
 public class GetInfoCommand extends CommandExecutor {
 
-    public GetInfoCommand() {
+    private final ObjectMapper objectMapper;
+
+    public GetInfoCommand(@Qualifier("messageToJsonMapper") ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -21,11 +28,13 @@ public class GetInfoCommand extends CommandExecutor {
             return;
         }
 
-        var replyInfo = message.getReplyToMessage()
-                .toString()
-                .replaceAll("\\w+=null,?\\s*", "")
-                .replaceAll("=(\\w+)", "=<code>$1</code>");
-
-        ctx.reply(replyInfo).callAsync(ctx.sender);
+        String serializedMessage;
+        try {
+            serializedMessage = Html.htmlSafe(objectMapper.writeValueAsString(message.getReplyToMessage()))
+                    .replaceAll(":\\s(\"?)([^{\\[].+)(\")?", ": $1<code>$2</code>$3");
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        ctx.replyToMessage(serializedMessage).callAsync(ctx.sender);
     }
 }

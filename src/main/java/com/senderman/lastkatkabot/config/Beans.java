@@ -2,6 +2,9 @@ package com.senderman.lastkatkabot.config;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.google.gson.Gson;
 import com.senderman.lastkatkabot.BotHandler;
@@ -47,6 +50,13 @@ public class Beans {
             Methods.sendMessage(chatId, "📛 Ваш чат в списке спамеров! Бот не хочет здесь работать!").callAsync(handler);
             Methods.leaveChat(chatId).callAsync(handler);
         };
+    }
+
+    @Bean
+    public ObjectMapper messageToJsonMapper() {
+        return JsonMapper.builder()
+                .enable(SerializationFeature.INDENT_OUTPUT)
+                .build();
     }
 
 }

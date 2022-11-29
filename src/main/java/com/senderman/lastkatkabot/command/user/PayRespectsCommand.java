@@ -13,9 +13,6 @@ import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
 )
 public class PayRespectsCommand extends CommandExecutor {
 
-    public PayRespectsCommand() {
-    }
-
     @Override
     public void accept(MessageContext ctx) {
         ctx.setArgumentsLimit(1);

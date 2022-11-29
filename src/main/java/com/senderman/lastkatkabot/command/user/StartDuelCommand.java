@@ -14,9 +14,6 @@ import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
 )
 public class StartDuelCommand extends CommandExecutor {
 
-    public StartDuelCommand() {
-    }
-
     @Override
     public void accept(MessageContext ctx) {
         var user = ctx.user();
