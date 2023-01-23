@@ -52,7 +52,7 @@ public class FeedbackBanCommand extends CommandExecutor {
             return;
         }
         var reason = ctx.argument(1, "&lt;причина не указана&gt;");
-        ctx.replyToMessage("Теперь %s - плохая киса! Причина: %s".formatted(feedback.getUserName(), reason))
+        ctx.replyToMessage("Теперь %s — плохая киса! Причина: %s".formatted(feedback.getUserName(), reason))
                 .callAsync(ctx.sender);
         Methods.sendMessage(feedback.getChatId(), "Разработчики добавили вас в ЧС бота. Причина: " + reason)
                 .setReplyToMessageId(feedback.getMessageId())

@@ -2,6 +2,7 @@ package com.senderman.lastkatkabot;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.handler.CommandUpdateHandler;
@@ -46,6 +47,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     private final NewMemberHandler newMemberHandler;
     private final ExecutorService threadPool;
     private final Set<Long> telegramServiceUserIds;
+    private final ObjectMapper messageToJsonMapper;
 
     @Autowired
     public BotHandler(
@@ -56,7 +58,8 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             UserActivityTrackerService activityTrackerService,
             @Lazy ChatPolicyEnsuringService chatPolicyEnsuringService,
             @Lazy NewMemberHandler newMemberHandler,
-            @Qualifier("generalNeedsPool") ExecutorService threadPool
+            @Qualifier("generalNeedsPool") ExecutorService threadPool,
+            ObjectMapper messageToJsonMapper
     ) {
         super(botOptions);
         this.config = config;
@@ -66,6 +69,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         this.chatPolicyEnsuringService = chatPolicyEnsuringService;
         this.newMemberHandler = newMemberHandler;
         this.threadPool = threadPool;
+        this.messageToJsonMapper = messageToJsonMapper;
 
         this.telegramServiceUserIds = Set.of(
                 777000L, // attached channel's messages
@@ -78,9 +82,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             m.disableWebPagePreview();
         });
 
-        addMethodPreprocessor(EditMessageText.class, m -> {
-            m.enableHtml(true);
-        });
+        addMethodPreprocessor(EditMessageText.class, m -> m.enableHtml(true));
 
         Methods.sendMessage(config.notificationChannelId(), "\n\nБот запущен!").callAsync(this);
     }
@@ -127,7 +129,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             var pw = new PrintWriter(baos);
             e.printStackTrace(pw);
             if (update != null)
-                pw.print("\n\n" + update);
+                messageToJsonMapper.writeValue(pw, update);
             pw.close();
             try (var bais = new ByteArrayInputStream(baos.toByteArray())) {
                 var date = ZonedDateTime.now(ZoneId.of(config.timezone())).format(DateTimeFormatter.ISO_INSTANT);

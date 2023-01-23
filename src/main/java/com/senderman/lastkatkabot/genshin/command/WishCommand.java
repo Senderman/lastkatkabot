@@ -68,21 +68,26 @@ public class WishCommand extends CommandExecutor {
         var receivedItem = possibleItems.get(ThreadLocalRandom.current().nextInt(possibleItems.size()));
 
         genshinUser.setLastRollDate(currentDay);
-        userService.save(genshinUser);
+
 
         var itemId = receivedItem.getId();
         var inventoryItem = inventoryItemService.findByChatIdAndUserIdAndItemId(chatId, userId, itemId);
-
         inventoryItem.incAmount();
-        inventoryItemService.save(inventoryItem);
+
 
         String text = getFormattedItemReceiveMessage(ctx.user(), receivedItem);
         var itemPicture = getItemPictureById(itemId);
-        ctx.replyToMessageWithPhoto()
+        var answer = ctx.replyToMessageWithPhoto()
                 .setCaption(text)
                 .setFile(itemId + ".webp", itemPicture)
                 .setParseMode(ParseMode.HTML)
-                .callAsync(ctx.sender);
+                .call(ctx.sender);
+
+        // do not save /wish results if message wasn't successfully sent
+        if (answer != null) {
+            inventoryItemService.save(inventoryItem);
+            userService.save(genshinUser);
+        }
 
     }
 

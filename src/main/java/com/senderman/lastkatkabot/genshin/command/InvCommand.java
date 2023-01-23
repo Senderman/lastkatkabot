@@ -102,6 +102,7 @@ public class InvCommand extends CommandExecutor {
     private String formatInventoryItemLine(List<InventoryItem> items) {
         return items
                 .stream()
+                .sorted()
                 .map(InventoryItem::toString)
                 .collect(Collectors.joining(", "));
     }
@@ -110,11 +111,16 @@ public class InvCommand extends CommandExecutor {
         return Stream.generate(() -> "⭐️").limit(amount).collect(Collectors.joining());
     }
 
-    private record InventoryItem(Item item, GenshinUserInventoryItem dbItem) {
+    private record InventoryItem(Item item, GenshinUserInventoryItem dbItem) implements Comparable<InventoryItem> {
 
         @Override
         public String toString() {
             return "%s x%d".formatted(item.getName(), dbItem.getAmount());
+        }
+
+        @Override
+        public int compareTo(@NotNull InvCommand.InventoryItem inventoryItem) {
+            return Integer.compare(inventoryItem.dbItem.getAmount(), this.dbItem.getAmount());
         }
     }
 

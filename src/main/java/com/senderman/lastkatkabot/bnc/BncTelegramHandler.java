@@ -58,7 +58,8 @@ public class BncTelegramHandler implements RegexCommand {
             var result = gamesManager.check(chatId, number);
             addMessageToDelete(message);
             if (result.isWin()) {
-                processWin(ctx, result);
+
+                processWin(gamesManager.getGameState(chatId), ctx, result);
             } else {
                 sendGameMessage(ctx.chatId(), formatResult(result), ctx.sender);
             }
@@ -110,11 +111,12 @@ public class BncTelegramHandler implements RegexCommand {
         gameMessageService.deleteByGameId(chatId);
     }
 
-    public void processWin(MessageContext ctx, BncResult result) {
+    public void processWin(BncGameState game, MessageContext ctx, BncResult result) {
         long chatId = ctx.chatId();
         var userId = ctx.user().getId();
         var userStats = usersRepo.findById(userId);
-        userStats.increaseBncScore(result.number().length());
+        int score = game.isHexadecimal() ? (int) (game.length() * 1.5) : game.length();
+        userStats.increaseBncScore(score);
         usersRepo.save(userStats);
 
         var gameState = gamesManager.getGameState(chatId);
