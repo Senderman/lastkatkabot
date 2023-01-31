@@ -6,10 +6,11 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.service.UserActivityTrackerService;
 
 import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryType;
 
 @Command(
-        command = "/health",
-        description = "здоровье бота"
+        command = "/uptime",
+        description = "посмотреть нагрузку на бота"
 )
 public class HealthCommand extends CommandExecutor {
 
@@ -34,6 +35,7 @@ public class HealthCommand extends CommandExecutor {
                 Свободно: <code>%.2f MiB</code>
                 Выделено JVM: <code>%.2f MiB</code>
                 Доступно JVM: <code>%.2f MiB</code>
+                Нативная память: <code>%.2f MiB</code>
                 Аптайм: <code>%s</code>
                 Потоки: <code>%d</code>
                 CPUs: <code>%d</code>
@@ -43,12 +45,21 @@ public class HealthCommand extends CommandExecutor {
                         r.freeMemory() / delimiter,
                         r.totalMemory() / delimiter,
                         r.maxMemory() / delimiter,
+                        getNativeMemory() / delimiter,
                         formatTime(ManagementFactory.getRuntimeMXBean().getUptime()),
                         ManagementFactory.getThreadMXBean().getThreadCount(),
                         ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors(),
                         trackerService.getAvgCacheFlushingSize(),
                         UserActivityTrackerService.FLUSH_INTERVAL
                 );
+    }
+
+    private long getNativeMemory() {
+        return ManagementFactory.getMemoryPoolMXBeans()
+                .stream()
+                .filter(b -> b.getType().equals(MemoryType.NON_HEAP))
+                .mapToLong(b -> b.getUsage().getUsed())
+                .sum();
     }
 
     private String formatTime(long millis) {
