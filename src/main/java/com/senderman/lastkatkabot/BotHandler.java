@@ -61,7 +61,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             @Qualifier("generalNeedsPool") ExecutorService threadPool,
             ObjectMapper messageToJsonMapper
     ) {
-        super(botOptions);
+        super(botOptions, config.token());
         this.config = config;
         this.commandUpdateHandler = commandUpdateHandler;
         this.chatUsers = chatUsers;
@@ -204,11 +204,6 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
                 .setReplyToMessageId(message.getMessageId())
                 .setFile(config.leaveStickerId())
                 .callAsync(this);
-    }
-
-    @Override
-    public String getBotToken() {
-        return config.token();
     }
 
     @Override

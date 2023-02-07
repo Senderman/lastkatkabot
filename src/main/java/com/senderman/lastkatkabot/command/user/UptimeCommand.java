@@ -12,17 +12,17 @@ import java.lang.management.MemoryType;
         command = "/uptime",
         description = "посмотреть нагрузку на бота"
 )
-public class HealthCommand extends CommandExecutor {
+public class UptimeCommand extends CommandExecutor {
 
     private final UserActivityTrackerService trackerService;
 
-    public HealthCommand(UserActivityTrackerService trackerService) {
+    public UptimeCommand(UserActivityTrackerService trackerService) {
         this.trackerService = trackerService;
     }
 
     @Override
     public void accept(MessageContext ctx) {
-        ctx.reply(formatHealth()).callAsync(ctx.sender);
+        ctx.replyToMessage(formatHealth()).callAsync(ctx.sender);
     }
 
     private String formatHealth() {

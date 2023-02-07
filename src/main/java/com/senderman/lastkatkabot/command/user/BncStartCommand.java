@@ -72,7 +72,7 @@ public class BncStartCommand extends CommandExecutor {
     private String startText(int length) {
         return """
                 Число загадано!
-                Отправляйте в чат ваши варианты, они должны состоять только из неповторяющихся чисел!
+                Отправляйте в чат ваши варианты, они должны состоять только из неповторяющихся цифр!
                 Правила игры - /bnchelp
                 Статус текущей игры - /bnc
                 Остановить игру - /bncstop
