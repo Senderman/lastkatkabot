@@ -1,5 +1,9 @@
 package com.senderman.lastkatkabot.bnc;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.senderman.lastkatkabot.bnc.exception.*;
 
 import java.util.*;
@@ -33,6 +37,30 @@ public class BncGame {
         this.startTime = System.currentTimeMillis();
     }
 
+    @JsonCreator
+    public BncGame(
+            @JsonProperty("id") long id,
+            @JsonProperty("creatorId") long creatorId,
+            @JsonProperty("answer") String answer,
+            @JsonProperty("length") int length,
+            @JsonProperty("history") List<BncResult> history,
+            @JsonProperty("checkedNumbers") Set<String> checkedNumbers,
+            @JsonProperty("startTime") long startTime,
+            @JsonProperty("hexadecimal") boolean isHexadecimal,
+            @JsonProperty("attemptsLeft") int attemptsLeft
+    ) {
+        this.id = id;
+        this.creatorId = creatorId;
+        this.answer = answer;
+        this.length = length;
+        this.history = history;
+        this.checkedNumbers = checkedNumbers;
+        this.startTime = startTime;
+        this.isHexadecimal = isHexadecimal;
+        this.attemptsLeft = attemptsLeft;
+    }
+
+    @JsonIgnore
     public static int totalAttempts(int length, boolean isHexadecimal) {
         double k = isHexadecimal ? 3.5 : 2.5;
         return (int) (length * k);
@@ -48,6 +76,7 @@ public class BncGame {
      * @throws RepeatingDigitsException      if the given number has repeating digits
      * @throws InvalidLengthException        if the number's length is different from length
      */
+    @JsonIgnore
     public BncResult check(String number) {
         if (number.length() != length)
             throw new InvalidLengthException(length, number.length());
@@ -82,14 +111,17 @@ public class BncGame {
         return result;
     }
 
+    @JsonIgnore
     public boolean hasRepeatingDigits(String number) {
         return number.chars().distinct().count() < number.length();
     }
 
+    @JsonIgnore
     public BncGameState getGameState() {
         return new BncGameState(id, creatorId, length, Collections.unmodifiableList(history), attemptsLeft, startTime, isHexadecimal, answer);
     }
 
+    @JsonIgnore
     private String generateAnswer(int length) {
         var list = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
         if (isHexadecimal)
@@ -100,11 +132,48 @@ public class BncGame {
         return String.join("", list.subList(0, length));
     }
 
+    @JsonGetter
     public long getId() {
         return id;
     }
 
+    @JsonGetter
+    public long getCreatorId() {
+        return creatorId;
+    }
+
+    @JsonGetter
     public String getAnswer() {
         return answer;
+    }
+
+    @JsonGetter
+    public int getLength() {
+        return length;
+    }
+
+    @JsonGetter
+    public List<BncResult> getHistory() {
+        return history;
+    }
+
+    @JsonGetter
+    public Set<String> getCheckedNumbers() {
+        return checkedNumbers;
+    }
+
+    @JsonGetter
+    public long getStartTime() {
+        return startTime;
+    }
+
+    @JsonGetter
+    public boolean isHexadecimal() {
+        return isHexadecimal;
+    }
+
+    @JsonGetter
+    public int getAttemptsLeft() {
+        return attemptsLeft;
     }
 }

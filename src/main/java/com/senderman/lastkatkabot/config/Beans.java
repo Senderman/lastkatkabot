@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import com.google.gson.Gson;
 import com.senderman.lastkatkabot.BotHandler;
 import com.senderman.lastkatkabot.genshin.Item;
 import org.springframework.context.annotation.Bean;
@@ -37,11 +36,6 @@ public class Beans {
     public List<Item> genshinItems() throws IOException {
         return new YAMLMapper().readValue(getClass().getResourceAsStream("/genshin/items.yml"), new TypeReference<>() {
         });
-    }
-
-    @Bean
-    public Gson gson() {
-        return new Gson();
     }
 
     @Bean

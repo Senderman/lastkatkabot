@@ -18,10 +18,13 @@ dependencies {
     implementation 'com.annimon:tgbots-module:6.5.0'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
     implementation 'com.github.jnr:jnr-unixsocket:0.38.17'
-    implementation 'com.google.code.gson:gson:2.10'
-    implementation 'org.apache.commons:commons-lang3:3.12.0'
 }
 
-tasks.withType(Jar) {
+tasks.withType(Jar).configureEach {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
 }
