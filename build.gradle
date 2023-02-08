@@ -15,7 +15,10 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.annimon:tgbots-module:6.5.0'
+    implementation('com.annimon:tgbots-module:6.5.0') {
+        exclude group: 'org.glassfish.grizzly', module: 'grizzly-http-server'
+        exclude group: 'org.glassfish.jersey.core', module: 'jersey-server'
+    }
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
     implementation 'com.github.jnr:jnr-unixsocket:0.38.17'
 }
