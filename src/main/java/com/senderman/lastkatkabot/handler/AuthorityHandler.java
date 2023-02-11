@@ -7,7 +7,7 @@ import com.senderman.lastkatkabot.dbservice.ChatInfoService;
 import com.senderman.lastkatkabot.dbservice.UserManager;
 import com.senderman.lastkatkabot.model.AdminUser;
 import com.senderman.lastkatkabot.model.BlacklistedUser;
-import org.springframework.stereotype.Component;
+import jakarta.inject.Singleton;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -15,7 +15,7 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import java.util.EnumSet;
 import java.util.Locale;
 
-@Component
+@Singleton
 public class AuthorityHandler implements Authority<Role> {
 
     private final UserManager<AdminUser> admins;

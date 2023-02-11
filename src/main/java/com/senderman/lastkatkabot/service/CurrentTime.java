@@ -1,13 +1,13 @@
 package com.senderman.lastkatkabot.service;
 
 import com.senderman.lastkatkabot.config.BotConfig;
-import org.springframework.stereotype.Service;
+import jakarta.inject.Singleton;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-@Service
+@Singleton
 public class CurrentTime {
 
     private final TimeZone timeZone;

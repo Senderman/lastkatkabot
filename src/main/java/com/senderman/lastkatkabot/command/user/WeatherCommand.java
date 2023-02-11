@@ -9,8 +9,8 @@ import com.senderman.lastkatkabot.exception.NoSuchCityException;
 import com.senderman.lastkatkabot.exception.WeatherParseException;
 import com.senderman.lastkatkabot.service.weather.Forecast;
 import com.senderman.lastkatkabot.service.weather.WeatherService;
+import jakarta.inject.Named;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -29,7 +29,7 @@ public class WeatherCommand extends CommandExecutor {
     public WeatherCommand(
             UserStatsService userStats,
             WeatherService weatherService,
-            @Qualifier("generalNeedsPool") ExecutorService threadPool) {
+            @Named("generalNeedsPool") ExecutorService threadPool) {
         this.userStats = userStats;
         this.weatherService = weatherService;
         this.threadPool = threadPool;

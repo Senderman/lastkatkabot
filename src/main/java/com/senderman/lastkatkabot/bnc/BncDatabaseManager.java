@@ -3,12 +3,12 @@ package com.senderman.lastkatkabot.bnc;
 import com.senderman.lastkatkabot.dbservice.BncService;
 import com.senderman.lastkatkabot.model.BncGameSave;
 import com.senderman.lastkatkabot.service.Serializer;
+import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.stereotype.Component;
 
 import java.util.NoSuchElementException;
 
-@Component("bncDatabaseManager")
+@Singleton
 public class BncDatabaseManager implements BncGamesManager {
 
     private final BncService database;

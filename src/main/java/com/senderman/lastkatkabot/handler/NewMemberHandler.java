@@ -8,14 +8,14 @@ import com.senderman.lastkatkabot.exception.TooWideNicknameException;
 import com.senderman.lastkatkabot.service.ImageService;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.function.Consumer;
 
-@Component
+@Singleton
 public class NewMemberHandler implements Consumer<MessageContext> {
 
     private final BlacklistedChatService blacklistedChatService;
@@ -25,7 +25,7 @@ public class NewMemberHandler implements Consumer<MessageContext> {
 
     public NewMemberHandler(
             BlacklistedChatService blacklistedChatService,
-            @Qualifier("chatPolicyViolationConsumer") Consumer<Long> chatPolicyViolationConsumer,
+            @Named("chatPolicyViolationConsumer") Consumer<Long> chatPolicyViolationConsumer,
             ChatInfoService chatInfoService,
             ImageService imageService
     ) {

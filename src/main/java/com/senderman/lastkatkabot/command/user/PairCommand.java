@@ -12,7 +12,7 @@ import com.senderman.lastkatkabot.model.ChatUser;
 import com.senderman.lastkatkabot.service.CurrentTime;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.Threads;
-import org.springframework.beans.factory.annotation.Qualifier;
+import jakarta.inject.Named;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.*;
@@ -43,7 +43,7 @@ public class PairCommand extends CommandExecutor {
             ChatInfoService chatInfoService,
             List<String> love,
             CurrentTime currentTime,
-            @Qualifier("pairPool") ExecutorService threadPool
+            @Named("pairPool") ExecutorService threadPool
     ) {
         this.userStatsService = userStatsService;
         this.chatUsersService = chatUsersService;

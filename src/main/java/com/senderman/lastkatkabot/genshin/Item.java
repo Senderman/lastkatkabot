@@ -2,38 +2,13 @@ package com.senderman.lastkatkabot.genshin;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Item {
-
-    @JsonProperty
-    private String id;
-    @JsonProperty
-    private String name;
-    @JsonProperty
-    private Type type;
-    @JsonProperty
-    private int stars;
-    @JsonProperty
-    private String description;
-
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public int getStars() {
-        return stars;
-    }
-
-    public String getDescription() {
-        return description;
-    }
+public record Item(
+        @JsonProperty(value = "id", required = true) String id,
+        @JsonProperty(value = "name", required = true) String name,
+        @JsonProperty(value = "type", required = true) Type type,
+        @JsonProperty(value = "stars", required = true) int stars,
+        @JsonProperty(value = "description", required = true) String description
+) {
 
     public enum Type {
         CHARACTER, WEAPON

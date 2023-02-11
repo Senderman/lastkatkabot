@@ -9,7 +9,6 @@ import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.dbservice.UserManager;
 import com.senderman.lastkatkabot.model.AdminUser;
 import com.senderman.lastkatkabot.util.Html;
-import org.springframework.context.annotation.Lazy;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -31,7 +30,7 @@ public class HelpCommand extends CommandExecutor {
     private final UserManager<AdminUser> admins;
     private final BotConfig config;
 
-    public HelpCommand(@Lazy Set<CommandExecutor> executors,
+    public HelpCommand(Set<CommandExecutor> executors,
                        UserManager<AdminUser> admins,
                        BotConfig config
     ) {

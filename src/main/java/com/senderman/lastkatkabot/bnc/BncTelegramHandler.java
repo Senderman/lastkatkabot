@@ -11,8 +11,8 @@ import com.senderman.lastkatkabot.dbservice.BncGameMessageService;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.model.BncGameMessage;
 import com.senderman.lastkatkabot.util.Html;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.EnumSet;
@@ -22,7 +22,7 @@ import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-@Component
+@Singleton
 public class BncTelegramHandler implements RegexCommand {
 
     private final Pattern pattern = Pattern.compile("(\\d|[a-fA-F]){4,16}");
@@ -31,7 +31,7 @@ public class BncTelegramHandler implements RegexCommand {
     private final BncGameMessageService gameMessageService;
 
     public BncTelegramHandler(
-            @Qualifier("bncDatabaseManager") BncGamesManager gamesManager,
+            @Named("bncDatabaseManager") BncGamesManager gamesManager,
             UserStatsService usersRepo,
             BncGameMessageService gameMessageService) {
         this.gamesManager = gamesManager;

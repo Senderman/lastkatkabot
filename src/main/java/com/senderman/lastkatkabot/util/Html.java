@@ -1,9 +1,9 @@
 package com.senderman.lastkatkabot.util;
 
-import org.springframework.stereotype.Service;
+import jakarta.inject.Singleton;
 import org.telegram.telegrambots.meta.api.objects.User;
 
-@Service
+@Singleton
 public class Html {
 
 

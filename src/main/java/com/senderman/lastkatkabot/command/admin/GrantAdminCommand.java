@@ -6,7 +6,7 @@ import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.UserManager;
 import com.senderman.lastkatkabot.model.AdminUser;
-import org.springframework.beans.factory.annotation.Qualifier;
+import jakarta.inject.Named;
 
 @Command(
         command = "/grantadmin",
@@ -18,7 +18,7 @@ public class GrantAdminCommand extends CommandExecutor {
     private final UserManager<AdminUser> admins;
 
     public GrantAdminCommand(
-            @Qualifier("adminManager") UserManager<AdminUser> admins) {
+            @Named("adminManager") UserManager<AdminUser> admins) {
         this.admins = admins;
     }
 

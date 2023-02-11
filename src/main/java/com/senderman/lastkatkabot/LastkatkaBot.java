@@ -3,8 +3,8 @@ package com.senderman.lastkatkabot;
 import com.annimon.tgbotsmodule.BotModule;
 import com.annimon.tgbotsmodule.Runner;
 import com.annimon.tgbotsmodule.beans.Config;
+import io.micronaut.runtime.Micronaut;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.boot.SpringApplication;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public class LastkatkaBot implements BotModule {
     @Override
     public @NotNull BotHandler botHandler(@NotNull Config config) {
         var handlerClass = BotHandler.class;
-        var context = SpringApplication.run(handlerClass);
+        var context = Micronaut.run(handlerClass);
         return context.getBean(handlerClass);
     }
 }

@@ -6,7 +6,6 @@ import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.service.CommandAccessManager;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.context.annotation.Lazy;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -19,7 +18,7 @@ public class AllowCommand extends CommandExecutor {
 
     private final CommandAccessManager commandAccessManager;
 
-    public AllowCommand(@Lazy CommandAccessManager commandAccessManager) {
+    public AllowCommand(CommandAccessManager commandAccessManager) {
         this.commandAccessManager = commandAccessManager;
     }
 

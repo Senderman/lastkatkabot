@@ -39,7 +39,7 @@ public class UptimeCommand extends CommandExecutor {
                 Аптайм: <code>%s</code>
                 Потоки: <code>%d</code>
                 CPUs: <code>%d</code>
-                Средний сброс кеша трекера юзеров: %d/%ds"""
+                Средний сброс кеша трекера юзеров: %d/%s"""
                 .formatted(
                         (r.totalMemory() - r.freeMemory()) / delimiter,
                         r.freeMemory() / delimiter,

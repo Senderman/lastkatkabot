@@ -1,12 +1,16 @@
-spring:
-  data:
-    mongodb:
-      uri: ${database}
-      database: lastkatka
+micronaut:
+  application:
+    name: LastkatkaBot
+
+mongodb:
+  uri: ${database}/lastkatka
 
 logging:
   level:
     root: ERROR
+
+jackson:
+  serializationInclusion: ALWAYS
 
 username: ${username} # bot username without @
 token: ${token} # telegram bot token

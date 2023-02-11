@@ -2,19 +2,24 @@ package com.senderman.lastkatkabot.callback;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
-import com.senderman.lastkatkabot.annotation.Callback;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
+import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-@Callback(Callbacks.DIVORCE)
-public class DivorceCallback extends CallbackExecutor {
+@Singleton
+public class DivorceCallback implements CallbackExecutor {
 
     private final UserStatsService users;
 
     public DivorceCallback(UserStatsService users) {
         this.users = users;
+    }
+
+    @Override
+    public String command() {
+        return Callbacks.DIVORCE;
     }
 
     @Override

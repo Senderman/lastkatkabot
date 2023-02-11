@@ -2,14 +2,21 @@ package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
-import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import jakarta.inject.Singleton;
 
-@Command(
-        command = "/action",
-        description = "сделать действие. Действие указывать через пробел, можно реплаем"
-)
-public class ActionCommand extends CommandExecutor {
+@Singleton
+public class ActionCommand implements CommandExecutor {
+
+    @Override
+    public String command() {
+        return "/action";
+    }
+
+    @Override
+    public String getDescription() {
+        return "сделать действие. Действие указывать через пробел, можно реплаем";
+    }
 
     @Override
     public void accept(MessageContext ctx) {

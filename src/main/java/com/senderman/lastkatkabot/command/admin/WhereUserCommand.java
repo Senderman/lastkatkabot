@@ -7,8 +7,8 @@ import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
+import jakarta.inject.Named;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
@@ -23,7 +23,7 @@ public class WhereUserCommand extends CommandExecutor {
     private final ChatUserService chatUsers;
     private final ExecutorService threadPool;
 
-    public WhereUserCommand(ChatUserService chatUsers, @Qualifier("generalNeedsPool") ExecutorService threadPool) {
+    public WhereUserCommand(ChatUserService chatUsers, @Named("generalNeedsPool") ExecutorService threadPool) {
         this.chatUsers = chatUsers;
         this.threadPool = threadPool;
     }

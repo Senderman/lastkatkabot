@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.util.Html;
-import org.springframework.beans.factory.annotation.Qualifier;
+import jakarta.inject.Named;
 
 @Command(
         command = "/getinfo",
@@ -16,7 +16,7 @@ public class GetInfoCommand extends CommandExecutor {
 
     private final ObjectMapper objectMapper;
 
-    public GetInfoCommand(@Qualifier("messageToJsonMapper") ObjectMapper objectMapper) {
+    public GetInfoCommand(@Named("messageToJsonMapper") ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 

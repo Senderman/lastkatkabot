@@ -2,17 +2,16 @@ package com.senderman.lastkatkabot.service;
 
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.model.ChatUser;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import io.micronaut.scheduling.annotation.Scheduled;
+import jakarta.inject.Singleton;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
-@Component
+@Singleton
 public class UserActivityTrackerService {
 
-    public final static int FLUSH_INTERVAL = 30;
+    public final static String FLUSH_INTERVAL = "30s";
     public final static int MAX_CACHE_SIZE = 500;
     private final ChatUserService chatUserService;
     private final Map<String, ChatUser> cache = new HashMap<>();
@@ -33,7 +32,7 @@ public class UserActivityTrackerService {
         return avgCacheFlushingSize;
     }
 
-    @Scheduled(fixedDelay = FLUSH_INTERVAL, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(fixedDelay = FLUSH_INTERVAL, scheduler = "taskScheduler")
     private synchronized void flush() {
         if (cache.isEmpty()) return;
         var data = cache.values();

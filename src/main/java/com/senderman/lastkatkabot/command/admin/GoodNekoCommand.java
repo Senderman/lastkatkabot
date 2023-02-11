@@ -7,7 +7,7 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.UserManager;
 import com.senderman.lastkatkabot.model.BlacklistedUser;
 import com.senderman.lastkatkabot.util.Html;
-import org.springframework.beans.factory.annotation.Qualifier;
+import jakarta.inject.Named;
 
 @Command(
         command = "/goodneko",
@@ -19,7 +19,7 @@ public class GoodNekoCommand extends CommandExecutor {
     private final UserManager<BlacklistedUser> blackUsers;
 
     public GoodNekoCommand(
-            @Qualifier("blacklistManager") UserManager<BlacklistedUser> blackUsers
+            @Named("blacklistManager") UserManager<BlacklistedUser> blackUsers
     ) {
         this.blackUsers = blackUsers;
     }

@@ -1,31 +1,25 @@
 package com.senderman.lastkatkabot.config;
 
 import com.senderman.lastkatkabot.util.Threads;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import io.micronaut.context.annotation.Factory;
+import jakarta.inject.Singleton;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
-@Configuration
-@EnableScheduling
+@Factory
 public class ThreadPoolsConfig {
 
-    @Bean
-    public TaskScheduler taskScheduler() {
-        var scheduler = new ThreadPoolTaskScheduler();
-        scheduler.setPoolSize(2);
-        scheduler.initialize();
-        return scheduler;
+    @Singleton
+    public ScheduledExecutorService taskScheduler() {
+        return Executors.newScheduledThreadPool(2, new Threads.NamedThreadFactory("schedulerPool-%d"));
     }
 
     /*
     /pair only
      */
-    @Bean
+    @Singleton
     public ExecutorService pairPool() {
         return Executors.newFixedThreadPool(1, new Threads.NamedThreadFactory("pairPool-%d"));
     }
@@ -37,7 +31,7 @@ public class ThreadPoolsConfig {
     image generation
     calling synchronized methods
      */
-    @Bean
+    @Singleton
     public ExecutorService generalNeedsPool() {
         int cpus = Runtime.getRuntime().availableProcessors();
         return Executors.newFixedThreadPool(Math.max(2, cpus / 2), new Threads.NamedThreadFactory("generalNeedsPool-%d"));

@@ -6,8 +6,8 @@ import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.BlacklistedChatService;
 import com.senderman.lastkatkabot.model.BlacklistedChat;
+import jakarta.inject.Named;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.function.Consumer;
 
@@ -23,7 +23,7 @@ public class BadChatCommand extends CommandExecutor {
 
     public BadChatCommand(
             BlacklistedChatService blacklistedChatService,
-            @Qualifier("chatPolicyViolationConsumer") Consumer<Long> chatPolicyViolationConsumer
+            @Named("chatPolicyViolationConsumer") Consumer<Long> chatPolicyViolationConsumer
     ) {
         this.database = blacklistedChatService;
         this.chatPolicyViolationConsumer = chatPolicyViolationConsumer;

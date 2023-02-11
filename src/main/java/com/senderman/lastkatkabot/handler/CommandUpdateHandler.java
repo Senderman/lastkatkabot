@@ -7,12 +7,12 @@ import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.bnc.BncTelegramHandler;
 import com.senderman.lastkatkabot.callback.CallbackExecutor;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
-@Component
+@Singleton
 public class CommandUpdateHandler extends CommandRegistry<Role> {
 
     public CommandUpdateHandler(

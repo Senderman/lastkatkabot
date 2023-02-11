@@ -1,26 +1,25 @@
 package com.senderman.lastkatkabot.service;
 
 import com.senderman.lastkatkabot.dbservice.BlacklistedChatService;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
+import io.micronaut.scheduling.annotation.Scheduled;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-@Service
+@Singleton
 public class ChatPolicyEnsuringService {
 
-    public final static int FLUSH_INTERVAL = 30;
+    public final static String FLUSH_INTERVAL = "30s";
     public final static int MAX_CACHE_SIZE = 500;
     private final Consumer<Long> chatPolicyViolationConsumer;
     private final BlacklistedChatService database;
     private final Set<Long> cache;
 
     public ChatPolicyEnsuringService(
-            @Qualifier("chatPolicyViolationConsumer") Consumer<Long> chatPolicyViolationConsumer,
+            @Named("chatPolicyViolationConsumer") Consumer<Long> chatPolicyViolationConsumer,
             BlacklistedChatService database
     ) {
         this.chatPolicyViolationConsumer = chatPolicyViolationConsumer;
@@ -34,7 +33,7 @@ public class ChatPolicyEnsuringService {
             checkViolations();
     }
 
-    @Scheduled(fixedDelay = FLUSH_INTERVAL, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(fixedDelay = FLUSH_INTERVAL, scheduler = "taskScheduler")
     private synchronized void checkViolations() {
         if (cache.isEmpty()) return;
         var violations = database.findByChatIdIn(cache);

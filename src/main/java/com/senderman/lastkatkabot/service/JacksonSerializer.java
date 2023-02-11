@@ -2,9 +2,9 @@ package com.senderman.lastkatkabot.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.stereotype.Service;
+import jakarta.inject.Singleton;
 
-@Service
+@Singleton
 public class JacksonSerializer implements Serializer {
 
     private final ObjectMapper objectMapper;
