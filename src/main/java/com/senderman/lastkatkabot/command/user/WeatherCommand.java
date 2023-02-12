@@ -2,7 +2,6 @@ package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
-import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.exception.NoSuchCityException;
@@ -10,17 +9,15 @@ import com.senderman.lastkatkabot.exception.WeatherParseException;
 import com.senderman.lastkatkabot.service.weather.Forecast;
 import com.senderman.lastkatkabot.service.weather.WeatherService;
 import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
-@Command(
-        command = "/weather",
-        description = "погода. Если не указать город, то покажет погоду в последнем введенном вами городе"
-)
-public class WeatherCommand extends CommandExecutor {
+@Singleton
+public class WeatherCommand implements CommandExecutor {
 
     private final UserStatsService userStats;
     private final WeatherService weatherService;
@@ -33,6 +30,16 @@ public class WeatherCommand extends CommandExecutor {
         this.userStats = userStats;
         this.weatherService = weatherService;
         this.threadPool = threadPool;
+    }
+
+    @Override
+    public String command() {
+        return "/weather";
+    }
+
+    @Override
+    public String getDescription() {
+        return "погода. Если не указать город, то покажет погоду в последнем введенном вами городе";
     }
 
     @Override

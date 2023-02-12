@@ -1,7 +1,5 @@
 package com.senderman.lastkatkabot.genshin.model;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.TypeAlias;
 
 @TypeAlias("genshinUserInventoryItem")
 public class GenshinUserInventoryItem {

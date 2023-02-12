@@ -2,7 +2,7 @@ package com.senderman.lastkatkabot.service.weather;
 
 import com.senderman.lastkatkabot.exception.NoSuchCityException;
 import com.senderman.lastkatkabot.exception.WeatherParseException;
-import org.springframework.stereotype.Service;
+import jakarta.inject.Singleton;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -10,7 +10,7 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Service
+@Singleton
 public class WttrWeatherService implements WeatherService {
 
     private static final String domain = "https://wttr.in/";

@@ -5,11 +5,10 @@ import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.model.ChatUser;
 import com.senderman.lastkatkabot.model.Userstats;
 import com.senderman.lastkatkabot.repository.UserStatsRepository;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
+@Singleton
 public class MongoUserStatsService implements UserStatsService {
 
     private final UserStatsRepository repository;

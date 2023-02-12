@@ -1,25 +1,32 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
-import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.bnc.BncGameState;
 import com.senderman.lastkatkabot.bnc.BncTelegramHandler;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import jakarta.inject.Singleton;
 
 import java.util.stream.Collectors;
 
-@Command(
-        command = "/bnc",
-        description = "начать игру \"Быки и коровы\". Можно указать /bnc x, где x от 4 до 10 - длина числа. " +
-                " А еще можно выбрать режим игры с hexadecimal системой. /bnc hex либо /bnc hex длина. " +
-                "Максимальная длина для hex - 16"
-)
-public class BncStartCommand extends CommandExecutor {
+@Singleton
+public class BncStartCommand implements CommandExecutor {
 
     private final BncTelegramHandler gamesHandler;
 
     public BncStartCommand(BncTelegramHandler gamesHandler) {
         this.gamesHandler = gamesHandler;
+    }
+
+    @Override
+    public String command() {
+        return "/bnc";
+    }
+
+    @Override
+    public String getDescription() {
+        return "начать игру \"Быки и коровы\". Можно указать /bnc x, где x от 4 до 10 - длина числа. " +
+                " А еще можно выбрать режим игры с hexadecimal системой. /bnc hex либо /bnc hex длина. " +
+                "Максимальная длина для hex - 16";
     }
 
     @Override

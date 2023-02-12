@@ -1,10 +1,6 @@
 package com.senderman.lastkatkabot.repository;
 
 import com.senderman.lastkatkabot.model.ChatUser;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.repository.Aggregation;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;

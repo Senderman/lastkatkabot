@@ -3,12 +3,12 @@ package com.senderman.lastkatkabot.command.user;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
-import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.dbservice.UserManager;
 import com.senderman.lastkatkabot.model.AdminUser;
 import com.senderman.lastkatkabot.util.Html;
+import jakarta.inject.Singleton;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -18,13 +18,8 @@ import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Command(
-        command = "/help",
-        aliases = "/start",
-        description = "помощь",
-        showInHelp = false
-)
-public class HelpCommand extends CommandExecutor {
+@Singleton
+public class HelpCommand implements CommandExecutor {
 
     private final Set<CommandExecutor> executors;
     private final UserManager<AdminUser> admins;
@@ -39,6 +34,26 @@ public class HelpCommand extends CommandExecutor {
                 .collect(Collectors.toSet());
         this.admins = admins;
         this.config = config;
+    }
+
+    @Override
+    public String command() {
+        return "/start";
+    }
+
+    @Override
+    public String getDescription() {
+        return "помощь";
+    }
+
+    @Override
+    public boolean showInHelp() {
+        return false;
+    }
+
+    @Override
+    public Set<String> aliases() {
+        return Set.of("/start");
     }
 
     @Override

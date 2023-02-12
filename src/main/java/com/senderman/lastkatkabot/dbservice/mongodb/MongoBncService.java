@@ -3,11 +3,10 @@ package com.senderman.lastkatkabot.dbservice.mongodb;
 import com.senderman.lastkatkabot.dbservice.BncService;
 import com.senderman.lastkatkabot.model.BncGameSave;
 import com.senderman.lastkatkabot.repository.BncRepository;
-import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Service
+@Singleton
 public class MongoBncService implements BncService {
 
     private final BncRepository repository;

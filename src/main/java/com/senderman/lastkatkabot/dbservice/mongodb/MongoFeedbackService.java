@@ -3,11 +3,10 @@ package com.senderman.lastkatkabot.dbservice.mongodb;
 import com.senderman.lastkatkabot.dbservice.FeedbackService;
 import com.senderman.lastkatkabot.model.Feedback;
 import com.senderman.lastkatkabot.repository.FeedbackRepository;
-import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Service
+@Singleton
 public class MongoFeedbackService implements FeedbackService {
 
     private final FeedbackRepository repository;

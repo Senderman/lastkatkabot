@@ -3,9 +3,9 @@ package com.senderman.lastkatkabot.genshin.dbservice.mongodb;
 import com.senderman.lastkatkabot.genshin.dbservice.GenshinChatUserService;
 import com.senderman.lastkatkabot.genshin.model.GenshinChatUser;
 import com.senderman.lastkatkabot.genshin.repository.GenshinChatUserRepository;
-import org.springframework.stereotype.Service;
 
-@Service
+
+@Singleton
 public class MongoGenshinChatUserService implements GenshinChatUserService {
 
     private final GenshinChatUserRepository repo;

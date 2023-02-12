@@ -1,18 +1,25 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
-import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.callback.Callbacks;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
+import jakarta.inject.Singleton;
 
-@Command(
-        command = "/cake",
-        description = "(reply) подарить тортик. Можно указать начинку, напр. /cake с вишней"
-)
-public class CakeCommand extends CommandExecutor {
+@Singleton
+public class CakeCommand implements CommandExecutor {
+
+    @Override
+    public String command() {
+        return "/cake";
+    }
+
+    @Override
+    public String getDescription() {
+        return "(reply) подарить тортик. Можно указать начинку, напр. /cake с вишней";
+    }
 
     @Override
     public void accept(MessageContext ctx) {

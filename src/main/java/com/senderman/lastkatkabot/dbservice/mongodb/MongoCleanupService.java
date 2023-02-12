@@ -10,14 +10,11 @@ import com.senderman.lastkatkabot.repository.ChatInfoRepository;
 import com.senderman.lastkatkabot.repository.ChatUserRepository;
 import com.senderman.lastkatkabot.repository.MarriageRequestRepository;
 import com.senderman.lastkatkabot.util.DbCleanupResults;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-@Service
+@Singleton
 public class MongoCleanupService implements DatabaseCleanupService {
 
     private final ChatUserRepository chatUserRepo;

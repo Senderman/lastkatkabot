@@ -3,11 +3,10 @@ package com.senderman.lastkatkabot.dbservice.mongodb;
 import com.senderman.lastkatkabot.dbservice.MarriageRequestService;
 import com.senderman.lastkatkabot.model.MarriageRequest;
 import com.senderman.lastkatkabot.repository.MarriageRequestRepository;
-import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Service
+@Singleton
 public class MongoMarriageRequestService implements MarriageRequestService {
 
     private final MarriageRequestRepository repository;

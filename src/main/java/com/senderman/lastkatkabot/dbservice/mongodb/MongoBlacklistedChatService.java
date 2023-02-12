@@ -3,12 +3,11 @@ package com.senderman.lastkatkabot.dbservice.mongodb;
 import com.senderman.lastkatkabot.dbservice.BlacklistedChatService;
 import com.senderman.lastkatkabot.model.BlacklistedChat;
 import com.senderman.lastkatkabot.repository.BlacklistedChatRepository;
-import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
 
-@Service
+@Singleton
 public class MongoBlacklistedChatService implements BlacklistedChatService {
 
     private final BlacklistedChatRepository repo;

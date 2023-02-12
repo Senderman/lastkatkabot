@@ -1,7 +1,6 @@
 package com.senderman.lastkatkabot.repository;
 
 import com.senderman.lastkatkabot.model.Feedback;
-import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
 

@@ -2,24 +2,37 @@ package com.senderman.lastkatkabot.command.admin;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
-import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.FeedbackService;
 import com.senderman.lastkatkabot.model.Feedback;
+import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
-@Command(
-        command = "/feedbacks",
-        description = "показать первые n фидбеков. Без параметра - первые 10. Напр. /feedbacks 5",
-        authority = {Role.ADMIN, Role.MAIN_ADMIN}
-)
-public class ShowFeedbacksCommand extends CommandExecutor {
+import java.util.EnumSet;
+
+@Singleton
+public class ShowFeedbacksCommand implements CommandExecutor {
 
     private static final String feedbackSeparator = "\n\n<code>====================================</code>\n\n";
     private final FeedbackService feedbackService;
 
     public ShowFeedbacksCommand(FeedbackService feedbackService) {
         this.feedbackService = feedbackService;
+    }
+
+    @Override
+    public String command() {
+        return "/feedbacks";
+    }
+
+    @Override
+    public String getDescription() {
+        return "показать первые n фидбеков. Без параметра - первые 10. Напр. /feedbacks 5";
+    }
+
+    @Override
+    public EnumSet<Role> authority() {
+        return EnumSet.of(Role.ADMIN, Role.MAIN_ADMIN);
     }
 
     @Override

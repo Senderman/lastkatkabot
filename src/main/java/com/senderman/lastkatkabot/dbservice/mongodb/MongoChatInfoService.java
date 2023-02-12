@@ -3,9 +3,9 @@ package com.senderman.lastkatkabot.dbservice.mongodb;
 import com.senderman.lastkatkabot.dbservice.ChatInfoService;
 import com.senderman.lastkatkabot.model.ChatInfo;
 import com.senderman.lastkatkabot.repository.ChatInfoRepository;
-import org.springframework.stereotype.Service;
 
-@Service
+
+@Singleton
 public class MongoChatInfoService implements ChatInfoService {
 
     private final ChatInfoRepository repository;

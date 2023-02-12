@@ -4,16 +4,13 @@ import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.dbservice.DatabaseCleanupService;
 import com.senderman.lastkatkabot.model.ChatUser;
 import com.senderman.lastkatkabot.repository.ChatUserRepository;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-@Service
+@Singleton
 public class MongoChatUserService implements ChatUserService {
 
     private final ChatUserRepository repository;

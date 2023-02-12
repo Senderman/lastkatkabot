@@ -3,18 +3,16 @@ package com.senderman.lastkatkabot.command.admin;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
-import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.dbservice.FeedbackService;
 import com.senderman.lastkatkabot.util.Html;
+import jakarta.inject.Singleton;
 
-@Command(
-        command = "/fdel",
-        description = "удалить фидбек по id. /fdel 3",
-        authority = {Role.ADMIN, Role.MAIN_ADMIN}
-)
-public class DeleteFeedbackCommand extends CommandExecutor {
+import java.util.EnumSet;
+
+@Singleton
+public class DeleteFeedbackCommand implements CommandExecutor {
 
     private final FeedbackService feedbackRepo;
     private final BotConfig config;
@@ -25,6 +23,21 @@ public class DeleteFeedbackCommand extends CommandExecutor {
     ) {
         this.feedbackRepo = feedbackRepo;
         this.config = config;
+    }
+
+    @Override
+    public String command() {
+        return "/fdel";
+    }
+
+    @Override
+    public String getDescription() {
+        return "удалить фидбек по id. /fdel 3";
+    }
+
+    @Override
+    public EnumSet<Role> authority() {
+        return EnumSet.of(Role.ADMIN, Role.MAIN_ADMIN);
     }
 
     @Override

@@ -3,21 +3,28 @@ package com.senderman.lastkatkabot.command.user;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 
-@Command(
-        command = "/getinfo",
-        description = "(reply) инфа о сообщении в формате JSON"
-)
-public class GetInfoCommand extends CommandExecutor {
+@Singleton
+public class GetInfoCommand implements CommandExecutor {
 
     private final ObjectMapper objectMapper;
 
     public GetInfoCommand(@Named("messageToJsonMapper") ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
+    }
+
+    @Override
+    public String command() {
+        return "/getinfo";
+    }
+
+    @Override
+    public String getDescription() {
+        return "(reply) инфа о сообщении в формате JSON";
     }
 
     @Override

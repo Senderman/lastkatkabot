@@ -2,26 +2,37 @@ package com.senderman.lastkatkabot.command.admin;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
-import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.UserManager;
 import com.senderman.lastkatkabot.model.BlacklistedUser;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 
-@Command(
-        command = "/badneko",
-        description = "опущение до плохой кисы. реплаем.",
-        authority = {Role.ADMIN, Role.MAIN_ADMIN}
-)
-public class BadNekoCommand extends CommandExecutor {
+import java.util.EnumSet;
+
+@Singleton
+public class BadNekoCommand implements CommandExecutor {
 
     private final UserManager<BlacklistedUser> blackUsers;
 
-    public BadNekoCommand(
-            @Named("blacklistManager") UserManager<BlacklistedUser> blackUsers
-    ) {
+    public BadNekoCommand(@Named("blacklistManager") UserManager<BlacklistedUser> blackUsers) {
         this.blackUsers = blackUsers;
+    }
+
+    @Override
+    public String command() {
+        return "/badneko";
+    }
+
+    @Override
+    public String getDescription() {
+        return "опущение до плохой кисы. реплаем";
+    }
+
+    @Override
+    public EnumSet<Role> authority() {
+        return EnumSet.of(Role.ADMIN, Role.MAIN_ADMIN);
     }
 
     @Override
