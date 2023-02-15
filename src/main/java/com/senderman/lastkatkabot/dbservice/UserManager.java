@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.dbservice;
 
 import com.senderman.lastkatkabot.model.IdAndName;
+import io.micronaut.data.repository.CrudRepository;
 
 import java.util.Set;
 import java.util.stream.Collectors;

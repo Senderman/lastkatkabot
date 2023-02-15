@@ -3,6 +3,7 @@ package com.senderman.lastkatkabot.genshin.dbservice.mongodb;
 import com.senderman.lastkatkabot.genshin.dbservice.GenshinUserInventoryItemService;
 import com.senderman.lastkatkabot.genshin.model.GenshinUserInventoryItem;
 import com.senderman.lastkatkabot.genshin.repository.GenshinUserInventoryItemRepository;
+import jakarta.inject.Singleton;
 
 import java.util.List;
 
@@ -29,6 +30,6 @@ public class MongoGenshinUserInventoryItemService implements GenshinUserInventor
 
     @Override
     public GenshinUserInventoryItem save(GenshinUserInventoryItem item) {
-        return repo.save(item);
+        return repo.update(item);
     }
 }

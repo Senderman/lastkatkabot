@@ -3,6 +3,7 @@ package com.senderman.lastkatkabot.dbservice.mongodb;
 import com.senderman.lastkatkabot.dbservice.MarriageRequestService;
 import com.senderman.lastkatkabot.model.MarriageRequest;
 import com.senderman.lastkatkabot.repository.MarriageRequestRepository;
+import jakarta.inject.Singleton;
 
 import java.util.Optional;
 

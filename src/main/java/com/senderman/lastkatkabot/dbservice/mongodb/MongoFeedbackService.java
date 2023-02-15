@@ -3,6 +3,7 @@ package com.senderman.lastkatkabot.dbservice.mongodb;
 import com.senderman.lastkatkabot.dbservice.FeedbackService;
 import com.senderman.lastkatkabot.model.Feedback;
 import com.senderman.lastkatkabot.repository.FeedbackRepository;
+import jakarta.inject.Singleton;
 
 import java.util.Optional;
 
@@ -50,7 +51,7 @@ public class MongoFeedbackService implements FeedbackService {
 
     @Override
     public Feedback update(Feedback feedback) {
-        return repository.save(feedback);
+        return repository.update(feedback);
     }
 
     @Override

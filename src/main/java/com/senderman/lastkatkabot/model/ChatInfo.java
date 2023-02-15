@@ -1,15 +1,18 @@
 package com.senderman.lastkatkabot.model;
 
-import org.jetbrains.annotations.Nullable;
+import io.micronaut.core.annotation.Creator;
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.annotation.Id;
+import io.micronaut.data.annotation.MappedEntity;
 
 import java.util.List;
 import java.util.Set;
 
-@TypeAlias("chatinfo")
+@MappedEntity("chatInfo")
 public class ChatInfo {
 
     @Id
-    private long chatId;
+    private final long chatId;
     @Nullable
     private List<String> lastPairs;
     @Nullable
@@ -19,16 +22,13 @@ public class ChatInfo {
     @Nullable
     private String greetingStickerId;
 
+    @Creator
     public ChatInfo(long chatId) {
         this.chatId = chatId;
     }
 
     public long getChatId() {
         return chatId;
-    }
-
-    public void setChatId(long chatId) {
-        this.chatId = chatId;
     }
 
     public @Nullable List<String> getLastPairs() {

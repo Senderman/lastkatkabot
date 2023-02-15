@@ -1,16 +1,23 @@
 package com.senderman.lastkatkabot.model;
 
 
+import io.micronaut.core.annotation.Creator;
+import io.micronaut.data.annotation.GeneratedValue;
+import io.micronaut.data.annotation.Id;
+import io.micronaut.data.annotation.MappedEntity;
+
 import java.util.Objects;
 
-@TypeAlias("bncGameMessage")
+@MappedEntity("bncGameMessage")
 public class BncGameMessage {
 
     @Id
+    @GeneratedValue
     private String id;
     private final long gameId;
     private final int messageId;
 
+    @Creator
     public BncGameMessage(long gameId, int messageId) {
         this.gameId = gameId;
         this.messageId = messageId;

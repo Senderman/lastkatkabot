@@ -10,6 +10,7 @@ import com.senderman.lastkatkabot.repository.ChatInfoRepository;
 import com.senderman.lastkatkabot.repository.ChatUserRepository;
 import com.senderman.lastkatkabot.repository.MarriageRequestRepository;
 import com.senderman.lastkatkabot.util.DbCleanupResults;
+import jakarta.inject.Singleton;
 
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;

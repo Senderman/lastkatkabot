@@ -3,7 +3,7 @@ package com.senderman.lastkatkabot.callback;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
-import com.senderman.lastkatkabot.model.Userstats;
+import com.senderman.lastkatkabot.model.UserStats;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Singleton;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -75,8 +75,8 @@ public class JoinDuel implements CallbackExecutor {
     private void processDuelResultToDatabase(DuelResult result) {
         var winner = result.winner;
         var loser = result.loser;
-        Userstats winnerStats = users.findById(winner.getId());
-        Userstats loserStats = users.findById(loser.getId());
+        UserStats winnerStats = users.findById(winner.getId());
+        UserStats loserStats = users.findById(loser.getId());
         winnerStats.increaseDuelsTotal();
         loserStats.increaseDuelsTotal();
         if (!result.isDraw())

@@ -1,6 +1,8 @@
 package com.senderman.lastkatkabot.repository;
 
 import com.senderman.lastkatkabot.model.BlacklistedChat;
+import io.micronaut.data.annotation.Repository;
+import io.micronaut.data.repository.CrudRepository;
 
 import java.util.Collection;
 import java.util.List;

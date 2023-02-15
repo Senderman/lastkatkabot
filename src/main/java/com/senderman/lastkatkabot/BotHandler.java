@@ -9,6 +9,8 @@ import com.senderman.lastkatkabot.handler.CommandUpdateHandler;
 import com.senderman.lastkatkabot.handler.NewMemberHandler;
 import com.senderman.lastkatkabot.service.ChatPolicyEnsuringService;
 import com.senderman.lastkatkabot.service.UserActivityTrackerService;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
@@ -31,7 +33,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 
-@SpringBootApplication
+@Singleton
 public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
     private final BotConfig config;
@@ -44,16 +46,15 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     private final Set<Long> telegramServiceUserIds;
     private final ObjectMapper messageToJsonMapper;
 
-    @Autowired
     public BotHandler(
             DefaultBotOptions botOptions,
             BotConfig config,
-            @Lazy CommandUpdateHandler commandUpdateHandler,
+            CommandUpdateHandler commandUpdateHandler,
             ChatUserService chatUsers,
             UserActivityTrackerService activityTrackerService,
-            @Lazy ChatPolicyEnsuringService chatPolicyEnsuringService,
-            @Lazy NewMemberHandler newMemberHandler,
-            @Qualifier("generalNeedsPool") ExecutorService threadPool,
+            ChatPolicyEnsuringService chatPolicyEnsuringService,
+            NewMemberHandler newMemberHandler,
+            @Named("generalNeedsPool") ExecutorService threadPool,
             ObjectMapper messageToJsonMapper
     ) {
         super(botOptions, config.token());
@@ -87,7 +88,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         for (var update : updates) {
             try {
                 onUpdate(update);
-            } catch (RejectedExecutionException | BeanCreationNotAllowedException ignored) { // may occur on restart
+            } catch (RejectedExecutionException e) { // may occur on restart
             } catch (Throwable e) {
                 notifyUserAboutError(update);
                 sendUpdateErrorAsFile(update, e, config.notificationChannelId());

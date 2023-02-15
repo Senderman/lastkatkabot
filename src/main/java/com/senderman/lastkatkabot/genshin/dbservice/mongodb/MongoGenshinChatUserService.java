@@ -3,6 +3,7 @@ package com.senderman.lastkatkabot.genshin.dbservice.mongodb;
 import com.senderman.lastkatkabot.genshin.dbservice.GenshinChatUserService;
 import com.senderman.lastkatkabot.genshin.model.GenshinChatUser;
 import com.senderman.lastkatkabot.genshin.repository.GenshinChatUserRepository;
+import jakarta.inject.Singleton;
 
 
 @Singleton
@@ -21,6 +22,6 @@ public class MongoGenshinChatUserService implements GenshinChatUserService {
 
     @Override
     public GenshinChatUser save(GenshinChatUser user) {
-        return repo.save(user);
+        return repo.update(user);
     }
 }

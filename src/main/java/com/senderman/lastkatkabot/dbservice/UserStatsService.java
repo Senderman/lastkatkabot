@@ -1,19 +1,19 @@
 package com.senderman.lastkatkabot.dbservice;
 
-import com.senderman.lastkatkabot.model.Userstats;
+import com.senderman.lastkatkabot.model.UserStats;
 
 import java.util.List;
 
 public interface UserStatsService {
 
-    Userstats findById(long userId);
+    UserStats findById(long userId);
 
-    Userstats save(Userstats userstats);
+    UserStats save(UserStats userstats);
 
-    Iterable<Userstats> saveAll(Iterable<Userstats> userstats);
+    Iterable<UserStats> saveAll(Iterable<UserStats> userstats);
 
-    List<Userstats> findTop10BncPlayers();
+    List<UserStats> findTop10BncPlayers();
 
-    List<Userstats> findTop10BncPlayersByChat(long chatId);
+    List<UserStats> findTop10BncPlayersByChat(long chatId);
 
 }

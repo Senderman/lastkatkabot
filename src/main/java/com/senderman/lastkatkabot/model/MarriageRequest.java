@@ -1,19 +1,26 @@
 package com.senderman.lastkatkabot.model;
 
 
+import io.micronaut.core.annotation.Creator;
+import io.micronaut.data.annotation.GeneratedValue;
+import io.micronaut.data.annotation.Id;
+import io.micronaut.data.annotation.MappedEntity;
+
 import java.util.Objects;
 
-@TypeAlias("marriageRequest")
+@MappedEntity("marriageRequest")
 public class MarriageRequest {
 
+    private final long proposerId;
+    private final String proposerName;
+    private final long proposeeId;
+    private final String proposeeName;
+    private final int requestDate;
     @Id
+    @GeneratedValue
     private int id;
-    private long proposerId;
-    private String proposerName;
-    private long proposeeId;
-    private String proposeeName;
-    private int requestDate;
 
+    @Creator
     public MarriageRequest(long proposerId, String proposerName, long proposeeId, String proposeeName, int requestDate) {
         this.proposerId = proposerId;
         this.proposerName = proposerName;
@@ -34,40 +41,20 @@ public class MarriageRequest {
         return proposerId;
     }
 
-    public void setProposerId(long proposerId) {
-        this.proposerId = proposerId;
-    }
-
     public String getProposerName() {
         return proposerName;
-    }
-
-    public void setProposerName(String proposerName) {
-        this.proposerName = proposerName;
     }
 
     public long getProposeeId() {
         return proposeeId;
     }
 
-    public void setProposeeId(long proposeeId) {
-        this.proposeeId = proposeeId;
-    }
-
     public String getProposeeName() {
         return proposeeName;
     }
 
-    public void setProposeeName(String proposeeName) {
-        this.proposeeName = proposeeName;
-    }
-
     public int getRequestDate() {
         return requestDate;
-    }
-
-    public void setRequestDate(int requestDate) {
-        this.requestDate = requestDate;
     }
 
     @Override

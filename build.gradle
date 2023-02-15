@@ -17,13 +17,13 @@ dependencies {
     }
     implementation 'com.github.jnr:jnr-unixsocket:0.38.17'
 
-    annotationProcessor("io.micronaut:micronaut-http-validation")
     annotationProcessor("io.micronaut.data:micronaut-data-document-processor")
     implementation("io.micronaut:micronaut-jackson-databind")
     implementation("io.micronaut.data:micronaut-data-mongodb")
     implementation("jakarta.annotation:jakarta.annotation-api")
     implementation("io.micronaut:micronaut-validation")
 
+    runtimeOnly("ch.qos.logback:logback-classic:1.4.5")
     runtimeOnly("org.mongodb:mongodb-driver-sync")
 }
 

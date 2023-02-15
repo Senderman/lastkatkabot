@@ -4,6 +4,8 @@ import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.dbservice.DatabaseCleanupService;
 import com.senderman.lastkatkabot.model.ChatUser;
 import com.senderman.lastkatkabot.repository.ChatUserRepository;
+import io.micronaut.data.model.Sort;
+import jakarta.inject.Singleton;
 
 import java.util.List;
 import java.util.Optional;
@@ -48,7 +50,7 @@ public class MongoChatUserService implements ChatUserService {
 
     @Override
     public Optional<ChatUser> findNewestUserData(long userId) {
-        return repository.findFirstByUserId(userId, Sort.by(Sort.Direction.DESC, "lastMessageDate"));
+        return repository.findFirstByUserId(userId, Sort.of(Sort.Order.desc("lastMessageDate")));
     }
 
     @Override

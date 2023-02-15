@@ -1,19 +1,24 @@
 package com.senderman.lastkatkabot.model;
 
 
+import io.micronaut.core.annotation.Creator;
+import io.micronaut.data.annotation.Id;
+import io.micronaut.data.annotation.MappedEntity;
+
 import java.util.Objects;
 
-@TypeAlias("chatuser")
+@MappedEntity("chatUser")
 public class ChatUser {
 
     @Id
-    private String id;
-
+    private final String id;
+    private final long chatId;
+    private final String name;
+    private final int lastMessageDate;
+    @MappedEntity
     private long userId;
-    private long chatId;
-    private String name;
-    private int lastMessageDate;
 
+    @Creator
     public ChatUser(long chatId, long userId, String name, int lastMessageDate) {
         this.id = generateId(chatId, userId);
         this.chatId = chatId;
@@ -38,24 +43,12 @@ public class ChatUser {
         return chatId;
     }
 
-    public void setChatId(long chatId) {
-        this.chatId = chatId;
-    }
-
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public int getLastMessageDate() {
         return lastMessageDate;
-    }
-
-    public void setLastMessageDate(int lastMessageDate) {
-        this.lastMessageDate = lastMessageDate;
     }
 
     @Override

@@ -1,6 +1,10 @@
 package com.senderman.lastkatkabot.repository;
 
 import com.senderman.lastkatkabot.model.ChatUser;
+import io.micronaut.data.annotation.Repository;
+import io.micronaut.data.model.Sort;
+import io.micronaut.data.mongodb.annotation.MongoAggregateQuery;
+import io.micronaut.data.repository.CrudRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,10 +12,9 @@ import java.util.Optional;
 @Repository
 public interface ChatUserRepository extends CrudRepository<ChatUser, String> {
 
-    @Aggregation({
-            "{ $match: { chatId: ?0 } }",
-            "{ $sample: { size: ?1 } }"
-    })
+    @MongoAggregateQuery("""
+            {{ $match: { chatId: ?0 } },
+            { $sample: { size: ?1 } }}""")
     List<ChatUser> sampleOfChat(long chatId, int amount);
 
     List<ChatUser> findByUserId(long userId);

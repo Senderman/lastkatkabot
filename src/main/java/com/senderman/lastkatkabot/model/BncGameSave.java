@@ -1,16 +1,21 @@
 package com.senderman.lastkatkabot.model;
 
 
+import io.micronaut.core.annotation.Creator;
+import io.micronaut.data.annotation.Id;
+import io.micronaut.data.annotation.MappedEntity;
+
 import java.util.Objects;
 
-@TypeAlias("bnc")
+@MappedEntity("bncGameSave")
 public class BncGameSave {
+
     @Id
-    private long id;
-    private String game;
-    private int editDate;
+    private final long id;
+    private final String game;
+    private final int editDate;
 
-
+    @Creator
     public BncGameSave(long id, String game, int editDate) {
         this.id = id;
         this.game = game;
@@ -21,24 +26,12 @@ public class BncGameSave {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
     public String getGame() {
         return game;
     }
 
-    public void setGame(String game) {
-        this.game = game;
-    }
-
     public int getEditDate() {
         return editDate;
-    }
-
-    public void setEditDate(int editDate) {
-        this.editDate = editDate;
     }
 
     @Override

@@ -1,16 +1,21 @@
 package com.senderman.lastkatkabot.genshin.model;
 
 
-@TypeAlias("genshinUserInventoryItem")
+import io.micronaut.core.annotation.Creator;
+import io.micronaut.data.annotation.Id;
+import io.micronaut.data.annotation.MappedEntity;
+
+@MappedEntity("genshinUserInventoryItem")
 public class GenshinUserInventoryItem {
 
     @Id
     private String id;
-    private long chatId;
-    private long userId;
-    private String itemId;
+    private final long chatId;
+    private final long userId;
+    private final String itemId;
     private int amount;
 
+    @Creator
     public GenshinUserInventoryItem(long chatId, long userId, String itemId, int amount) {
         this.id = generateId(chatId, userId, itemId);
         this.chatId = chatId;
@@ -21,6 +26,14 @@ public class GenshinUserInventoryItem {
 
     private static String generateId(long chatId, long userId, String itemId) {
         return chatId + " " + userId + " " + itemId;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public long getChatId() {
@@ -40,10 +53,6 @@ public class GenshinUserInventoryItem {
     }
 
     public void incAmount() {
-        amount++;
-    }
-
-    public String getId() {
-        return id;
+        this.amount++;
     }
 }
