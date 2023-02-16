@@ -4,6 +4,7 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.util.Threads;
@@ -17,6 +18,7 @@ import java.util.EnumSet;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
+@Command
 @Singleton
 public class BroadcastMessageCommand implements CommandExecutor {
 

@@ -3,11 +3,13 @@ package com.senderman.lastkatkabot.command.user;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 
+@Command
 @Singleton
 public class GetInfoCommand implements CommandExecutor {
 

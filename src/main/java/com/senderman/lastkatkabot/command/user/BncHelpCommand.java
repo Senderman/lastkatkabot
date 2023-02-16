@@ -1,10 +1,12 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
 import jakarta.inject.Singleton;
 
+@Command
 @Singleton
 public class BncHelpCommand implements CommandExecutor {
 

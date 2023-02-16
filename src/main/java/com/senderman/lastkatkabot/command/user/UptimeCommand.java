@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.service.UserActivityTrackerService;
 import jakarta.inject.Singleton;
@@ -8,6 +9,7 @@ import jakarta.inject.Singleton;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryType;
 
+@Command
 @Singleton
 public class UptimeCommand implements CommandExecutor {
 

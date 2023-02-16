@@ -2,6 +2,7 @@ package com.senderman.lastkatkabot.command.admin;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.UserManager;
 import com.senderman.lastkatkabot.model.AdminUser;
@@ -13,6 +14,7 @@ import java.util.EnumSet;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+@Command
 @Singleton
 public class ListUsersCommand implements CommandExecutor {
 

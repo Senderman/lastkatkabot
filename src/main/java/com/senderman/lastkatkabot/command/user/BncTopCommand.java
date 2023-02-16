@@ -3,6 +3,7 @@ package com.senderman.lastkatkabot.command.user;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
@@ -14,6 +15,7 @@ import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
 import java.util.Optional;
 import java.util.function.Function;
 
+@Command
 @Singleton
 public class BncTopCommand implements CommandExecutor {
 

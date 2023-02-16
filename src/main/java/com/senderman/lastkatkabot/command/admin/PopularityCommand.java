@@ -2,12 +2,14 @@ package com.senderman.lastkatkabot.command.admin;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import jakarta.inject.Singleton;
 
 import java.util.EnumSet;
 
+@Command
 @Singleton
 public class PopularityCommand implements CommandExecutor {
 

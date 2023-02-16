@@ -2,9 +2,11 @@ package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import jakarta.inject.Singleton;
 
+@Command
 @Singleton
 public class ActionCommand implements CommandExecutor {
 

@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.command.user.settings;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatInfoService;
 import jakarta.inject.Singleton;
@@ -9,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashSet;
 import java.util.Objects;
 
+@Command
 @Singleton
 public class ChatSettingsCommand implements CommandExecutor {
 

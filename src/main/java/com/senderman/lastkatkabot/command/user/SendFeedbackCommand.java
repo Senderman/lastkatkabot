@@ -2,6 +2,7 @@ package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.dbservice.AdminService;
@@ -13,6 +14,7 @@ import jakarta.inject.Singleton;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+@Command
 @Singleton
 public class SendFeedbackCommand implements CommandExecutor {
 

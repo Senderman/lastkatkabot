@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.callback.Callbacks;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.MarriageRequestService;
@@ -13,6 +14,7 @@ import jakarta.inject.Singleton;
 
 import java.util.Objects;
 
+@Command
 @Singleton
 public class MarryMeCommand implements CommandExecutor {
 

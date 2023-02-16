@@ -2,6 +2,7 @@ package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.exception.NoSuchCityException;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
+@Command
 @Singleton
 public class WeatherCommand implements CommandExecutor {
 

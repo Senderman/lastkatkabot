@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.bnc.BncTelegramHandler;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import jakarta.inject.Singleton;
@@ -8,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
+@Command
 @Singleton
 public class BncStopCommand implements CommandExecutor {
 

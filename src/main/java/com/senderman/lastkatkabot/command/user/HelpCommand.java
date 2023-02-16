@@ -3,11 +3,13 @@ package com.senderman.lastkatkabot.command.user;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.dbservice.UserManager;
 import com.senderman.lastkatkabot.model.AdminUser;
 import com.senderman.lastkatkabot.util.Html;
+import jakarta.inject.Singleton;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -17,16 +19,18 @@ import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-//@Singleton
+@Singleton
 public class HelpCommand implements CommandExecutor {
 
     private final Set<CommandExecutor> executors;
     private final UserManager<AdminUser> admins;
     private final BotConfig config;
 
-    public HelpCommand(Set<CommandExecutor> executors,
-                       UserManager<AdminUser> admins,
-                       BotConfig config
+    public HelpCommand(
+            @Command
+            @Singleton Set<CommandExecutor> executors,
+            UserManager<AdminUser> admins,
+            BotConfig config
     ) {
         this.executors = executors.stream()
                 .filter(CommandExecutor::showInHelp)
@@ -37,7 +41,7 @@ public class HelpCommand implements CommandExecutor {
 
     @Override
     public String command() {
-        return "/start";
+        return "/help";
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.command.user;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.bnc.BncGameState;
 import com.senderman.lastkatkabot.bnc.BncTelegramHandler;
 import com.senderman.lastkatkabot.command.CommandExecutor;
@@ -8,6 +9,7 @@ import jakarta.inject.Singleton;
 
 import java.util.stream.Collectors;
 
+@Command
 @Singleton
 public class BncStartCommand implements CommandExecutor {
 

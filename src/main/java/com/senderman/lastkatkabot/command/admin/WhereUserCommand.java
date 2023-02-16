@@ -4,6 +4,7 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import jakarta.inject.Named;
@@ -14,6 +15,7 @@ import java.util.EnumSet;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
+@Command
 @Singleton
 public class WhereUserCommand implements CommandExecutor {
 
