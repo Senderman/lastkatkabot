@@ -15,16 +15,18 @@ dependencies {
         exclude group: 'org.glassfish.grizzly', module: 'grizzly-http-server'
         exclude group: 'org.glassfish.jersey.core', module: 'jersey-server'
     }
-    implementation 'com.github.jnr:jnr-unixsocket:0.38.17'
 
-    annotationProcessor("io.micronaut.data:micronaut-data-document-processor")
     implementation("io.micronaut:micronaut-jackson-databind")
     implementation("io.micronaut.data:micronaut-data-mongodb")
     implementation("jakarta.annotation:jakarta.annotation-api")
     implementation("io.micronaut:micronaut-validation")
+    implementation("io.micronaut:micronaut-management")
 
     runtimeOnly("ch.qos.logback:logback-classic:1.4.5")
-    runtimeOnly("org.mongodb:mongodb-driver-sync")
+
+    annotationProcessor("io.micronaut.data:micronaut-data-document-processor")
+    implementation("org.mongodb:mongodb-driver-sync:4.9.0")
+    runtimeOnly('com.github.jnr:jnr-unixsocket:0.38.17')
 }
 
 application {
@@ -35,11 +37,6 @@ java {
     sourceCompatibility = JavaVersion.toVersion("17")
     targetCompatibility = JavaVersion.toVersion("17")
 }
-
-tasks.withType(Jar).configureEach {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'

@@ -16,11 +16,9 @@ import java.util.stream.StreamSupport;
 public class MongoChatUserService implements ChatUserService {
 
     private final ChatUserRepository repository;
-    private final MongoTemplate mongoTemplate;
 
-    public MongoChatUserService(ChatUserRepository repository, MongoTemplate mongoTemplate) {
+    public MongoChatUserService(ChatUserRepository repository) {
         this.repository = repository;
-        this.mongoTemplate = mongoTemplate;
     }
 
     @Override
@@ -80,7 +78,7 @@ public class MongoChatUserService implements ChatUserService {
 
     @Override
     public long getTotalUsers() {
-        return mongoTemplate.findDistinct("userId", ChatUser.class, Long.class).size();
+        return repository.findDistinctUserId().size();
     }
 
     @Override
@@ -90,6 +88,6 @@ public class MongoChatUserService implements ChatUserService {
 
     @Override
     public List<Long> getChatIds() {
-        return mongoTemplate.findDistinct("chatId", ChatUser.class, Long.class);
+        return repository.findDistinctChatId();
     }
 }

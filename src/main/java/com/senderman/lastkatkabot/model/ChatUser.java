@@ -27,6 +27,10 @@ public class ChatUser {
         this.lastMessageDate = lastMessageDate;
     }
 
+    public String getId() {
+        return id;
+    }
+
     public static String generateId(long chatId, long userId) {
         return chatId + " " + userId;
     }

@@ -44,7 +44,7 @@ public class MongoFeedbackService implements FeedbackService {
     @Override
     public Feedback insert(Feedback feedback) {
         // id as counter
-        int id = repository.findFirstByOrderByIdDesc().map(f -> f.getId() + 1).orElse(1);
+        int id = repository.findFirstOrderByIdDesc().map(f -> f.getId() + 1).orElse(1);
         feedback.setId(id);
         return repository.save(feedback);
     }

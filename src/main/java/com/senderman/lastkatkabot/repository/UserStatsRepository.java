@@ -1,8 +1,8 @@
 package com.senderman.lastkatkabot.repository;
 
 import com.senderman.lastkatkabot.model.UserStats;
-import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.mongodb.annotation.MongoFindQuery;
+import io.micronaut.data.mongodb.annotation.MongoRepository;
 import io.micronaut.data.mongodb.annotation.MongoUpdateOptions;
 import io.micronaut.data.repository.CrudRepository;
 
@@ -11,15 +11,15 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
+@MongoRepository
 public interface UserStatsRepository extends CrudRepository<UserStats, Long> {
 
     Optional<UserStats> findByLoverId(int loverId);
 
-    List<UserStats> findTop10ByOrderByBncScoreDesc();
+    List<UserStats> findTop10OrderByBncScoreDesc();
 
-    @MongoFindQuery(value = "{ _id: { $in: ?0 }, bncScore: { $ne: 0 } }", sort = "{ bncScore : -1 }")
-    List<UserStats> findTop10ByOrderByBncScoreDescByUserIdIn(List<Long> ids);
+    @MongoFindQuery(value = "{ _id: { $in: :ids }, bncScore: { $ne: 0 } }", sort = "{ bncScore : -1 }")
+    List<UserStats> findTop10ByUserIdInOrderByBncScoreDesc(List<Long> ids);
 
     @Override
     @MongoUpdateOptions(upsert = true)

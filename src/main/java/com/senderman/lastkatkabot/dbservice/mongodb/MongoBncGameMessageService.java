@@ -3,6 +3,7 @@ package com.senderman.lastkatkabot.dbservice.mongodb;
 import com.senderman.lastkatkabot.dbservice.BncGameMessageService;
 import com.senderman.lastkatkabot.model.BncGameMessage;
 import com.senderman.lastkatkabot.repository.BncGameMessageRepository;
+import jakarta.inject.Singleton;
 
 import java.util.Collection;
 import java.util.List;

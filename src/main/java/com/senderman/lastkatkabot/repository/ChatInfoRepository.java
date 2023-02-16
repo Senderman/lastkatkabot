@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.repository;
 
 import com.senderman.lastkatkabot.model.ChatInfo;
+import io.micronaut.data.mongodb.annotation.MongoRepository;
 import io.micronaut.data.mongodb.annotation.MongoUpdateOptions;
 import io.micronaut.data.repository.CrudRepository;
 
@@ -8,6 +9,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
+@MongoRepository
 public interface ChatInfoRepository extends CrudRepository<ChatInfo, Long> {
 
     long deleteByChatIdIn(Collection<Long> chatIds);

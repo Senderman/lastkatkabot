@@ -4,16 +4,17 @@ import com.senderman.lastkatkabot.dbservice.BncGameMessageService;
 import com.senderman.lastkatkabot.dbservice.DatabaseCleanupService;
 import com.senderman.lastkatkabot.model.BncGameSave;
 import com.senderman.lastkatkabot.model.ChatInfo;
-import com.senderman.lastkatkabot.model.ChatUser;
 import com.senderman.lastkatkabot.repository.BncRepository;
 import com.senderman.lastkatkabot.repository.ChatInfoRepository;
 import com.senderman.lastkatkabot.repository.ChatUserRepository;
 import com.senderman.lastkatkabot.repository.MarriageRequestRepository;
 import com.senderman.lastkatkabot.util.DbCleanupResults;
+import io.micronaut.scheduling.annotation.Scheduled;
 import jakarta.inject.Singleton;
 
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Singleton
 public class MongoCleanupService implements DatabaseCleanupService {
@@ -23,20 +24,19 @@ public class MongoCleanupService implements DatabaseCleanupService {
     private final BncRepository bncRepo;
     private final BncGameMessageService bncGameMessageService;
     private final MarriageRequestRepository marriageRequestRepo;
-    private final MongoTemplate mongoTemplate;
 
-    public MongoCleanupService(ChatUserRepository chatUserRepo,
-                               ChatInfoRepository chatInfoRepo,
-                               BncRepository bncRepo,
-                               BncGameMessageService bncGameMessageService,
-                               MarriageRequestRepository marriageRequestRepo,
-                               MongoTemplate mongoTemplate) {
+    public MongoCleanupService(
+            ChatUserRepository chatUserRepo,
+            ChatInfoRepository chatInfoRepo,
+            BncRepository bncRepo,
+            BncGameMessageService bncGameMessageService,
+            MarriageRequestRepository marriageRequestRepo
+    ) {
         this.chatUserRepo = chatUserRepo;
         this.chatInfoRepo = chatInfoRepo;
         this.bncRepo = bncRepo;
         this.bncGameMessageService = bncGameMessageService;
         this.marriageRequestRepo = marriageRequestRepo;
-        this.mongoTemplate = mongoTemplate;
     }
 
 
@@ -52,8 +52,11 @@ public class MongoCleanupService implements DatabaseCleanupService {
 
     @Override
     public long cleanEmptyChats() {
-        var chatIds = mongoTemplate.findDistinct("_id", ChatInfo.class, Long.class);
-        var chatsWithUsersIds = mongoTemplate.findDistinct("chatId", ChatUser.class, Long.class);
+        var chatIds = StreamSupport
+                .stream(chatInfoRepo.findAll().spliterator(), false)
+                .map(ChatInfo::getChatId)
+                .collect(Collectors.toCollection(ArrayList::new));
+        var chatsWithUsersIds = chatUserRepo.findDistinctUserId();
         chatIds.removeAll(chatsWithUsersIds);
         return chatInfoRepo.deleteByChatIdIn(chatIds);
     }
@@ -73,7 +76,7 @@ public class MongoCleanupService implements DatabaseCleanupService {
     }
 
     @Override
-    @Scheduled(fixedDelay = 2, timeUnit = TimeUnit.HOURS)
+    @Scheduled(fixedDelay = "2h")
     public DbCleanupResults cleanAll() {
         long users = cleanInactiveUsers();
         long chats = cleanEmptyChats();

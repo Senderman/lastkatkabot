@@ -2,24 +2,32 @@ package com.senderman.lastkatkabot.config;
 
 import com.senderman.lastkatkabot.util.Threads;
 import io.micronaut.context.annotation.Factory;
+import io.micronaut.context.annotation.Replaces;
+import io.micronaut.scheduling.ScheduledExecutorTaskScheduler;
+import io.micronaut.scheduling.TaskScheduler;
+import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 @Factory
 public class ThreadPoolsConfig {
 
     @Singleton
-    public ScheduledExecutorService taskScheduler() {
-        return Executors.newScheduledThreadPool(2, new Threads.NamedThreadFactory("schedulerPool-%d"));
+    @Replaces(TaskScheduler.class)
+    @Named("taskScheduler")
+    public TaskScheduler taskScheduler() {
+        var executor = Executors.newScheduledThreadPool(2, new Threads.NamedThreadFactory("schedulerPool-%d"));
+        return new ScheduledExecutorTaskScheduler(executor);
+
     }
 
     /*
     /pair only
      */
     @Singleton
+    @Named("pairPool")
     public ExecutorService pairPool() {
         return Executors.newFixedThreadPool(1, new Threads.NamedThreadFactory("pairPool-%d"));
     }
@@ -32,6 +40,7 @@ public class ThreadPoolsConfig {
     calling synchronized methods
      */
     @Singleton
+    @Named("generalNeedsPool")
     public ExecutorService generalNeedsPool() {
         int cpus = Runtime.getRuntime().availableProcessors();
         return Executors.newFixedThreadPool(Math.max(2, cpus / 2), new Threads.NamedThreadFactory("generalNeedsPool-%d"));

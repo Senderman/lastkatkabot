@@ -13,6 +13,8 @@ import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -35,6 +37,8 @@ import java.util.concurrent.RejectedExecutionException;
 
 @Singleton
 public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
+
+    private final static Logger logger = LoggerFactory.getLogger(BotHandler.class);
 
     private final BotConfig config;
     private final CommandUpdateHandler commandUpdateHandler;
@@ -90,6 +94,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
                 onUpdate(update);
             } catch (RejectedExecutionException e) { // may occur on restart
             } catch (Throwable e) {
+                logger.error(e.getMessage(), e);
                 notifyUserAboutError(update);
                 sendUpdateErrorAsFile(update, e, config.notificationChannelId());
             }

@@ -33,7 +33,7 @@ public class UserActivityTrackerService {
     }
 
     @Scheduled(fixedDelay = FLUSH_INTERVAL, scheduler = "taskScheduler")
-    private synchronized void flush() {
+    protected synchronized void flush() {
         if (cache.isEmpty()) return;
         var data = cache.values();
         avgCacheFlushingSize = avgCacheFlushingSize == -1 ? data.size() : (avgCacheFlushingSize + data.size()) / 2;

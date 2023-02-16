@@ -9,6 +9,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.senderman.lastkatkabot.BotHandler;
 import com.senderman.lastkatkabot.genshin.Item;
 import io.micronaut.context.annotation.Factory;
+import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 
@@ -27,18 +28,21 @@ public class Beans {
     }
 
     @Singleton
+    @Named("love")
     public List<String> love() throws IOException {
         return new YAMLMapper().readValue(getClass().getResourceAsStream("/love.yml"), new TypeReference<>() {
         });
     }
 
     @Singleton
+    @Named("genshinItems")
     public List<Item> genshinItems() throws IOException {
         return new YAMLMapper().readValue(getClass().getResourceAsStream("/genshin/items.yml"), new TypeReference<>() {
         });
     }
 
     @Singleton
+    @Named("chatPolicyViolationConsumer")
     public Consumer<Long> chatPolicyViolationConsumer(BotHandler handler) {
         return (chatId) -> {
             Methods.sendMessage(chatId, "📛 Ваш чат в списке спамеров! Бот не хочет здесь работать!").callAsync(handler);
@@ -47,6 +51,7 @@ public class Beans {
     }
 
     @Singleton
+    @Named("messageToJsonMapper")
     public ObjectMapper messageToJsonMapper() {
         return JsonMapper.builder()
                 .enable(SerializationFeature.INDENT_OUTPUT)

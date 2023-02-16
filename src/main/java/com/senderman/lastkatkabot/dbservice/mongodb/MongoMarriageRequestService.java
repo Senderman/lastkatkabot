@@ -38,7 +38,7 @@ public class MongoMarriageRequestService implements MarriageRequestService {
 
     @Override
     public MarriageRequest insert(MarriageRequest marriageRequest) {
-        int id = repository.findFirstByOrderByIdDesc().map(r -> r.getId() + 1).orElse(1);
+        int id = repository.findFirstOrderByIdDesc().map(r -> r.getId() + 1).orElse(1);
         marriageRequest.setId(id);
         return repository.save(marriageRequest);
     }
