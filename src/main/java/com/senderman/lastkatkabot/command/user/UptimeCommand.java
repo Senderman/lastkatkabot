@@ -9,8 +9,8 @@ import jakarta.inject.Singleton;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryType;
 
-@Command
 @Singleton
+@Command
 public class UptimeCommand implements CommandExecutor {
 
     private final UserActivityTrackerService trackerService;

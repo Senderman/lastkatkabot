@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
-@Command
 @Singleton
+@Command
 public class BncStopCommand implements CommandExecutor {
 
     private final BncTelegramHandler gameHandler;

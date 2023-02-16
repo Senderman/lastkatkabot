@@ -11,8 +11,8 @@ import jakarta.inject.Singleton;
 
 import java.util.EnumSet;
 
-@Command
 @Singleton
+@Command
 public class AnswerFeedbackCommand implements CommandExecutor {
 
     private final FeedbackService feedbackService;

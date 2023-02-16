@@ -10,8 +10,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
-@Command
 @Singleton
+@Command
 public class ResetGreetingCommand implements CommandExecutor {
 
     private final ChatInfoService chatInfoService;

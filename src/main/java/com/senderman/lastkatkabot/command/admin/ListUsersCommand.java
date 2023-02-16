@@ -14,8 +14,8 @@ import java.util.EnumSet;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-@Command
 @Singleton
+@Command
 public class ListUsersCommand implements CommandExecutor {
 
     private final UserManager<BlacklistedUser> blacklist;

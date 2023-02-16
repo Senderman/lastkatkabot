@@ -6,8 +6,8 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatInfoService;
 import jakarta.inject.Singleton;
 
-@Command
 @Singleton
+@Command
 public class LastPairsCommand implements CommandExecutor {
 
     private final ChatInfoService chats;

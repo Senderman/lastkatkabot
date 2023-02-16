@@ -9,8 +9,8 @@ import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 
-@Command
 @Singleton
+@Command
 public class GetInfoCommand implements CommandExecutor {
 
     private final ObjectMapper objectMapper;

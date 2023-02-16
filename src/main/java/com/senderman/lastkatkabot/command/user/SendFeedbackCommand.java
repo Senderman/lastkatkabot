@@ -14,8 +14,8 @@ import jakarta.inject.Singleton;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-@Command
 @Singleton
+@Command
 public class SendFeedbackCommand implements CommandExecutor {
 
     private final FeedbackService feedbackRepo;

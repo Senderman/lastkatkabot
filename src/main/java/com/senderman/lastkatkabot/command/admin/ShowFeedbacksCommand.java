@@ -11,8 +11,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 
-@Command
 @Singleton
+@Command
 public class ShowFeedbacksCommand implements CommandExecutor {
 
     private static final String feedbackSeparator = "\n\n<code>====================================</code>\n\n";

@@ -8,8 +8,8 @@ import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
 import jakarta.inject.Singleton;
 
-@Command
 @Singleton
+@Command
 public class PayRespectsCommand implements CommandExecutor {
 
     @Override

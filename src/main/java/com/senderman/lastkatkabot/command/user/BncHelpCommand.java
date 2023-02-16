@@ -6,8 +6,8 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
 import jakarta.inject.Singleton;
 
-@Command
 @Singleton
+@Command
 public class BncHelpCommand implements CommandExecutor {
 
     private final BotConfig config;

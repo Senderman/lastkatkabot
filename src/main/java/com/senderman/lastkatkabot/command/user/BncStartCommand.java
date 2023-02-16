@@ -9,8 +9,8 @@ import jakarta.inject.Singleton;
 
 import java.util.stream.Collectors;
 
-@Command
 @Singleton
+@Command
 public class BncStartCommand implements CommandExecutor {
 
     private final BncTelegramHandler gamesHandler;

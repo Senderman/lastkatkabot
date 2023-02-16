@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    implementation('com.annimon:tgbots-module:6.5.0') {
+    implementation('com.annimon:tgbots-module:6.5.1') {
         exclude group: 'org.glassfish.grizzly', module: 'grizzly-http-server'
         exclude group: 'org.glassfish.jersey.core', module: 'jersey-server'
     }

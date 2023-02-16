@@ -15,8 +15,8 @@ import java.util.EnumSet;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
-@Command
 @Singleton
+@Command
 public class WhereUserCommand implements CommandExecutor {
 
     private final ChatUserService chatUsers;

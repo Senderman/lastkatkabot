@@ -14,8 +14,8 @@ import jakarta.inject.Singleton;
 
 import java.util.Objects;
 
-@Command
 @Singleton
+@Command
 public class MarryMeCommand implements CommandExecutor {
 
     private final UserStatsService users;

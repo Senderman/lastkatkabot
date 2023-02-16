@@ -18,8 +18,8 @@ import java.util.EnumSet;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-@Command
 @Singleton
+@Command
 public class BroadcastMessageCommand implements CommandExecutor {
 
     private final ChatUserService chatUsers;

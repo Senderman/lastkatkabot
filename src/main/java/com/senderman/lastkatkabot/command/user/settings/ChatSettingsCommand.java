@@ -10,8 +10,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashSet;
 import java.util.Objects;
 
-@Command
 @Singleton
+@Command
 public class ChatSettingsCommand implements CommandExecutor {
 
     private final ChatInfoService chatInfoService;

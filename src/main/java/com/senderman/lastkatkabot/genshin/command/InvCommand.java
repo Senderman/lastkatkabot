@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.genshin.command;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.genshin.Item;
 import com.senderman.lastkatkabot.genshin.dbservice.GenshinUserInventoryItemService;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Singleton
+@Command
 public class InvCommand implements CommandExecutor {
 
     private final GenshinUserInventoryItemService inventoryItemService;

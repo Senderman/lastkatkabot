@@ -5,8 +5,8 @@ import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import jakarta.inject.Singleton;
 
-@Command
 @Singleton
+@Command
 public class ShortInfoCommand implements CommandExecutor {
 
     @Override

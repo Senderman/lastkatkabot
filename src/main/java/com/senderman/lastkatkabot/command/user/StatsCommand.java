@@ -14,8 +14,8 @@ import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
 
 import java.util.Optional;
 
-@Command
 @Singleton
+@Command
 public class StatsCommand implements CommandExecutor {
 
     private final UserStatsService users;

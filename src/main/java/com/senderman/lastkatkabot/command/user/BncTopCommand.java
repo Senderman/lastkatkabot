@@ -15,8 +15,8 @@ import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
 import java.util.Optional;
 import java.util.function.Function;
 
-@Command
 @Singleton
+@Command
 public class BncTopCommand implements CommandExecutor {
 
     private final UserStatsService users;

@@ -9,8 +9,8 @@ import jakarta.inject.Singleton;
 
 import java.util.EnumSet;
 
-@Command
 @Singleton
+@Command
 public class PopularityCommand implements CommandExecutor {
 
     private final ChatUserService chatUsers;

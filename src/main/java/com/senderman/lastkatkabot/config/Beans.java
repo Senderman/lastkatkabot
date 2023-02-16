@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.config;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.annimon.tgbotsmodule.commands.CommandRegistry;
 import com.annimon.tgbotsmodule.commands.authority.Authority;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,7 +14,6 @@ import com.senderman.lastkatkabot.bnc.BncTelegramHandler;
 import com.senderman.lastkatkabot.callback.CallbackExecutor;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.genshin.Item;
-import com.senderman.lastkatkabot.handler.TempCommandRegistryImpl;
 import io.micronaut.context.annotation.Factory;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
@@ -36,14 +36,14 @@ public class Beans {
     }
 
     @Singleton
-    public TempCommandRegistryImpl<Role> commandRegistry(
+    public CommandRegistry<Role> commandRegistry(
             BotConfig config,
             @NotNull Authority<Role> authority,
             Set<CommandExecutor> commands,
             Set<CallbackExecutor> callbacks,
             BncTelegramHandler bncTelegramHandler
     ) {
-        var registry = new TempCommandRegistryImpl<>(config.username(), authority);
+        var registry = new CommandRegistry<>(config.username(), authority);
 
         registry.splitCallbackCommandByWhitespace();
 
@@ -56,15 +56,19 @@ public class Beans {
     @Singleton
     @Named("love")
     public List<String> love() throws IOException {
-        return new YAMLMapper().readValue(getClass().getResourceAsStream("/love.yml"), new TypeReference<>() {
-        });
+        try (var in = getClass().getResourceAsStream("/love.yml")) {
+            return new YAMLMapper().readValue(in, new TypeReference<>() {
+            });
+        }
     }
 
     @Singleton
     @Named("genshinItems")
     public List<Item> genshinItems() throws IOException {
-        return new YAMLMapper().readValue(getClass().getResourceAsStream("/genshin/items.yml"), new TypeReference<>() {
-        });
+        try (var in = getClass().getResourceAsStream("/genshin/items.yml")) {
+            return new YAMLMapper().readValue(in, new TypeReference<>() {
+            });
+        }
     }
 
     //@Singleton

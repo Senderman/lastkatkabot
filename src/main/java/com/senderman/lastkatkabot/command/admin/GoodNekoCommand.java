@@ -12,8 +12,8 @@ import jakarta.inject.Singleton;
 
 import java.util.EnumSet;
 
-@Command
 @Singleton
+@Command
 public class GoodNekoCommand implements CommandExecutor {
 
     private final UserManager<BlacklistedUser> blackUsers;

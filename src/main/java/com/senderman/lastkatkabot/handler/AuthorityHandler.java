@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.handler;
 
 import com.annimon.tgbotsmodule.commands.authority.Authority;
+import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.dbservice.ChatInfoService;
@@ -8,6 +9,7 @@ import com.senderman.lastkatkabot.dbservice.UserManager;
 import com.senderman.lastkatkabot.model.AdminUser;
 import com.senderman.lastkatkabot.model.BlacklistedUser;
 import jakarta.inject.Singleton;
+import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -36,7 +38,7 @@ public class AuthorityHandler implements Authority<Role> {
     }
 
     @Override
-    public boolean hasRights(Update update, User user, EnumSet<Role> roles) {
+    public boolean hasRights(@NotNull CommonAbsSender sender, @NotNull Update update, @NotNull User user, @NotNull EnumSet<Role> roles) {
         var userId = user.getId();
 
         if (update.hasMessage()) {

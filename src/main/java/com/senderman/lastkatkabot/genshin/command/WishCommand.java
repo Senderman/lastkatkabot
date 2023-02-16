@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.genshin.command;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.genshin.Item;
 import com.senderman.lastkatkabot.genshin.dbservice.GenshinChatUserService;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Singleton
+@Command
 public class WishCommand implements CommandExecutor {
 
     private final GenshinChatUserService userService;

@@ -17,8 +17,8 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
-@Command
 @Singleton
+@Command
 public class WeatherCommand implements CommandExecutor {
 
     private final UserStatsService userStats;
