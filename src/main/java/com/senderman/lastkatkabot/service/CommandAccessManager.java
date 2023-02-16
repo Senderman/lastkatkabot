@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.service;
 
 import com.annimon.tgbotsmodule.commands.TextCommand;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatInfoService;
 import jakarta.inject.Singleton;
@@ -18,7 +19,7 @@ public class CommandAccessManager {
 
     public CommandAccessManager(
             ChatInfoService chatInfoService,
-            Set<CommandExecutor> executors
+            @Command Set<CommandExecutor> executors
     ) {
         this.chatInfoService = chatInfoService;
         this.existingCommands = executors.stream()

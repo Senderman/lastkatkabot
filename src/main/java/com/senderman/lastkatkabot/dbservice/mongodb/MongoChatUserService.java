@@ -1,5 +1,6 @@
 package com.senderman.lastkatkabot.dbservice.mongodb;
 
+import com.mongodb.client.MongoDatabase;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.dbservice.DatabaseCleanupService;
 import com.senderman.lastkatkabot.model.ChatUser;
@@ -16,9 +17,11 @@ import java.util.stream.StreamSupport;
 public class MongoChatUserService implements ChatUserService {
 
     private final ChatUserRepository repository;
+    private final MongoDatabase mongoDatabase;
 
-    public MongoChatUserService(ChatUserRepository repository) {
+    public MongoChatUserService(ChatUserRepository repository, MongoDatabase mongoDatabase) {
         this.repository = repository;
+        this.mongoDatabase = mongoDatabase;
     }
 
     @Override
@@ -78,16 +81,18 @@ public class MongoChatUserService implements ChatUserService {
 
     @Override
     public long getTotalUsers() {
-        return repository.findDistinctUserId().size();
+        return StreamSupport
+                .stream(mongoDatabase.getCollection("chatUser").distinct("userId", Long.class).spliterator(), false)
+                .count();
     }
 
     @Override
     public long getTotalChats() {
-        return getChatIds().size();
+        return StreamSupport.stream(getChatIds().spliterator(), false).count();
     }
 
     @Override
-    public List<Long> getChatIds() {
-        return repository.findDistinctChatId();
+    public Iterable<Long> getChatIds() {
+        return mongoDatabase.getCollection("chatUser").distinct("chatId", Long.class);
     }
 }

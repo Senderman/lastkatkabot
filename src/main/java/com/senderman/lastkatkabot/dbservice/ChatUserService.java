@@ -35,6 +35,6 @@ public interface ChatUserService {
 
     long getTotalChats();
 
-    List<Long> getChatIds();
+    Iterable<Long> getChatIds();
 
 }

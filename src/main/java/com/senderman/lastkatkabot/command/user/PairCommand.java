@@ -3,6 +3,7 @@ package com.senderman.lastkatkabot.command.user;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatInfoService;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
@@ -12,7 +13,6 @@ import com.senderman.lastkatkabot.service.CurrentTime;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.Threads;
 import jakarta.inject.Named;
-import jakarta.inject.Singleton;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.*;
@@ -22,7 +22,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-@Singleton
+@Command
 public class PairCommand implements CommandExecutor {
 
     private static final String EMPTY_NAME_REPLACEMENT = "Без имени";

@@ -8,6 +8,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import com.mongodb.ConnectionString;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
 import com.senderman.lastkatkabot.BotHandler;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.bnc.BncTelegramHandler;
@@ -15,6 +18,7 @@ import com.senderman.lastkatkabot.callback.CallbackExecutor;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.genshin.Item;
 import io.micronaut.context.annotation.Factory;
+import io.micronaut.context.annotation.Value;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
@@ -22,6 +26,7 @@ import org.telegram.telegrambots.bots.DefaultBotOptions;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -86,6 +91,13 @@ public class Beans {
         return JsonMapper.builder()
                 .enable(SerializationFeature.INDENT_OUTPUT)
                 .build();
+    }
+
+    @Singleton
+    public MongoDatabase mongoDatabase(@Value("${mongodb.uri}") String uri) {
+        var connectionString = new ConnectionString(uri);
+        var client = MongoClients.create(connectionString);
+        return client.getDatabase(Objects.requireNonNull(connectionString.getDatabase()));
     }
 
 }

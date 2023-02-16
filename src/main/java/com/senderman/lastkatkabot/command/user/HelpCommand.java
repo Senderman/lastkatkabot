@@ -3,6 +3,7 @@ package com.senderman.lastkatkabot.command.user;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
+import com.senderman.lastkatkabot.annotation.AccessManagerCommand;
 import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
@@ -18,6 +19,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Singleton
 public class HelpCommand implements CommandExecutor {
@@ -27,12 +29,12 @@ public class HelpCommand implements CommandExecutor {
     private final BotConfig config;
 
     public HelpCommand(
-            @Command
-            @Singleton Set<CommandExecutor> executors,
+            @Command Set<CommandExecutor> commands,
+            @AccessManagerCommand Set<CommandExecutor> accessCommands,
             UserManager<AdminUser> admins,
             BotConfig config
     ) {
-        this.executors = executors.stream()
+        this.executors = Stream.concat(commands.stream(), accessCommands.stream())
                 .filter(CommandExecutor::showInHelp)
                 .collect(Collectors.toSet());
         this.admins = admins;

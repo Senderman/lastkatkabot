@@ -3,7 +3,6 @@ package com.senderman.lastkatkabot.repository;
 import com.senderman.lastkatkabot.model.ChatUser;
 import io.micronaut.data.model.Sort;
 import io.micronaut.data.mongodb.annotation.MongoAggregateQuery;
-import io.micronaut.data.mongodb.annotation.MongoFindQuery;
 import io.micronaut.data.mongodb.annotation.MongoRepository;
 import io.micronaut.data.mongodb.annotation.MongoUpdateOptions;
 import io.micronaut.data.repository.CrudRepository;
@@ -31,14 +30,6 @@ public interface ChatUserRepository extends CrudRepository<ChatUser, String> {
     List<ChatUser> findByChatId(long chatId);
 
     Optional<ChatUser> findByChatIdAndUserId(long chatId, long userId);
-
-    // TODO: implement distinct
-    @MongoFindQuery(value = "{}", project = "{ _id: 0, userId: 1 }")
-    List<Long> findDistinctUserId();
-
-    // TODO: implement distinct
-    @MongoFindQuery(value = "{}", project = "{ _id: 0, chatId: 1 }")
-    List<Long> findDistinctChatId();
 
     void deleteByChatIdAndLastMessageDateLessThan(long chatId, int lastMessageDate);
 
