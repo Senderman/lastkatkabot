@@ -1,13 +1,13 @@
 package com.senderman.lastkatkabot.dbservice;
 
-import com.senderman.lastkatkabot.model.IdAndName;
+import com.senderman.lastkatkabot.model.UserIdAndName;
 import io.micronaut.data.repository.CrudRepository;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public abstract class UserManager<TUserEntity extends IdAndName<Long>> {
+public abstract class UserManager<TUserEntity extends UserIdAndName<Long>> {
 
     private final CrudRepository<TUserEntity, Long> repository;
     private final Set<Long> userIds;
@@ -15,7 +15,7 @@ public abstract class UserManager<TUserEntity extends IdAndName<Long>> {
     public UserManager(CrudRepository<TUserEntity, Long> repository) {
         this.repository = repository;
         this.userIds = StreamSupport.stream(repository.findAll().spliterator(), false)
-                .map(IdAndName::getId)
+                .map(UserIdAndName::getUserId)
                 .collect(Collectors.toSet());
     }
 
@@ -28,8 +28,8 @@ public abstract class UserManager<TUserEntity extends IdAndName<Long>> {
     }
 
     public boolean addUser(TUserEntity entity) {
-        if (userIds.contains(entity.getId())) return false;
-        userIds.add(entity.getId());
+        if (userIds.contains(entity.getUserId())) return false;
+        userIds.add(entity.getUserId());
         repository.save(entity);
         return true;
     }

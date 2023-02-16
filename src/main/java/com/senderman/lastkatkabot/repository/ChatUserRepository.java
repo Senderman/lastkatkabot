@@ -5,8 +5,11 @@ import io.micronaut.data.model.Sort;
 import io.micronaut.data.mongodb.annotation.MongoAggregateQuery;
 import io.micronaut.data.mongodb.annotation.MongoFindQuery;
 import io.micronaut.data.mongodb.annotation.MongoRepository;
+import io.micronaut.data.mongodb.annotation.MongoUpdateOptions;
 import io.micronaut.data.repository.CrudRepository;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,4 +50,7 @@ public interface ChatUserRepository extends CrudRepository<ChatUser, String> {
 
     long countByChatId(long chatId);
 
+    @Override
+    @MongoUpdateOptions(upsert = true)
+    <S extends ChatUser> Iterable<S> updateAll(@Valid @NotNull Iterable<S> entities);
 }

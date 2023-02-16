@@ -1,13 +1,10 @@
 package com.senderman.lastkatkabot;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
-import com.senderman.lastkatkabot.handler.CommandUpdateHandler;
-import com.senderman.lastkatkabot.handler.NewMemberHandler;
-import com.senderman.lastkatkabot.service.ChatPolicyEnsuringService;
+import com.senderman.lastkatkabot.handler.TempCommandRegistryImpl;
 import com.senderman.lastkatkabot.service.UserActivityTrackerService;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
@@ -41,11 +38,11 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     private final static Logger logger = LoggerFactory.getLogger(BotHandler.class);
 
     private final BotConfig config;
-    private final CommandUpdateHandler commandUpdateHandler;
+    private final TempCommandRegistryImpl<Role> commandRegistry;
     private final ChatUserService chatUsers;
     private final UserActivityTrackerService activityTrackerService;
-    private final ChatPolicyEnsuringService chatPolicyEnsuringService;
-    private final NewMemberHandler newMemberHandler;
+    // private final ChatPolicyEnsuringService chatPolicyEnsuringService;
+    //private final NewMemberHandler newMemberHandler;
     private final ExecutorService threadPool;
     private final Set<Long> telegramServiceUserIds;
     private final ObjectMapper messageToJsonMapper;
@@ -53,21 +50,21 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     public BotHandler(
             DefaultBotOptions botOptions,
             BotConfig config,
-            CommandUpdateHandler commandUpdateHandler,
+            TempCommandRegistryImpl<Role> commandRegistry,
             ChatUserService chatUsers,
             UserActivityTrackerService activityTrackerService,
-            ChatPolicyEnsuringService chatPolicyEnsuringService,
-            NewMemberHandler newMemberHandler,
+            //ChatPolicyEnsuringService chatPolicyEnsuringService,
+            //NewMemberHandler newMemberHandler,
             @Named("generalNeedsPool") ExecutorService threadPool,
-            ObjectMapper messageToJsonMapper
+            @Named("messageToJsonMapper") ObjectMapper messageToJsonMapper
     ) {
         super(botOptions, config.token());
         this.config = config;
-        this.commandUpdateHandler = commandUpdateHandler;
+        this.commandRegistry = commandRegistry;
         this.chatUsers = chatUsers;
         this.activityTrackerService = activityTrackerService;
-        this.chatPolicyEnsuringService = chatPolicyEnsuringService;
-        this.newMemberHandler = newMemberHandler;
+        //this.chatPolicyEnsuringService = chatPolicyEnsuringService;
+        //this.newMemberHandler = newMemberHandler;
         this.threadPool = threadPool;
         this.messageToJsonMapper = messageToJsonMapper;
 
@@ -163,13 +160,13 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             if (message.getDate() + 120 < System.currentTimeMillis() / 1000)
                 return null;
 
-            threadPool.execute(() -> chatPolicyEnsuringService.queueViolationCheck(message.getChatId()));
+            //threadPool.execute(() -> chatPolicyEnsuringService.queueViolationCheck(message.getChatId()));
 
 
             {
                 var newMembers = message.getNewChatMembers();
                 if (!newMembers.isEmpty()) {
-                    threadPool.execute(() -> newMemberHandler.accept(new MessageContext(this, update, "")));
+                    // threadPool.execute(() -> newMemberHandler.accept(new MessageContext(this, update, "")));
                     return null;
                 }
             }
@@ -188,7 +185,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             }
         }
 
-        commandUpdateHandler.handleUpdate(update);
+        commandRegistry.handleUpdate(update, this);
 
         return null;
     }

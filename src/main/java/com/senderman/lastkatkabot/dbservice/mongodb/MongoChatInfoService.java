@@ -22,6 +22,6 @@ public class MongoChatInfoService implements ChatInfoService {
 
     @Override
     public ChatInfo save(ChatInfo chatInfo) {
-        return repository.save(chatInfo);
+        return repository.update(chatInfo);
     }
 }

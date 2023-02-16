@@ -16,6 +16,7 @@ public interface UserStatsRepository extends CrudRepository<UserStats, Long> {
 
     Optional<UserStats> findByLoverId(int loverId);
 
+    @MongoFindQuery(value = "{ bncScore: { $ne: 0 } }", sort = "{ bncScore : -1 }")
     List<UserStats> findTop10OrderByBncScoreDesc();
 
     @MongoFindQuery(value = "{ _id: { $in: :ids }, bncScore: { $ne: 0 } }", sort = "{ bncScore : -1 }")
@@ -24,4 +25,8 @@ public interface UserStatsRepository extends CrudRepository<UserStats, Long> {
     @Override
     @MongoUpdateOptions(upsert = true)
     <S extends UserStats> S update(@Valid @NotNull S entity);
+
+    @Override
+    @MongoUpdateOptions(upsert = true)
+    <S extends UserStats> Iterable<S> updateAll(@Valid @NotNull Iterable<S> entities);
 }

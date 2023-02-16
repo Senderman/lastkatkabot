@@ -2,7 +2,6 @@ package com.senderman.lastkatkabot.model;
 
 
 import io.micronaut.core.annotation.Creator;
-import io.micronaut.data.annotation.GeneratedValue;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.MappedEntity;
 
@@ -11,14 +10,13 @@ import java.util.Objects;
 @MappedEntity("marriageRequest")
 public class MarriageRequest {
 
+    @Id
+    private int id;
     private final long proposerId;
     private final String proposerName;
     private final long proposeeId;
     private final String proposeeName;
     private final int requestDate;
-    @Id
-    @GeneratedValue
-    private int id;
 
     @Creator
     public MarriageRequest(long proposerId, String proposerName, long proposeeId, String proposeeName, int requestDate) {

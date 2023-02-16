@@ -54,7 +54,7 @@ public class ListUsersCommand implements CommandExecutor {
 
     private String formatUsers(UserManager<?> userManager) {
         return StreamSupport.stream(userManager.findAll().spliterator(), false)
-                .map(u -> "<a href=\"tg://user?id=%d\">%s</a>".formatted(u.getId(), Html.htmlSafe(u.getName())))
+                .map(u -> "<a href=\"tg://user?id=%d\">%s</a>".formatted(u.getUserId(), Html.htmlSafe(u.getName())))
                 .collect(Collectors.joining("\n"));
     }
 }

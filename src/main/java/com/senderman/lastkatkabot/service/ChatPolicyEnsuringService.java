@@ -1,15 +1,16 @@
 package com.senderman.lastkatkabot.service;
 
 import com.senderman.lastkatkabot.dbservice.BlacklistedChatService;
+import io.micronaut.context.ApplicationContext;
+import io.micronaut.core.type.Argument;
+import io.micronaut.inject.qualifiers.Qualifiers;
 import io.micronaut.scheduling.annotation.Scheduled;
-import jakarta.inject.Named;
-import jakarta.inject.Singleton;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
-@Singleton
+//@Singleton
 public class ChatPolicyEnsuringService {
 
     public final static String FLUSH_INTERVAL = "30s";
@@ -19,10 +20,11 @@ public class ChatPolicyEnsuringService {
     private final Set<Long> cache;
 
     public ChatPolicyEnsuringService(
-            @Named("chatPolicyViolationConsumer") Consumer<Long> chatPolicyViolationConsumer,
+            ApplicationContext context,
+            //@Named("chatPolicyViolationConsumer") Consumer<Long> chatPolicyViolationConsumer,
             BlacklistedChatService database
     ) {
-        this.chatPolicyViolationConsumer = chatPolicyViolationConsumer;
+        this.chatPolicyViolationConsumer = context.getBean(Argument.of(Consumer.class, Long.class), Qualifiers.byName("chatPolicyViolationConsumer"));
         this.database = database;
         this.cache = new HashSet<>();
     }

@@ -4,13 +4,12 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.service.CommandAccessManager;
-import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Set;
 
-@Singleton
+//@Singleton
 public class ForbidCommand implements CommandExecutor {
 
     private final CommandAccessManager commandAccessManager;

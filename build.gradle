@@ -21,11 +21,12 @@ dependencies {
     implementation("jakarta.annotation:jakarta.annotation-api")
     implementation("io.micronaut:micronaut-validation")
     implementation("io.micronaut:micronaut-management")
+    implementation 'jakarta.persistence:jakarta.persistence-api:3.1.0'
 
     runtimeOnly("ch.qos.logback:logback-classic:1.4.5")
 
     annotationProcessor("io.micronaut.data:micronaut-data-document-processor")
-    implementation("org.mongodb:mongodb-driver-sync:4.9.0")
+    runtimeOnly("org.mongodb:mongodb-driver-sync:4.9.0")
     runtimeOnly('com.github.jnr:jnr-unixsocket:0.38.17')
 }
 

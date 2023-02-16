@@ -73,7 +73,7 @@ public class MongoChatUserService implements ChatUserService {
 
     @Override
     public Iterable<ChatUser> saveAll(Iterable<ChatUser> chatUsers) {
-        return repository.saveAll(chatUsers);
+        return repository.updateAll(chatUsers);
     }
 
     @Override

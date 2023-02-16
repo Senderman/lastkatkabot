@@ -8,7 +8,7 @@ import io.micronaut.data.annotation.MappedEntity;
 import java.util.Objects;
 
 @MappedEntity("adminUser")
-public class AdminUser implements IdAndName<Long> {
+public class AdminUser implements UserIdAndName<Long> {
 
     @Id
     private final long userId;
@@ -18,10 +18,6 @@ public class AdminUser implements IdAndName<Long> {
     public AdminUser(long userId, String name) {
         this.userId = userId;
         this.name = name;
-    }
-
-    public long getUserId() {
-        return userId;
     }
 
     @Override
@@ -46,8 +42,8 @@ public class AdminUser implements IdAndName<Long> {
     }
 
     @Override
-    public Long getId() {
-        return getUserId();
+    public Long getUserId() {
+        return userId;
     }
 
     @Override

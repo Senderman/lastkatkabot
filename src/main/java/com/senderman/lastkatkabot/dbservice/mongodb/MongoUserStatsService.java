@@ -32,7 +32,7 @@ public class MongoUserStatsService implements UserStatsService {
 
     @Override
     public Iterable<UserStats> saveAll(Iterable<UserStats> userstats) {
-        return repository.saveAll(userstats);
+        return repository.updateAll(userstats);
     }
 
     @Override

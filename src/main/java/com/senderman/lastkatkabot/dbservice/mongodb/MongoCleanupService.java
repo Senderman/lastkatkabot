@@ -9,7 +9,6 @@ import com.senderman.lastkatkabot.repository.ChatInfoRepository;
 import com.senderman.lastkatkabot.repository.ChatUserRepository;
 import com.senderman.lastkatkabot.repository.MarriageRequestRepository;
 import com.senderman.lastkatkabot.util.DbCleanupResults;
-import io.micronaut.scheduling.annotation.Scheduled;
 import jakarta.inject.Singleton;
 
 import java.util.ArrayList;
@@ -76,7 +75,7 @@ public class MongoCleanupService implements DatabaseCleanupService {
     }
 
     @Override
-    @Scheduled(fixedDelay = "2h")
+    //@Scheduled(fixedDelay = "2h")
     public DbCleanupResults cleanAll() {
         long users = cleanInactiveUsers();
         long chats = cleanEmptyChats();

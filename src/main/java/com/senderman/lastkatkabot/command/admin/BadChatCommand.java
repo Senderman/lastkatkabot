@@ -6,13 +6,12 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.BlacklistedChatService;
 import com.senderman.lastkatkabot.model.BlacklistedChat;
 import jakarta.inject.Named;
-import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 import java.util.function.Consumer;
 
-@Singleton
+//@Singleton
 public class BadChatCommand implements CommandExecutor {
 
     private final BlacklistedChatService database;

@@ -58,7 +58,7 @@ public class SendFeedbackCommand implements CommandExecutor {
         feedback = feedbackRepo.insert(feedback);
         var feedbackId = feedback.getId();
         var adminPings = StreamSupport.stream(adminRepo.findAll().spliterator(), false)
-                .map(a -> "<a href=\"tg://user?id=" + a.getId() + "\">" + a.getName() + "</a>")
+                .map(a -> "<a href=\"tg://user?id=" + a.getUserId() + "\">" + a.getName() + "</a>")
                 .collect(Collectors.joining(", "));
         var text = ("""
                 🔔 <b>Фидбек #%d</b>
