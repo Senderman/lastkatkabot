@@ -3,7 +3,7 @@ micronaut:
     name: LastkatkaBot
 
 mongodb:
-  uri: ${database}/lastkatka
+  uri: ${MONGODB_URI}
 
 logging:
   level:
