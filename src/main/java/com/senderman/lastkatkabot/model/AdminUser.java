@@ -15,7 +15,7 @@ public class AdminUser implements UserIdAndName<Long> {
     private final String name;
 
     @Creator
-    public AdminUser(long userId, String name) {
+    public AdminUser(@Id long userId, String name) {
         this.userId = userId;
         this.name = name;
     }

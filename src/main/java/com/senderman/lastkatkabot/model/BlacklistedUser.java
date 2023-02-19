@@ -15,11 +15,12 @@ public class BlacklistedUser implements UserIdAndName<Long> {
     private final String name;
 
     @Creator
-    public BlacklistedUser(long userId, String name) {
+    public BlacklistedUser(@Id long userId, String name) {
         this.userId = userId;
         this.name = name;
     }
 
+    @Id
     public Long getUserId() {
         return userId;
     }

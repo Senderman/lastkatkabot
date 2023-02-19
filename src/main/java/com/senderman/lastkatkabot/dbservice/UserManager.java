@@ -30,7 +30,7 @@ public abstract class UserManager<TUserEntity extends UserIdAndName<Long>> {
     public boolean addUser(TUserEntity entity) {
         if (userIds.contains(entity.getUserId())) return false;
         userIds.add(entity.getUserId());
-        repository.save(entity);
+        repository.update(entity);
         return true;
     }
 
