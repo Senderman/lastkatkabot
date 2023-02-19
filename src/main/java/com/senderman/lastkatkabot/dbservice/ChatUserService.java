@@ -24,7 +24,6 @@ public interface ChatUserService {
 
     Optional<ChatUser> findByChatIdAndUserId(long chatId, long userId);
 
-    // TODO move period here
     void deleteInactiveChatUsers(long chatId);
 
     void delete(ChatUser chatUser);

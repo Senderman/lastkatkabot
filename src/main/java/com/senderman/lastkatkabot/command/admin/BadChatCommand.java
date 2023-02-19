@@ -1,28 +1,23 @@
 package com.senderman.lastkatkabot.command.admin;
 
+import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.BlacklistedChatService;
 import com.senderman.lastkatkabot.model.BlacklistedChat;
-import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
-import java.util.function.Consumer;
 
-//@Singleton
+@Singleton
 public class BadChatCommand implements CommandExecutor {
 
     private final BlacklistedChatService database;
-    private final Consumer<Long> chatPolicyViolationConsumer;
 
-    public BadChatCommand(
-            BlacklistedChatService blacklistedChatService,
-            @Named("chatPolicyViolationConsumer") Consumer<Long> chatPolicyViolationConsumer
-    ) {
+    public BadChatCommand(BlacklistedChatService blacklistedChatService) {
         this.database = blacklistedChatService;
-        this.chatPolicyViolationConsumer = chatPolicyViolationConsumer;
     }
 
     @Override
@@ -56,7 +51,8 @@ public class BadChatCommand implements CommandExecutor {
         }
 
         database.save(new BlacklistedChat(chatId));
-        chatPolicyViolationConsumer.accept(chatId);
+        Methods.sendMessage(chatId, "📛 Ваш чат в списке спамеров! Бот не хочет здесь работать!").callAsync(ctx.sender);
+        Methods.leaveChat(chatId).callAsync(ctx.sender);
         ctx.replyToMessage("✅ Чат успешно добавлен в чс!").callAsync(ctx.sender);
     }
 }

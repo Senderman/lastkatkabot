@@ -1,6 +1,5 @@
 package com.senderman.lastkatkabot.config;
 
-import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.CommandRegistry;
 import com.annimon.tgbotsmodule.commands.authority.Authority;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -11,7 +10,6 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.mongodb.ConnectionString;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
-import com.senderman.lastkatkabot.BotHandler;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.bnc.BncTelegramHandler;
 import com.senderman.lastkatkabot.callback.CallbackExecutor;
@@ -28,7 +26,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Consumer;
 
 @Factory
 public class Beans {
@@ -74,15 +71,6 @@ public class Beans {
             return new YAMLMapper().readValue(in, new TypeReference<>() {
             });
         }
-    }
-
-    //@Singleton
-    //@Named("chatPolicyViolationConsumer")
-    public Consumer<Long> chatPolicyViolationConsumer(BotHandler handler) {
-        return (chatId) -> {
-            Methods.sendMessage(chatId, "📛 Ваш чат в списке спамеров! Бот не хочет здесь работать!").callAsync(handler);
-            Methods.leaveChat(chatId).callAsync(handler);
-        };
     }
 
     @Singleton

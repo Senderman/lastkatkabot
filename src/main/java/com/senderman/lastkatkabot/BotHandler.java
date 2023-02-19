@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.handler.NewMemberHandler;
+import com.senderman.lastkatkabot.service.ChatPolicyEnsuringService;
 import com.senderman.lastkatkabot.service.UserActivityTrackerService;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
@@ -43,7 +44,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     private final CommandRegistry<Role> commandRegistry;
     private final ChatUserService chatUsers;
     private final UserActivityTrackerService activityTrackerService;
-    // private final ChatPolicyEnsuringService chatPolicyEnsuringService;
+    private final ChatPolicyEnsuringService chatPolicyEnsuringService;
     private final NewMemberHandler newMemberHandler;
     private final ExecutorService threadPool;
     private final Set<Long> telegramServiceUserIds;
@@ -55,7 +56,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             CommandRegistry<Role> commandRegistry,
             ChatUserService chatUsers,
             UserActivityTrackerService activityTrackerService,
-            //ChatPolicyEnsuringService chatPolicyEnsuringService,
+            ChatPolicyEnsuringService chatPolicyEnsuringService,
             NewMemberHandler newMemberHandler,
             @Named("generalNeedsPool") ExecutorService threadPool,
             @Named("messageToJsonMapper") ObjectMapper messageToJsonMapper
@@ -65,7 +66,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         this.commandRegistry = commandRegistry;
         this.chatUsers = chatUsers;
         this.activityTrackerService = activityTrackerService;
-        //this.chatPolicyEnsuringService = chatPolicyEnsuringService;
+        this.chatPolicyEnsuringService = chatPolicyEnsuringService;
         this.newMemberHandler = newMemberHandler;
         this.threadPool = threadPool;
         this.messageToJsonMapper = messageToJsonMapper;
@@ -162,8 +163,8 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             if (message.getDate() + 120 < System.currentTimeMillis() / 1000)
                 return null;
 
-            //threadPool.execute(() -> chatPolicyEnsuringService.queueViolationCheck(message.getChatId()));
-
+            threadPool.execute(() -> chatPolicyEnsuringService
+                    .queueViolationCheck(message.getChatId(), this::onChatViolation));
 
             {
                 var newMembers = message.getNewChatMembers();
@@ -219,6 +220,11 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         var name = user.getFirstName();
         var date = message.getDate();
         activityTrackerService.updateLastMessageDate(chatId, userId, name, date);
+    }
+
+    private void onChatViolation(long chatId) {
+        Methods.sendMessage(chatId, "📛 Ваш чат в списке спамеров! Бот не хочет здесь работать!").callAsync(this);
+        Methods.leaveChat(chatId).callAsync(this);
     }
 
 }
