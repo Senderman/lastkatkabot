@@ -3,6 +3,7 @@ package com.senderman.lastkatkabot.command.admin;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
+import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.BlacklistedChatService;
 import com.senderman.lastkatkabot.model.BlacklistedChat;
@@ -12,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.EnumSet;
 
 @Singleton
+@Command
 public class BadChatCommand implements CommandExecutor {
 
     private final BlacklistedChatService database;

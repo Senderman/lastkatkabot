@@ -12,7 +12,6 @@ import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
 @Singleton
@@ -57,8 +56,7 @@ public class WhereUserCommand implements CommandExecutor {
         threadPool.execute(() -> {
             var chatNames = chatUsers.findByUserId(userId)
                     .stream()
-                    .map(chat -> getChatNameOrNull(chat.getChatId(), ctx.sender))
-                    .filter(Objects::nonNull)
+                    .map(chat -> getChatNameOrChatId(chat.getChatId(), ctx.sender))
                     .toList();
 
             if (chatNames.isEmpty()) {
@@ -70,8 +68,9 @@ public class WhereUserCommand implements CommandExecutor {
         });
     }
 
-    private String getChatNameOrNull(long chatId, CommonAbsSender telegram) {
+    // get chat name. If unable to get if from tg, return chatId as string
+    private String getChatNameOrChatId(long chatId, CommonAbsSender telegram) {
         var chat = Methods.getChat(chatId).call(telegram);
-        return chat != null ? chat.getTitle() : null;
+        return chat != null ? chat.getTitle() : String.valueOf(chatId);
     }
 }
