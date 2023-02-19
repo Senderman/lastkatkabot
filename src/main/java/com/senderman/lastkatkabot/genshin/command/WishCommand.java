@@ -9,8 +9,9 @@ import com.senderman.lastkatkabot.genshin.dbservice.GenshinUserInventoryItemServ
 import com.senderman.lastkatkabot.genshin.model.GenshinChatUser;
 import com.senderman.lastkatkabot.service.CurrentTime;
 import com.senderman.lastkatkabot.util.Html;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.objects.User;
 
@@ -18,11 +19,9 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-@Command(
-        command = "/wish",
-        description = "Молитва (Genshin). Можно раз в день"
-)
-public class WishCommand extends CommandExecutor {
+@Singleton
+@Command
+public class WishCommand implements CommandExecutor {
 
     private final GenshinChatUserService userService;
     private final GenshinUserInventoryItemService inventoryItemService;
@@ -33,12 +32,22 @@ public class WishCommand extends CommandExecutor {
             GenshinChatUserService userService,
             GenshinUserInventoryItemService inventoryItemService,
             CurrentTime currentTime,
-            @Qualifier("genshinItems") List<Item> genshinItems
+            @Named("genshinItems") List<Item> genshinItems
     ) {
         this.userService = userService;
         this.inventoryItemService = inventoryItemService;
         this.currentTime = currentTime;
         this.genshinItems = genshinItems;
+    }
+
+    @Override
+    public String command() {
+        return "/wish";
+    }
+
+    @Override
+    public String getDescription() {
+        return "молитва (Genshin). Можно раз в день";
     }
 
     @Override
@@ -63,14 +72,14 @@ public class WishCommand extends CommandExecutor {
         updatePity(genshinUser, rate);
 
         var possibleItems = genshinItems.stream()
-                .filter(i -> i.getStars() == rate)
+                .filter(i -> i.stars() == rate)
                 .toList();
         var receivedItem = possibleItems.get(ThreadLocalRandom.current().nextInt(possibleItems.size()));
 
         genshinUser.setLastRollDate(currentDay);
 
 
-        var itemId = receivedItem.getId();
+        var itemId = receivedItem.id();
         var inventoryItem = inventoryItemService.findByChatIdAndUserIdAndItemId(chatId, userId, itemId);
         inventoryItem.incAmount();
 
@@ -130,10 +139,10 @@ public class WishCommand extends CommandExecutor {
 
     private String getFormattedItemReceiveMessage(User user, Item item) {
         return "%s\n\n%s, ваша награда - %d⭐ <b>️%s</b>".formatted(
-                item.getDescription(),
+                item.description(),
                 Html.getUserLink(user),
-                item.getStars(),
-                item.getName()
+                item.stars(),
+                item.name()
         );
     }
 }

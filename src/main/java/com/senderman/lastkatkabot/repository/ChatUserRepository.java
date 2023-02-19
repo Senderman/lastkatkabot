@@ -1,21 +1,25 @@
 package com.senderman.lastkatkabot.repository;
 
 import com.senderman.lastkatkabot.model.ChatUser;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.repository.Aggregation;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
+import io.micronaut.data.model.Sort;
+import io.micronaut.data.mongodb.annotation.MongoAggregateQuery;
+import io.micronaut.data.mongodb.annotation.MongoRepository;
+import io.micronaut.data.mongodb.annotation.MongoUpdateOptions;
+import io.micronaut.data.repository.CrudRepository;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
+@MongoRepository
 public interface ChatUserRepository extends CrudRepository<ChatUser, String> {
 
-    @Aggregation({
-            "{ $match: { chatId: ?0 } }",
-            "{ $sample: { size: ?1 } }"
-    })
+    @MongoAggregateQuery("""
+            [
+            { $match: { chatId: :chatId } },
+            { $sample: { size: :amount } }
+            ]""")
     List<ChatUser> sampleOfChat(long chatId, int amount);
 
     List<ChatUser> findByUserId(long userId);
@@ -37,4 +41,7 @@ public interface ChatUserRepository extends CrudRepository<ChatUser, String> {
 
     long countByChatId(long chatId);
 
+    @Override
+    @MongoUpdateOptions(upsert = true)
+    <S extends ChatUser> Iterable<S> updateAll(@Valid @NotNull Iterable<S> entities);
 }

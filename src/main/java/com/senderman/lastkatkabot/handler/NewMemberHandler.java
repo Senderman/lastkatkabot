@@ -1,5 +1,6 @@
 package com.senderman.lastkatkabot.handler;
 
+import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.callback.Callbacks;
 import com.senderman.lastkatkabot.dbservice.BlacklistedChatService;
@@ -8,39 +9,36 @@ import com.senderman.lastkatkabot.exception.TooWideNicknameException;
 import com.senderman.lastkatkabot.service.ImageService;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
+import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.function.Consumer;
 
-@Component
+@Singleton
 public class NewMemberHandler implements Consumer<MessageContext> {
 
     private final BlacklistedChatService blacklistedChatService;
-    private final Consumer<Long> chatPolicyViolationConsumer;
     private final ChatInfoService chatInfoService;
     private final ImageService imageService;
 
     public NewMemberHandler(
             BlacklistedChatService blacklistedChatService,
-            @Qualifier("chatPolicyViolationConsumer") Consumer<Long> chatPolicyViolationConsumer,
             ChatInfoService chatInfoService,
             ImageService imageService
     ) {
         this.blacklistedChatService = blacklistedChatService;
-        this.chatPolicyViolationConsumer = chatPolicyViolationConsumer;
         this.chatInfoService = chatInfoService;
         this.imageService = imageService;
     }
 
     @Override
     public void accept(MessageContext ctx) {
-        var chatId = ctx.chatId();
+        long chatId = ctx.chatId();
         // if bot is added to the blacklisted chat, leave
         if (blacklistedChatService.existsById(chatId)) {
-            chatPolicyViolationConsumer.accept(chatId);
+            Methods.sendMessage(chatId, "📛 Ваш чат в списке спамеров! Бот не хочет здесь работать!").callAsync(ctx.sender);
+            Methods.leaveChat(chatId).callAsync(ctx.sender);
             return;
         }
         ctx.message().getNewChatMembers()

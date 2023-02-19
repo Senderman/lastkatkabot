@@ -10,14 +10,13 @@ import com.senderman.lastkatkabot.model.MarriageRequest;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
+import jakarta.inject.Singleton;
 
 import java.util.Objects;
 
-@Command(
-        command = "/marryme",
-        description = "(reply) пожениться на ком-нибудь"
-)
-public class MarryMeCommand extends CommandExecutor {
+@Singleton
+@Command
+public class MarryMeCommand implements CommandExecutor {
 
     private final UserStatsService users;
     private final MarriageRequestService marriages;
@@ -25,6 +24,16 @@ public class MarryMeCommand extends CommandExecutor {
     public MarryMeCommand(UserStatsService users, MarriageRequestService marriages) {
         this.users = users;
         this.marriages = marriages;
+    }
+
+    @Override
+    public String command() {
+        return "/marryme";
+    }
+
+    @Override
+    public String getDescription() {
+        return "(reply) пожениться на ком-нибудь";
     }
 
     @Override

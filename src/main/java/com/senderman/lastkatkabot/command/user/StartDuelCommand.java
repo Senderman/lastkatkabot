@@ -7,12 +7,21 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
+import jakarta.inject.Singleton;
 
-@Command(
-        command = "/duel",
-        description = "Начать дуэль"
-)
-public class StartDuelCommand extends CommandExecutor {
+@Singleton
+@Command
+public class StartDuelCommand implements CommandExecutor {
+
+    @Override
+    public String command() {
+        return "/duel";
+    }
+
+    @Override
+    public String getDescription() {
+        return "начать дуэль";
+    }
 
     @Override
     public void accept(MessageContext ctx) {

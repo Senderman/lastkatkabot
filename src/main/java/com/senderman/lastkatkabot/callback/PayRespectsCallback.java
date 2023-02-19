@@ -1,11 +1,16 @@
 package com.senderman.lastkatkabot.callback;
 
 import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
-import com.senderman.lastkatkabot.annotation.Callback;
 import com.senderman.lastkatkabot.util.Html;
+import jakarta.inject.Singleton;
 
-@Callback(Callbacks.F)
-public class PayRespectsCallback extends CallbackExecutor {
+@Singleton
+public class PayRespectsCallback implements CallbackExecutor {
+
+    @Override
+    public String command() {
+        return Callbacks.F;
+    }
 
     @Override
     public void accept(CallbackQueryContext ctx) {

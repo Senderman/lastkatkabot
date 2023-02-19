@@ -8,16 +8,15 @@ import com.senderman.lastkatkabot.dbservice.UserManager;
 import com.senderman.lastkatkabot.model.AdminUser;
 import com.senderman.lastkatkabot.model.BlacklistedUser;
 import com.senderman.lastkatkabot.util.Html;
+import jakarta.inject.Singleton;
 
+import java.util.EnumSet;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-@Command(
-        command = "/ulist",
-        description = "показать списки пользователей (админы/чс)",
-        authority = {Role.ADMIN, Role.MAIN_ADMIN}
-)
-public class ListUsersCommand extends CommandExecutor {
+@Singleton
+@Command
+public class ListUsersCommand implements CommandExecutor {
 
     private final UserManager<BlacklistedUser> blacklist;
     private final UserManager<AdminUser> admins;
@@ -25,6 +24,21 @@ public class ListUsersCommand extends CommandExecutor {
     public ListUsersCommand(UserManager<BlacklistedUser> blacklist, UserManager<AdminUser> admins) {
         this.blacklist = blacklist;
         this.admins = admins;
+    }
+
+    @Override
+    public String command() {
+        return "/ulist";
+    }
+
+    @Override
+    public String getDescription() {
+        return "показать списки пользователей (админы/чс)";
+    }
+
+    @Override
+    public EnumSet<Role> authority() {
+        return EnumSet.of(Role.ADMIN, Role.MAIN_ADMIN);
     }
 
     @Override
@@ -42,7 +56,7 @@ public class ListUsersCommand extends CommandExecutor {
 
     private String formatUsers(UserManager<?> userManager) {
         return StreamSupport.stream(userManager.findAll().spliterator(), false)
-                .map(u -> "<a href=\"tg://user?id=%d\">%s</a>".formatted(u.getId(), Html.htmlSafe(u.getName())))
+                .map(u -> "<a href=\"tg://user?id=%d\">%s</a>".formatted(u.getUserId(), Html.htmlSafe(u.getName())))
                 .collect(Collectors.joining("\n"));
     }
 }

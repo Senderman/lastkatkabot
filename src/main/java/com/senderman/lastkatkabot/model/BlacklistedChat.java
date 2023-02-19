@@ -1,13 +1,17 @@
 package com.senderman.lastkatkabot.model;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.TypeAlias;
 
-@TypeAlias("blacklistedChat")
+import io.micronaut.core.annotation.Creator;
+import io.micronaut.data.annotation.Id;
+import io.micronaut.data.annotation.MappedEntity;
+
+@MappedEntity("blacklistedChat")
 public class BlacklistedChat {
-    @Id
-    private long chatId;
 
+    @Id
+    private final long chatId;
+
+    @Creator
     public BlacklistedChat(long chatId) {
         this.chatId = chatId;
     }

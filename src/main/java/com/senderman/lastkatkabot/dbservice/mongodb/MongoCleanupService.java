@@ -1,23 +1,22 @@
 package com.senderman.lastkatkabot.dbservice.mongodb;
 
+import com.mongodb.client.MongoDatabase;
 import com.senderman.lastkatkabot.dbservice.BncGameMessageService;
 import com.senderman.lastkatkabot.dbservice.DatabaseCleanupService;
 import com.senderman.lastkatkabot.model.BncGameSave;
-import com.senderman.lastkatkabot.model.ChatInfo;
-import com.senderman.lastkatkabot.model.ChatUser;
 import com.senderman.lastkatkabot.repository.BncRepository;
 import com.senderman.lastkatkabot.repository.ChatInfoRepository;
 import com.senderman.lastkatkabot.repository.ChatUserRepository;
 import com.senderman.lastkatkabot.repository.MarriageRequestRepository;
 import com.senderman.lastkatkabot.util.DbCleanupResults;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
+import io.micronaut.scheduling.annotation.Scheduled;
+import jakarta.inject.Singleton;
 
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
-@Service
+@Singleton
 public class MongoCleanupService implements DatabaseCleanupService {
 
     private final ChatUserRepository chatUserRepo;
@@ -25,20 +24,22 @@ public class MongoCleanupService implements DatabaseCleanupService {
     private final BncRepository bncRepo;
     private final BncGameMessageService bncGameMessageService;
     private final MarriageRequestRepository marriageRequestRepo;
-    private final MongoTemplate mongoTemplate;
+    private final MongoDatabase mongoDatabase;
 
-    public MongoCleanupService(ChatUserRepository chatUserRepo,
-                               ChatInfoRepository chatInfoRepo,
-                               BncRepository bncRepo,
-                               BncGameMessageService bncGameMessageService,
-                               MarriageRequestRepository marriageRequestRepo,
-                               MongoTemplate mongoTemplate) {
+    public MongoCleanupService(
+            ChatUserRepository chatUserRepo,
+            ChatInfoRepository chatInfoRepo,
+            BncRepository bncRepo,
+            BncGameMessageService bncGameMessageService,
+            MarriageRequestRepository marriageRequestRepo,
+            MongoDatabase mongoDatabase
+    ) {
         this.chatUserRepo = chatUserRepo;
         this.chatInfoRepo = chatInfoRepo;
         this.bncRepo = bncRepo;
         this.bncGameMessageService = bncGameMessageService;
         this.marriageRequestRepo = marriageRequestRepo;
-        this.mongoTemplate = mongoTemplate;
+        this.mongoDatabase = mongoDatabase;
     }
 
 
@@ -54,19 +55,22 @@ public class MongoCleanupService implements DatabaseCleanupService {
 
     @Override
     public long cleanEmptyChats() {
-        var chatIds = mongoTemplate.findDistinct("_id", ChatInfo.class, Long.class);
-        var chatsWithUsersIds = mongoTemplate.findDistinct("chatId", ChatUser.class, Long.class);
-        chatIds.removeAll(chatsWithUsersIds);
+        var chatIds = StreamSupport
+                .stream(mongoDatabase.getCollection("chatInfo").distinct("_id", Long.class).spliterator(), false)
+                .collect(Collectors.toCollection(ArrayList::new));
+        var chatsWithUsersIds = mongoDatabase.getCollection("chatUser").distinct("chatId", Long.class);
+        chatsWithUsersIds.forEach(chatIds::remove);
         return chatInfoRepo.deleteByChatIdIn(chatIds);
     }
 
     @Override
     public long cleanOldBncGames() {
-        var deletedGames = bncRepo.deleteByEditDateLessThan(DatabaseCleanupService.inactivePeriod());
-        var gameIds = deletedGames.stream().map(BncGameSave::getId).collect(Collectors.toList());
+        var gamesToDelete = bncRepo.findByEditDateLessThan(DatabaseCleanupService.inactivePeriod());
+        bncRepo.deleteAll(gamesToDelete);
+        var gameIds = gamesToDelete.stream().map(BncGameSave::getId).collect(Collectors.toList());
         if (!gameIds.isEmpty())
             bncGameMessageService.deleteByGameIdIn(gameIds);
-        return deletedGames.size();
+        return gameIds.size();
     }
 
     @Override
@@ -75,7 +79,7 @@ public class MongoCleanupService implements DatabaseCleanupService {
     }
 
     @Override
-    @Scheduled(fixedDelay = 2, timeUnit = TimeUnit.HOURS)
+    @Scheduled(fixedDelay = "2h")
     public DbCleanupResults cleanAll() {
         long users = cleanInactiveUsers();
         long chats = cleanEmptyChats();

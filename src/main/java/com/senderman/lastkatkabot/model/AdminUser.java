@@ -1,24 +1,23 @@
 package com.senderman.lastkatkabot.model;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.TypeAlias;
+
+import io.micronaut.core.annotation.Creator;
+import io.micronaut.data.annotation.Id;
+import io.micronaut.data.annotation.MappedEntity;
 
 import java.util.Objects;
 
-@TypeAlias("admin")
-public class AdminUser implements IdAndName<Long> {
+@MappedEntity("adminUser")
+public class AdminUser implements UserIdAndName<Long> {
 
     @Id
-    private long userId;
-    private String name;
+    private final long userId;
+    private final String name;
 
+    @Creator
     public AdminUser(long userId, String name) {
         this.userId = userId;
         this.name = name;
-    }
-
-    public long getUserId() {
-        return userId;
     }
 
     @Override
@@ -43,8 +42,8 @@ public class AdminUser implements IdAndName<Long> {
     }
 
     @Override
-    public Long getId() {
-        return getUserId();
+    public Long getUserId() {
+        return userId;
     }
 
     @Override

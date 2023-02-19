@@ -1,16 +1,17 @@
 package com.senderman.lastkatkabot.model;
 
+import io.micronaut.core.annotation.Creator;
+import io.micronaut.data.annotation.Id;
+import io.micronaut.data.annotation.MappedEntity;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.TypeAlias;
 
 import java.util.Objects;
 
-@TypeAlias("userstats")
-public class Userstats {
+@MappedEntity("userstats")
+public class UserStats {
 
     @Id
-    private long userId;
+    private final long userId;
     private int duelsTotal;
     private int duelWins;
     private int bncScore;
@@ -19,10 +20,8 @@ public class Userstats {
     @Nullable
     private Long loverId;
 
-    public Userstats() {
-    }
-
-    public Userstats(long userId) {
+    @Creator
+    public UserStats(long userId) {
         this.userId = userId;
         this.duelsTotal = 0;
         this.duelWins = 0;
@@ -31,10 +30,6 @@ public class Userstats {
 
     public long getUserId() {
         return userId;
-    }
-
-    public void setUserId(long userId) {
-        this.userId = userId;
     }
 
     public int getDuelsTotal() {
@@ -97,7 +92,7 @@ public class Userstats {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Userstats userstats = (Userstats) o;
+        UserStats userstats = (UserStats) o;
         return userId == userstats.userId;
     }
 

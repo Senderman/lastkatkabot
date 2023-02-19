@@ -1,33 +1,51 @@
 plugins {
-    id 'org.springframework.boot' version '3.0.3-SNAPSHOT'
-    id 'io.spring.dependency-management' version '1.1.0'
-    id 'java'
+    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("io.micronaut.application") version "3.7.0"
 }
 
 group 'com.senderman'
 version '1.0'
-sourceCompatibility = JavaVersion.VERSION_19
 
 repositories {
     mavenCentral()
-    maven { url 'https://repo.spring.io/milestone' }
-    maven { url 'https://repo.spring.io/snapshot' }
 }
 
 dependencies {
-    implementation('com.annimon:tgbots-module:6.5.0') {
+    implementation('com.annimon:tgbots-module:6.5.1') {
         exclude group: 'org.glassfish.grizzly', module: 'grizzly-http-server'
         exclude group: 'org.glassfish.jersey.core', module: 'jersey-server'
     }
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-    implementation 'com.github.jnr:jnr-unixsocket:0.38.17'
+
+    implementation("io.micronaut:micronaut-jackson-databind")
+    implementation("io.micronaut.data:micronaut-data-mongodb")
+    implementation("jakarta.annotation:jakarta.annotation-api")
+    implementation("io.micronaut:micronaut-validation")
+    implementation("io.micronaut:micronaut-management")
+    implementation("org.mongodb:mongodb-driver-sync:4.9.0")
+
+    runtimeOnly("ch.qos.logback:logback-classic:1.4.5")
+
+    annotationProcessor("io.micronaut.data:micronaut-data-document-processor")
+    runtimeOnly('com.github.jnr:jnr-unixsocket:0.38.17')
 }
 
-tasks.withType(Jar).configureEach {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+application {
+    mainClass.set("com.senderman.lastkatkabot.LastkatkaBot")
 }
 
+java {
+    sourceCompatibility = JavaVersion.toVersion("17")
+    targetCompatibility = JavaVersion.toVersion("17")
+}
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+}
+
+graalvmNative.toolchainDetection = false
+micronaut {
+    processing {
+        incremental(true)
+        annotations("com.senderman.lastkatkabot.*")
+    }
 }

@@ -7,5 +7,5 @@ import java.lang.annotation.RetentionPolicy;
 
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Command {
+public @interface AccessManagerCommand {
 }

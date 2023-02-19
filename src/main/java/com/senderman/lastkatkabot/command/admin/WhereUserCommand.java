@@ -7,25 +7,38 @@ import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Qualifier;
 
-import java.util.Objects;
+import java.util.EnumSet;
 import java.util.concurrent.ExecutorService;
 
-@Command(
-        command = "/wru",
-        description = "в каких чатах сидит юзер. реплай или /wru userId",
-        authority = {Role.ADMIN, Role.MAIN_ADMIN}
-)
-public class WhereUserCommand extends CommandExecutor {
+@Singleton
+@Command
+public class WhereUserCommand implements CommandExecutor {
 
     private final ChatUserService chatUsers;
     private final ExecutorService threadPool;
 
-    public WhereUserCommand(ChatUserService chatUsers, @Qualifier("generalNeedsPool") ExecutorService threadPool) {
+    public WhereUserCommand(ChatUserService chatUsers, @Named("generalNeedsPool") ExecutorService threadPool) {
         this.chatUsers = chatUsers;
         this.threadPool = threadPool;
+    }
+
+    @Override
+    public String command() {
+        return "/wru";
+    }
+
+    @Override
+    public String getDescription() {
+        return "в каких чатах сидит юзер. реплай или /wru userId";
+    }
+
+    @Override
+    public EnumSet<Role> authority() {
+        return EnumSet.of(Role.ADMIN, Role.MAIN_ADMIN);
     }
 
     @Override
@@ -43,8 +56,7 @@ public class WhereUserCommand extends CommandExecutor {
         threadPool.execute(() -> {
             var chatNames = chatUsers.findByUserId(userId)
                     .stream()
-                    .map(chat -> getChatNameOrNull(chat.getChatId(), ctx.sender))
-                    .filter(Objects::nonNull)
+                    .map(chat -> getChatNameOrChatId(chat.getChatId(), ctx.sender))
                     .toList();
 
             if (chatNames.isEmpty()) {
@@ -56,8 +68,9 @@ public class WhereUserCommand extends CommandExecutor {
         });
     }
 
-    private String getChatNameOrNull(long chatId, CommonAbsSender telegram) {
+    // get chat name. If unable to get if from tg, return chatId as string
+    private String getChatNameOrChatId(long chatId, CommonAbsSender telegram) {
         var chat = Methods.getChat(chatId).call(telegram);
-        return chat != null ? chat.getTitle() : null;
+        return chat != null ? chat.getTitle() : String.valueOf(chatId);
     }
 }

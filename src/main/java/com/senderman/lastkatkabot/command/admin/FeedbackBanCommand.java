@@ -8,13 +8,13 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.FeedbackService;
 import com.senderman.lastkatkabot.dbservice.UserManager;
 import com.senderman.lastkatkabot.model.BlacklistedUser;
+import jakarta.inject.Singleton;
 
-@Command(
-        command = "/fban",
-        description = "бан по фидбеку. /fban feedbackId причина (opt)",
-        authority = {Role.ADMIN, Role.MAIN_ADMIN}
-)
-public class FeedbackBanCommand extends CommandExecutor {
+import java.util.EnumSet;
+
+@Singleton
+@Command
+public class FeedbackBanCommand implements CommandExecutor {
 
     private final UserManager<BlacklistedUser> blackUsers;
     private final FeedbackService feedbackService;
@@ -22,6 +22,21 @@ public class FeedbackBanCommand extends CommandExecutor {
     public FeedbackBanCommand(UserManager<BlacklistedUser> blackUsers, FeedbackService feedbackService) {
         this.blackUsers = blackUsers;
         this.feedbackService = feedbackService;
+    }
+
+    @Override
+    public String command() {
+        return "/fban";
+    }
+
+    @Override
+    public String getDescription() {
+        return "бан по фидбеку. /fban feedbackId причина (opt)";
+    }
+
+    @Override
+    public EnumSet<Role> authority() {
+        return EnumSet.of(Role.ADMIN, Role.MAIN_ADMIN);
     }
 
     @Override

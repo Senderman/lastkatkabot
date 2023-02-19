@@ -1,21 +1,20 @@
 package com.senderman.lastkatkabot;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
+import com.annimon.tgbotsmodule.commands.CommandRegistry;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
-import com.senderman.lastkatkabot.handler.CommandUpdateHandler;
 import com.senderman.lastkatkabot.handler.NewMemberHandler;
 import com.senderman.lastkatkabot.service.ChatPolicyEnsuringService;
 import com.senderman.lastkatkabot.service.UserActivityTrackerService;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.beans.factory.BeanCreationNotAllowedException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Lazy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -36,11 +35,13 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 
-@SpringBootApplication
+@Singleton
 public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
+    private final static Logger logger = LoggerFactory.getLogger(BotHandler.class);
+
     private final BotConfig config;
-    private final CommandUpdateHandler commandUpdateHandler;
+    private final CommandRegistry<Role> commandRegistry;
     private final ChatUserService chatUsers;
     private final UserActivityTrackerService activityTrackerService;
     private final ChatPolicyEnsuringService chatPolicyEnsuringService;
@@ -49,21 +50,20 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     private final Set<Long> telegramServiceUserIds;
     private final ObjectMapper messageToJsonMapper;
 
-    @Autowired
     public BotHandler(
             DefaultBotOptions botOptions,
             BotConfig config,
-            @Lazy CommandUpdateHandler commandUpdateHandler,
+            CommandRegistry<Role> commandRegistry,
             ChatUserService chatUsers,
             UserActivityTrackerService activityTrackerService,
-            @Lazy ChatPolicyEnsuringService chatPolicyEnsuringService,
-            @Lazy NewMemberHandler newMemberHandler,
-            @Qualifier("generalNeedsPool") ExecutorService threadPool,
-            ObjectMapper messageToJsonMapper
+            ChatPolicyEnsuringService chatPolicyEnsuringService,
+            NewMemberHandler newMemberHandler,
+            @Named("generalNeedsPool") ExecutorService threadPool,
+            @Named("messageToJsonMapper") ObjectMapper messageToJsonMapper
     ) {
         super(botOptions, config.token());
         this.config = config;
-        this.commandUpdateHandler = commandUpdateHandler;
+        this.commandRegistry = commandRegistry;
         this.chatUsers = chatUsers;
         this.activityTrackerService = activityTrackerService;
         this.chatPolicyEnsuringService = chatPolicyEnsuringService;
@@ -92,8 +92,9 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         for (var update : updates) {
             try {
                 onUpdate(update);
-            } catch (RejectedExecutionException | BeanCreationNotAllowedException ignored) { // may occur on restart
+            } catch (RejectedExecutionException e) { // may occur on restart
             } catch (Throwable e) {
+                logger.error(e.getMessage(), e);
                 notifyUserAboutError(update);
                 sendUpdateErrorAsFile(update, e, config.notificationChannelId());
             }
@@ -162,8 +163,8 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             if (message.getDate() + 120 < System.currentTimeMillis() / 1000)
                 return null;
 
-            threadPool.execute(() -> chatPolicyEnsuringService.queueViolationCheck(message.getChatId()));
-
+            threadPool.execute(() -> chatPolicyEnsuringService
+                    .queueViolationCheck(message.getChatId(), this::onChatViolation));
 
             {
                 var newMembers = message.getNewChatMembers();
@@ -187,7 +188,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             }
         }
 
-        commandUpdateHandler.handleUpdate(update);
+        commandRegistry.handleUpdate(this, update);
 
         return null;
     }
@@ -219,6 +220,11 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         var name = user.getFirstName();
         var date = message.getDate();
         activityTrackerService.updateLastMessageDate(chatId, userId, name, date);
+    }
+
+    private void onChatViolation(long chatId) {
+        Methods.sendMessage(chatId, "📛 Ваш чат в списке спамеров! Бот не хочет здесь работать!").callAsync(this);
+        Methods.leaveChat(chatId).callAsync(this);
     }
 
 }

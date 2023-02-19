@@ -7,17 +7,26 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
+import jakarta.inject.Singleton;
 
-@Command(
-        command = "/divorce",
-        description = "подать на развод"
-)
-public class DivorceCommand extends CommandExecutor {
+@Singleton
+@Command
+public class DivorceCommand implements CommandExecutor {
 
     private final UserStatsService users;
 
     public DivorceCommand(UserStatsService users) {
         this.users = users;
+    }
+
+    @Override
+    public String command() {
+        return "/divorce";
+    }
+
+    @Override
+    public String getDescription() {
+        return "подать на развод";
     }
 
     @Override

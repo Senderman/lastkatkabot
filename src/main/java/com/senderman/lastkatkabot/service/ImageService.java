@@ -2,7 +2,7 @@ package com.senderman.lastkatkabot.service;
 
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.exception.TooWideNicknameException;
-import org.springframework.stereotype.Service;
+import jakarta.inject.Singleton;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
-@Service
+@Singleton
 public class ImageService {
 
     private final BotConfig config;

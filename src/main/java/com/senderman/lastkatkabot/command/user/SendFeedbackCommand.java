@@ -9,15 +9,14 @@ import com.senderman.lastkatkabot.dbservice.AdminService;
 import com.senderman.lastkatkabot.dbservice.FeedbackService;
 import com.senderman.lastkatkabot.model.Feedback;
 import com.senderman.lastkatkabot.util.Html;
+import jakarta.inject.Singleton;
 
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-@Command(
-        command = "/feedback",
-        description = "отправить сообщение разработчику. Например, /feedback бот не работает"
-)
-public class SendFeedbackCommand extends CommandExecutor {
+@Singleton
+@Command
+public class SendFeedbackCommand implements CommandExecutor {
 
     private final FeedbackService feedbackRepo;
     private final AdminService adminRepo;
@@ -30,6 +29,16 @@ public class SendFeedbackCommand extends CommandExecutor {
         this.feedbackRepo = feedbackRepo;
         this.adminRepo = adminRepo;
         this.config = config;
+    }
+
+    @Override
+    public String command() {
+        return "/feedback";
+    }
+
+    @Override
+    public String getDescription() {
+        return "отправить сообщение разработчику. Например, /feedback бот не работает";
     }
 
     @Override
@@ -51,7 +60,7 @@ public class SendFeedbackCommand extends CommandExecutor {
         feedback = feedbackRepo.insert(feedback);
         var feedbackId = feedback.getId();
         var adminPings = StreamSupport.stream(adminRepo.findAll().spliterator(), false)
-                .map(a -> "<a href=\"tg://user?id=" + a.getId() + "\">" + a.getName() + "</a>")
+                .map(a -> "<a href=\"tg://user?id=" + a.getUserId() + "\">" + a.getName() + "</a>")
                 .collect(Collectors.joining(", "));
         var text = ("""
                 🔔 <b>Фидбек #%d</b>

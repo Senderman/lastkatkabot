@@ -4,21 +4,30 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatInfoService;
+import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Objects;
 
-@Command(
-        command = "/settings",
-        description = "настройки чата"
-)
-public class ChatSettingsCommand extends CommandExecutor {
+@Singleton
+@Command
+public class ChatSettingsCommand implements CommandExecutor {
 
     private final ChatInfoService chatInfoService;
 
     public ChatSettingsCommand(ChatInfoService chatInfoService) {
         this.chatInfoService = chatInfoService;
+    }
+
+    @Override
+    public String command() {
+        return "/settings";
+    }
+
+    @Override
+    public String getDescription() {
+        return "настройки чата";
     }
 
     @Override

@@ -1,27 +1,27 @@
 package com.senderman.lastkatkabot.dbservice.mongodb;
 
+import com.mongodb.client.MongoDatabase;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import com.senderman.lastkatkabot.dbservice.DatabaseCleanupService;
 import com.senderman.lastkatkabot.model.ChatUser;
 import com.senderman.lastkatkabot.repository.ChatUserRepository;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.stereotype.Service;
+import io.micronaut.data.model.Sort;
+import jakarta.inject.Singleton;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-@Service
+@Singleton
 public class MongoChatUserService implements ChatUserService {
 
     private final ChatUserRepository repository;
-    private final MongoTemplate mongoTemplate;
+    private final MongoDatabase mongoDatabase;
 
-    public MongoChatUserService(ChatUserRepository repository, MongoTemplate mongoTemplate) {
+    public MongoChatUserService(ChatUserRepository repository, MongoDatabase mongoDatabase) {
         this.repository = repository;
-        this.mongoTemplate = mongoTemplate;
+        this.mongoDatabase = mongoDatabase;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class MongoChatUserService implements ChatUserService {
 
     @Override
     public Optional<ChatUser> findNewestUserData(long userId) {
-        return repository.findFirstByUserId(userId, Sort.by(Sort.Direction.DESC, "lastMessageDate"));
+        return repository.findFirstByUserId(userId, Sort.of(Sort.Order.desc("lastMessageDate")));
     }
 
     @Override
@@ -76,21 +76,23 @@ public class MongoChatUserService implements ChatUserService {
 
     @Override
     public Iterable<ChatUser> saveAll(Iterable<ChatUser> chatUsers) {
-        return repository.saveAll(chatUsers);
+        return repository.updateAll(chatUsers);
     }
 
     @Override
     public long getTotalUsers() {
-        return mongoTemplate.findDistinct("userId", ChatUser.class, Long.class).size();
+        return StreamSupport
+                .stream(mongoDatabase.getCollection("chatUser").distinct("userId", Long.class).spliterator(), false)
+                .count();
     }
 
     @Override
     public long getTotalChats() {
-        return getChatIds().size();
+        return StreamSupport.stream(getChatIds().spliterator(), false).count();
     }
 
     @Override
-    public List<Long> getChatIds() {
-        return mongoTemplate.findDistinct("chatId", ChatUser.class, Long.class);
+    public Iterable<Long> getChatIds() {
+        return mongoDatabase.getCollection("chatUser").distinct("chatId", Long.class);
     }
 }

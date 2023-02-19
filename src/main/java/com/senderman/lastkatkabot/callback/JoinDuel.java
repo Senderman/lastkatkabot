@@ -2,22 +2,27 @@ package com.senderman.lastkatkabot.callback;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
-import com.senderman.lastkatkabot.annotation.Callback;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
-import com.senderman.lastkatkabot.model.Userstats;
+import com.senderman.lastkatkabot.model.UserStats;
 import com.senderman.lastkatkabot.util.Html;
+import jakarta.inject.Singleton;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-@Callback(Callbacks.DUEL)
-public class JoinDuel extends CallbackExecutor {
+@Singleton
+public class JoinDuel implements CallbackExecutor {
 
     private final UserStatsService users;
 
     public JoinDuel(UserStatsService users) {
         this.users = users;
+    }
+
+    @Override
+    public String command() {
+        return Callbacks.DUEL;
     }
 
     @Override
@@ -70,8 +75,8 @@ public class JoinDuel extends CallbackExecutor {
     private void processDuelResultToDatabase(DuelResult result) {
         var winner = result.winner;
         var loser = result.loser;
-        Userstats winnerStats = users.findById(winner.getId());
-        Userstats loserStats = users.findById(loser.getId());
+        UserStats winnerStats = users.findById(winner.getId());
+        UserStats loserStats = users.findById(loser.getId());
         winnerStats.increaseDuelsTotal();
         loserStats.increaseDuelsTotal();
         if (!result.isDraw())

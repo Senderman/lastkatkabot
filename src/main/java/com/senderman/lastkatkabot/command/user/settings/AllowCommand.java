@@ -2,25 +2,33 @@ package com.senderman.lastkatkabot.command.user.settings;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
-import com.senderman.lastkatkabot.annotation.Command;
+import com.senderman.lastkatkabot.annotation.AccessManagerCommand;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.service.CommandAccessManager;
+import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.context.annotation.Lazy;
 
 import java.util.Arrays;
 import java.util.Set;
 
-@Command(
-        command = "/callow",
-        description = "разрешить команды. Использование: /callow /command1 command2"
-)
-public class AllowCommand extends CommandExecutor {
+@Singleton
+@AccessManagerCommand
+public class AllowCommand implements CommandExecutor {
 
     private final CommandAccessManager commandAccessManager;
 
-    public AllowCommand(@Lazy CommandAccessManager commandAccessManager) {
+    public AllowCommand(CommandAccessManager commandAccessManager) {
         this.commandAccessManager = commandAccessManager;
+    }
+
+    @Override
+    public String command() {
+        return "/callow";
+    }
+
+    @Override
+    public String getDescription() {
+        return "разрешить команды. Использование: /callow /command1 command2";
     }
 
     @Override

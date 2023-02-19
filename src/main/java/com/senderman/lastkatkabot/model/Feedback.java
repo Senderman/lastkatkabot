@@ -1,21 +1,25 @@
 package com.senderman.lastkatkabot.model;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.TypeAlias;
+
+import io.micronaut.core.annotation.Creator;
+import io.micronaut.data.annotation.Id;
+import io.micronaut.data.annotation.MappedEntity;
 
 import java.util.Objects;
 
-@TypeAlias("feedback")
+@MappedEntity("feedback")
 public class Feedback {
+
     @Id
     private int id;
-    private String message;
-    private long userId;
-    private String userName;
-    private long chatId;
-    private int messageId;
+    private final String message;
+    private final long userId;
+    private final String userName;
+    private final long chatId;
+    private final int messageId;
     private boolean replied;
 
+    @Creator
     public Feedback(String message, long userId, String userName, long chatId, int messageId) {
         this.message = message;
         this.userId = userId;
@@ -37,40 +41,20 @@ public class Feedback {
         return message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
     public long getUserId() {
         return userId;
-    }
-
-    public void setUserId(long userId) {
-        this.userId = userId;
     }
 
     public String getUserName() {
         return userName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
     public long getChatId() {
         return chatId;
     }
 
-    public void setChatId(long chatId) {
-        this.chatId = chatId;
-    }
-
     public int getMessageId() {
         return messageId;
-    }
-
-    public void setMessageId(int messageId) {
-        this.messageId = messageId;
     }
 
     public boolean isReplied() {

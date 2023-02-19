@@ -1,11 +1,16 @@
 package com.senderman.lastkatkabot.callback;
 
 import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
-import com.senderman.lastkatkabot.annotation.Callback;
+import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
-@Callback(Callbacks.GREETING)
-public class GreetingCallback extends CallbackExecutor {
+@Singleton
+public class GreetingCallback implements CallbackExecutor {
+
+    @Override
+    public String command() {
+        return Callbacks.GREETING;
+    }
 
     @Override
     public void accept(@NotNull CallbackQueryContext context) {

@@ -5,20 +5,29 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatInfoService;
+import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
-@Command(
-        command = "/resetgreeting",
-        description = "удалить стикер приветствия из бота"
-)
-public class ResetGreetingCommand extends CommandExecutor {
+@Singleton
+@Command
+public class ResetGreetingCommand implements CommandExecutor {
 
     private final ChatInfoService chatInfoService;
 
     public ResetGreetingCommand(ChatInfoService chatInfoService) {
         this.chatInfoService = chatInfoService;
+    }
+
+    @Override
+    public String command() {
+        return "/resetgreeting";
+    }
+
+    @Override
+    public String getDescription() {
+        return "удалить стикер приветствия из бота";
     }
 
     @Override

@@ -1,10 +1,10 @@
 package com.senderman.lastkatkabot.config;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import io.micronaut.context.annotation.Value;
+import jakarta.inject.Singleton;
 
-@Component
-public class SpringBotConfig implements BotConfig {
+@Singleton
+public class ApplicationBotConfig implements BotConfig {
 
     private final String token;
     private final String username;
@@ -16,7 +16,7 @@ public class SpringBotConfig implements BotConfig {
     private final String helloGifId;
     private final String leaveStickerId;
 
-    public SpringBotConfig(
+    public ApplicationBotConfig(
             @Value("${username}") String username,
             @Value("${token}") String token,
             @Value("${timezone}") String timezone,

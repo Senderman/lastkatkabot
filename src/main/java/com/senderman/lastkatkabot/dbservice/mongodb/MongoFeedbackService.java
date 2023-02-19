@@ -3,11 +3,11 @@ package com.senderman.lastkatkabot.dbservice.mongodb;
 import com.senderman.lastkatkabot.dbservice.FeedbackService;
 import com.senderman.lastkatkabot.model.Feedback;
 import com.senderman.lastkatkabot.repository.FeedbackRepository;
-import org.springframework.stereotype.Service;
+import jakarta.inject.Singleton;
 
 import java.util.Optional;
 
-@Service
+@Singleton
 public class MongoFeedbackService implements FeedbackService {
 
     private final FeedbackRepository repository;
@@ -44,14 +44,14 @@ public class MongoFeedbackService implements FeedbackService {
     @Override
     public Feedback insert(Feedback feedback) {
         // id as counter
-        int id = repository.findFirstByOrderByIdDesc().map(f -> f.getId() + 1).orElse(1);
+        int id = repository.findFirstOrderByIdDesc().map(f -> f.getId() + 1).orElse(1);
         feedback.setId(id);
         return repository.save(feedback);
     }
 
     @Override
     public Feedback update(Feedback feedback) {
-        return repository.save(feedback);
+        return repository.update(feedback);
     }
 
     @Override

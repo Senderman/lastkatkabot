@@ -3,9 +3,10 @@ package com.senderman.lastkatkabot.dbservice.mongodb;
 import com.senderman.lastkatkabot.dbservice.ChatInfoService;
 import com.senderman.lastkatkabot.model.ChatInfo;
 import com.senderman.lastkatkabot.repository.ChatInfoRepository;
-import org.springframework.stereotype.Service;
+import jakarta.inject.Singleton;
 
-@Service
+
+@Singleton
 public class MongoChatInfoService implements ChatInfoService {
 
     private final ChatInfoRepository repository;
@@ -21,6 +22,6 @@ public class MongoChatInfoService implements ChatInfoService {
 
     @Override
     public ChatInfo save(ChatInfo chatInfo) {
-        return repository.save(chatInfo);
+        return repository.update(chatInfo);
     }
 }

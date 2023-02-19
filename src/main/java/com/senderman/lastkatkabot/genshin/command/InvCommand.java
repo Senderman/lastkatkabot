@@ -6,8 +6,9 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.genshin.Item;
 import com.senderman.lastkatkabot.genshin.dbservice.GenshinUserInventoryItemService;
 import com.senderman.lastkatkabot.genshin.model.GenshinUserInventoryItem;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,24 +16,32 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Command(
-        command = "/inv",
-        description = "инвентарь (Genshin)"
-)
-public class InvCommand extends CommandExecutor {
+@Singleton
+@Command
+public class InvCommand implements CommandExecutor {
 
     private final GenshinUserInventoryItemService inventoryItemService;
     private final Map<String, Item> genshinItems;
 
     public InvCommand(
             GenshinUserInventoryItemService inventoryItemService,
-            @Qualifier("genshinItems") List<Item> genshinItems
+            @Named("genshinItems") List<Item> genshinItems
     ) {
         this.inventoryItemService = inventoryItemService;
         this.genshinItems = new HashMap<>();
         for (var item : genshinItems) {
-            this.genshinItems.put(item.getId(), item);
+            this.genshinItems.put(item.id(), item);
         }
+    }
+
+    @Override
+    public String command() {
+        return "/inv";
+    }
+
+    @Override
+    public String getDescription() {
+        return "инвентарь (Genshin)";
     }
 
     @Override
@@ -53,7 +62,7 @@ public class InvCommand extends CommandExecutor {
 
         var itemsByStars = items.stream()
                 .map(i -> new InventoryItem(genshinItems.get(i.getItemId()), i))
-                .collect(Collectors.groupingBy(i -> i.item.getStars()));
+                .collect(Collectors.groupingBy(i -> i.item.stars()));
 
         var text = new StringBuilder("<b>Ваш инвентарь:</b>\n\n");
         for (int i = 5; i > 2; i--) {
@@ -78,7 +87,7 @@ public class InvCommand extends CommandExecutor {
      */
     private String formatStarSection(List<InventoryItem> items) {
         var itemsByType = items.stream()
-                .collect(Collectors.groupingBy(i -> i.item.getType()));
+                .collect(Collectors.groupingBy(i -> i.item.type()));
         var result = new StringBuilder();
         if (itemsByType.containsKey(Item.Type.CHARACTER)) {
             result
@@ -115,7 +124,7 @@ public class InvCommand extends CommandExecutor {
 
         @Override
         public String toString() {
-            return "%s x%d".formatted(item.getName(), dbItem.getAmount());
+            return "%s x%d".formatted(item.name(), dbItem.getAmount());
         }
 
         @Override

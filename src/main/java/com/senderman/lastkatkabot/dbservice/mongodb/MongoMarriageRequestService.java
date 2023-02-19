@@ -3,11 +3,11 @@ package com.senderman.lastkatkabot.dbservice.mongodb;
 import com.senderman.lastkatkabot.dbservice.MarriageRequestService;
 import com.senderman.lastkatkabot.model.MarriageRequest;
 import com.senderman.lastkatkabot.repository.MarriageRequestRepository;
-import org.springframework.stereotype.Service;
+import jakarta.inject.Singleton;
 
 import java.util.Optional;
 
-@Service
+@Singleton
 public class MongoMarriageRequestService implements MarriageRequestService {
 
     private final MarriageRequestRepository repository;
@@ -38,7 +38,7 @@ public class MongoMarriageRequestService implements MarriageRequestService {
 
     @Override
     public MarriageRequest insert(MarriageRequest marriageRequest) {
-        int id = repository.findFirstByOrderByIdDesc().map(r -> r.getId() + 1).orElse(1);
+        int id = repository.findFirstOrderByIdDesc().map(r -> r.getId() + 1).orElse(1);
         marriageRequest.setId(id);
         return repository.save(marriageRequest);
     }

@@ -4,20 +4,29 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.service.UserActivityTrackerService;
+import jakarta.inject.Singleton;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryType;
 
-@Command(
-        command = "/uptime",
-        description = "посмотреть нагрузку на бота"
-)
-public class UptimeCommand extends CommandExecutor {
+@Singleton
+@Command
+public class UptimeCommand implements CommandExecutor {
 
     private final UserActivityTrackerService trackerService;
 
     public UptimeCommand(UserActivityTrackerService trackerService) {
         this.trackerService = trackerService;
+    }
+
+    @Override
+    public String command() {
+        return "/uptime";
+    }
+
+    @Override
+    public String getDescription() {
+        return "посмотреть нагрузку на бота";
     }
 
     @Override
@@ -39,7 +48,7 @@ public class UptimeCommand extends CommandExecutor {
                 Аптайм: <code>%s</code>
                 Потоки: <code>%d</code>
                 CPUs: <code>%d</code>
-                Средний сброс кеша трекера юзеров: %d/%ds"""
+                Средний сброс кеша трекера юзеров: %d/%s"""
                 .formatted(
                         (r.totalMemory() - r.freeMemory()) / delimiter,
                         r.freeMemory() / delimiter,

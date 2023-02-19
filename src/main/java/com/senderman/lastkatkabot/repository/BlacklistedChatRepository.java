@@ -1,13 +1,13 @@
 package com.senderman.lastkatkabot.repository;
 
 import com.senderman.lastkatkabot.model.BlacklistedChat;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
+import io.micronaut.data.mongodb.annotation.MongoRepository;
+import io.micronaut.data.repository.CrudRepository;
 
 import java.util.Collection;
 import java.util.List;
 
-@Repository
+@MongoRepository
 public interface BlacklistedChatRepository extends CrudRepository<BlacklistedChat, Long> {
 
     List<BlacklistedChat> findByChatIdIn(Collection<Long> ids);

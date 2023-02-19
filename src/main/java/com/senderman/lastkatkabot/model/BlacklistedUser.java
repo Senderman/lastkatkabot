@@ -1,23 +1,26 @@
 package com.senderman.lastkatkabot.model;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.TypeAlias;
+
+import io.micronaut.core.annotation.Creator;
+import io.micronaut.data.annotation.Id;
+import io.micronaut.data.annotation.MappedEntity;
 
 import java.util.Objects;
 
-@TypeAlias("blacklist")
-public class BlacklistedUser implements IdAndName<Long> {
+@MappedEntity("blacklistedUser")
+public class BlacklistedUser implements UserIdAndName<Long> {
 
     @Id
-    private long userId;
-    private String name;
+    private final long userId;
+    private final String name;
 
+    @Creator
     public BlacklistedUser(long userId, String name) {
         this.userId = userId;
         this.name = name;
     }
 
-    public long getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
@@ -40,11 +43,6 @@ public class BlacklistedUser implements IdAndName<Long> {
                 "userId=" + userId +
                 ", name='" + name + '\'' +
                 '}';
-    }
-
-    @Override
-    public Long getId() {
-        return getUserId();
     }
 
     @Override

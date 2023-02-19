@@ -4,17 +4,26 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatInfoService;
+import jakarta.inject.Singleton;
 
-@Command(
-        command = "/lastpairs",
-        description = "последние 10 пар чата"
-)
-public class LastPairsCommand extends CommandExecutor {
+@Singleton
+@Command
+public class LastPairsCommand implements CommandExecutor {
 
     private final ChatInfoService chats;
 
     public LastPairsCommand(ChatInfoService chats) {
         this.chats = chats;
+    }
+
+    @Override
+    public String command() {
+        return "/lastpairs";
+    }
+
+    @Override
+    public String getDescription() {
+        return "последние 10 пар чата";
     }
 
     @Override

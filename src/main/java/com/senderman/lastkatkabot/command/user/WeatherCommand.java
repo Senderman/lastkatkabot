@@ -9,18 +9,17 @@ import com.senderman.lastkatkabot.exception.NoSuchCityException;
 import com.senderman.lastkatkabot.exception.WeatherParseException;
 import com.senderman.lastkatkabot.service.weather.Forecast;
 import com.senderman.lastkatkabot.service.weather.WeatherService;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
-@Command(
-        command = "/weather",
-        description = "погода. Если не указать город, то покажет погоду в последнем введенном вами городе"
-)
-public class WeatherCommand extends CommandExecutor {
+@Singleton
+@Command
+public class WeatherCommand implements CommandExecutor {
 
     private final UserStatsService userStats;
     private final WeatherService weatherService;
@@ -29,10 +28,20 @@ public class WeatherCommand extends CommandExecutor {
     public WeatherCommand(
             UserStatsService userStats,
             WeatherService weatherService,
-            @Qualifier("generalNeedsPool") ExecutorService threadPool) {
+            @Named("generalNeedsPool") ExecutorService threadPool) {
         this.userStats = userStats;
         this.weatherService = weatherService;
         this.threadPool = threadPool;
+    }
+
+    @Override
+    public String command() {
+        return "/weather";
+    }
+
+    @Override
+    public String getDescription() {
+        return "погода. Если не указать город, то покажет погоду в последнем введенном вами городе";
     }
 
     @Override

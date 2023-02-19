@@ -4,17 +4,26 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
+import jakarta.inject.Singleton;
 
-@Command(
-        command = "/bnchelp",
-        description = "помощь по игре Быки и Коровы"
-)
-public class BncHelpCommand extends CommandExecutor {
+@Singleton
+@Command
+public class BncHelpCommand implements CommandExecutor {
 
     private final BotConfig config;
 
     public BncHelpCommand(BotConfig config) {
         this.config = config;
+    }
+
+    @Override
+    public String command() {
+        return "/bnchelp";
+    }
+
+    @Override
+    public String getDescription() {
+        return "помощь по игре Быки и Коровы";
     }
 
     @Override

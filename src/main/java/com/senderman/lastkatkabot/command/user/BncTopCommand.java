@@ -7,6 +7,7 @@ import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
+import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
@@ -14,16 +15,24 @@ import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
 import java.util.Optional;
 import java.util.function.Function;
 
-@Command(
-        command = "/bnctop",
-        description = "топ игроков в Быки и Коровы. /bnctop chat для топа чата"
-)
-public class BncTopCommand extends CommandExecutor {
+@Singleton
+@Command
+public class BncTopCommand implements CommandExecutor {
 
     private final UserStatsService users;
 
     public BncTopCommand(UserStatsService users) {
         this.users = users;
+    }
+
+    @Override
+    public String command() {
+        return "/bnctop";
+    }
+
+    @Override
+    public String getDescription() {
+        return "топ игроков в Быки и Коровы. /bnctop chat для топа чата";
     }
 
     @Override

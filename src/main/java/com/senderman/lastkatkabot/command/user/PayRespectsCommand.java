@@ -6,12 +6,21 @@ import com.senderman.lastkatkabot.callback.Callbacks;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
+import jakarta.inject.Singleton;
 
-@Command(
-        command = "/f",
-        description = "(reply) press f to pay respects. А можно вот так: /f штаны за 40 хривень. Или просто /f"
-)
-public class PayRespectsCommand extends CommandExecutor {
+@Singleton
+@Command
+public class PayRespectsCommand implements CommandExecutor {
+
+    @Override
+    public String command() {
+        return "/f";
+    }
+
+    @Override
+    public String getDescription() {
+        return "(reply) press f to pay respects. А можно вот так: /f штаны за 40 хривень. Или просто /f";
+    }
 
     @Override
     public void accept(MessageContext ctx) {

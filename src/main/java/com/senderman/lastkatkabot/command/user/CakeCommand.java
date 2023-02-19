@@ -7,12 +7,21 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
+import jakarta.inject.Singleton;
 
-@Command(
-        command = "/cake",
-        description = "(reply) подарить тортик. Можно указать начинку, напр. /cake с вишней"
-)
-public class CakeCommand extends CommandExecutor {
+@Singleton
+@Command
+public class CakeCommand implements CommandExecutor {
+
+    @Override
+    public String command() {
+        return "/cake";
+    }
+
+    @Override
+    public String getDescription() {
+        return "(reply) подарить тортик. Можно указать начинку, напр. /cake с вишней";
+    }
 
     @Override
     public void accept(MessageContext ctx) {

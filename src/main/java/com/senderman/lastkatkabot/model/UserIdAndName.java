@@ -1,8 +1,8 @@
 package com.senderman.lastkatkabot.model;
 
-public interface IdAndName<TId> {
+public interface UserIdAndName<TId> {
 
-    TId getId();
+    TId getUserId();
 
     String getName();
 

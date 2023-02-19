@@ -1,14 +1,22 @@
 package com.senderman.lastkatkabot.repository;
 
 import com.senderman.lastkatkabot.model.BncGameSave;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
+import io.micronaut.data.mongodb.annotation.MongoFindQuery;
+import io.micronaut.data.mongodb.annotation.MongoRepository;
+import io.micronaut.data.mongodb.annotation.MongoUpdateOptions;
+import io.micronaut.data.repository.CrudRepository;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@Repository
+@MongoRepository
 public interface BncRepository extends CrudRepository<BncGameSave, Long> {
 
-    List<BncGameSave> deleteByEditDateLessThan(int editDate);
+    @MongoFindQuery("{ editDate: { $lt: :editDate } }")
+    List<BncGameSave> findByEditDateLessThan(int editDate);
 
+    @Override
+    @MongoUpdateOptions(upsert = true)
+    <S extends BncGameSave> S update(@Valid @NotNull S entity);
 }

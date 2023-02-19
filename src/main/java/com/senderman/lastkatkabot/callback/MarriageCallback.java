@@ -2,16 +2,16 @@ package com.senderman.lastkatkabot.callback;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
-import com.senderman.lastkatkabot.annotation.Callback;
 import com.senderman.lastkatkabot.dbservice.MarriageRequestService;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.model.MarriageRequest;
 import com.senderman.lastkatkabot.util.Html;
+import jakarta.inject.Singleton;
 
 import java.util.List;
 
-@Callback(Callbacks.MARRIAGE)
-public class MarriageCallback extends CallbackExecutor {
+@Singleton
+public class MarriageCallback implements CallbackExecutor {
 
     private final UserStatsService userStats;
     private final MarriageRequestService marriages;
@@ -19,6 +19,11 @@ public class MarriageCallback extends CallbackExecutor {
     public MarriageCallback(UserStatsService userStats, MarriageRequestService marriages) {
         this.userStats = userStats;
         this.marriages = marriages;
+    }
+
+    @Override
+    public String command() {
+        return Callbacks.MARRIAGE;
     }
 
     @Override
