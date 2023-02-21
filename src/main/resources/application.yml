@@ -1,13 +1,22 @@
 micronaut:
   application:
     name: LastkatkaBot
+  server:
+    port: 1457
+  metrics:
+    enabled: true
+    export:
+      prometheus:
+        enabled: true
+        step: PT1M
+        descriptions: true
+
+endpoints:
+  prometheus:
+    sensitive: false
 
 mongodb:
   uri: ${MONGODB_URI}
-
-logging:
-  level:
-    root: ERROR
 
 jackson:
   serializationInclusion: ALWAYS
