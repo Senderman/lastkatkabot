@@ -8,6 +8,7 @@ import jakarta.inject.Singleton;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Singleton
 public class UserActivityTrackerService {
@@ -17,18 +18,27 @@ public class UserActivityTrackerService {
     public final static int MAX_CACHE_SIZE = 500;
     private final ChatUserService chatUserService;
     private final Map<String, ChatUser> cache = new HashMap<>();
+    private final AtomicLong cacheSize;
     private int avgCacheFlushingSize = -1;
     private final MeterRegistry meterRegistry;
 
     public UserActivityTrackerService(ChatUserService chatUserService, MeterRegistry meterRegistry) {
         this.chatUserService = chatUserService;
         this.meterRegistry = meterRegistry;
+        this.cacheSize = new AtomicLong(0);
     }
 
     public synchronized void updateLastMessageDate(long chatId, long userId, String name, int lastMessageDate) {
         String id = ChatUser.generateId(chatId, userId);
-        cache.computeIfAbsent(id, k -> new ChatUser(chatId, userId, name, lastMessageDate));
-        meterRegistry.gauge(METER_NAME, cache.size());
+        cache.compute(id, (k, v) -> {
+            if (v == null) {
+                cacheSize.incrementAndGet();
+                return new ChatUser(chatId, userId, name, lastMessageDate);
+            }
+            v.setLastMessageDate(lastMessageDate);
+            return v;
+        });
+        meterRegistry.gauge(METER_NAME, cacheSize);
         if (cache.size() >= MAX_CACHE_SIZE)
             flush();
     }
@@ -44,6 +54,7 @@ public class UserActivityTrackerService {
         avgCacheFlushingSize = avgCacheFlushingSize == -1 ? data.size() : (avgCacheFlushingSize + data.size()) / 2;
         chatUserService.saveAll(data);
         cache.clear();
-        meterRegistry.gauge(METER_NAME, 0);
+        cacheSize.set(0);
+        meterRegistry.gauge(METER_NAME, cacheSize);
     }
 }

@@ -7,6 +7,7 @@ import jakarta.inject.Singleton;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 @Singleton
@@ -17,17 +18,22 @@ public class ChatPolicyEnsuringService {
     public final static int MAX_CACHE_SIZE = 500;
     private final BlacklistedChatService database;
     private final Map<Long, Consumer<Long>> cache;
+    private final AtomicLong cacheSize;
     private final MeterRegistry meterRegistry;
 
     public ChatPolicyEnsuringService(BlacklistedChatService database, MeterRegistry meterRegistry) {
         this.database = database;
         this.meterRegistry = meterRegistry;
         this.cache = new HashMap<>();
+        this.cacheSize = new AtomicLong(0);
     }
 
     public synchronized void queueViolationCheck(long chatId, Consumer<Long> onViolation) {
-        cache.put(chatId, onViolation);
-        meterRegistry.gauge(METER_NAME, cache.size());
+        cache.computeIfAbsent(chatId, k -> {
+            cacheSize.incrementAndGet();
+            return onViolation;
+        });
+        meterRegistry.gauge(METER_NAME, cacheSize);
         if (cache.size() >= MAX_CACHE_SIZE)
             checkViolations();
     }
@@ -39,6 +45,7 @@ public class ChatPolicyEnsuringService {
         violations.forEach(chat -> cache.getOrDefault(chat.getChatId(), (c) -> {
         }).accept(chat.getChatId()));
         cache.clear();
-        meterRegistry.gauge(METER_NAME, 0);
+        cacheSize.set(0);
+        meterRegistry.gauge(METER_NAME, cacheSize);
     }
 }

@@ -14,8 +14,7 @@ public class ChatUser {
     private final String id;
     private final long chatId;
     private final String name;
-    private final int lastMessageDate;
-    @MappedEntity
+    private int lastMessageDate;
     private long userId;
 
     @Creator
@@ -49,6 +48,10 @@ public class ChatUser {
 
     public String getName() {
         return name;
+    }
+
+    public void setLastMessageDate(int lastMessageDate) {
+        this.lastMessageDate = lastMessageDate;
     }
 
     public int getLastMessageDate() {
