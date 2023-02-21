@@ -29,7 +29,8 @@ import java.util.stream.Stream;
 @Singleton
 public class LastkatkaUpdateHandler implements UpdateHandler {
 
-    private final static String METER_NAME = "bot.command";
+    private final static String COMMAND_METER_NAME = "bot.command";
+    private final static String CALLBACK_METER_NAME = "bot.callback";
     private final String botUsername;
     private final ListMultimap<String, TextCommand> textCommands;
     private final List<RegexCommand> regexCommands;
@@ -136,7 +137,7 @@ public class LastkatkaUpdateHandler implements UpdateHandler {
         final var context = new MessageContext(sender, update, commandArguments);
         for (TextCommand cmd : commands) {
             cmd.accept(context);
-            meterRegistry.counter(METER_NAME, "command", cmd.command().replaceFirst("/", "")).increment();
+            meterRegistry.counter(COMMAND_METER_NAME, "command", cmd.command().replaceFirst("/", "")).increment();
         }
         return true;
     }
@@ -173,6 +174,7 @@ public class LastkatkaUpdateHandler implements UpdateHandler {
         final var context = new CallbackQueryContext(sender, update, commandArguments);
         for (CallbackQueryCommand cmd : commands) {
             cmd.accept(context);
+            meterRegistry.counter(CALLBACK_METER_NAME, "command", cmd.command()).increment();
         }
         return true;
     }
