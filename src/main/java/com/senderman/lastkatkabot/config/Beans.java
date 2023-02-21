@@ -1,7 +1,5 @@
 package com.senderman.lastkatkabot.config;
 
-import com.annimon.tgbotsmodule.commands.CommandRegistry;
-import com.annimon.tgbotsmodule.commands.authority.Authority;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -10,22 +8,16 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.mongodb.ConnectionString;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
-import com.senderman.lastkatkabot.Role;
-import com.senderman.lastkatkabot.bnc.BncTelegramHandler;
-import com.senderman.lastkatkabot.callback.CallbackExecutor;
-import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.genshin.Item;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Value;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
-import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @Factory
 public class Beans {
@@ -35,24 +27,6 @@ public class Beans {
         var options = new DefaultBotOptions();
         options.setAllowedUpdates(List.of("message", "callback_query"));
         return options;
-    }
-
-    @Singleton
-    public CommandRegistry<Role> commandRegistry(
-            BotConfig config,
-            @NotNull Authority<Role> authority,
-            Set<CommandExecutor> commands,
-            Set<CallbackExecutor> callbacks,
-            BncTelegramHandler bncTelegramHandler
-    ) {
-        var registry = new CommandRegistry<>(config.username(), authority);
-
-        registry.splitCallbackCommandByWhitespace();
-
-        registry.register(bncTelegramHandler);
-        commands.forEach(registry::register);
-        callbacks.forEach(registry::register);
-        return registry;
     }
 
     @Singleton

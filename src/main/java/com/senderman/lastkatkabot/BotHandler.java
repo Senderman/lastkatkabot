@@ -1,7 +1,7 @@
 package com.senderman.lastkatkabot;
 
+import com.annimon.tgbotsmodule.analytics.UpdateHandler;
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.commands.CommandRegistry;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.senderman.lastkatkabot.config.BotConfig;
@@ -41,7 +41,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     private final static Logger logger = LoggerFactory.getLogger(BotHandler.class);
 
     private final BotConfig config;
-    private final CommandRegistry<Role> commandRegistry;
+    private final UpdateHandler commandRegistry;
     private final ChatUserService chatUsers;
     private final UserActivityTrackerService activityTrackerService;
     private final ChatPolicyEnsuringService chatPolicyEnsuringService;
@@ -53,7 +53,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     public BotHandler(
             DefaultBotOptions botOptions,
             BotConfig config,
-            CommandRegistry<Role> commandRegistry,
+            UpdateHandler commandRegistry,
             ChatUserService chatUsers,
             UserActivityTrackerService activityTrackerService,
             ChatPolicyEnsuringService chatPolicyEnsuringService,
