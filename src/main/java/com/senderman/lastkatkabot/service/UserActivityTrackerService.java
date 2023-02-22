@@ -19,13 +19,11 @@ public class UserActivityTrackerService {
     private final ChatUserService chatUserService;
     private final Map<String, ChatUser> cache = new HashMap<>();
     private final AtomicLong cacheSize;
-    private int avgCacheFlushingSize = -1;
-    private final MeterRegistry meterRegistry;
 
     public UserActivityTrackerService(ChatUserService chatUserService, MeterRegistry meterRegistry) {
         this.chatUserService = chatUserService;
-        this.meterRegistry = meterRegistry;
         this.cacheSize = new AtomicLong(0);
+        meterRegistry.gauge(METER_NAME, cacheSize);
     }
 
     public synchronized void updateLastMessageDate(long chatId, long userId, String name, int lastMessageDate) {
@@ -38,23 +36,16 @@ public class UserActivityTrackerService {
             v.setLastMessageDate(lastMessageDate);
             return v;
         });
-        meterRegistry.gauge(METER_NAME, cacheSize);
         if (cache.size() >= MAX_CACHE_SIZE)
             flush();
-    }
-
-    public int getAvgCacheFlushingSize() {
-        return avgCacheFlushingSize;
     }
 
     @Scheduled(fixedDelay = FLUSH_INTERVAL, scheduler = "taskScheduler")
     protected synchronized void flush() {
         if (cache.isEmpty()) return;
         var data = cache.values();
-        avgCacheFlushingSize = avgCacheFlushingSize == -1 ? data.size() : (avgCacheFlushingSize + data.size()) / 2;
         chatUserService.saveAll(data);
         cache.clear();
         cacheSize.set(0);
-        meterRegistry.gauge(METER_NAME, cacheSize);
     }
 }

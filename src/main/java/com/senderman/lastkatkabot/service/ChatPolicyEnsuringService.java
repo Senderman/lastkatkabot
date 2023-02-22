@@ -19,13 +19,12 @@ public class ChatPolicyEnsuringService {
     private final BlacklistedChatService database;
     private final Map<Long, Consumer<Long>> cache;
     private final AtomicLong cacheSize;
-    private final MeterRegistry meterRegistry;
 
     public ChatPolicyEnsuringService(BlacklistedChatService database, MeterRegistry meterRegistry) {
         this.database = database;
-        this.meterRegistry = meterRegistry;
         this.cache = new HashMap<>();
         this.cacheSize = new AtomicLong(0);
+        meterRegistry.gauge(METER_NAME, cacheSize);
     }
 
     public synchronized void queueViolationCheck(long chatId, Consumer<Long> onViolation) {
@@ -33,7 +32,6 @@ public class ChatPolicyEnsuringService {
             cacheSize.incrementAndGet();
             return onViolation;
         });
-        meterRegistry.gauge(METER_NAME, cacheSize);
         if (cache.size() >= MAX_CACHE_SIZE)
             checkViolations();
     }
@@ -46,6 +44,5 @@ public class ChatPolicyEnsuringService {
         }).accept(chat.getChatId()));
         cache.clear();
         cacheSize.set(0);
-        meterRegistry.gauge(METER_NAME, cacheSize);
     }
 }

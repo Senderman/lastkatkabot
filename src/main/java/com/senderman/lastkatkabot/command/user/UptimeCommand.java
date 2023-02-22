@@ -3,7 +3,6 @@ package com.senderman.lastkatkabot.command.user;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import com.senderman.lastkatkabot.service.UserActivityTrackerService;
 import jakarta.inject.Singleton;
 
 import java.lang.management.ManagementFactory;
@@ -12,12 +11,6 @@ import java.lang.management.MemoryType;
 @Singleton
 @Command
 public class UptimeCommand implements CommandExecutor {
-
-    private final UserActivityTrackerService trackerService;
-
-    public UptimeCommand(UserActivityTrackerService trackerService) {
-        this.trackerService = trackerService;
-    }
 
     @Override
     public String command() {
@@ -47,8 +40,7 @@ public class UptimeCommand implements CommandExecutor {
                 Нативная память: <code>%.2f MiB</code>
                 Аптайм: <code>%s</code>
                 Потоки: <code>%d</code>
-                CPUs: <code>%d</code>
-                Средний сброс кеша трекера юзеров: %d/%s"""
+                CPUs: <code>%d</code>"""
                 .formatted(
                         (r.totalMemory() - r.freeMemory()) / delimiter,
                         r.freeMemory() / delimiter,
@@ -57,9 +49,7 @@ public class UptimeCommand implements CommandExecutor {
                         getNativeMemory() / delimiter,
                         formatTime(ManagementFactory.getRuntimeMXBean().getUptime()),
                         ManagementFactory.getThreadMXBean().getThreadCount(),
-                        ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors(),
-                        trackerService.getAvgCacheFlushingSize(),
-                        UserActivityTrackerService.FLUSH_INTERVAL
+                        ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors()
                 );
     }
 
