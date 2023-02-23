@@ -32,7 +32,7 @@ public class Threads {
 
         @Override
         public Thread newThread(@NotNull Runnable runnable) {
-            String threadName = String.format(threadNameFormat, threadsCreated++);
+            String threadName = threadNameFormat.formatted(threadsCreated++);
             return new Thread(runnable, threadName);
         }
     }

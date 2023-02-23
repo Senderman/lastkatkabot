@@ -61,19 +61,20 @@ public class BncStartCommand implements CommandExecutor {
 
     private void sendGameState(MessageContext ctx, BncGameState state) {
         var historyText = state.history().stream()
-                .map(e -> String.format("%s: %dБ %dК", e.number(), e.bulls(), e.cows()))
+                .map(e -> "%s: %dБ %dК".formatted(e.number(), e.bulls(), e.cows()))
                 .collect(Collectors.joining("\n"));
 
-        var textToSend = String.format("""
-                        Длина числа: %d
-                        Тип числа: %s
-                        Осталось попыток: %d
+        var textToSend = """
+                Длина числа: %d
+                Тип числа: %s
+                Осталось попыток: %d
 
-                        %s""",
+                %s""".formatted(
                 state.length(),
                 state.isHexadecimal() ? "HEX" : "DEC",
                 state.attemptsLeft(),
-                historyText);
+                historyText
+        );
 
         gamesHandler.sendGameMessage(ctx.chatId(), textToSend, ctx.sender);
     }

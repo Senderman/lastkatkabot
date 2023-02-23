@@ -123,9 +123,11 @@ public class BncTelegramHandler implements RegexCommand {
         gamesManager.deleteGame(chatId);
 
         var username = Html.htmlSafe(ctx.user().getFirstName());
-        var text = username + " выиграл за " +
-                (BncGame.totalAttempts(gameState.length(), gameState.isHexadecimal()) - result.attempts()) +
-                " попыток!\n\n" + formatGameStateStats(gameState);
+        var text = "%s выиграл за %d попыток и получил %d очков!".formatted(
+                username,
+                BncGame.totalAttempts(gameState.length(), gameState.isHexadecimal()) - result.attempts(),
+                score
+        );
         deleteGameMessages(chatId, ctx.sender);
         ctx.reply(text).callAsync(ctx.sender);
     }
@@ -160,7 +162,7 @@ public class BncTelegramHandler implements RegexCommand {
 
     private String formatHistory(List<BncResult> history) {
         return history.stream()
-                .map(e -> String.format("%s: %dБ %dК", e.number(), e.bulls(), e.cows()))
+                .map(e -> "%s: %dБ %dК".formatted(e.number(), e.bulls(), e.cows()))
                 .collect(Collectors.joining("\n"));
     }
 
@@ -170,13 +172,15 @@ public class BncTelegramHandler implements RegexCommand {
         sec -= mins * 60;
         var hours = mins / 60;
         mins -= hours * 60;
-        return String.format("%02d:%02d:%02d", hours, mins, sec);
+        return "%02d:%02d:%02d".formatted(hours, mins, sec);
     }
 
     private String formatResult(BncResult result) {
-        return String.format("%s: %dБ %dК, попыток: %d", result.number(),
+        return "%s: %dБ %dК, попыток: %d".formatted(
+                result.number(),
                 result.bulls(),
                 result.cows(),
-                result.attempts());
+                result.attempts()
+        );
     }
 }

@@ -58,6 +58,6 @@ public class CakeCallback implements CallbackExecutor {
                 .getText()
                 .split("тортик", 2)[1]
                 .strip();
-        return String.format(format, query.getFrom().getFirstName(), cakeInsides);
+        return format.formatted(query.getFrom().getFirstName(), cakeInsides);
     }
 }

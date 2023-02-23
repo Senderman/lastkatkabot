@@ -62,7 +62,7 @@ public class JoinDuel implements CallbackExecutor {
         var loserName = Html.htmlSafe(result.loser.getFirstName());
         var text = "<b>Итоги дуэли:</b>\n\n";
         if (result.isDraw()) {
-            text += String.format("\uD83D\uDFE1 Ничья!\n\nУчастники: %s, %s", winnerName, loserName);
+            text += "\uD83D\uDFE1 Ничья!\n\nУчастники: %s, %s".formatted(winnerName, loserName);
         } else {
             text += "\uD83D\uDE0E Победитель: " + winnerName + "\n" +
                     "\uD83D\uDE14 Проигравший: " + loserName;

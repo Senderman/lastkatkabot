@@ -31,7 +31,7 @@ public class CakeCommand implements CommandExecutor {
         var subjectName = Html.htmlSafe(ctx.user().getFirstName());
         var target = ctx.message().getReplyToMessage().getFrom();
         var targetName = Html.htmlSafe(target.getFirstName());
-        var text = String.format("\uD83C\uDF82 %s, пользователь %s подарил вам тортик %s",
+        var text = "\uD83C\uDF82 %s, пользователь %s подарил вам тортик %s".formatted(
                 targetName, subjectName, ctx.message().getText().replaceAll("/@\\S*\\s?|/\\S*\\s?", ""));
 
         var markup = new MarkupBuilder()

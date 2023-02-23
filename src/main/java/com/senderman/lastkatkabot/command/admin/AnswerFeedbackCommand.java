@@ -79,8 +79,7 @@ public class AnswerFeedbackCommand implements CommandExecutor {
         // notify others about answer
         if (!ctx.chatId().equals(config.feedbackChannelId())) {
             var replierUsername = ctx.user().getFirstName();
-            var answerReport = String.format("%s ответил на фидбек #%d:\n\n%s",
-                    replierUsername, feedbackId, answer);
+            var answerReport = "%s ответил на фидбек #%d:\n\n%s".formatted(replierUsername, feedbackId, answer);
             Methods.sendMessage(config.feedbackChannelId(), answerReport).callAsync(ctx.sender);
         }
     }

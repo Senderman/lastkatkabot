@@ -108,9 +108,10 @@ public class PairCommand implements CommandExecutor {
                 chatInfo.setLastPairs(lastPairs.stream().limit(10).collect(Collectors.toList()));
                 chatInfoService.save(chatInfo);
 
-                var text = String.format(loveStrings[loveStrings.length - 1],
+                var text = loveStrings[loveStrings.length - 1].formatted(
                         Html.getUserLink(pair.first),
-                        Html.getUserLink(pair.second));
+                        Html.getUserLink(pair.second)
+                );
                 // wait while flood ends to prevent race condition
                 floodFuture.get();
                 ctx.reply(text).callAsync(ctx.sender);
@@ -178,7 +179,7 @@ public class PairCommand implements CommandExecutor {
 
         @Override
         public String toString() {
-            return String.format("%s %s %s",
+            return "%s %s %s".formatted(
                     Html.htmlSafe(first.getFirstName()),
                     getPairEmoji(),
                     Html.htmlSafe(second.getFirstName())

@@ -56,7 +56,7 @@ public class StatsCommand implements CommandExecutor {
 
                 👑 Дуэлей выиграно: %d
                 ⚔️ Всего дуэлей: %d
-                📈 Винрейт: %d
+                📈 Винрейт: %d%%
 
                 🐮 Баллов за быки и коровы: %d"""
                 .formatted(name, stats.getDuelWins(), stats.getDuelsTotal(), winRate, stats.getBncScore());
