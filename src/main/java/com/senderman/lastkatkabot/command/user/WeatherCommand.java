@@ -41,7 +41,7 @@ public class WeatherCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "погода. Если не указать город, то покажет погоду в последнем введенном вами городе";
+        return "погода. Если не указать город, то покажет погоду в последнем введенном вами городе. Можно реплаем на геолокацию";
     }
 
     @Override
@@ -88,6 +88,10 @@ public class WeatherCommand implements CommandExecutor {
      * @throws NoCitySpecifiedException if the city is found neither in message text, neither in db
      */
     private String getCityFromMessageOrDb(MessageContext ctx) throws NoCitySpecifiedException {
+        if (ctx.message().isReply() && ctx.message().getReplyToMessage().hasLocation()) {
+            var location = ctx.message().getReplyToMessage().getLocation();
+            return "%s,%s".formatted(location.getLatitude(), location.getLongitude());
+        }
         ctx.setArgumentsLimit(1);
         if (ctx.argumentsLength() != 0)
             return ctx.argument(0);
