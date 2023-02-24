@@ -12,6 +12,7 @@ repositories {
 
 dependencies {
     annotationProcessor("io.micronaut:micronaut-http-validation")
+    annotationProcessor("io.micronaut.data:micronaut-data-document-processor")
     implementation('com.annimon:tgbots-module:6.5.1') {
         exclude group: 'org.glassfish.grizzly', module: 'grizzly-http-server'
         exclude group: 'org.glassfish.jersey.core', module: 'jersey-server'
@@ -20,15 +21,12 @@ dependencies {
     implementation("io.micronaut:micronaut-jackson-databind")
     implementation("io.micronaut.data:micronaut-data-mongodb")
     implementation("jakarta.annotation:jakarta.annotation-api")
-    implementation("io.micronaut:micronaut-validation")
     implementation("io.micronaut:micronaut-management")
-    implementation "io.micronaut.micrometer:micronaut-micrometer-core"
+    implementation("io.micronaut.micrometer:micronaut-micrometer-core")
     implementation("io.micronaut.micrometer:micronaut-micrometer-registry-prometheus")
     implementation("org.mongodb:mongodb-driver-sync:4.9.0")
 
     runtimeOnly("ch.qos.logback:logback-classic:1.4.5")
-
-    annotationProcessor("io.micronaut.data:micronaut-data-document-processor")
     runtimeOnly('com.github.jnr:jnr-unixsocket:0.38.17')
 }
 
