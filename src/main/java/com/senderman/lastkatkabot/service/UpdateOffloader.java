@@ -3,9 +3,10 @@ package com.senderman.lastkatkabot.service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
 
 public interface UpdateOffloader {
 
-    void offloadUpdates(Collection<Update> updates);
+    CompletableFuture<Void> offloadUpdates(Collection<Update> updates);
 
 }

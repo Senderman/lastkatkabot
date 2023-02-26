@@ -67,8 +67,7 @@ public class Beans {
     @Singleton
     @Requires(missingProperty = "offload.enabled")
     public UpdateOffloader updateOffloader() {
-        return u -> {
-        };
+        return u -> null;
     }
 
 }

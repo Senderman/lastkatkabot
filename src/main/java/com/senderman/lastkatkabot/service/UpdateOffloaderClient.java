@@ -8,6 +8,7 @@ import io.micronaut.http.client.annotation.Client;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
 
 @Client
 @Requires(property = "offload.enabled")
@@ -16,6 +17,6 @@ public interface UpdateOffloaderClient extends UpdateOffloader {
     @Override
     @Post("${offload.path}")
     @Header(name = "Authorization", value = "Bearer ${offload.token}")
-    void offloadUpdates(@Body Collection<Update> updates);
+    CompletableFuture<Void> offloadUpdates(@Body Collection<Update> updates);
 
 }
