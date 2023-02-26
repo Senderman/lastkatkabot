@@ -71,6 +71,6 @@ public class WhereUserCommand implements CommandExecutor {
     // get chat name. If unable to get if from tg, return chatId as string
     private String getChatNameOrChatId(long chatId, CommonAbsSender telegram) {
         var chat = Methods.getChat(chatId).call(telegram);
-        return chat != null ? chat.getTitle() : String.valueOf(chatId);
+        return chat != null ? chat.getTitle() + " (<code>" + chatId + "</code>)" : String.valueOf(chatId);
     }
 }
