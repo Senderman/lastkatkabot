@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.repository;
 
 import com.senderman.lastkatkabot.model.UserStats;
+import io.micronaut.data.mongodb.annotation.MongoFindOptions;
 import io.micronaut.data.mongodb.annotation.MongoFindQuery;
 import io.micronaut.data.mongodb.annotation.MongoRepository;
 import io.micronaut.data.mongodb.annotation.MongoUpdateOptions;
@@ -17,9 +18,11 @@ public interface UserStatsRepository extends CrudRepository<UserStats, Long> {
     Optional<UserStats> findByLoverId(int loverId);
 
     @MongoFindQuery(value = "{ bncScore: { $ne: 0 } }", sort = "{ bncScore : -1 }")
+    @MongoFindOptions(limit = 10)
     List<UserStats> findTop10OrderByBncScoreDesc();
 
     @MongoFindQuery(value = "{ _id: { $in: :ids }, bncScore: { $ne: 0 } }", sort = "{ bncScore : -1 }")
+    @MongoFindOptions(limit = 10)
     List<UserStats> findTop10ByUserIdInOrderByBncScoreDesc(List<Long> ids);
 
     @Override
