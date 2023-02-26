@@ -6,6 +6,7 @@ import com.senderman.lastkatkabot.bnc.BncGameState;
 import com.senderman.lastkatkabot.bnc.BncTelegramHandler;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import jakarta.inject.Singleton;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Collectors;
 
@@ -32,7 +33,7 @@ public class BncStartCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(MessageContext ctx) {
+    public void accept(@NotNull MessageContext ctx) {
         // if there's game in this chat already, send state
         if (gamesHandler.hasGame(ctx.chatId())) {
             sendGameState(ctx, gamesHandler.getGameState(ctx.chatId()));

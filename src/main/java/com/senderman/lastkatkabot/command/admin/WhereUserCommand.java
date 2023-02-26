@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
 
 @Singleton
 @Command
@@ -57,20 +58,20 @@ public class WhereUserCommand implements CommandExecutor {
             var chatNames = chatUsers.findByUserId(userId)
                     .stream()
                     .map(chat -> getChatNameOrChatId(chat.getChatId(), ctx.sender))
-                    .toList();
+                    .collect(Collectors.joining("\n"));
 
             if (chatNames.isEmpty()) {
                 ctx.replyToMessage("\uD83D\uDD75️\u200D♂ Юзера нет ни в одном чате с ботом!️").callAsync(ctx.sender);
                 return;
             }
 
-            ctx.replyToMessage("🕵️‍♂ Юзер замечен в следующих чатах:\n\n️" + String.join("\n", chatNames)).callAsync(ctx.sender);
+            ctx.replyToMessage("🕵️‍♂ Юзер замечен в следующих чатах:\n\n️" + chatNames).callAsync(ctx.sender);
         });
     }
 
     // get chat name. If unable to get if from tg, return chatId as string
     private String getChatNameOrChatId(long chatId, CommonAbsSender telegram) {
         var chat = Methods.getChat(chatId).call(telegram);
-        return chat != null ? chat.getTitle() + " (<code>" + chatId + "</code>)" : String.valueOf(chatId);
+        return chat != null ? chat.getTitle() + " (<code>%d</code>)".formatted(chatId) : String.valueOf(chatId);
     }
 }

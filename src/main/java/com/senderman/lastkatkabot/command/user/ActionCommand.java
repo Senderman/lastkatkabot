@@ -5,6 +5,7 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import jakarta.inject.Singleton;
+import org.jetbrains.annotations.NotNull;
 
 @Singleton
 @Command
@@ -21,7 +22,7 @@ public class ActionCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(MessageContext ctx) {
+    public void accept(@NotNull MessageContext ctx) {
         ctx.deleteMessage().callAsync(ctx.sender);
         ctx.setArgumentsLimit(1);
         if (ctx.argumentsLength() < 1) return;

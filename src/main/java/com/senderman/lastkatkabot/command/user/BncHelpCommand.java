@@ -5,6 +5,7 @@ import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
 import jakarta.inject.Singleton;
+import org.jetbrains.annotations.NotNull;
 
 @Singleton
 @Command
@@ -27,7 +28,7 @@ public class BncHelpCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(MessageContext ctx) {
+    public void accept(@NotNull MessageContext ctx) {
         ctx.replyWithPhoto()
                 .setFile(config.bncHelpPictureId())
                 .callAsync(ctx.sender);

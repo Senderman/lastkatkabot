@@ -7,6 +7,7 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.ChatUserService;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 import java.util.concurrent.ExecutorService;
@@ -39,7 +40,7 @@ public class PopularityCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(MessageContext ctx) {
+    public void accept(@NotNull MessageContext ctx) {
         threadPool.execute(() -> {
             var text = "📊 <b>Популярность бота:</b>\n\n";
             var chatsWithUsers = chatUsers.getTotalChats();

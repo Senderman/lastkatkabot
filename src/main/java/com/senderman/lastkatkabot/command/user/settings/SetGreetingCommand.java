@@ -43,7 +43,6 @@ public class SetGreetingCommand implements CommandExecutor {
         var reply = ctx.message().getReplyToMessage();
         if (reply == null || !reply.hasSticker()) {
             ctx.replyToMessage("❌ Вы должны отправить эту команду на стикер, который станет приветствием!").callAsync(ctx.sender);
-            ;
             return;
         }
 
