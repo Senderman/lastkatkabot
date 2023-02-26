@@ -15,7 +15,7 @@ public interface UpdateOffloaderClient extends UpdateOffloader {
 
     @Override
     @Post("${offload.path}")
-    @Header(name = "Authorization", value = "${offload.token}")
+    @Header(name = "Authorization", value = "Bearer ${offload.token}")
     void offloadUpdates(@Body Collection<Update> updates);
 
 }
