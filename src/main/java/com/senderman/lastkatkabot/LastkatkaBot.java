@@ -20,7 +20,23 @@ public class LastkatkaBot implements BotModule {
     }
 
     public static void main(String[] args) {
-        Micronaut.run(LastkatkaBot.class, args);
+        Micronaut.build(args)
+                .environmentVariableIncludes(
+                        "MICRONAUT_SERVER_HOST",
+                        "MICRONAUT_SERVER_PORT",
+                        "MICRONAUT_METRICS_ENABLED",
+                        "MONGODB_URI",
+                        "username",
+                        "token",
+                        "main-admin",
+                        "feedback-channel-id",
+                        "notification-channel-id",
+                        "OFFLOAD_ENABLED",
+                        "OFFLOAD_PATH",
+                        "OFFLOAD_TOKEN"
+                )
+                .classes(LastkatkaBot.class)
+                .start();
     }
 
     @Scheduled(initialDelay = "1s")

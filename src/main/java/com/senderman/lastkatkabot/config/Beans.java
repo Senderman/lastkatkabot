@@ -9,7 +9,9 @@ import com.mongodb.ConnectionString;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import com.senderman.lastkatkabot.genshin.Item;
+import com.senderman.lastkatkabot.service.UpdateOffloader;
 import io.micronaut.context.annotation.Factory;
+import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
@@ -60,6 +62,13 @@ public class Beans {
         var connectionString = new ConnectionString(uri);
         var client = MongoClients.create(connectionString);
         return client.getDatabase(Objects.requireNonNull(connectionString.getDatabase()));
+    }
+
+    @Singleton
+    @Requires(missingProperty = "offload.enabled")
+    public UpdateOffloader updateOffloader() {
+        return u -> {
+        };
     }
 
 }
