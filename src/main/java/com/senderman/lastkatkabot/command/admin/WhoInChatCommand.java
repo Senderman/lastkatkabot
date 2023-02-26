@@ -76,7 +76,7 @@ public class WhoInChatCommand implements CommandExecutor {
             }
             // send remaining users
             if (text.length() != 0) {
-                ctx.reply(text.toString()).callAsync(ctx.sender);
+                ctx.replyToMessage(text.toString()).callAsync(ctx.sender);
             }
         });
 
