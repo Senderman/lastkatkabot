@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 @Client
-@Requires(property = "offload.enabled")
+@Requires(property = "offload.enabled", value = "true")
 public interface UpdateOffloaderClient extends UpdateOffloader {
 
     @Override

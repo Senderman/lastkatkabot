@@ -15,8 +15,13 @@ endpoints:
   prometheus:
     sensitive: false
 
+# you can also use unix domain socket connection:
+
+# mongodb:
+#  uri: mongodb://user:password@%2Ftmp%2Fmongodb-27017.sock/database?directConnection=true&authSource=admin
+
 mongodb:
-  uri: ${MONGODB_URI}
+  uri: "mongodb://user:password@host:port/database?directConnection=true&authSource=admin"
 
 jackson:
   serializationInclusion: ALWAYS
@@ -34,4 +39,10 @@ bncHelpPictureId: "AgADAgAD2qkxG1TVaUjH0X-0YjLur08E9Q4ABAG8AAEj0FdnA6d7AgABAg" #
 helloGifId: "CgADAQADiwAD0r04RoeZTv5wklZNAg" # gif for new members
 leaveStickerId: "CAADAgADDAADea1UE9LCz-IGyKZhAg" # sticker that bot will send after someone leaves the chat
 
-
+# enable to offload all updates to a third-party service
+# the service should accept a POST request on its $path endpoint
+# the request contains list of telegram updates
+offload:
+  enabled: false
+  path: path to a POST endpoint to offload updates
+  token: token for bearer authentication
