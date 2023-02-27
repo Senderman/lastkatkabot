@@ -7,4 +7,5 @@ public class Callbacks {
     public final static String DUEL = "DUEL";
     public final static String DIVORCE = "DIVORCE";
     public final static String GREETING = "GREETING";
+    public final static String FEEDBACK_DELETE = "FDEL";
 }
