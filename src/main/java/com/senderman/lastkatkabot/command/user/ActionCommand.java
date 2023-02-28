@@ -30,7 +30,7 @@ public class ActionCommand implements CommandExecutor {
         var action = ctx.user().getFirstName() + " " + ctx.argument(0);
         var sm = Methods.sendMessage(ctx.chatId(), action);
         if (ctx.message().isReply()) {
-            sm.setReplyToMessageId(ctx.message().getReplyToMessage().getMessageId());
+            sm.inReplyTo(ctx.message().getReplyToMessage());
         }
         sm.callAsync(ctx.sender);
     }

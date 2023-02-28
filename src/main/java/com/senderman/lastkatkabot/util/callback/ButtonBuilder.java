@@ -2,6 +2,8 @@ package com.senderman.lastkatkabot.util.callback;
 
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
+import java.util.StringJoiner;
+
 public abstract class ButtonBuilder {
 
     protected final InlineKeyboardButton button;
@@ -32,6 +34,15 @@ public abstract class ButtonBuilder {
     }
 
     public abstract ButtonBuilder payload(String payload);
+
+    public ButtonBuilder payload(String command, Object... args) {
+        final var joiner = new StringJoiner(" ");
+        joiner.add(command);
+        for (Object arg : args) {
+            joiner.add(String.valueOf(arg));
+        }
+        return payload(joiner.toString());
+    }
 
     public InlineKeyboardButton create() {
         return button;

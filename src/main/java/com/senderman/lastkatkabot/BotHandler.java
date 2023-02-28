@@ -124,10 +124,10 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
                     .setShowAlert(true)
                     .callAsync(this);
         } else if (update.hasMessage()) {
-            var messageId = update.getMessage().getMessageId();
-            var chatId = update.getMessage().getChatId();
+            var message = update.getMessage();
+            var chatId = message.getChatId();
             Methods.sendMessage(chatId, errorText)
-                    .setReplyToMessageId(messageId)
+                    .inReplyTo(message)
                     .callAsync(this);
         }
     }
