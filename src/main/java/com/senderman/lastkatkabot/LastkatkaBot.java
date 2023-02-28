@@ -30,10 +30,7 @@ public class LastkatkaBot implements BotModule {
                         "token",
                         "main-admin",
                         "feedback-channel-id",
-                        "notification-channel-id",
-                        "OFFLOAD_ENABLED",
-                        "OFFLOAD_PATH",
-                        "OFFLOAD_TOKEN"
+                        "notification-channel-id"
                 )
                 .classes(LastkatkaBot.class)
                 .start();

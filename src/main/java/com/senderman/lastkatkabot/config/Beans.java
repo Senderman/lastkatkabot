@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.mongodb.ConnectionString;
-import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import com.senderman.lastkatkabot.feature.genshin.model.Item;
 import io.micronaut.context.annotation.Factory;
@@ -56,9 +56,8 @@ public class Beans {
     }
 
     @Singleton
-    public MongoDatabase mongoDatabase(@Value("${mongodb.uri}") String uri) {
+    public MongoDatabase mongoDatabase(@Value("${mongodb.uri}") String uri, MongoClient client) {
         var connectionString = new ConnectionString(uri);
-        var client = MongoClients.create(connectionString);
         return client.getDatabase(Objects.requireNonNull(connectionString.getDatabase()));
     }
 
