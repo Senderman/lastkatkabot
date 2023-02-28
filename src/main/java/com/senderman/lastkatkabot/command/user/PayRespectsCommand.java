@@ -5,7 +5,6 @@ import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.callback.Callbacks;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
-import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
 import jakarta.inject.Singleton;
 
 @Singleton
@@ -39,12 +38,11 @@ public class PayRespectsCommand implements CommandExecutor {
         var text = "🕯 Press F to pay respects " + object +
                 "\n" + ctx.user().getFirstName() + " has paid respects";
 
-        var markup = new MarkupBuilder()
-                .addButton(ButtonBuilder.callbackButton()
+        ctx.reply(text)
+                .setInlineKeyboard(ButtonBuilder.callbackButton()
                         .text("F")
-                        .payload(Callbacks.F))
-                .build();
-
-        ctx.reply(text).setReplyMarkup(markup).callAsync(ctx.sender);
+                        .payload(Callbacks.F)
+                        .create())
+                .callAsync(ctx.sender);
     }
 }

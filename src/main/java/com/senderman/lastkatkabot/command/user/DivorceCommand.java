@@ -6,7 +6,6 @@ import com.senderman.lastkatkabot.callback.Callbacks;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
-import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
 import jakarta.inject.Singleton;
 
 @Singleton
@@ -41,17 +40,17 @@ public class DivorceCommand implements CommandExecutor {
             return;
         }
 
-        var markup = new MarkupBuilder()
-                .addButton(ButtonBuilder.callbackButton()
-                        .text("Развестись")
-                        .payload(Callbacks.DIVORCE + " a " + userId + " " + loverId)) // accept button
-                .addButton(ButtonBuilder.callbackButton()
-                        .text("Отмена")
-                        .payload(Callbacks.DIVORCE + " d " + userId)) // decline button
-                .build();
-
         ctx.replyToMessage("Вы точно уверены, что хотите развестись со своей половинкой?")
-                .setReplyMarkup(markup)
+                .setSingleRowInlineKeyboard(
+                        ButtonBuilder.callbackButton()
+                                .text("Развестись")
+                                .payload(Callbacks.DIVORCE, "a", userId, loverId)
+                                .create(),
+                        ButtonBuilder.callbackButton()
+                                .text("Отмена")
+                                .payload(Callbacks.DIVORCE, "d", userId)
+                                .create()
+                )
                 .callAsync(ctx.sender);
 
     }

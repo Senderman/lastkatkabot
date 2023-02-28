@@ -81,11 +81,11 @@ public class AnswerFeedbackCommand implements CommandExecutor {
                 .setSingleColumnInlineKeyboard(
                         ButtonBuilder.callbackButton()
                                 .text("Удалить фидбек")
-                                .payload(Callbacks.FEEDBACK_DELETE + " " + feedback.getId())
+                                .payload(Callbacks.FEEDBACK_DELETE, feedback.getId())
                                 .create(),
                         ButtonBuilder.callbackButton()
                                 .text("Закрыть")
-                                .payload(Callbacks.FEEDBACK_DELETE + " close")
+                                .payload(Callbacks.FEEDBACK_DELETE, "close")
                                 .create()
                 )
                 .callAsync(ctx.sender);

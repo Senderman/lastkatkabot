@@ -8,7 +8,6 @@ import com.senderman.lastkatkabot.dbservice.ChatInfoService;
 import com.senderman.lastkatkabot.exception.TooWideNicknameException;
 import com.senderman.lastkatkabot.service.ImageService;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
-import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
@@ -74,16 +73,12 @@ public class NewMemberHandler implements Consumer<MessageContext> {
         if (nickname.length() > 32)
             throw new TooWideNicknameException(nickname);
 
-        var markup = new MarkupBuilder()
-                .addButton(ButtonBuilder.callbackButton()
+        ctx.replyToMessageWithSticker()
+                .setFile(stickerId)
+                .setInlineKeyboard(ButtonBuilder.callbackButton()
                         .text("Привет, " + nickname + "!")
                         .payload(Callbacks.GREETING)
                         .create())
-                .build();
-
-        ctx.replyToMessageWithSticker()
-                .setFile(stickerId)
-                .setReplyMarkup(markup)
                 .callAsync(ctx.sender);
     }
 

@@ -9,7 +9,6 @@ import com.senderman.lastkatkabot.dbservice.UserStatsService;
 import com.senderman.lastkatkabot.model.MarriageRequest;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
-import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
 import jakarta.inject.Singleton;
 
 import java.util.Objects;
@@ -83,18 +82,18 @@ public class MarryMeCommand implements CommandExecutor {
 
         request = marriages.insert(request);
 
-        var markup = new MarkupBuilder()
-                .addButton(ButtonBuilder.callbackButton()
-                        .text("Принять")
-                        .payload(Callbacks.MARRIAGE + " accept " + request.getId()))
-                .addButton(ButtonBuilder.callbackButton()
-                        .text("Отказаться")
-                        .payload(Callbacks.MARRIAGE + " decline " + request.getId()))
-                .build();
-
         ctx.reply(text)
-                .setReplyToMessageId(message.getReplyToMessage().getMessageId())
-                .setReplyMarkup(markup)
+                .inReplyTo(message.getReplyToMessage())
+                .setSingleRowInlineKeyboard(
+                        ButtonBuilder.callbackButton()
+                                .text("Принять")
+                                .payload(Callbacks.MARRIAGE, "accept", request.getId())
+                                .create(),
+                        ButtonBuilder.callbackButton()
+                                .text("Отказаться")
+                                .payload(Callbacks.MARRIAGE, "decline", request.getId())
+                                .create()
+                )
                 .callAsync(ctx.sender);
     }
 

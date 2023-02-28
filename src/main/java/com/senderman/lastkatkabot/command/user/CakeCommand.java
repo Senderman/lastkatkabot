@@ -6,7 +6,6 @@ import com.senderman.lastkatkabot.callback.Callbacks;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
-import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
 import jakarta.inject.Singleton;
 
 @Singleton
@@ -34,18 +33,18 @@ public class CakeCommand implements CommandExecutor {
         var text = "\uD83C\uDF82 %s, пользователь %s подарил вам тортик %s".formatted(
                 targetName, subjectName, ctx.message().getText().replaceAll("/@\\S*\\s?|/\\S*\\s?", ""));
 
-        var markup = new MarkupBuilder()
-                .addButton(ButtonBuilder.callbackButton()
-                        .text("Принять")
-                        .payload(Callbacks.CAKE + " accept " + target.getId()))
-                .addButton(ButtonBuilder.callbackButton()
-                        .text("Отказаться")
-                        .payload(Callbacks.CAKE + " decline " + target.getId()))
-                .build();
-
         ctx.reply(text)
-                .setReplyToMessageId(ctx.message().getReplyToMessage().getMessageId())
-                .setReplyMarkup(markup)
+                .inReplyTo(ctx.message().getReplyToMessage())
+                .setSingleRowInlineKeyboard(
+                        ButtonBuilder.callbackButton()
+                                .text("Принять")
+                                .payload(Callbacks.CAKE, "accept", target.getId())
+                                .create(),
+                        ButtonBuilder.callbackButton()
+                                .text("Отказаться")
+                                .payload(Callbacks.CAKE, "decline", target.getId())
+                                .create()
+                )
                 .callAsync(ctx.sender);
     }
 
