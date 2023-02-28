@@ -5,13 +5,11 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.senderman.lastkatkabot.config.BotConfig;
-import com.senderman.lastkatkabot.dbservice.ChatUserService;
-import com.senderman.lastkatkabot.handler.NewMemberHandler;
-import com.senderman.lastkatkabot.service.ChatPolicyEnsuringService;
-import com.senderman.lastkatkabot.service.UpdateOffloader;
-import com.senderman.lastkatkabot.service.UserActivityTrackerService;
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.MeterRegistry;
+import com.senderman.lastkatkabot.feature.access.service.ChatPolicyEnsuringService;
+import com.senderman.lastkatkabot.feature.members.service.NewMemberHandler;
+import com.senderman.lastkatkabot.feature.tracking.service.ChatUserService;
+import com.senderman.lastkatkabot.feature.tracking.service.UserActivityTrackerService;
+import io.micrometer.core.annotation.Counted;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
@@ -52,8 +50,6 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     private final ExecutorService threadPool;
     private final Set<Long> telegramServiceUserIds;
     private final ObjectMapper messageToJsonMapper;
-    private final Counter updateCounter;
-    private final UpdateOffloader updateOffloader;
 
     public BotHandler(
             DefaultBotOptions botOptions,
@@ -64,9 +60,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             ChatPolicyEnsuringService chatPolicyEnsuringService,
             NewMemberHandler newMemberHandler,
             @Named("generalNeedsPool") ExecutorService threadPool,
-            @Named("messageToJsonMapper") ObjectMapper messageToJsonMapper,
-            MeterRegistry meterRegistry,
-            UpdateOffloader updateOffloader
+            @Named("messageToJsonMapper") ObjectMapper messageToJsonMapper
     ) {
         super(botOptions, config.token());
         this.config = config;
@@ -77,8 +71,6 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         this.newMemberHandler = newMemberHandler;
         this.threadPool = threadPool;
         this.messageToJsonMapper = messageToJsonMapper;
-        this.updateCounter = meterRegistry.counter("bot_updates");
-        this.updateOffloader = updateOffloader;
 
         this.telegramServiceUserIds = Set.of(
                 777000L, // attached channel's messages
@@ -98,11 +90,6 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
     @Override
     public void onUpdatesReceived(List<Update> updates) {
-        try {
-            updateOffloader.offloadUpdates(updates);
-        } catch (RuntimeException e) {
-            logger.warn("Can't connect to offload endpoint", e);
-        }
         for (var update : updates) {
             try {
                 onUpdate(update);
@@ -161,6 +148,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     }
 
     @Override
+    @Counted("bot_updates")
     protected BotApiMethod<?> onUpdate(@NotNull Update update) {
 
         if (update.hasCallbackQuery()) {
@@ -176,8 +164,6 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             // do not process messages older than 2 minutes
             if (message.getDate() + 120 < System.currentTimeMillis() / 1000)
                 return null;
-
-            updateCounter.increment();
 
             threadPool.execute(() -> chatPolicyEnsuringService
                     .queueViolationCheck(message.getChatId(), this::onChatViolation));

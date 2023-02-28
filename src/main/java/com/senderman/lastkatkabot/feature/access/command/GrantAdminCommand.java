@@ -1,0 +1,64 @@
+package com.senderman.lastkatkabot.feature.access.command;
+
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
+import com.senderman.lastkatkabot.Role;
+import com.senderman.lastkatkabot.command.Command;
+import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.feature.access.model.AdminUser;
+import com.senderman.lastkatkabot.feature.access.service.UserManager;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
+
+import java.util.EnumSet;
+
+@Singleton
+@Command
+public class GrantAdminCommand implements CommandExecutor {
+
+    private final UserManager<AdminUser> admins;
+
+    public GrantAdminCommand(@Named("adminManager") UserManager<AdminUser> admins) {
+        this.admins = admins;
+    }
+
+    @Override
+    public String command() {
+        return "/grantadmin";
+    }
+
+    @Override
+    public String getDescription() {
+        return "выдача админа реплаем.";
+    }
+
+    @Override
+    public EnumSet<Role> authority() {
+        return EnumSet.of(Role.MAIN_ADMIN);
+    }
+
+    @Override
+    public void accept(MessageContext ctx) {
+        if (!ctx.message().isReply() || ctx.message().isUserMessage()) {
+            ctx.replyToMessage("Посвящать в админы нужно в группе и реплаем!").callAsync(ctx.sender);
+            return;
+        }
+        var user = ctx.message().getReplyToMessage().getFrom();
+
+        if (user.getIsBot()) {
+            ctx.replyToMessage(
+                            "Но это же просто бот, имитация человека! " +
+                                    "Разве может бот написать симфонию, иметь статистику, участвовать в дуэлях, быть админом?")
+                    .callAsync(ctx.sender);
+            return;
+        }
+
+        if (admins.addUser(new AdminUser(user.getId(), user.getFirstName())))
+            ctx.replyToMessage("Пользователь успешно посвящен в админы!").callAsync(ctx.sender);
+        else
+            ctx.replyToMessage("Не следует посвящать в админы дважды!").callAsync(ctx.sender);
+    }
+}
+
+
+
+

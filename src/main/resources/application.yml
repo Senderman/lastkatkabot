@@ -38,11 +38,3 @@ notificationChannelId: ${notification-channel-id} # id of channel/group where no
 bncHelpPictureId: "AgADAgAD2qkxG1TVaUjH0X-0YjLur08E9Q4ABAG8AAEj0FdnA6d7AgABAg" # picture for /bnchelp
 helloGifId: "CgADAQADiwAD0r04RoeZTv5wklZNAg" # gif for new members
 leaveStickerId: "CAADAgADDAADea1UE9LCz-IGyKZhAg" # sticker that bot will send after someone leaves the chat
-
-# enable to offload all updates to a third-party service
-# the service should accept a POST request on its $path endpoint
-# the request contains list of telegram updates
-offload:
-  enabled: false
-  path: path to a POST endpoint to offload updates
-  token: token for bearer authentication
