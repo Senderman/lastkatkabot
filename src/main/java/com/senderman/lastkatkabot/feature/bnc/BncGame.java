@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.senderman.lastkatkabot.feature.bnc.exception.*;
+import com.senderman.lastkatkabot.feature.bnc.model.BncGameState;
+import com.senderman.lastkatkabot.feature.bnc.model.BncResult;
 
 import java.util.*;
 import java.util.stream.Collectors;

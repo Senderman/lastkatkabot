@@ -1,6 +1,9 @@
-package com.senderman.lastkatkabot.feature.bnc;
+package com.senderman.lastkatkabot.feature.bnc.service;
 
+import com.senderman.lastkatkabot.feature.bnc.BncGame;
 import com.senderman.lastkatkabot.feature.bnc.exception.*;
+import com.senderman.lastkatkabot.feature.bnc.model.BncGameState;
+import com.senderman.lastkatkabot.feature.bnc.model.BncResult;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.NoSuchElementException;

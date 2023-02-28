@@ -3,7 +3,7 @@ package com.senderman.lastkatkabot.feature.bnc.command;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import com.senderman.lastkatkabot.feature.bnc.BncGameState;
+import com.senderman.lastkatkabot.feature.bnc.model.BncGameState;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 

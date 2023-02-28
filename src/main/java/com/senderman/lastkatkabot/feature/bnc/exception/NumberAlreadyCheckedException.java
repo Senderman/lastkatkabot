@@ -1,6 +1,6 @@
 package com.senderman.lastkatkabot.feature.bnc.exception;
 
-import com.senderman.lastkatkabot.feature.bnc.BncResult;
+import com.senderman.lastkatkabot.feature.bnc.model.BncResult;
 
 public class NumberAlreadyCheckedException extends RuntimeException {
 

@@ -1,7 +1,9 @@
-package com.senderman.lastkatkabot.feature.bnc;
+package com.senderman.lastkatkabot.feature.bnc.service;
 
+import com.senderman.lastkatkabot.feature.bnc.BncGame;
 import com.senderman.lastkatkabot.feature.bnc.model.BncGameSave;
-import com.senderman.lastkatkabot.feature.bnc.service.BncService;
+import com.senderman.lastkatkabot.feature.bnc.model.BncGameState;
+import com.senderman.lastkatkabot.feature.bnc.model.BncResult;
 import com.senderman.lastkatkabot.util.Serializer;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;

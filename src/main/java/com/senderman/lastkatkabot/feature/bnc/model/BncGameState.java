@@ -1,4 +1,4 @@
-package com.senderman.lastkatkabot.feature.bnc;
+package com.senderman.lastkatkabot.feature.bnc.model;
 
 import java.util.List;
 
