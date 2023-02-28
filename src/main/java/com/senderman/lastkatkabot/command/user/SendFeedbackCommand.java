@@ -8,6 +8,7 @@ import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.dbservice.AdminService;
 import com.senderman.lastkatkabot.dbservice.FeedbackService;
 import com.senderman.lastkatkabot.model.Feedback;
+import com.senderman.lastkatkabot.service.FeedbackFormatterService;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Singleton;
 
@@ -19,14 +20,17 @@ import java.util.stream.StreamSupport;
 public class SendFeedbackCommand implements CommandExecutor {
 
     private final FeedbackService feedbackRepo;
+    private final FeedbackFormatterService feedbackFormatter;
     private final AdminService adminRepo;
     private final BotConfig config;
 
     public SendFeedbackCommand(
             FeedbackService feedbackRepo,
+            FeedbackFormatterService feedbackFormatter,
             AdminService adminRepo, BotConfig config
     ) {
         this.feedbackRepo = feedbackRepo;
+        this.feedbackFormatter = feedbackFormatter;
         this.adminRepo = adminRepo;
         this.config = config;
     }
@@ -53,9 +57,8 @@ public class SendFeedbackCommand implements CommandExecutor {
             ctx.replyToMessage("Максимальная длина текста - 2000 символов!").callAsync(ctx.sender);
             return;
         }
-        var user = ctx.user();
-        var userLink = Html.getUserLink(user);
 
+        var user = ctx.user();
         var feedback = new Feedback(feedbackText, user.getId(), user.getFirstName(), ctx.chatId(), ctx.message().getMessageId());
         feedback = feedbackRepo.insert(feedback);
         var feedbackId = feedback.getId();
@@ -63,16 +66,11 @@ public class SendFeedbackCommand implements CommandExecutor {
                 .map(a -> "<a href=\"tg://user?id=" + a.getUserId() + "\">" + a.getName() + "</a>")
                 .collect(Collectors.joining(", "));
         var text = ("""
-                🔔 <b>Фидбек #%d</b>
+                🔔 <b>Фидбек</b> %s
 
-                От: %s
-
-                %s
-
-                Для ответа, введите /fresp %d &lt;ваш ответ&gt;
-                                
+                Для ответа, введите <code>/fresp %d </code>&lt;ваш ответ&gt;
                 🚨 %s""")
-                .formatted(feedbackId, userLink, feedbackText, feedbackId, adminPings);
+                .formatted(feedbackFormatter.format(feedback), feedbackId, adminPings);
         Methods.sendMessage(config.feedbackChannelId(), text).callAsync(ctx.sender);
         ctx.replyToMessage("✅ Сообщение отправлено разработчикам!").callAsync(ctx.sender);
     }

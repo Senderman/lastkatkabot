@@ -4,9 +4,11 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.annotation.Command;
+import com.senderman.lastkatkabot.callback.Callbacks;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.dbservice.FeedbackService;
+import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import jakarta.inject.Singleton;
 
 import java.util.EnumSet;
@@ -74,7 +76,19 @@ public class AnswerFeedbackCommand implements CommandExecutor {
                 .setText("\uD83D\uDD14 <b>Ответ разработчика</b>\n\n" + answer)
                 .setReplyToMessageId(feedback.getMessageId())
                 .callAsync(ctx.sender);
-        ctx.replyToMessage("Ответ отправлен!").callAsync(ctx.sender);
+
+        ctx.replyToMessage("✅ Ответ отправлен!")
+                .setSingleColumnInlineKeyboard(
+                        ButtonBuilder.callbackButton()
+                                .text("Удалить фидбек")
+                                .payload(Callbacks.FEEDBACK_DELETE + " " + feedback.getId())
+                                .create(),
+                        ButtonBuilder.callbackButton()
+                                .text("Закрыть")
+                                .payload(Callbacks.FEEDBACK_DELETE + " close")
+                                .create()
+                )
+                .callAsync(ctx.sender);
 
         // notify others about answer
         if (!ctx.chatId().equals(config.feedbackChannelId())) {

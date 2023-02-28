@@ -6,6 +6,7 @@ import com.senderman.lastkatkabot.annotation.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.dbservice.FeedbackService;
 import com.senderman.lastkatkabot.model.Feedback;
+import com.senderman.lastkatkabot.service.FeedbackFormatterService;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,9 +18,14 @@ public class ShowFeedbacksCommand implements CommandExecutor {
 
     private static final String feedbackSeparator = "\n\n<code>====================================</code>\n\n";
     private final FeedbackService feedbackService;
+    private final FeedbackFormatterService feedbackFormatter;
 
-    public ShowFeedbacksCommand(FeedbackService feedbackService) {
+    public ShowFeedbacksCommand(
+            FeedbackService feedbackService,
+            FeedbackFormatterService feedbackFormatter
+    ) {
         this.feedbackService = feedbackService;
+        this.feedbackFormatter = feedbackFormatter;
     }
 
     @Override
@@ -48,7 +54,7 @@ public class ShowFeedbacksCommand implements CommandExecutor {
 
         var text = new StringBuilder("<b>Фидбеки от даунов не умеющих юзать бота</b>");
         for (Feedback feedback : feedbackService.findAll()) {
-            String formattedFeedback = formatFeedback(feedback);
+            String formattedFeedback = feedbackFormatter.format(feedback);
             // if maximum text length reached
             if (text.length() + feedbackSeparator.length() + formattedFeedback.length() >= 4096) {
                 ctx.reply(text.toString()).callAsync(ctx.sender);
@@ -58,23 +64,9 @@ public class ShowFeedbacksCommand implements CommandExecutor {
         }
         // send remaining feedbacks
         if (text.length() != 0) {
-            ctx.reply(text.toString()).callAsync(ctx.sender);
+            ctx.reply(text.toString())
+                    .disableNotification()
+                    .callAsync(ctx.sender);
         }
-    }
-
-    private String formatFeedback(Feedback feedback) {
-        return """
-                <code>#%d</code>
-                От %s (id<code>%d</code>)
-                Отвечен: %s
-
-                %s"""
-                .formatted(
-                        feedback.getId(),
-                        feedback.getUserName(),
-                        feedback.getUserId(),
-                        feedback.isReplied() ? "✅" : "❌",
-                        feedback.getMessage()
-                );
     }
 }
