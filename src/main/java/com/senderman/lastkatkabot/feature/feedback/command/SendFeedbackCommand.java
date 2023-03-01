@@ -11,6 +11,9 @@ import com.senderman.lastkatkabot.feature.feedback.service.FeedbackFormatterServ
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackService;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Singleton;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -49,29 +52,64 @@ public class SendFeedbackCommand implements CommandExecutor {
     public void accept(MessageContext ctx) {
         ctx.setArgumentsLimit(1);
         if (ctx.argumentsLength() < 1) {
-            ctx.replyToMessage("Неверное кол-во аргументов!").callAsync(ctx.sender);
+            ctx.replyToMessage("Неверное количество аргументов!").callAsync(ctx.sender);
             return;
         }
         var feedbackText = Html.htmlSafe(ctx.argument(0));
         if (feedbackText.length() > 2000) {
-            ctx.replyToMessage("Максимальная длина текста - 2000 символов!").callAsync(ctx.sender);
+            ctx.replyToMessage("Максимальная длина текста — 2000 символов!").callAsync(ctx.sender);
             return;
         }
 
         var user = ctx.user();
         var feedback = new Feedback(feedbackText, user.getId(), user.getFirstName(), ctx.chatId(), ctx.message().getMessageId());
         feedback = feedbackRepo.insert(feedback);
-        var feedbackId = feedback.getId();
-        var adminPings = StreamSupport.stream(adminRepo.findAll().spliterator(), false)
-                .map(a -> "<a href=\"tg://user?id=" + a.getUserId() + "\">" + a.getName() + "</a>")
-                .collect(Collectors.joining(", "));
-        var text = ("""
+
+        // If possible send a reply message as a context first
+        Integer replyMessageId = getCopyableReplyMessageId(ctx.message());
+        Integer contextMessageId = null;
+        if (replyMessageId != null) {
+            contextMessageId = getMessageId(
+                    Methods.forwardMessage(config.feedbackChannelId(), ctx.chatId(), replyMessageId)
+                            .call(ctx.sender)
+            );
+        }
+
+        // Send feedback to developers
+        var text = """
                 🔔 <b>Фидбек</b> %s
 
-                Для ответа, введите <code>/fresp %d </code>&lt;ваш ответ&gt;
-                🚨 %s""")
-                .formatted(feedbackFormatter.format(feedback), feedbackId, adminPings);
-        Methods.sendMessage(config.feedbackChannelId(), text).callAsync(ctx.sender);
+                Для ответа введите <code>/fresp %d</code> &lt;ваш ответ&gt;,
+                или ответом на сообщение, которое хотите отправить.
+                🚨 %s""".formatted(feedbackFormatter.format(feedback), feedback.getId(), listAdmins());
+        Methods.sendMessage(config.feedbackChannelId(), text)
+                .setReplyToMessageId(contextMessageId)
+                .callAsync(ctx.sender);
+
+        // Notify reporter that the feedback is sent
         ctx.replyToMessage("✅ Сообщение отправлено разработчикам!").callAsync(ctx.sender);
+    }
+
+    private String listAdmins() {
+        return StreamSupport.stream(adminRepo.findAll().spliterator(), false)
+                .map(a -> "<a href=\"tg://user?id=" + a.getUserId() + "\">" + a.getName() + "</a>")
+                .collect(Collectors.joining(", "));
+    }
+
+    @Nullable
+    private Integer getMessageId(@Nullable Message messag) {
+        if (messag == null) return null;
+        return messag.getMessageId();
+    }
+
+    @Nullable
+    private Integer getCopyableReplyMessageId(@NotNull Message message) {
+        if (!message.isReply()) return null;
+
+        final var reply = message.getReplyToMessage();
+        // Bot message is not copyable
+        if (reply.getFrom().getIsBot()) return null;
+
+        return reply.getMessageId();
     }
 }

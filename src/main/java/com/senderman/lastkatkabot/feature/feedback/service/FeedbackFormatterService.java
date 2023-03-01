@@ -34,9 +34,9 @@ public class FeedbackFormatterService {
     private String formatRepliedLine(Feedback feedback) {
         final int id = feedback.getId();
         if (feedback.isReplied()) {
-            return "✅ (удалить — <code>/fdel %d</code>)".formatted(id);
+            return "✅  <code>/fdel %d</code>".formatted(id);
         } else {
-            return "❌ (<code>/fresp %d </code>ваш ответ)".formatted(id);
+            return "❌  <code>/fresp %d</code>".formatted(id);
         }
     }
 }
