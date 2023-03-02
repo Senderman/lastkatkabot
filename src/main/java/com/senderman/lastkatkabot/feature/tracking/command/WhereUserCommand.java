@@ -7,6 +7,7 @@ import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.tracking.service.ChatUserService;
+import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Named;
 import org.jetbrains.annotations.NotNull;
 
@@ -70,6 +71,6 @@ public class WhereUserCommand implements CommandExecutor {
     // get chat name. If unable to get if from tg, return chatId as string
     private String getChatNameOrChatId(long chatId, CommonAbsSender telegram) {
         var chat = Methods.getChat(chatId).call(telegram);
-        return chat != null ? chat.getTitle() + " (<code>%d</code>)".formatted(chatId) : String.valueOf(chatId);
+        return chat != null ? Html.htmlSafe(chat.getTitle()) + " (<code>%d</code>)".formatted(chatId) : String.valueOf(chatId);
     }
 }
