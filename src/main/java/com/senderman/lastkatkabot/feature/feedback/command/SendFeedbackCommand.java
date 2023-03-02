@@ -92,14 +92,14 @@ public class SendFeedbackCommand implements CommandExecutor {
 
     private String listAdmins() {
         return StreamSupport.stream(adminRepo.findAll().spliterator(), false)
-                .map(a -> "<a href=\"tg://user?id=" + a.getUserId() + "\">" + a.getName() + "</a>")
+                .map(a -> "<a href=\"tg://user?id=%d\">%s</a>".formatted(a.getUserId(), Html.htmlSafe(a.getName())))
                 .collect(Collectors.joining(", "));
     }
 
     @Nullable
-    private Integer getMessageId(@Nullable Message messag) {
-        if (messag == null) return null;
-        return messag.getMessageId();
+    private Integer getMessageId(@Nullable Message message) {
+        if (message == null) return null;
+        return message.getMessageId();
     }
 
     @Nullable

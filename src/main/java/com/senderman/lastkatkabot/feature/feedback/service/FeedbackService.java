@@ -16,7 +16,12 @@ public interface FeedbackService {
 
     Iterable<Feedback> findAll();
 
-    // id could be changed, so use the returned object
+    /**
+     * Insert new feedback into database. Not that the id can be changed, so use the returned object
+     *
+     * @param feedback feedback to insert
+     * @return the actually saved object (id can be different)
+     */
     Feedback insert(Feedback feedback);
 
     Feedback update(Feedback feedback);
