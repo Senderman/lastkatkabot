@@ -1,23 +1,26 @@
 package com.senderman.lastkatkabot.config;
 
+import io.micronaut.context.annotation.ConfigurationProperties;
+
+@ConfigurationProperties("bot")
 public interface BotConfig {
 
-    String token();
+    String getToken();
 
-    String username();
+    String getUsername();
 
-    String timezone();
+    String getTimezone();
 
-    long mainAdminId();
+    long getMainAdminId();
 
-    long feedbackChannelId();
+    long getFeedbackChannelId();
 
-    long notificationChannelId();
+    long getNotificationChannelId();
 
-    String bncHelpPictureId();
+    String getBncHelpPictureId();
 
-    String helloGifId();
+    String getHelloGifId();
 
-    String leaveStickerId();
+    String getLeaveStickerId();
 
 }

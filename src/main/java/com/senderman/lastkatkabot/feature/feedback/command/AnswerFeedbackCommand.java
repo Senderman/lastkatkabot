@@ -78,10 +78,10 @@ public class AnswerFeedbackCommand implements CommandExecutor {
         notifyResponseIsSent(ctx, feedback.getId());
 
         // notify others about answer
-        if (!ctx.chatId().equals(config.feedbackChannelId())) {
+        if (!ctx.chatId().equals(config.getFeedbackChannelId())) {
             var replierUsername = ctx.user().getFirstName();
             var answerReport = "%s ответил на фидбек #%d:\n\n%s".formatted(replierUsername, feedback.getId(), answer);
-            Methods.sendMessage(config.feedbackChannelId(), answerReport).callAsync(ctx.sender);
+            Methods.sendMessage(config.getFeedbackChannelId(), answerReport).callAsync(ctx.sender);
         }
     }
 
@@ -105,11 +105,11 @@ public class AnswerFeedbackCommand implements CommandExecutor {
         notifyResponseIsSent(ctx, feedback.getId());
 
         // notify others about answer
-        if (!ctx.chatId().equals(config.feedbackChannelId())) {
+        if (!ctx.chatId().equals(config.getFeedbackChannelId())) {
             var replierUsername = Html.htmlSafe(ctx.user().getFirstName());
             var answerReport = "%s ответил на фидбек #%d:".formatted(replierUsername, feedback.getId());
-            Methods.sendMessage(config.feedbackChannelId(), answerReport).callAsync(ctx.sender);
-            Methods.copyMessage(config.feedbackChannelId(), ctx.chatId(), reply.getMessageId())
+            Methods.sendMessage(config.getFeedbackChannelId(), answerReport).callAsync(ctx.sender);
+            Methods.copyMessage(config.getFeedbackChannelId(), ctx.chatId(), reply.getMessageId())
                     .callAsync(ctx.sender);
         }
     }

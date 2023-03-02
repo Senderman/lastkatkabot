@@ -49,7 +49,7 @@ public class UpdateHandler implements com.annimon.tgbotsmodule.analytics.UpdateH
     ) {
         this.authority = authority;
         this.meterRegistry = meterRegistry;
-        this.botUsername = "@" + config.username().toLowerCase(Locale.ENGLISH);
+        this.botUsername = "@" + config.getUsername().toLowerCase(Locale.ENGLISH);
         textCommands = ArrayListMultimap.create();
         regexCommands = new ArrayList<>();
         callbackCommands = ArrayListMultimap.create();

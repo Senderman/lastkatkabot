@@ -51,7 +51,7 @@ public class AuthorityHandler implements Authority<Role> {
         }
 
         // always allow main admin to execute commands
-        if (userId.equals(botConfig.mainAdminId())) return true;
+        if (userId.equals(botConfig.getMainAdminId())) return true;
 
         if (blacklist.hasUser(userId)) return false;
 
@@ -70,7 +70,7 @@ public class AuthorityHandler implements Authority<Role> {
         String command = message.getText()
                 .split("\\s+", 2)[0]
                 .toLowerCase(Locale.ENGLISH)
-                .replace("@" + botConfig.username(), "");
+                .replace("@" + botConfig.getUsername(), "");
 
         return !forbiddenCommands.contains(command);
     }

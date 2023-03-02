@@ -66,9 +66,9 @@ public class DeleteFeedbackCallback implements CallbackExecutor {
 
         final var msg = getMessage(ctx);
         if (msg.isEmpty()) return;
-        if (!msg.orElseThrow().getChatId().equals(config.feedbackChannelId()))
+        if (!msg.orElseThrow().getChatId().equals(config.getFeedbackChannelId()))
             Methods.sendMessage()
-                    .setChatId(config.feedbackChannelId())
+                    .setChatId(config.getFeedbackChannelId())
                     .setText(text + " пользователем " + Html.getUserLink(ctx.user()))
                     .callAsync(ctx.sender);
     }

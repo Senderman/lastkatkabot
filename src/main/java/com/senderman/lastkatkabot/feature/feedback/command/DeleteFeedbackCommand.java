@@ -81,9 +81,9 @@ public class DeleteFeedbackCommand implements CommandExecutor {
 
     private void notifySuccess(MessageContext ctx, String text) {
         ctx.replyToMessage(text).callAsync(ctx.sender);
-        if (!ctx.chatId().equals(config.feedbackChannelId()))
+        if (!ctx.chatId().equals(config.getFeedbackChannelId()))
             Methods.sendMessage()
-                    .setChatId(config.feedbackChannelId())
+                    .setChatId(config.getFeedbackChannelId())
                     .setText(text + " пользователем " + Html.getUserLink(ctx.user()))
                     .callAsync(ctx.sender);
     }

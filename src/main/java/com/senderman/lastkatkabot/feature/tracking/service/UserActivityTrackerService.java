@@ -39,7 +39,7 @@ public class UserActivityTrackerService {
             flush();
     }
 
-    @Scheduled(fixedDelay = FLUSH_INTERVAL, scheduler = "taskScheduler")
+    @Scheduled(fixedDelay = FLUSH_INTERVAL)
     protected synchronized void flush() {
         if (cache.isEmpty()) return;
         var data = cache.values();

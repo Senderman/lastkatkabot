@@ -35,7 +35,7 @@ public class ChatPolicyEnsuringService {
             checkViolations();
     }
 
-    @Scheduled(fixedDelay = FLUSH_INTERVAL, scheduler = "taskScheduler")
+    @Scheduled(fixedDelay = FLUSH_INTERVAL)
     protected synchronized void checkViolations() {
         if (cache.isEmpty()) return;
         var violations = database.findByChatIdIn(cache.keySet());

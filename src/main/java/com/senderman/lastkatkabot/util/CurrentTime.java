@@ -14,7 +14,7 @@ public class CurrentTime {
     private final SimpleDateFormat dayFormat;
 
     public CurrentTime(BotConfig config) {
-        this.timeZone = TimeZone.getTimeZone(config.timezone());
+        this.timeZone = TimeZone.getTimeZone(config.getTimezone());
         this.dayFormat = new SimpleDateFormat("yyyyMMdd");
         dayFormat.setTimeZone(timeZone);
     }

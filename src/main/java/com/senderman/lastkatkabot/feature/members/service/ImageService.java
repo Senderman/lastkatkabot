@@ -62,6 +62,6 @@ public class ImageService {
     }
 
     public String getHelloGifId() {
-        return config.helloGifId();
+        return config.getHelloGifId();
     }
 }

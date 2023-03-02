@@ -62,7 +62,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             @Named("generalNeedsPool") ExecutorService threadPool,
             @Named("messageToJsonMapper") ObjectMapper messageToJsonMapper
     ) {
-        super(botOptions, config.token());
+        super(botOptions, config.getToken());
         this.config = config;
         this.commandRegistry = commandRegistry;
         this.chatUsers = chatUsers;
@@ -85,7 +85,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
         addMethodPreprocessor(EditMessageText.class, m -> m.enableHtml(true));
 
-        Methods.sendMessage(config.notificationChannelId(), "\n\nБот запущен!").callAsync(this);
+        Methods.sendMessage(config.getNotificationChannelId(), "\n\nБот запущен!").callAsync(this);
     }
 
     @Override
@@ -97,7 +97,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             } catch (Throwable e) {
                 logger.error(e.getMessage(), e);
                 notifyUserAboutError(update);
-                sendUpdateErrorAsFile(update, e, config.notificationChannelId());
+                sendUpdateErrorAsFile(update, e, config.getNotificationChannelId());
             }
         }
     }
@@ -134,10 +134,10 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
                 messageToJsonMapper.writeValue(pw, update);
             pw.close();
             try (var bais = new ByteArrayInputStream(baos.toByteArray())) {
-                var date = ZonedDateTime.now(ZoneId.of(config.timezone())).format(DateTimeFormatter.ISO_INSTANT);
+                var date = ZonedDateTime.now(ZoneId.of(config.getTimezone())).format(DateTimeFormatter.ISO_INSTANT);
                 Methods.sendDocument()
                         .setChatId(chatId)
-                        .setFile(config.username() + "-" + date + ".log", bais)
+                        .setFile(config.getUsername() + "-" + date + ".log", bais)
                         .setCaption("⚠️ <b>Ошибка обработки апдейта</b>\n" + e.getMessage())
                         .enableHtml()
                         .call(this);
@@ -205,13 +205,13 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         chatUsers.deleteByChatIdAndUserId(message.getChatId(), message.getLeftChatMember().getId());
         Methods.sendDocument(message.getChatId())
                 .setReplyToMessageId(message.getMessageId())
-                .setFile(config.leaveStickerId())
+                .setFile(config.getLeaveStickerId())
                 .callAsync(this);
     }
 
     @Override
     public String getBotUsername() {
-        return config.username();
+        return config.getUsername();
     }
 
 

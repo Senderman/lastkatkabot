@@ -27,8 +27,8 @@ public class LastkatkaBot implements BotModule {
                         "MICRONAUT_SERVER_PORT",
                         "MICRONAUT_METRICS_ENABLED",
                         "MONGODB_URI",
-                        "username",
-                        "token",
+                        "BOT_USERNAME",
+                        "BOT_TOKEN",
                         "main-admin",
                         "feedback-channel-id",
                         "notification-channel-id"

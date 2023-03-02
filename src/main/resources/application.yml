@@ -10,6 +10,10 @@ micronaut:
         enabled: true
         step: PT1M
         descriptions: true
+  executors:
+    scheduled:
+      type: scheduled
+      core-pool-size: 3
 
 endpoints:
   prometheus:
@@ -26,15 +30,16 @@ mongodb:
 jackson:
   serializationInclusion: ALWAYS
 
-username: ${username} # bot username without @
-token: ${token} # telegram bot token
+bot:
+  username: ${BOT_USERNAME} # bot username without @
+  token: ${BOT_TOKEN} # telegram bot token
 
-timezone: "Europe/Kiev" # timezone for /pair, /wish and other time-based features
+  timezone: "Europe/Kiev" # timezone for /pair, /wish and other time-based features
 
-mainAdminId: ${main-admin} # id of main admin
-feedbackChannelId: ${feedback-channel-id} # id of channel/group for feedbacks
-notificationChannelId: ${notification-channel-id} # id of channel/group where notifications stacktraces will be sent
+  mainAdminId: ${main-admin} # id of main admin
+  feedbackChannelId: ${feedback-channel-id} # id of channel/group for feedbacks
+  notificationChannelId: ${notification-channel-id} # id of channel/group where notifications stacktraces will be sent
 
-bncHelpPictureId: "AgADAgAD2qkxG1TVaUjH0X-0YjLur08E9Q4ABAG8AAEj0FdnA6d7AgABAg" # picture for /bnchelp
-helloGifId: "CgADAQADiwAD0r04RoeZTv5wklZNAg" # gif for new members
-leaveStickerId: "CAADAgADDAADea1UE9LCz-IGyKZhAg" # sticker that bot will send after someone leaves the chat
+  bncHelpPictureId: "AgADAgAD2qkxG1TVaUjH0X-0YjLur08E9Q4ABAG8AAEj0FdnA6d7AgABAg" # picture for /bnchelp
+  helloGifId: "CgADAQADiwAD0r04RoeZTv5wklZNAg" # gif for new members
+  leaveStickerId: "CAADAgADDAADea1UE9LCz-IGyKZhAg" # sticker that bot will send after someone leaves the chat

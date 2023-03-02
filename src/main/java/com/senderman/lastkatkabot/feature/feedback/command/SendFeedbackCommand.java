@@ -68,7 +68,7 @@ public class SendFeedbackCommand implements CommandExecutor {
         Integer contextMessageId = null;
         if (replyMessageId != null) {
             contextMessageId = getMessageId(
-                    Methods.forwardMessage(config.feedbackChannelId(), ctx.chatId(), replyMessageId)
+                    Methods.forwardMessage(config.getFeedbackChannelId(), ctx.chatId(), replyMessageId)
                             .call(ctx.sender)
             );
         }
@@ -80,7 +80,7 @@ public class SendFeedbackCommand implements CommandExecutor {
                 Для ответа введите <code>/fresp %d</code> &lt;ваш ответ&gt;,
                 или ответом на сообщение, которое хотите отправить.
                 🚨 %s""".formatted(feedbackFormatter.format(feedback), feedback.getId(), listAdmins());
-        Methods.sendMessage(config.feedbackChannelId(), text)
+        Methods.sendMessage(config.getFeedbackChannelId(), text)
                 .setReplyToMessageId(contextMessageId)
                 .callAsync(ctx.sender);
 

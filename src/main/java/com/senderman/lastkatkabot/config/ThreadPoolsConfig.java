@@ -2,9 +2,6 @@ package com.senderman.lastkatkabot.config;
 
 import com.senderman.lastkatkabot.util.Threads;
 import io.micronaut.context.annotation.Factory;
-import io.micronaut.context.annotation.Replaces;
-import io.micronaut.scheduling.ScheduledExecutorTaskScheduler;
-import io.micronaut.scheduling.TaskScheduler;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 
@@ -13,15 +10,6 @@ import java.util.concurrent.Executors;
 
 @Factory
 public class ThreadPoolsConfig {
-
-    @Singleton
-    @Replaces(TaskScheduler.class)
-    @Named("taskScheduler")
-    public TaskScheduler taskScheduler() {
-        var executor = Executors.newScheduledThreadPool(2, new Threads.NamedThreadFactory("schedulerPool-%d"));
-        return new ScheduledExecutorTaskScheduler(executor);
-
-    }
 
     /*
     /pair only

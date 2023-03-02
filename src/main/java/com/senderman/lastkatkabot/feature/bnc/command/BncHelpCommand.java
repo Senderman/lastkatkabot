@@ -28,7 +28,7 @@ public class BncHelpCommand implements CommandExecutor {
     @Override
     public void accept(@NotNull MessageContext ctx) {
         ctx.replyWithPhoto()
-                .setFile(config.bncHelpPictureId())
+                .setFile(config.getBncHelpPictureId())
                 .callAsync(ctx.sender);
     }
 }
