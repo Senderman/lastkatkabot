@@ -7,7 +7,10 @@ import com.senderman.lastkatkabot.command.Callbacks;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
+import com.senderman.lastkatkabot.feature.feedback.exception.FeedbackValidationException;
+import com.senderman.lastkatkabot.feature.feedback.model.Feedback;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackService;
+import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import jakarta.inject.Singleton;
 
@@ -35,7 +38,8 @@ public class AnswerFeedbackCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "ответить на фидбек. /fresp id ответ. /fresp 4 хорошо, починим";
+        return "ответить на фидбек. /fresp id текст (/fresp 4 хорошо, починим)" +
+                " или /fresp id в ответ на сообщение, которое хотите переслать. ";
     }
 
     @Override
@@ -46,42 +50,97 @@ public class AnswerFeedbackCommand implements CommandExecutor {
     @Override
     public void accept(MessageContext ctx) {
         ctx.setArgumentsLimit(2);
-
         if (ctx.argumentsLength() < 2) {
             ctx.replyToMessage("Неверное количество аргументов!").callAsync(ctx.sender);
             return;
         }
-
-        int feedbackId;
+        final Feedback feedback;
         try {
-            feedbackId = Integer.parseInt(ctx.argument(0));
-        } catch (NumberFormatException e) {
-            ctx.replyToMessage("id фидбека - это число!").callAsync(ctx.sender);
+            feedback = getFeedbackByMessage(ctx);
+        } catch (FeedbackValidationException e) {
+            ctx.replyToMessage(e.getMessage()).callAsync(ctx.sender);
             return;
         }
 
-        var feedbackOptional = feedbackService.findById(feedbackId);
-        if (feedbackOptional.isEmpty()) {
-            ctx.replyToMessage("Фидбека с таким id не существует!").callAsync(ctx.sender);
-            return;
+        markAnswered(feedback);
+        if (ctx.message().isReply()) {
+            answerWithTextAndMessage(ctx, feedback);
+        } else {
+            answerWithText(ctx, feedback);
         }
-        // feedbackRepo.deleteById(feedbackId);
-        var feedback = feedbackOptional.get();
-        feedback.setReplied(true);
-        feedbackService.update(feedback);
+    }
 
+    private void answerWithText(MessageContext ctx, Feedback feedback) {
         var answer = ctx.argument(1);
         Methods.sendMessage()
                 .setChatId(feedback.getChatId())
                 .setText("\uD83D\uDD14 <b>Ответ разработчика</b>\n\n" + answer)
                 .setReplyToMessageId(feedback.getMessageId())
+                .call(ctx.sender);
+
+        notifyResponseIsSent(ctx, feedback.getId());
+
+        // notify others about answer
+        if (!ctx.chatId().equals(config.feedbackChannelId())) {
+            var replierUsername = ctx.user().getFirstName();
+            var answerReport = "%s ответил на фидбек #%d:\n\n%s".formatted(replierUsername, feedback.getId(), answer);
+            Methods.sendMessage(config.feedbackChannelId(), answerReport).callAsync(ctx.sender);
+        }
+    }
+
+    private void answerWithTextAndMessage(MessageContext ctx, Feedback feedback) {
+        final var reply = ctx.message().getReplyToMessage();
+        if (reply.getFrom().getIsBot()) {
+            ctx.replyToMessage("Нельзя пересылать сообщения от ботов").callAsync(ctx.sender);
+            return;
+        }
+
+        markAnswered(feedback);
+
+        // Send the first message explaining that this is a developer's feedback
+        Methods.sendMessage(feedback.getChatId(), "\uD83D\uDD14 <b>Ответ разработчика</b>:")
+                .setReplyToMessageId(feedback.getMessageId())
+                .callAsync(ctx.sender);
+        // Send second detail message
+        Methods.copyMessage(feedback.getChatId(), ctx.chatId(), reply.getMessageId())
                 .callAsync(ctx.sender);
 
+        notifyResponseIsSent(ctx, feedback.getId());
+
+        // notify others about answer
+        if (!ctx.chatId().equals(config.feedbackChannelId())) {
+            var replierUsername = Html.htmlSafe(ctx.user().getFirstName());
+            var answerReport = "%s ответил на фидбек #%d:".formatted(replierUsername, feedback.getId());
+            Methods.sendMessage(config.feedbackChannelId(), answerReport).callAsync(ctx.sender);
+            Methods.copyMessage(config.feedbackChannelId(), ctx.chatId(), reply.getMessageId())
+                    .callAsync(ctx.sender);
+        }
+    }
+
+    private Feedback getFeedbackByMessage(MessageContext ctx) throws FeedbackValidationException {
+        int feedbackId;
+        try {
+            feedbackId = Integer.parseInt(ctx.argument(0));
+        } catch (NumberFormatException e) {
+            throw new FeedbackValidationException("id фидбека - это число!");
+        }
+
+        var feedbackOptional = feedbackService.findById(feedbackId);
+        return feedbackOptional.orElseThrow(() -> new FeedbackValidationException("Фидбека с таким id не существует!"));
+
+    }
+
+    private void markAnswered(Feedback feedback) {
+        feedback.setReplied(true);
+        feedbackService.update(feedback);
+    }
+
+    private static void notifyResponseIsSent(MessageContext ctx, int feedbackId) {
         ctx.replyToMessage("✅ Ответ отправлен!")
                 .setSingleColumnInlineKeyboard(
                         ButtonBuilder.callbackButton()
                                 .text("Удалить фидбек")
-                                .payload(Callbacks.FEEDBACK_DELETE, feedback.getId())
+                                .payload(Callbacks.FEEDBACK_DELETE, feedbackId)
                                 .create(),
                         ButtonBuilder.callbackButton()
                                 .text("Закрыть")
@@ -89,12 +148,5 @@ public class AnswerFeedbackCommand implements CommandExecutor {
                                 .create()
                 )
                 .callAsync(ctx.sender);
-
-        // notify others about answer
-        if (!ctx.chatId().equals(config.feedbackChannelId())) {
-            var replierUsername = ctx.user().getFirstName();
-            var answerReport = "%s ответил на фидбек #%d:\n\n%s".formatted(replierUsername, feedbackId, answer);
-            Methods.sendMessage(config.feedbackChannelId(), answerReport).callAsync(ctx.sender);
-        }
     }
 }
