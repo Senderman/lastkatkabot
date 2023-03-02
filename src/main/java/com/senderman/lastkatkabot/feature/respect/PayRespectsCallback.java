@@ -2,16 +2,17 @@ package com.senderman.lastkatkabot.feature.respect;
 
 import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
 import com.senderman.lastkatkabot.command.CallbackExecutor;
-import com.senderman.lastkatkabot.command.Callbacks;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Singleton;
 
 @Singleton
 public class PayRespectsCallback implements CallbackExecutor {
 
+    public final static String NAME = "F";
+
     @Override
     public String command() {
-        return Callbacks.F;
+        return NAME;
     }
 
     @Override

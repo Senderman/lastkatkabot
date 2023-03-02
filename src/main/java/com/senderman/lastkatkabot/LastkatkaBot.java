@@ -3,6 +3,7 @@ package com.senderman.lastkatkabot;
 import com.annimon.tgbotsmodule.BotModule;
 import com.annimon.tgbotsmodule.Runner;
 import com.annimon.tgbotsmodule.beans.Config;
+import com.senderman.lastkatkabot.handler.BotHandler;
 import io.micronaut.runtime.Micronaut;
 import io.micronaut.scheduling.annotation.Scheduled;
 import jakarta.inject.Singleton;

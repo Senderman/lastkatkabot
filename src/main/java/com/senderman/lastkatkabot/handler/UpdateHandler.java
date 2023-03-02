@@ -1,6 +1,5 @@
-package com.senderman.lastkatkabot;
+package com.senderman.lastkatkabot.handler;
 
-import com.annimon.tgbotsmodule.analytics.UpdateHandler;
 import com.annimon.tgbotsmodule.commands.CallbackQueryCommand;
 import com.annimon.tgbotsmodule.commands.InlineQueryCommand;
 import com.annimon.tgbotsmodule.commands.RegexCommand;
@@ -13,6 +12,7 @@ import com.annimon.tgbotsmodule.commands.context.RegexMessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
+import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CallbackExecutor;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
@@ -26,7 +26,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 @Singleton
-public class LastkatkaUpdateHandler implements UpdateHandler {
+public class UpdateHandler implements com.annimon.tgbotsmodule.analytics.UpdateHandler {
 
     private final static String COMMAND_METER_NAME = "bot.command";
     private final static String CALLBACK_METER_NAME = "bot.callback";
@@ -39,7 +39,7 @@ public class LastkatkaUpdateHandler implements UpdateHandler {
     private final MeterRegistry meterRegistry;
     private String callbackCommandSplitPattern;
 
-    public LastkatkaUpdateHandler(
+    public UpdateHandler(
             BotConfig config,
             Authority<Role> authority,
             MeterRegistry meterRegistry,
@@ -62,7 +62,7 @@ public class LastkatkaUpdateHandler implements UpdateHandler {
         callbacks.forEach(this::register);
     }
 
-    public LastkatkaUpdateHandler register(@NotNull TextCommand command) {
+    public UpdateHandler register(@NotNull TextCommand command) {
         Objects.requireNonNull(command);
         Stream.concat(Stream.of(command.command()), command.aliases().stream())
                 .map(this::stringToCommand)
@@ -70,13 +70,13 @@ public class LastkatkaUpdateHandler implements UpdateHandler {
         return this;
     }
 
-    public LastkatkaUpdateHandler register(@NotNull RegexCommand command) {
+    public UpdateHandler register(@NotNull RegexCommand command) {
         Objects.requireNonNull(command);
         regexCommands.add(command);
         return this;
     }
 
-    public LastkatkaUpdateHandler register(@NotNull CallbackQueryCommand command) {
+    public UpdateHandler register(@NotNull CallbackQueryCommand command) {
         Objects.requireNonNull(command);
         callbackCommands.put(command.command(), command);
         return this;
@@ -87,12 +87,12 @@ public class LastkatkaUpdateHandler implements UpdateHandler {
      *
      * @return this
      */
-    public LastkatkaUpdateHandler splitCallbackCommandByWhitespace() {
+    public UpdateHandler splitCallbackCommandByWhitespace() {
         return splitCallbackCommandByPattern("\\s+");
     }
 
 
-    public LastkatkaUpdateHandler splitCallbackCommandByPattern(@NotNull String pattern) {
+    public UpdateHandler splitCallbackCommandByPattern(@NotNull String pattern) {
         this.callbackCommandSplitPattern = Objects.requireNonNull(pattern);
         return this;
     }

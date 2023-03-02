@@ -3,7 +3,6 @@ package com.senderman.lastkatkabot.feature.love.command;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
 import com.senderman.lastkatkabot.command.CallbackExecutor;
-import com.senderman.lastkatkabot.command.Callbacks;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +12,8 @@ import java.util.List;
 @Singleton
 public class DivorceCallback implements CallbackExecutor {
 
+    public final static String NAME = "DIVORCE";
+
     private final UserStatsService users;
 
     public DivorceCallback(UserStatsService users) {
@@ -21,7 +22,7 @@ public class DivorceCallback implements CallbackExecutor {
 
     @Override
     public String command() {
-        return Callbacks.DIVORCE;
+        return NAME;
     }
 
     @Override

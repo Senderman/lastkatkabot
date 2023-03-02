@@ -3,7 +3,6 @@ package com.senderman.lastkatkabot.feature.feedback.command;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
-import com.senderman.lastkatkabot.command.Callbacks;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
@@ -138,11 +137,11 @@ public class AnswerFeedbackCommand implements CommandExecutor {
                 .setSingleColumnInlineKeyboard(
                         ButtonBuilder.callbackButton()
                                 .text("Удалить фидбек")
-                                .payload(Callbacks.FEEDBACK_DELETE, feedbackId)
+                                .payload(DeleteFeedbackCallback.NAME, feedbackId)
                                 .create(),
                         ButtonBuilder.callbackButton()
                                 .text("Закрыть")
-                                .payload(Callbacks.FEEDBACK_DELETE, "close")
+                                .payload(DeleteFeedbackCallback.NAME, "close")
                                 .create()
                 )
                 .callAsync(ctx.sender);

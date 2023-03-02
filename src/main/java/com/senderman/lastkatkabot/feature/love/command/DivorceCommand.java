@@ -1,7 +1,6 @@
 package com.senderman.lastkatkabot.feature.love.command;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
-import com.senderman.lastkatkabot.command.Callbacks;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
@@ -42,11 +41,11 @@ public class DivorceCommand implements CommandExecutor {
                 .setSingleRowInlineKeyboard(
                         ButtonBuilder.callbackButton()
                                 .text("Развестись")
-                                .payload(Callbacks.DIVORCE, "a", userId, loverId)
+                                .payload(DivorceCallback.NAME, "a", userId, loverId)
                                 .create(),
                         ButtonBuilder.callbackButton()
                                 .text("Отмена")
-                                .payload(Callbacks.DIVORCE, "d", userId)
+                                .payload(DivorceCallback.NAME, "d", userId)
                                 .create()
                 )
                 .callAsync(ctx.sender);

@@ -1,7 +1,8 @@
-package com.senderman.lastkatkabot;
+package com.senderman.lastkatkabot.handler;
 
 import com.annimon.tgbotsmodule.commands.authority.Authority;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
+import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.feature.access.model.AdminUser;
 import com.senderman.lastkatkabot.feature.access.model.BlacklistedUser;

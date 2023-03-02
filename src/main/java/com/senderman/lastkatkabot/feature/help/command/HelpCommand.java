@@ -1,8 +1,10 @@
-package com.senderman.lastkatkabot.command;
+package com.senderman.lastkatkabot.feature.help.command;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
+import com.senderman.lastkatkabot.command.Command;
+import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.feature.access.model.AdminUser;
 import com.senderman.lastkatkabot.feature.access.service.UserManager;

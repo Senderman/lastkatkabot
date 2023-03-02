@@ -1,4 +1,4 @@
-package com.senderman.lastkatkabot;
+package com.senderman.lastkatkabot.handler;
 
 import com.annimon.tgbotsmodule.analytics.UpdateHandler;
 import com.annimon.tgbotsmodule.api.methods.Methods;

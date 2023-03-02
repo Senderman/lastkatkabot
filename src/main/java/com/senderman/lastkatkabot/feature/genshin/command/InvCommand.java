@@ -6,6 +6,7 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.genshin.model.GenshinUserInventoryItem;
 import com.senderman.lastkatkabot.feature.genshin.model.Item;
 import com.senderman.lastkatkabot.feature.genshin.service.GenshinUserInventoryItemService;
+import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import jakarta.inject.Named;
 import org.jetbrains.annotations.NotNull;
 
@@ -73,9 +74,13 @@ public class InvCommand implements CommandExecutor {
                     .append("\n\n");
         }
 
-        ctx.replyToMessage(text.toString()).callAsync(ctx.sender);
-
-
+        ctx.replyToMessage(text.toString())
+                .setSingleRowInlineKeyboard(ButtonBuilder
+                        .callbackButton()
+                        .text("Закрыть")
+                        .payload(CloseInvCallback.NAME)
+                        .create())
+                .callAsync(ctx.sender);
     }
 
     /* format every star section to make it look like:

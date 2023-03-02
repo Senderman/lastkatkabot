@@ -1,7 +1,6 @@
 package com.senderman.lastkatkabot.feature.roleplay.command;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
-import com.senderman.lastkatkabot.command.Callbacks;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.util.Html;
@@ -36,11 +35,11 @@ public class CakeCommand implements CommandExecutor {
                 .setSingleRowInlineKeyboard(
                         ButtonBuilder.callbackButton()
                                 .text("Принять")
-                                .payload(Callbacks.CAKE, "accept", target.getId())
+                                .payload(CakeCallback.NAME, "accept", target.getId())
                                 .create(),
                         ButtonBuilder.callbackButton()
                                 .text("Отказаться")
-                                .payload(Callbacks.CAKE, "decline", target.getId())
+                                .payload(CakeCallback.NAME, "decline", target.getId())
                                 .create()
                 )
                 .callAsync(ctx.sender);

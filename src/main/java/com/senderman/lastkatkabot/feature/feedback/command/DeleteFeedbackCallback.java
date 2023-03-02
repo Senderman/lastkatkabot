@@ -4,7 +4,6 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CallbackExecutor;
-import com.senderman.lastkatkabot.command.Callbacks;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackService;
 import com.senderman.lastkatkabot.util.Html;
@@ -16,12 +15,14 @@ import java.util.EnumSet;
 import java.util.Optional;
 
 @Singleton
-public class FeedbackDeleteCallback implements CallbackExecutor {
+public class DeleteFeedbackCallback implements CallbackExecutor {
+
+    public final static String NAME = "FDEL";
 
     private final FeedbackService feedbackRepo;
     private final BotConfig config;
 
-    public FeedbackDeleteCallback(
+    public DeleteFeedbackCallback(
             FeedbackService feedbackRepo,
             BotConfig config
     ) {
@@ -31,7 +32,7 @@ public class FeedbackDeleteCallback implements CallbackExecutor {
 
     @Override
     public String command() {
-        return Callbacks.FEEDBACK_DELETE;
+        return NAME;
     }
 
     @Override

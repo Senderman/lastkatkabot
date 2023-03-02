@@ -3,7 +3,6 @@ package com.senderman.lastkatkabot.feature.love.command;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
 import com.senderman.lastkatkabot.command.CallbackExecutor;
-import com.senderman.lastkatkabot.command.Callbacks;
 import com.senderman.lastkatkabot.feature.love.model.MarriageRequest;
 import com.senderman.lastkatkabot.feature.love.service.MarriageRequestService;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
@@ -15,6 +14,8 @@ import java.util.List;
 @Singleton
 public class MarriageCallback implements CallbackExecutor {
 
+    public final static String NAME = "MARRIAGE";
+
     private final UserStatsService userStats;
     private final MarriageRequestService marriages;
 
@@ -25,7 +26,7 @@ public class MarriageCallback implements CallbackExecutor {
 
     @Override
     public String command() {
-        return Callbacks.MARRIAGE;
+        return NAME;
     }
 
     @Override

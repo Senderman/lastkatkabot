@@ -2,16 +2,17 @@ package com.senderman.lastkatkabot.feature.roleplay.command;
 
 import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
 import com.senderman.lastkatkabot.command.CallbackExecutor;
-import com.senderman.lastkatkabot.command.Callbacks;
 import jakarta.inject.Singleton;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
 @Singleton
 public class CakeCallback implements CallbackExecutor {
 
+    public final static String NAME = "CAKE";
+
     @Override
     public String command() {
-        return Callbacks.CAKE;
+        return NAME;
     }
 
     @Override

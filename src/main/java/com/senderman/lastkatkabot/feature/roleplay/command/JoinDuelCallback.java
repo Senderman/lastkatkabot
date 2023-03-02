@@ -3,7 +3,6 @@ package com.senderman.lastkatkabot.feature.roleplay.command;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
 import com.senderman.lastkatkabot.command.CallbackExecutor;
-import com.senderman.lastkatkabot.command.Callbacks;
 import com.senderman.lastkatkabot.feature.userstats.model.UserStats;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
@@ -14,17 +13,19 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Singleton
-public class JoinDuel implements CallbackExecutor {
+public class JoinDuelCallback implements CallbackExecutor {
+
+    public final static String NAME = "DUEL";
 
     private final UserStatsService users;
 
-    public JoinDuel(UserStatsService users) {
+    public JoinDuelCallback(UserStatsService users) {
         this.users = users;
     }
 
     @Override
     public String command() {
-        return Callbacks.DUEL;
+        return NAME;
     }
 
     @Override

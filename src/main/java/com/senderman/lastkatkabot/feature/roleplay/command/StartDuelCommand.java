@@ -1,7 +1,6 @@
 package com.senderman.lastkatkabot.feature.roleplay.command;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
-import com.senderman.lastkatkabot.command.Callbacks;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.util.Html;
@@ -27,7 +26,7 @@ public class StartDuelCommand implements CommandExecutor {
         ctx.reply("🎯 Пользователь " + name + " начинает набор на дуэль!")
                 .setInlineKeyboard(ButtonBuilder.callbackButton()
                         .text("Присоединиться")
-                        .payload(Callbacks.DUEL, user.getId())
+                        .payload(JoinDuelCallback.NAME, user.getId())
                         .create())
                 .callAsync(ctx.sender);
     }

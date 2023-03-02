@@ -1,7 +1,6 @@
 package com.senderman.lastkatkabot.feature.respect;
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
-import com.senderman.lastkatkabot.command.Callbacks;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
@@ -39,7 +38,7 @@ public class PayRespectsCommand implements CommandExecutor {
         ctx.reply(text)
                 .setInlineKeyboard(ButtonBuilder.callbackButton()
                         .text("F")
-                        .payload(Callbacks.F)
+                        .payload(PayRespectsCallback.NAME)
                         .create())
                 .callAsync(ctx.sender);
     }

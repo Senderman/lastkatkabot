@@ -2,16 +2,17 @@ package com.senderman.lastkatkabot.feature.members.command;
 
 import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
 import com.senderman.lastkatkabot.command.CallbackExecutor;
-import com.senderman.lastkatkabot.command.Callbacks;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
 @Singleton
 public class GreetingCallback implements CallbackExecutor {
 
+    public final static String NAME = "GREETING";
+
     @Override
     public String command() {
-        return Callbacks.GREETING;
+        return NAME;
     }
 
     @Override

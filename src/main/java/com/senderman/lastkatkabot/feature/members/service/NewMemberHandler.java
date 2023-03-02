@@ -2,9 +2,9 @@ package com.senderman.lastkatkabot.feature.members.service;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
-import com.senderman.lastkatkabot.command.Callbacks;
 import com.senderman.lastkatkabot.feature.access.service.BlacklistedChatService;
 import com.senderman.lastkatkabot.feature.chatsettings.service.ChatInfoService;
+import com.senderman.lastkatkabot.feature.members.command.GreetingCallback;
 import com.senderman.lastkatkabot.feature.members.exception.TooWideNicknameException;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import jakarta.inject.Singleton;
@@ -76,7 +76,7 @@ public class NewMemberHandler implements Consumer<MessageContext> {
                 .setFile(stickerId)
                 .setInlineKeyboard(ButtonBuilder.callbackButton()
                         .text("Привет, " + nickname + "!")
-                        .payload(Callbacks.GREETING)
+                        .payload(GreetingCallback.NAME)
                         .create())
                 .callAsync(ctx.sender);
     }
