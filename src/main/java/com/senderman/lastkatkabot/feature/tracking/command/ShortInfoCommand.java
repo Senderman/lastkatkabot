@@ -3,9 +3,7 @@ package com.senderman.lastkatkabot.feature.tracking.command;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import jakarta.inject.Singleton;
 
-@Singleton
 @Command
 public class ShortInfoCommand implements CommandExecutor {
 

@@ -7,12 +7,10 @@ import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.access.model.BlacklistedChat;
 import com.senderman.lastkatkabot.feature.access.service.BlacklistedChatService;
-import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 
-@Singleton
 @Command
 public class BadChatCommand implements CommandExecutor {
 

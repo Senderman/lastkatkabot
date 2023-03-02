@@ -3,12 +3,10 @@ package com.senderman.lastkatkabot.feature.tracking.command;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import jakarta.inject.Singleton;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryType;
 
-@Singleton
 @Command
 public class UptimeCommand implements CommandExecutor {
 

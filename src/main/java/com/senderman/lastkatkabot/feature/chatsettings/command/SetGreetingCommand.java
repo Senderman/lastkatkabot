@@ -5,12 +5,10 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.chatsettings.service.ChatInfoService;
-import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
-@Singleton
 @Command
 public class SetGreetingCommand implements CommandExecutor {
 

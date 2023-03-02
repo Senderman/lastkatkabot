@@ -7,7 +7,6 @@ import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
-import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
@@ -15,7 +14,6 @@ import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
 import java.util.Optional;
 import java.util.function.Function;
 
-@Singleton
 @Command
 public class BncTopCommand implements CommandExecutor {
 

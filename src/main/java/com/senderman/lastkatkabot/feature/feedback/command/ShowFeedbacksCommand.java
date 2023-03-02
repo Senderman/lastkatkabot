@@ -7,12 +7,10 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.feedback.model.Feedback;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackFormatterService;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackService;
-import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 
-@Singleton
 @Command
 public class ShowFeedbacksCommand implements CommandExecutor {
 

@@ -12,11 +12,9 @@ import com.senderman.lastkatkabot.feature.feedback.model.Feedback;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackService;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
-import jakarta.inject.Singleton;
 
 import java.util.EnumSet;
 
-@Singleton
 @Command
 public class AnswerFeedbackCommand implements CommandExecutor {
 

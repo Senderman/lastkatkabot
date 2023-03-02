@@ -7,7 +7,6 @@ import com.senderman.lastkatkabot.feature.genshin.model.GenshinUserInventoryItem
 import com.senderman.lastkatkabot.feature.genshin.model.Item;
 import com.senderman.lastkatkabot.feature.genshin.service.GenshinUserInventoryItemService;
 import jakarta.inject.Named;
-import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -16,7 +15,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Singleton
 @Command
 public class InvCommand implements CommandExecutor {
 

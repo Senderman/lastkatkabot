@@ -10,7 +10,6 @@ import com.senderman.lastkatkabot.feature.feedback.model.Feedback;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackFormatterService;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackService;
 import com.senderman.lastkatkabot.util.Html;
-import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -18,7 +17,6 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-@Singleton
 @Command
 public class SendFeedbackCommand implements CommandExecutor {
 

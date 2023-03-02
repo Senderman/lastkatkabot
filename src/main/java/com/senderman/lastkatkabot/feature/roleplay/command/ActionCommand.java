@@ -4,10 +4,8 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
-@Singleton
 @Command
 public class ActionCommand implements CommandExecutor {
 

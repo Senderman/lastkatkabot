@@ -10,14 +10,12 @@ import com.senderman.lastkatkabot.feature.weather.exception.WeatherParseExceptio
 import com.senderman.lastkatkabot.feature.weather.model.Forecast;
 import com.senderman.lastkatkabot.feature.weather.service.WeatherService;
 import jakarta.inject.Named;
-import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
-@Singleton
 @Command
 public class WeatherCommand implements CommandExecutor {
 

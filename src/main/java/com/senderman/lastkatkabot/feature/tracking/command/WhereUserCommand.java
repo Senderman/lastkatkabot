@@ -8,14 +8,12 @@ import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.tracking.service.ChatUserService;
 import jakarta.inject.Named;
-import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
-@Singleton
 @Command
 public class WhereUserCommand implements CommandExecutor {
 

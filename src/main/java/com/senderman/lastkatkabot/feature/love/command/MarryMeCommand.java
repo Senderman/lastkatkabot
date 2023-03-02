@@ -9,11 +9,9 @@ import com.senderman.lastkatkabot.feature.love.service.MarriageRequestService;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
-import jakarta.inject.Singleton;
 
 import java.util.Objects;
 
-@Singleton
 @Command
 public class MarryMeCommand implements CommandExecutor {
 

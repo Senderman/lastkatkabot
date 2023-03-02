@@ -4,12 +4,10 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.bnc.model.BncGameState;
-import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Collectors;
 
-@Singleton
 @Command
 public class BncStartCommand implements CommandExecutor {
 

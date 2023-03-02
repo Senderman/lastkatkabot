@@ -3,12 +3,10 @@ package com.senderman.lastkatkabot.feature.bnc.command;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
-@Singleton
 @Command
 public class BncStopCommand implements CommandExecutor {
 

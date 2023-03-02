@@ -8,11 +8,9 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackService;
 import com.senderman.lastkatkabot.util.Html;
-import jakarta.inject.Singleton;
 
 import java.util.EnumSet;
 
-@Singleton
 @Command
 public class DeleteFeedbackCommand implements CommandExecutor {
 

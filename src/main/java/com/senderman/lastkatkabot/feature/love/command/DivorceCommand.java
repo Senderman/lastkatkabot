@@ -6,9 +6,7 @@ import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
-import jakarta.inject.Singleton;
 
-@Singleton
 @Command
 public class DivorceCommand implements CommandExecutor {
 

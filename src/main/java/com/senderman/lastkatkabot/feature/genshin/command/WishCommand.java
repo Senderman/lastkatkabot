@@ -10,7 +10,6 @@ import com.senderman.lastkatkabot.feature.genshin.service.GenshinUserInventoryIt
 import com.senderman.lastkatkabot.util.CurrentTime;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Named;
-import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -19,7 +18,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-@Singleton
 @Command
 public class WishCommand implements CommandExecutor {
 

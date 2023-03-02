@@ -7,9 +7,7 @@ import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Named;
-import jakarta.inject.Singleton;
 
-@Singleton
 @Command
 public class GetInfoCommand implements CommandExecutor {
 

@@ -5,9 +5,7 @@ import com.senderman.lastkatkabot.command.Callbacks;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
-import jakarta.inject.Singleton;
 
-@Singleton
 @Command
 public class PayRespectsCommand implements CommandExecutor {
 

@@ -5,13 +5,11 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.chatsettings.annotation.CommandAccessCommand;
 import com.senderman.lastkatkabot.feature.chatsettings.service.CommandAccessManager;
-import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Set;
 
-@Singleton
 @CommandAccessCommand
 public class ForbidCommand implements CommandExecutor {
 

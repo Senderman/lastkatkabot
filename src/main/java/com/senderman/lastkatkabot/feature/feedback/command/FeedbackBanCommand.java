@@ -8,11 +8,9 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.access.model.BlacklistedUser;
 import com.senderman.lastkatkabot.feature.access.service.UserManager;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackService;
-import jakarta.inject.Singleton;
 
 import java.util.EnumSet;
 
-@Singleton
 @Command
 public class FeedbackBanCommand implements CommandExecutor {
 

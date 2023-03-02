@@ -8,13 +8,11 @@ import com.senderman.lastkatkabot.feature.access.model.AdminUser;
 import com.senderman.lastkatkabot.feature.access.model.BlacklistedUser;
 import com.senderman.lastkatkabot.feature.access.service.UserManager;
 import com.senderman.lastkatkabot.util.Html;
-import jakarta.inject.Singleton;
 
 import java.util.EnumSet;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-@Singleton
 @Command
 public class ListUsersCommand implements CommandExecutor {
 

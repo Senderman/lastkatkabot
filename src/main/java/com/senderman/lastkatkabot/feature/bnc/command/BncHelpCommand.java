@@ -4,10 +4,8 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
-import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
-@Singleton
 @Command
 public class BncHelpCommand implements CommandExecutor {
 

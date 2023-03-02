@@ -4,9 +4,7 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.chatsettings.service.ChatInfoService;
-import jakarta.inject.Singleton;
 
-@Singleton
 @Command
 public class LastPairsCommand implements CommandExecutor {
 
