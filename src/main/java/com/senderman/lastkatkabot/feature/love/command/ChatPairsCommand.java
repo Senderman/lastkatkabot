@@ -51,6 +51,10 @@ public class ChatPairsCommand implements CommandExecutor {
                 .stream()
                 .collect(Collectors.toMap(ChatUser::getUserId, ChatUser::getName));
         var lovers = userStats.findByIdAndLoverIdIn(users.keySet());
+        if (lovers.isEmpty()) {
+            ctx.reply("Браков в чате нет!").callAsync(ctx.sender);
+            return;
+        }
         var processedUsers = new HashSet<Long>();
         for (var loverStat : lovers) {
             if (!processedUsers.add(loverStat.getUserId())) continue;
