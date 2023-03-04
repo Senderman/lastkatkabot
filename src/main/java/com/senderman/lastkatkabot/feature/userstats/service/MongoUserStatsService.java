@@ -6,6 +6,7 @@ import com.senderman.lastkatkabot.feature.userstats.model.UserStats;
 import com.senderman.lastkatkabot.feature.userstats.repository.UserStatsRepository;
 import jakarta.inject.Singleton;
 
+import java.util.Collection;
 import java.util.List;
 
 @Singleton
@@ -45,5 +46,10 @@ public class MongoUserStatsService implements UserStatsService {
         return repository.findTop10ByUserIdInOrderByBncScoreDesc(userIds).stream()
                 .limit(10)
                 .toList();
+    }
+
+    @Override
+    public List<UserStats> findByIdAndLoverIdIn(Collection<Long> ids) {
+        return repository.findByIdAndLoverIdIn(ids);
     }
 }
