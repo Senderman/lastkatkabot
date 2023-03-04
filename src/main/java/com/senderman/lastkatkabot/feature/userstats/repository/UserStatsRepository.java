@@ -9,6 +9,7 @@ import io.micronaut.data.repository.CrudRepository;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +25,9 @@ public interface UserStatsRepository extends CrudRepository<UserStats, Long> {
     @MongoFindQuery(value = "{ _id: { $in: :ids }, bncScore: { $ne: 0 } }", sort = "{ bncScore : -1 }")
     @MongoFindOptions(limit = 10)
     List<UserStats> findTop10ByUserIdInOrderByBncScoreDesc(List<Long> ids);
+
+    @MongoFindQuery("{ _id: { $in: :ids }, loverId: { $in: :ids } }")
+    List<UserStats> findByIdAndLoverIdIn(Collection<Long> ids);
 
     @Override
     @MongoUpdateOptions(upsert = true)
