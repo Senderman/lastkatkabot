@@ -37,8 +37,16 @@ public class BncTopCommand implements CommandExecutor {
     public void accept(@NotNull MessageContext ctx) {
 
         boolean chatTop = ctx.argument(0, "").equals("chat");
+        if (chatTop && ctx.message().isUserMessage()) {
+            ctx.replyToMessage("Команду /bnctop chat нельзя использовать в лс!").callAsync(ctx.sender);
+            return;
+        }
         String title = (chatTop ? "<b>Топ-10 задротов чата в bnc:</b>" : "<b>Топ-10 задротов в bnc:</b>") + "\n\n";
         var topUsers = chatTop ? users.findTop10BncPlayersByChat(ctx.chatId()) : users.findTop10BncPlayers();
+        if (topUsers.isEmpty()) {
+            ctx.replyToMessage("В этом чате никто не играет в быки и коровы :(").callAsync(ctx.sender);
+            return;
+        }
         int counter = 0;
         var top = new StringBuilder(title);
         for (var user : topUsers) {
