@@ -10,6 +10,7 @@ import com.senderman.lastkatkabot.feature.feedback.exception.FeedbackValidationE
 import com.senderman.lastkatkabot.feature.feedback.model.Feedback;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackService;
 import com.senderman.lastkatkabot.util.Html;
+import com.senderman.lastkatkabot.util.TelegramUsersHelper;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 
 import java.util.EnumSet;
@@ -18,13 +19,16 @@ import java.util.EnumSet;
 public class AnswerFeedbackCommand implements CommandExecutor {
 
     private final FeedbackService feedbackService;
+    private final TelegramUsersHelper telegramUsersHelper;
     private final BotConfig config;
 
     public AnswerFeedbackCommand(
             FeedbackService feedbackService,
+            TelegramUsersHelper telegramUsersHelper,
             BotConfig config
     ) {
         this.feedbackService = feedbackService;
+        this.telegramUsersHelper = telegramUsersHelper;
         this.config = config;
     }
 
@@ -87,8 +91,8 @@ public class AnswerFeedbackCommand implements CommandExecutor {
 
     private void answerWithTextAndMessage(MessageContext ctx, Feedback feedback) {
         final var reply = ctx.message().getReplyToMessage();
-        if (reply.getFrom().getIsBot()) {
-            ctx.replyToMessage("Нельзя пересылать сообщения от ботов").callAsync(ctx.sender);
+        if (telegramUsersHelper.isAnotherBot(reply.getFrom())) {
+            ctx.replyToMessage("Нельзя пересылать сообщения от других ботов").callAsync(ctx.sender);
             return;
         }
 
