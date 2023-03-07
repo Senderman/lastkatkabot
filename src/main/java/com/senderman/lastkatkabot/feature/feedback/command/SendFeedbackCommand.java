@@ -10,6 +10,7 @@ import com.senderman.lastkatkabot.feature.feedback.model.Feedback;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackFormatterService;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackService;
 import com.senderman.lastkatkabot.util.Html;
+import com.senderman.lastkatkabot.util.TelegramUsersHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -22,16 +23,19 @@ public class SendFeedbackCommand implements CommandExecutor {
 
     private final FeedbackService feedbackRepo;
     private final FeedbackFormatterService feedbackFormatter;
+    private final TelegramUsersHelper telegramUsersHelper;
     private final AdminService adminRepo;
     private final BotConfig config;
 
     public SendFeedbackCommand(
             FeedbackService feedbackRepo,
             FeedbackFormatterService feedbackFormatter,
+            TelegramUsersHelper telegramUsersHelper,
             AdminService adminRepo, BotConfig config
     ) {
         this.feedbackRepo = feedbackRepo;
         this.feedbackFormatter = feedbackFormatter;
+        this.telegramUsersHelper = telegramUsersHelper;
         this.adminRepo = adminRepo;
         this.config = config;
     }
@@ -105,8 +109,8 @@ public class SendFeedbackCommand implements CommandExecutor {
         if (!message.isReply()) return null;
 
         final var reply = message.getReplyToMessage();
-        // Bot message is not copyable
-        if (reply.getFrom().getIsBot()) return null;
+        // Others bot messages are not copyable
+        if (telegramUsersHelper.isAnotherBot(reply.getFrom())) return null;
 
         return reply.getMessageId();
     }

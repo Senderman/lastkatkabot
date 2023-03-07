@@ -9,6 +9,7 @@ import com.senderman.lastkatkabot.feature.access.service.ChatPolicyEnsuringServi
 import com.senderman.lastkatkabot.feature.members.service.NewMemberHandler;
 import com.senderman.lastkatkabot.feature.tracking.service.ChatUserService;
 import com.senderman.lastkatkabot.feature.tracking.service.UserActivityTrackerService;
+import com.senderman.lastkatkabot.util.TelegramUsersHelper;
 import io.micrometer.core.annotation.Counted;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
@@ -32,7 +33,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -48,7 +48,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     private final ChatPolicyEnsuringService chatPolicyEnsuringService;
     private final NewMemberHandler newMemberHandler;
     private final ExecutorService threadPool;
-    private final Set<Long> telegramServiceUserIds;
+    private final TelegramUsersHelper telegramUsersHelper;
     private final ObjectMapper messageToJsonMapper;
 
     public BotHandler(
@@ -59,6 +59,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             UserActivityTrackerService activityTrackerService,
             ChatPolicyEnsuringService chatPolicyEnsuringService,
             NewMemberHandler newMemberHandler,
+            TelegramUsersHelper telegramUsersHelper,
             @Named("generalNeedsPool") ExecutorService threadPool,
             @Named("messageToJsonMapper") ObjectMapper messageToJsonMapper
     ) {
@@ -69,14 +70,9 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         this.activityTrackerService = activityTrackerService;
         this.chatPolicyEnsuringService = chatPolicyEnsuringService;
         this.newMemberHandler = newMemberHandler;
+        this.telegramUsersHelper = telegramUsersHelper;
         this.threadPool = threadPool;
         this.messageToJsonMapper = messageToJsonMapper;
-
-        this.telegramServiceUserIds = Set.of(
-                777000L, // attached channel's messages
-                1087968824L, // anonymous group admin @GroupAnonymousBot
-                136817688L // Channel message, @Channel_Bot
-        );
 
         addMethodPreprocessor(SendMessage.class, m -> {
             m.enableHtml(true);
@@ -181,7 +177,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
                 return null;
             }
 
-            if (telegramServiceUserIds.contains(message.getFrom().getId())) {
+            if (telegramUsersHelper.isServiceUserId(message.getFrom())) {
                 return null;
             }
 
