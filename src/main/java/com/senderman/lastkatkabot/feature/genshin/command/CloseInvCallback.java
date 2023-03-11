@@ -1,6 +1,5 @@
 package com.senderman.lastkatkabot.feature.genshin.command;
 
-import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
 import com.senderman.lastkatkabot.command.CallbackExecutor;
 import com.senderman.lastkatkabot.util.Html;
@@ -20,8 +19,7 @@ public class CloseInvCallback implements CallbackExecutor {
     @Override
     public void accept(@NotNull CallbackQueryContext ctx) {
         final var userId = ctx.user().getId();
-        final var reply = ctx.message().getReplyToMessage();
-        final var ownerId = reply.getFrom().getId();
+        final var ownerId = Long.parseLong(ctx.argument(0));
 
         if (!userId.equals(ownerId)) {
             ctx.answerAsAlert("Это не ваш инвентарь!").callAsync(ctx.sender);
@@ -29,7 +27,6 @@ public class CloseInvCallback implements CallbackExecutor {
         }
         ctx.editMessage("Здесь был инвентарь, но его закрыл %s".formatted(Html.htmlSafe(ctx.user().getFirstName())))
                 .callAsync(ctx.sender);
-        Methods.deleteMessage(reply.getChatId(), reply.getMessageId()).callAsync(ctx.sender);
         ctx.answer("Инвентарь закрыт").callAsync(ctx.sender);
     }
 }
