@@ -55,6 +55,6 @@ public class MongoFeedbackService implements FeedbackService {
 
     @Override
     public long deleteByIdBetween(int from, int to) {
-        return repository.deleteByIdBetween(from - 1, to + 1);
+        return repository.deleteByIdBetween(from, to);
     }
 }
