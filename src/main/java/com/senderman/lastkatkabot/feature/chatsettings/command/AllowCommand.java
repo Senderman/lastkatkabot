@@ -3,14 +3,12 @@ package com.senderman.lastkatkabot.feature.chatsettings.command;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import com.senderman.lastkatkabot.feature.chatsettings.annotation.CommandAccessCommand;
 import com.senderman.lastkatkabot.feature.chatsettings.service.CommandAccessManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Set;
 
-@CommandAccessCommand
 public class AllowCommand implements CommandExecutor {
 
     private final CommandAccessManager commandAccessManager;
