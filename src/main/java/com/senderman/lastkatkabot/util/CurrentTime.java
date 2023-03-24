@@ -3,20 +3,19 @@ package com.senderman.lastkatkabot.util;
 import com.senderman.lastkatkabot.config.BotConfig;
 import jakarta.inject.Singleton;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.TimeZone;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Singleton
 public class CurrentTime {
 
-    private final TimeZone timeZone;
-    private final SimpleDateFormat dayFormat;
+    private final ZoneId timeZone;
+    private final DateTimeFormatter dayFormat;
 
     public CurrentTime(BotConfig config) {
-        this.timeZone = TimeZone.getTimeZone(config.getTimezone());
-        this.dayFormat = new SimpleDateFormat("yyyyMMdd");
-        dayFormat.setTimeZone(timeZone);
+        this.timeZone = ZoneId.of(config.getTimezone());
+        this.dayFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
     }
 
     /**
@@ -25,7 +24,6 @@ public class CurrentTime {
      * @return current day as String in format yyyyMMdd
      */
     public String getCurrentDay() {
-        var date = Calendar.getInstance(timeZone).getTime();
-        return dayFormat.format(date);
+        return ZonedDateTime.now(timeZone).format(dayFormat);
     }
 }
