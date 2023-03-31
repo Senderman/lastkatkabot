@@ -26,7 +26,7 @@ public class WeatherCommand implements CommandExecutor {
     public WeatherCommand(
             UserStatsService userStats,
             WeatherService weatherService,
-            @Named("generalNeedsPool") ExecutorService threadPool) {
+            @Named("weatherPool") ExecutorService threadPool) {
         this.userStats = userStats;
         this.weatherService = weatherService;
         this.threadPool = threadPool;

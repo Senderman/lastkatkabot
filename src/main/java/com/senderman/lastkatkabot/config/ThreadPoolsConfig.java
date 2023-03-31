@@ -21,8 +21,7 @@ public class ThreadPoolsConfig {
     }
 
     /*
-    /wru
-    /weather
+    /wru, /wic
     new chat member processing
     image generation
     calling synchronized methods
@@ -33,4 +32,12 @@ public class ThreadPoolsConfig {
         int cpus = Runtime.getRuntime().availableProcessors();
         return Executors.newFixedThreadPool(Math.max(2, cpus / 2), new Threads.NamedThreadFactory("generalNeedsPool-%d"));
     }
+
+    @Singleton
+    @Named("weatherPool")
+    public ExecutorService weatherPool() {
+        int cpus = Runtime.getRuntime().availableProcessors();
+        return Executors.newFixedThreadPool(Math.max(2, cpus / 2), new Threads.NamedThreadFactory("weatherPool-%d"));
+    }
+
 }
