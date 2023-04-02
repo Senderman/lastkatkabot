@@ -3,6 +3,7 @@ package com.senderman.lastkatkabot.feature.respect;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 
 @Command
@@ -33,7 +34,7 @@ public class PayRespectsCommand implements CommandExecutor {
 
         ctx.deleteMessage().callAsync(ctx.sender);
         var text = "🕯 Press F to pay respects " + object +
-                "\n" + ctx.user().getFirstName() + " has paid respects";
+                "\n" + Html.htmlSafe(ctx.user().getFirstName()) + " has paid respects";
 
         ctx.reply(text)
                 .setInlineKeyboard(ButtonBuilder.callbackButton()
