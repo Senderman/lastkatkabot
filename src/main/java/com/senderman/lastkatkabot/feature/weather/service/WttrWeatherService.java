@@ -8,6 +8,7 @@ import jakarta.inject.Singleton;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -75,7 +76,7 @@ public class WttrWeatherService implements WeatherService {
         if (conn.getResponseCode() == 404)
             throw new NoSuchCityException(city);
         try (var out = conn.getInputStream()) {
-            return new String(out.readAllBytes());
+            return new String(out.readAllBytes(), StandardCharsets.UTF_8);
         }
     }
 
