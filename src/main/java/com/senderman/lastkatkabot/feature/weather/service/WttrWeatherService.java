@@ -8,6 +8,7 @@ import jakarta.inject.Singleton;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -81,7 +82,7 @@ public class WttrWeatherService implements WeatherService {
     }
 
     private String urlEncodeCity(String city) {
-        return city.replaceAll("\\s", "%20");
+        return URLEncoder.encode(city, StandardCharsets.UTF_8);
     }
 
     private String getImageLink(String city) {
