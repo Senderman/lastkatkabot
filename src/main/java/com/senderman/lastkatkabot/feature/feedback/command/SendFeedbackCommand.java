@@ -1,7 +1,6 @@
 package com.senderman.lastkatkabot.feature.feedback.command;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
@@ -9,6 +8,7 @@ import com.senderman.lastkatkabot.feature.access.service.AdminService;
 import com.senderman.lastkatkabot.feature.feedback.model.Feedback;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackFormatterService;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackService;
+import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.TelegramUsersHelper;
 import org.jetbrains.annotations.NotNull;
@@ -47,19 +47,19 @@ public class SendFeedbackCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "отправить сообщение разработчику. Например, /feedback бот не работает";
+        return "feedback.feedback.description";
     }
 
     @Override
-    public void accept(MessageContext ctx) {
+    public void accept(@NotNull LocalizedMessageContext ctx) {
         ctx.setArgumentsLimit(1);
         if (ctx.argumentsLength() < 1) {
-            ctx.replyToMessage("Неверное количество аргументов!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("common.invalidArgumentsNumber")).callAsync(ctx.sender);
             return;
         }
         var feedbackText = Html.htmlSafe(ctx.argument(0));
         if (feedbackText.length() > 2000) {
-            ctx.replyToMessage("Максимальная длина текста — 2000 символов!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("feedback.feedback.textMaxLength")).callAsync(ctx.sender);
             return;
         }
 
@@ -78,18 +78,14 @@ public class SendFeedbackCommand implements CommandExecutor {
         }
 
         // Send feedback to developers
-        var text = """
-                🔔 <b>Фидбек</b> %s
-
-                Для ответа введите <code>/fresp %d</code> &lt;ваш ответ&gt;,
-                или ответом на сообщение, которое хотите отправить.
-                🚨 %s""".formatted(feedbackFormatter.format(feedback), feedback.getId(), listAdmins());
+        var text = ctx.getString("feedback.feedback.message")
+                .formatted(feedbackFormatter.format(feedback), feedback.getId(), listAdmins());
         Methods.sendMessage(config.getFeedbackChannelId(), text)
                 .setReplyToMessageId(contextMessageId)
                 .callAsync(ctx.sender);
 
         // Notify reporter that the feedback is sent
-        ctx.replyToMessage("✅ Сообщение отправлено разработчикам!").callAsync(ctx.sender);
+        ctx.replyToMessage(ctx.getString("feedback.feedback.success")).callAsync(ctx.sender);
     }
 
     private String listAdmins() {

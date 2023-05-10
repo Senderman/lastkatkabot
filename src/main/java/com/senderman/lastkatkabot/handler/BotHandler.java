@@ -2,10 +2,11 @@ package com.senderman.lastkatkabot.handler;
 
 import com.annimon.tgbotsmodule.analytics.UpdateHandler;
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.feature.access.service.ChatPolicyEnsuringService;
+import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
+import com.senderman.lastkatkabot.feature.localization.service.LocalizationService;
 import com.senderman.lastkatkabot.feature.members.service.NewMemberHandler;
 import com.senderman.lastkatkabot.feature.tracking.service.ChatUserService;
 import com.senderman.lastkatkabot.feature.tracking.service.UserActivityTrackerService;
@@ -50,6 +51,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     private final ExecutorService threadPool;
     private final TelegramUsersHelper telegramUsersHelper;
     private final ObjectMapper messageToJsonMapper;
+    private final LocalizationService localizationService;
 
     public BotHandler(
             DefaultBotOptions botOptions,
@@ -60,6 +62,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             ChatPolicyEnsuringService chatPolicyEnsuringService,
             NewMemberHandler newMemberHandler,
             TelegramUsersHelper telegramUsersHelper,
+            LocalizationService localizationService,
             @Named("generalNeedsPool") ExecutorService threadPool,
             @Named("messageToJsonMapper") ObjectMapper messageToJsonMapper
     ) {
@@ -73,6 +76,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         this.telegramUsersHelper = telegramUsersHelper;
         this.threadPool = threadPool;
         this.messageToJsonMapper = messageToJsonMapper;
+        this.localizationService = localizationService;
 
         addMethodPreprocessor(SendMessage.class, m -> {
             m.enableHtml(true);
@@ -167,7 +171,8 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             {
                 var newMembers = message.getNewChatMembers();
                 if (!newMembers.isEmpty()) {
-                    threadPool.execute(() -> newMemberHandler.accept(new MessageContext(this, update, "")));
+                    threadPool.execute(() -> newMemberHandler.accept(
+                            new LocalizedMessageContext(this, update, "", localizationService)));
                     return null;
                 }
             }

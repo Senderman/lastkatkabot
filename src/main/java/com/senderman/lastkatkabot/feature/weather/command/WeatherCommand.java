@@ -1,9 +1,9 @@
 package com.senderman.lastkatkabot.feature.weather.command;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import com.senderman.lastkatkabot.feature.weather.exception.NoSuchCityException;
 import com.senderman.lastkatkabot.feature.weather.exception.WeatherParseException;
@@ -39,12 +39,12 @@ public class WeatherCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "погода. Если не указать город, то покажет погоду в последнем введенном вами городе. Можно реплаем на геолокацию";
+        return "weather.description";
     }
 
     @Override
-    public void accept(@NotNull MessageContext ctx) {
-        final var messageToEdit = ctx.replyToMessage("\uD83C\uDF10 Запрос в очереди...").call(ctx.sender);
+    public void accept(@NotNull LocalizedMessageContext ctx) {
+        final var messageToEdit = ctx.replyToMessage(ctx.getString("weather.queue")).call(ctx.sender);
         // if bot failed to send the message
         if (messageToEdit == null) {
             return;
@@ -58,21 +58,21 @@ public class WeatherCommand implements CommandExecutor {
 
         threadPool.execute(() -> {
             try {
-                editMessageConsumer.accept("\uD83C\uDF10 Соединение...");
+                editMessageConsumer.accept("weather.connecting");
                 String city = getCityFromMessageOrDb(ctx);
-                var text = forecastToString(weatherService.getWeatherByCity(city));
+                var text = forecastToString(weatherService.getWeatherByCity(city, ctx.getLocale()), ctx);
                 editMessageConsumer.accept(text);
                 // save last defined city in db (we won't get here if exception is occurred)
                 updateUserCity(ctx.user().getId(), city);
             } catch (NoCitySpecifiedException e) {
-                editMessageConsumer.accept("Вы не указали город! (/weather город). Бот запомнит ваш выбор.");
+                editMessageConsumer.accept(ctx.getString("weather.noCityGiven"));
             } catch (NoSuchCityException e) {
-                editMessageConsumer.accept("Город не найден - " + e.getCity());
+                editMessageConsumer.accept(ctx.getString("weather.cityNotFound").formatted(e.getCity()));
             } catch (WeatherParseException e) {
-                editMessageConsumer.accept("Ошибка обработки запроса: " + e.getMessage());
+                editMessageConsumer.accept(ctx.getString("weather.queryError").formatted(e.getMessage()));
                 throw new RuntimeException(e);
             } catch (IOException e) {
-                editMessageConsumer.accept("Ошибка соединения с сервисом погоды");
+                editMessageConsumer.accept(ctx.getString("weather.connectionError"));
                 throw new RuntimeException(e);
             }
         });
@@ -85,7 +85,7 @@ public class WeatherCommand implements CommandExecutor {
      * @return user's city
      * @throws NoCitySpecifiedException if the city is found neither in message text, neither in db
      */
-    private String getCityFromMessageOrDb(MessageContext ctx) throws NoCitySpecifiedException {
+    private String getCityFromMessageOrDb(LocalizedMessageContext ctx) throws NoCitySpecifiedException {
         if (ctx.message().isReply() && ctx.message().getReplyToMessage().hasLocation()) {
             var location = ctx.message().getReplyToMessage().getLocation();
             return "%s,%s".formatted(location.getLatitude(), location.getLongitude());
@@ -106,11 +106,11 @@ public class WeatherCommand implements CommandExecutor {
     }
 
 
-    private String forecastToString(Forecast f) {
+    private String forecastToString(Forecast f, LocalizedMessageContext ctx) {
         return "<b>" + f.title() + "</b>\n\n" +
                 f.feelings() + "\n" +
                 "🌡: " + f.temperature() + "\n" +
-                "🤔: Ощущается как " + f.feelsLike() + "\n" +
+                "🤔: %s ".formatted(ctx.getString("weather.feelsLike")) + f.feelsLike() + "\n" +
                 "💨: " + f.wind() + "\n" +
                 "💧: " + f.humidity() + "\n" +
                 "🧭: " + f.pressure() + "\n" +

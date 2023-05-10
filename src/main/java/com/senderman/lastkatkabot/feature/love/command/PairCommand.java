@@ -1,11 +1,11 @@
 package com.senderman.lastkatkabot.feature.love.command;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.chatsettings.service.ChatInfoService;
+import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
 import com.senderman.lastkatkabot.feature.tracking.model.ChatUser;
 import com.senderman.lastkatkabot.feature.tracking.service.ChatUserService;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
@@ -13,6 +13,7 @@ import com.senderman.lastkatkabot.util.CurrentTime;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.Threads;
 import jakarta.inject.Named;
+import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.*;
@@ -59,15 +60,15 @@ public class PairCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "пара дня";
+        return "love.pair.description";
     }
 
     @Override
-    public void accept(MessageContext ctx) {
+    public void accept(@NotNull LocalizedMessageContext ctx) {
         long chatId = ctx.chatId();
 
         if (ctx.message().isUserMessage()) {
-            ctx.replyToMessage("Команду нельзя использовать в лс!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("common.noUsageInPM")).callAsync(ctx.sender);
             return;
         }
 
@@ -80,7 +81,7 @@ public class PairCommand implements CommandExecutor {
 
         // pair of today already exists
         if (!lastPairs.isEmpty() && lastPairGenerationDate == currentDay) {
-            ctx.reply("Пара дня: " + lastPairs.get(0)).callAsync(ctx.sender);
+            ctx.reply(ctx.getString("love.pair.message") + lastPairs.get(0)).callAsync(ctx.sender);
             return;
         }
 
@@ -90,7 +91,7 @@ public class PairCommand implements CommandExecutor {
 
         final var usersForPair = chatUsersService.getTwoOrLessUsersOfChat(chatId);
         if (usersForPair.size() < 2) {
-            ctx.reply("Недостаточно пользователей писало в чат за последние 2 недели!").callAsync(ctx.sender);
+            ctx.reply(ctx.getString("love.pair.notEnoughUsers")).callAsync(ctx.sender);
             runningChatPairsGenerations.remove(chatId);
             return;
         }
@@ -117,7 +118,7 @@ public class PairCommand implements CommandExecutor {
                 ctx.reply(text).callAsync(ctx.sender);
             } catch (InterruptedException | ExecutionException e) {
                 floodFuture.cancel(true);
-                ctx.reply("...Упс, произошла ошибка. Попробуйте еще раз").callAsync(ctx.sender);
+                ctx.reply(ctx.getString("love.pair.error")).callAsync(ctx.sender);
                 throw new RuntimeException(e);
             } finally {
                 runningChatPairsGenerations.remove(chatId);

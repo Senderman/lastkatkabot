@@ -1,7 +1,10 @@
 package com.senderman.lastkatkabot.command;
 
 import com.annimon.tgbotsmodule.commands.TextCommand;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
+import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 
@@ -22,4 +25,10 @@ public interface CommandExecutor extends TextCommand {
         return EnumSet.of(Role.USER);
     }
 
+    void accept(@NotNull LocalizedMessageContext context);
+
+    @Override
+    default void accept(@NotNull MessageContext context) {
+        accept((LocalizedMessageContext) context);
+    }
 }

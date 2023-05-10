@@ -1,7 +1,7 @@
 package com.senderman.lastkatkabot.feature.respect;
 
-import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
 import com.senderman.lastkatkabot.command.CallbackExecutor;
+import com.senderman.lastkatkabot.feature.localization.context.LocalizedCallbackQueryContext;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Singleton;
 
@@ -16,7 +16,7 @@ public class PayRespectsCallback implements CallbackExecutor {
     }
 
     @Override
-    public void accept(CallbackQueryContext ctx) {
+    public void accept(LocalizedCallbackQueryContext ctx) {
 
         if (ctx.message().getText().contains(ctx.user().getFirstName())) {
             ctx.answer("You've already payed respects! (or you've tried to pay respects to yourself)", true).callAsync(ctx.sender);

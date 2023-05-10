@@ -1,8 +1,8 @@
 package com.senderman.lastkatkabot.feature.roleplay.command;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
 import com.senderman.lastkatkabot.command.CallbackExecutor;
+import com.senderman.lastkatkabot.feature.localization.context.LocalizedCallbackQueryContext;
 import com.senderman.lastkatkabot.feature.userstats.model.UserStats;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
@@ -29,23 +29,23 @@ public class JoinDuelCallback implements CallbackExecutor {
     }
 
     @Override
-    public void accept(CallbackQueryContext ctx) {
+    public void accept(LocalizedCallbackQueryContext ctx) {
         var firstUserId = Long.parseLong(ctx.argument(0));
         var secondUser = ctx.user();
         if (secondUser.getId().equals(firstUserId)) {
-            ctx.answer("👺 Похоже, вам надо обратиться к психологу! Вы пытаетесь вызвать на дуэль самого себя!", true)
+            ctx.answer(ctx.getString("roleplay.duel.selfDuel"), true)
                     .callAsync(ctx.sender);
             return;
         }
         var firstUserMember = Methods.getChatMember(ctx.message().getChatId(), firstUserId).call(ctx.sender);
         if (firstUserMember == null) {
-            ctx.answer("😒 Похоже, ваш оппонент ушел из чата!", true).callAsync(ctx.sender);
-            ctx.editMessage("😒 Дуэль не состоялась, так как один из дуэлянтов покинул чат!")
+            ctx.answer(ctx.getString("roleplay.duel.leftChatNotify"), true).callAsync(ctx.sender);
+            ctx.editMessage(ctx.getString("roleplay.duel.leftChatMessage"))
                     .disableWebPagePreview()
                     .callAsync(ctx.sender);
             return;
         }
-        ctx.answer("Вы вступили в дуэль!").callAsync(ctx.sender);
+        ctx.answer(ctx.getString("roleplay.duel.joinNotify")).callAsync(ctx.sender);
         var firstUser = firstUserMember.getUser();
         var result = calculateResults(firstUser, secondUser);
         processDuelResultToDatabase(result);
@@ -60,15 +60,14 @@ public class JoinDuelCallback implements CallbackExecutor {
         return new DuelResult(winner, loser, draw);
     }
 
-    private void processDuelResultToMessage(CallbackQueryContext ctx, DuelResult result) {
+    private void processDuelResultToMessage(LocalizedCallbackQueryContext ctx, DuelResult result) {
         var winnerName = Html.htmlSafe(result.winner.getFirstName());
         var loserName = Html.htmlSafe(result.loser.getFirstName());
-        var text = "<b>Итоги дуэли:</b>\n\n";
+        var text = ctx.getString("roleplay.duel.resultTitle");
         if (result.isDraw()) {
-            text += "\uD83D\uDFE1 Ничья!\n\nУчастники: %s, %s".formatted(winnerName, loserName);
+            text += ctx.getString("roleplay.duel.resultDraw").formatted(winnerName, loserName);
         } else {
-            text += "\uD83D\uDE0E Победитель: " + winnerName + "\n" +
-                    "\uD83D\uDE14 Проигравший: " + loserName;
+            text += ctx.getString("roleplay.duel.resultMessage").formatted(winnerName, loserName);
         }
         ctx.editMessage(text)
                 .disableWebPagePreview()

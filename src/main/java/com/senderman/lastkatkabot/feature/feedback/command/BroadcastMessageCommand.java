@@ -1,13 +1,14 @@
 package com.senderman.lastkatkabot.feature.feedback.command;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
 import com.senderman.lastkatkabot.feature.tracking.service.ChatUserService;
 import com.senderman.lastkatkabot.util.Threads;
+import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -34,7 +35,7 @@ public class BroadcastMessageCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "разослать всем сообщение";
+        return "feedback.broadcast.description";
     }
 
     @Override
@@ -43,24 +44,25 @@ public class BroadcastMessageCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(MessageContext ctx) {
+    public void accept(@NotNull LocalizedMessageContext ctx) {
         var chatId = ctx.chatId();
         ctx.setArgumentsLimit(1);
         if (ctx.argumentsLength() < 1) {
-            ctx.replyToMessage("Неверное количество аргументов!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("common.invalidArgumentsNumber")).callAsync(ctx.sender);
             return;
         }
 
-        Methods.sendMessage(chatId, "Начало рассылки сообщений...").call(ctx.sender);
+        Methods.sendMessage(chatId, ctx.getString("feedback.broadcast.start")).call(ctx.sender);
 
-        var messageToBroadcast = "🔔 <b>Сообщение от разработчиков</b>\n\n" + ctx.argument(0);
+        var messageToBroadcast = "🔔 %s\n\n"
+                .formatted(ctx.getString("feedback.broadcast.messageFromDevelopers")) + ctx.argument(0);
         var chatIds = StreamSupport.stream(chatUsers.getChatIds().spliterator(), false).toList();
         long total = chatIds.size();
-        var counterMessage = ctx.replyToMessage("Статус рассылки: %d успешно, %d неуспешно, всего %d из ~%d"
+        var counterMessage = ctx.replyToMessage(ctx.getString("feedback.broadcast.status")
                 .formatted(0, 0, 0, total)
         ).call(ctx.sender);
 
-        var counter = new CounterMessage(total, ctx.sender, counterMessage);
+        var counter = new CounterMessage(total, counterMessage, ctx);
 
         // no need to use thread pool, since the /broadcast command is used rarely
         new Thread(() -> {
@@ -85,7 +87,7 @@ public class BroadcastMessageCommand implements CommandExecutor {
                     Threads.sleep(SECONDS.toMillis(5));
                 }
             }
-            ctx.replyToMessage("✅ Рассылка завершена!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("feedback.broadcast.finished")).callAsync(ctx.sender);
         }).start();
     }
 
@@ -100,13 +102,15 @@ public class BroadcastMessageCommand implements CommandExecutor {
         private final long total;
         private final CommonAbsSender sender;
         private final Message messageToEdit;
+        private final LocalizedMessageContext ctx;
         private int successful = 0;
         private int done = 0;
 
-        public CounterMessage(long total, CommonAbsSender sender, Message messageToEdit) {
+        public CounterMessage(long total, Message messageToEdit, LocalizedMessageContext ctx) {
             this.total = total;
-            this.sender = sender;
+            this.sender = ctx.sender;
             this.messageToEdit = messageToEdit;
+            this.ctx = ctx;
         }
 
         synchronized void incSuccessful() {
@@ -121,7 +125,7 @@ public class BroadcastMessageCommand implements CommandExecutor {
         }
 
         synchronized private void updateStatus() {
-            String text = "Статус рассылки: %d успешно, %d неуспешно, всего %d из %d"
+            String text = ctx.getString("feedback.broadcast.status")
                     .formatted(successful, done - successful, done, total);
             Methods.editMessageText(messageToEdit.getChatId(), messageToEdit.getMessageId(), text).callAsync(sender);
         }

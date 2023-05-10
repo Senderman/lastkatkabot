@@ -1,12 +1,13 @@
 package com.senderman.lastkatkabot.feature.tracking.command;
 
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Named;
+import org.jetbrains.annotations.NotNull;
 
 @Command
 public class GetInfoCommand implements CommandExecutor {
@@ -24,14 +25,14 @@ public class GetInfoCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "(reply) инфа о сообщении в формате JSON";
+        return "tracking.getinfo.description";
     }
 
     @Override
-    public void accept(MessageContext ctx) {
+    public void accept(@NotNull LocalizedMessageContext ctx) {
         var message = ctx.message();
         if (!message.isReply()) {
-            ctx.replyToMessage("Для использования команды, отправьте ее в ответ на нужное сообщение!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("tracking.getinfo.mustBeReply")).callAsync(ctx.sender);
             return;
         }
 

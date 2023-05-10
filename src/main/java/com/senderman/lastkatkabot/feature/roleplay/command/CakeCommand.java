@@ -1,10 +1,11 @@
 package com.senderman.lastkatkabot.feature.roleplay.command;
 
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
+import org.jetbrains.annotations.NotNull;
 
 @Command
 public class CakeCommand implements CommandExecutor {
@@ -16,29 +17,29 @@ public class CakeCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "(reply) подарить тортик. Можно указать начинку, напр. /cake с вишней";
+        return "roleplay.cake.description";
     }
 
     @Override
-    public void accept(MessageContext ctx) {
+    public void accept(@NotNull LocalizedMessageContext ctx) {
         if (!ctx.message().isReply() || ctx.message().isUserMessage()) return;
 
 
         var subjectName = Html.htmlSafe(ctx.user().getFirstName());
         var target = ctx.message().getReplyToMessage().getFrom();
         var targetName = Html.htmlSafe(target.getFirstName());
-        var text = "\uD83C\uDF82 %s, пользователь %s подарил вам тортик %s".formatted(
+        var text = ctx.getString("roleplay.cake.message").formatted(
                 targetName, subjectName, ctx.message().getText().replaceAll("/@\\S*\\s?|/\\S*\\s?", ""));
 
         ctx.reply(text)
                 .inReplyTo(ctx.message().getReplyToMessage())
                 .setSingleRowInlineKeyboard(
                         ButtonBuilder.callbackButton()
-                                .text("Принять")
+                                .text(ctx.getString("roleplay.cake.acceptButton"))
                                 .payload(CakeCallback.NAME, "accept", target.getId())
                                 .create(),
                         ButtonBuilder.callbackButton()
-                                .text("Отказаться")
+                                .text(ctx.getString("roleplay.cake.declineButton"))
                                 .payload(CakeCallback.NAME, "decline", target.getId())
                                 .create()
                 )

@@ -1,11 +1,11 @@
 package com.senderman.lastkatkabot.feature.genshin.command;
 
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.genshin.model.GenshinUserInventoryItem;
 import com.senderman.lastkatkabot.feature.genshin.model.Item;
 import com.senderman.lastkatkabot.feature.genshin.service.GenshinUserInventoryItemService;
+import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import jakarta.inject.Named;
 import org.jetbrains.annotations.NotNull;
@@ -40,13 +40,13 @@ public class InvCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "инвентарь (Genshin)";
+        return "genshin.inv.description";
     }
 
     @Override
-    public void accept(@NotNull MessageContext ctx) {
+    public void accept(@NotNull LocalizedMessageContext ctx) {
         if (ctx.message().isUserMessage()) {
-            ctx.replyToMessage("Команду нельзя использовать в ЛС!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("common.noUsageInPM")).callAsync(ctx.sender);
             return;
         }
 
@@ -55,7 +55,7 @@ public class InvCommand implements CommandExecutor {
 
         var items = inventoryItemService.findByChatIdAndUserId(chatId, userId);
         if (items.size() == 0) {
-            ctx.replyToMessage("Ваш инвентарь пуст! Используйте /wish чтобы начать его наполнять!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("genshin.inv.emptyInv")).callAsync(ctx.sender);
             return;
         }
 
@@ -63,7 +63,7 @@ public class InvCommand implements CommandExecutor {
                 .map(i -> new InventoryItem(genshinItems.get(i.getItemId()), i))
                 .collect(Collectors.groupingBy(i -> i.item.stars()));
 
-        var text = new StringBuilder("<b>Ваш инвентарь:</b>\n\n");
+        var text = new StringBuilder("%s\n\n".formatted(ctx.getString("genshin.inv.yourInv")));
         for (int i = 5; i > 2; i--) {
             if (!itemsByStars.containsKey(i))
                 continue;
@@ -77,7 +77,7 @@ public class InvCommand implements CommandExecutor {
         ctx.replyToMessage(text.toString())
                 .setSingleRowInlineKeyboard(ButtonBuilder
                         .callbackButton()
-                        .text("Закрыть")
+                        .text(ctx.getString("common.close"))
                         .payload(CloseInvCallback.NAME, userId)
                         .create())
                 .callAsync(ctx.sender);

@@ -1,8 +1,8 @@
 package com.senderman.lastkatkabot.feature.love.command;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
 import com.senderman.lastkatkabot.command.CallbackExecutor;
+import com.senderman.lastkatkabot.feature.localization.context.LocalizedCallbackQueryContext;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
@@ -26,11 +26,11 @@ public class DivorceCallback implements CallbackExecutor {
     }
 
     @Override
-    public void accept(@NotNull CallbackQueryContext ctx) {
+    public void accept(@NotNull LocalizedCallbackQueryContext ctx) {
         var userId = ctx.user().getId();
 
         if (!userId.equals(Long.parseLong(ctx.argument(1)))) {
-            ctx.answerAsAlert("Это не вам!").callAsync(ctx.sender);
+            ctx.answerAsAlert(ctx.getString("love.divorce.notForYou")).callAsync(ctx.sender);
             return;
         }
 
@@ -42,13 +42,13 @@ public class DivorceCallback implements CallbackExecutor {
 
     }
 
-    private void acceptDivorce(CallbackQueryContext ctx) {
+    private void acceptDivorce(LocalizedCallbackQueryContext ctx) {
         var userId = ctx.user().getId();
         var userStats = users.findById(userId);
         var loverId = userStats.getLoverId();
 
         if (loverId == null || !loverId.equals(Long.parseLong(ctx.argument(2)))) {
-            ctx.answerAsAlert("У вас сменилась/пропала пара, данная кнопка не актуальна!").callAsync(ctx.sender);
+            ctx.answerAsAlert(ctx.getString("love.divorce.pairChanged")).callAsync(ctx.sender);
             Methods.deleteMessage(ctx.message().getChatId(), ctx.message().getMessageId()).callAsync(ctx.sender);
             return;
         }
@@ -58,16 +58,16 @@ public class DivorceCallback implements CallbackExecutor {
         loverStats.setLoverId(null);
         users.saveAll(List.of(userStats, loverStats));
 
-        ctx.answerAsAlert("Вы расстались со своей половинкой!").callAsync(ctx.sender);
-        ctx.editMessage("\uD83D\uDE1E Вы расстались со своей половинкой!")
+        ctx.answerAsAlert(ctx.getString("love.divorce.notifySuccess")).callAsync(ctx.sender);
+        ctx.editMessage(ctx.getString("love.divorce.notifySuccess"))
                 .disableWebPagePreview()
                 .callAsync(ctx.sender);
-        Methods.sendMessage(loverId, "Ваша половинка решила с вами расстаться :(").callAsync(ctx.sender);
+        Methods.sendMessage(loverId, ctx.getString("love.divorce.notifyLover")).callAsync(ctx.sender);
     }
 
-    private void declineDivorce(CallbackQueryContext ctx) {
-        ctx.answer("Вы отменили развод!").callAsync(ctx.sender);
-        ctx.editMessage("\uD83D\uDE04 Развод отменен, расходимся!")
+    private void declineDivorce(LocalizedCallbackQueryContext ctx) {
+        ctx.answer(ctx.getString("love.divorce.cancelNotify")).callAsync(ctx.sender);
+        ctx.editMessage(ctx.getString("love.divorce.canceled"))
                 .disableWebPagePreview()
                 .callAsync(ctx.sender);
     }

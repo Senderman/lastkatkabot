@@ -1,9 +1,9 @@
 package com.senderman.lastkatkabot.feature.roleplay.command;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
 import com.senderman.lastkatkabot.util.Html;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,11 +17,11 @@ public class ActionCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "сделать действие. Действие указывать через пробел, можно реплаем";
+        return "roleplay.action.description";
     }
 
     @Override
-    public void accept(@NotNull MessageContext ctx) {
+    public void accept(@NotNull LocalizedMessageContext ctx) {
         ctx.deleteMessage().callAsync(ctx.sender);
         ctx.setArgumentsLimit(1);
         if (ctx.argumentsLength() < 1) return;

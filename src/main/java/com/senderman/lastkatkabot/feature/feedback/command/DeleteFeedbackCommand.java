@@ -1,13 +1,14 @@
 package com.senderman.lastkatkabot.feature.feedback.command;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackService;
+import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
 import com.senderman.lastkatkabot.util.Html;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 
@@ -32,7 +33,7 @@ public class DeleteFeedbackCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "удалить фидбек по id. /fdel 3";
+        return "feedback.fdel.description";
     }
 
     @Override
@@ -41,9 +42,9 @@ public class DeleteFeedbackCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(MessageContext ctx) {
+    public void accept(@NotNull LocalizedMessageContext ctx) {
         if (ctx.argumentsLength() < 1) {
-            ctx.replyToMessage("Неверное количество аргументов!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("common.invalidArgumentsNumber")).callAsync(ctx.sender);
             return;
         }
         var arg = ctx.argument(0);
@@ -55,40 +56,41 @@ public class DeleteFeedbackCommand implements CommandExecutor {
             int to = Integer.parseInt(args[1]);
             deleteFeedbackInRange(ctx, from, to);
         } else {
-            ctx.replyToMessage("id фидбека - это число либо интервал!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("feedback.common.feedbackIdIsNumber")).callAsync(ctx.sender);
         }
     }
 
 
-    private void deleteSingleFeedback(MessageContext ctx, int feedbackId) {
+    private void deleteSingleFeedback(LocalizedMessageContext ctx, int feedbackId) {
         if (!feedbackRepo.existsById(feedbackId)) {
             notifyNoFeedbacksFound(ctx);
             return;
         }
 
         feedbackRepo.deleteById(feedbackId);
-        notifySuccess(ctx, "Фидбек #" + feedbackId + " удален");
+        notifySuccess(ctx, ctx.getString("feedback.fdel.feedbackDeleted"));
     }
 
-    private void deleteFeedbackInRange(MessageContext ctx, int from, int to) {
+    private void deleteFeedbackInRange(LocalizedMessageContext ctx, int from, int to) {
         long result = feedbackRepo.deleteByIdBetween(from, to);
         if (result == 0) {
             notifyNoFeedbacksFound(ctx);
             return;
         }
-        notifySuccess(ctx, "Удалено " + result + " фидбеков (с " + from + " по " + to + ")");
+        notifySuccess(ctx, ctx.getString("feedback.fdel.feedbacksDeleted").formatted(result, from, to));
     }
 
-    private void notifySuccess(MessageContext ctx, String text) {
+    private void notifySuccess(LocalizedMessageContext ctx, String text) {
         ctx.replyToMessage(text).callAsync(ctx.sender);
         if (!ctx.chatId().equals(config.getFeedbackChannelId()))
             Methods.sendMessage()
                     .setChatId(config.getFeedbackChannelId())
-                    .setText(text + " пользователем " + Html.getUserLink(ctx.user()))
+                    .setText(ctx.getString("feedback.fdel.notifySuccess")
+                            .formatted(text, Html.getUserLink(ctx.user())))
                     .callAsync(ctx.sender);
     }
 
-    private void notifyNoFeedbacksFound(MessageContext ctx) {
-        ctx.replyToMessage("Ни одного фидбека не найдено").callAsync(ctx.sender);
+    private void notifyNoFeedbacksFound(LocalizedMessageContext ctx) {
+        ctx.replyToMessage(ctx.getString("feedback.fdel.noFeedbacksFound")).callAsync(ctx.sender);
     }
 }

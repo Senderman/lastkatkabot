@@ -1,8 +1,8 @@
 package com.senderman.lastkatkabot.feature.bnc.command;
 
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
@@ -24,14 +24,14 @@ public class BncStopCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "остановить игру \"быки и коровы\" в текущем чате";
+        return "bnc.bncstop.description";
     }
 
     @Override
-    public void accept(@NotNull MessageContext ctx) {
+    public void accept(@NotNull LocalizedMessageContext ctx) {
         long chatId = ctx.chatId();
         if (!gameHandler.hasGame(chatId)) {
-            ctx.replyToMessage("В этом чате нет игры!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("bnc.bncstop.noGame")).callAsync(ctx.sender);
             return;
         }
 
@@ -42,12 +42,11 @@ public class BncStopCommand implements CommandExecutor {
         boolean isOneHourPassed = System.currentTimeMillis() - startTime > period;
 
         if (!isCreator && !isOneHourPassed) {
-            ctx.replyToMessage("Для остановки игры в группе, вы должны быть создателем игры, либо " +
-                            "с момента создания игры должно пройти не менее 1 часа!")
+            ctx.replyToMessage(ctx.getString("bnc.bncstop.stopRequirements"))
                     .callAsync(ctx.sender);
             return;
         }
 
-        gameHandler.forceFinishGame(ctx.sender, chatId);
+        gameHandler.forceFinishGame(ctx, chatId);
     }
 }

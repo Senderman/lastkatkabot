@@ -1,12 +1,12 @@
 package com.senderman.lastkatkabot.feature.feedback.command;
 
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.feedback.model.Feedback;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackFormatterService;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackService;
+import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
@@ -33,7 +33,7 @@ public class ShowFeedbacksCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "показать первые n фидбеков. Без параметра - первые 10. Напр. /feedbacks 5";
+        return "feedback.feedbacks.description";
     }
 
     @Override
@@ -42,15 +42,15 @@ public class ShowFeedbacksCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(@NotNull MessageContext ctx) {
+    public void accept(@NotNull LocalizedMessageContext ctx) {
         if (feedbackService.count() == 0) {
-            ctx.replyToMessage("Фидбеков нет!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("feedback.feedbacks.noFeedbacks")).callAsync(ctx.sender);
             return;
         }
 
-        ctx.replyToMessage("Собираем фидбеки...").callAsync(ctx.sender);
+        ctx.replyToMessage(ctx.getString("feedback.feedbacks.loading")).callAsync(ctx.sender);
 
-        var text = new StringBuilder("<b>Фидбеки от даунов не умеющих юзать бота</b>");
+        var text = new StringBuilder(ctx.getString("feedback.feedbacks.listTitle"));
         for (Feedback feedback : feedbackService.findAll()) {
             String formattedFeedback = feedbackFormatter.format(feedback);
             // if maximum text length reached

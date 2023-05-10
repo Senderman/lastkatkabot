@@ -17,6 +17,6 @@ public interface WeatherService {
      * @throws NoSuchCityException   if there's no such city
      * @throws WeatherParseException on parse error
      */
-    Forecast getWeatherByCity(String city) throws IOException, NoSuchCityException, WeatherParseException;
+    Forecast getWeatherByCity(String city, String locale) throws IOException, NoSuchCityException, WeatherParseException;
 
 }

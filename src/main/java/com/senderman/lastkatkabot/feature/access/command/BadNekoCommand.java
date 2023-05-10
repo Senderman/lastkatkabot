@@ -1,13 +1,14 @@
 package com.senderman.lastkatkabot.feature.access.command;
 
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.access.model.BlacklistedUser;
 import com.senderman.lastkatkabot.feature.access.service.UserManager;
+import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Named;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 
@@ -27,7 +28,7 @@ public class BadNekoCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "опущение до плохой кисы. реплаем";
+        return "access.badneko.description";
     }
 
     @Override
@@ -36,26 +37,23 @@ public class BadNekoCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(MessageContext ctx) {
+    public void accept(@NotNull LocalizedMessageContext ctx) {
         var message = ctx.message();
         if (!message.isReply() || message.isUserMessage()) {
-            ctx.replyToMessage("Опускать в плохие кисы нужно в группе и реплаем!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("access.badneko.wrongUsage")).callAsync(ctx.sender);
             return;
         }
         var user = message.getReplyToMessage().getFrom();
         var userLink = Html.getUserLink(user);
         if (user.getIsBot()) {
-            ctx.replyToMessage(
-                            "Но это же просто бот, имитация человека! " +
-                                    "Разве может бот написать симфонию, иметь статистику, участвовать в дуэлях, быть плохой кисой?")
-                    .callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("access.badneko.bot")).callAsync(ctx.sender);
             return;
         }
 
         if (blackUsers.addUser(new BlacklistedUser(user.getId(), user.getFirstName())))
-            ctx.replyToMessage("Теперь " + userLink + " -  плохая киса!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("access.badneko.success").formatted(userLink)).callAsync(ctx.sender);
         else
-            ctx.replyToMessage(userLink + " уже плохая киса!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("common.alreadyBadNeko").formatted(userLink)).callAsync(ctx.sender);
 
     }
 }

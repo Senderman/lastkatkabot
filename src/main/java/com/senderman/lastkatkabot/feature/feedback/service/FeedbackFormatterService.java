@@ -1,19 +1,22 @@
 package com.senderman.lastkatkabot.feature.feedback.service;
 
 import com.senderman.lastkatkabot.feature.feedback.model.Feedback;
+import com.senderman.lastkatkabot.feature.localization.service.LocalizationService;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Singleton;
 
 @Singleton
 public class FeedbackFormatterService {
 
-    public String format(Feedback feedback) {
-        return """
-                <code>#%d</code>
-                От %s (id<code>%d</code>)%s
-                Отвечен: %s
+    public LocalizationService l;
 
-                %s"""
+    public FeedbackFormatterService(LocalizationService l) {
+        this.l = l;
+    }
+
+    public String format(Feedback feedback) {
+        String locale = l.getLocale(feedback.getUserId());
+        return l.getString("feedback.text", locale)
                 .formatted(
                         feedback.getId(),
                         Html.getUserLink(feedback.getUserId(), feedback.getUserName()),
@@ -25,8 +28,9 @@ public class FeedbackFormatterService {
     }
 
     private String formatChatLine(Feedback feedback) {
+        String locale = l.getLocale(feedback.getUserId());
         if (feedback.getUserId() != feedback.getChatId()) {
-            return " из чата <code>%d</code>".formatted(feedback.getChatId());
+            return l.getString("feedback.fromChat", locale).formatted(feedback.getChatId());
         }
         return "";
     }
