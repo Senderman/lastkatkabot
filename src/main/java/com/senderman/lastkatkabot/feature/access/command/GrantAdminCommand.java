@@ -5,7 +5,7 @@ import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.access.model.AdminUser;
 import com.senderman.lastkatkabot.feature.access.service.UserManager;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import jakarta.inject.Named;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,7 +36,7 @@ public class GrantAdminCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(@NotNull LocalizedMessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         if (!ctx.message().isReply() || ctx.message().isUserMessage()) {
             ctx.replyToMessage(ctx.getString("access.grantadmin.wrongUsage")).callAsync(ctx.sender);
             return;

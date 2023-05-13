@@ -3,7 +3,7 @@ package com.senderman.lastkatkabot.feature.bnc.command;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import org.jetbrains.annotations.NotNull;
 
 @Command
@@ -26,7 +26,7 @@ public class BncHelpCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(@NotNull LocalizedMessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         ctx.replyWithPhoto()
                 .setFile(config.getBncHelpPictureId())
                 .callAsync(ctx.sender);

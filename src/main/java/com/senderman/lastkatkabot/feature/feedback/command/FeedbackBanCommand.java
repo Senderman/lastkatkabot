@@ -7,7 +7,7 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.access.model.BlacklistedUser;
 import com.senderman.lastkatkabot.feature.access.service.UserManager;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackService;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
@@ -39,7 +39,7 @@ public class FeedbackBanCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(@NotNull LocalizedMessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         ctx.setArgumentsLimit(2);
         if (ctx.argumentsLength() < 1) {
             ctx.replyToMessage(ctx.getString("common.invalidArgumentsNumber")).callAsync(ctx.sender);

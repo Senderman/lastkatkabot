@@ -1,7 +1,7 @@
 package com.senderman.lastkatkabot.feature.genshin.command;
 
 import com.senderman.lastkatkabot.command.CallbackExecutor;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedCallbackQueryContext;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nCallbackQueryContext;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +17,7 @@ public class CloseInvCallback implements CallbackExecutor {
     }
 
     @Override
-    public void accept(@NotNull LocalizedCallbackQueryContext ctx) {
+    public void accept(@NotNull L10nCallbackQueryContext ctx) {
         final var userId = ctx.user().getId();
         final var ownerId = Long.parseLong(ctx.argument(0));
 

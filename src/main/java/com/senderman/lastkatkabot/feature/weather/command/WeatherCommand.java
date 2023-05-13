@@ -3,7 +3,7 @@ package com.senderman.lastkatkabot.feature.weather.command;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import com.senderman.lastkatkabot.feature.weather.exception.NoSuchCityException;
 import com.senderman.lastkatkabot.feature.weather.exception.WeatherParseException;
@@ -43,7 +43,7 @@ public class WeatherCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(@NotNull LocalizedMessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         final var messageToEdit = ctx.replyToMessage(ctx.getString("weather.queue")).call(ctx.sender);
         // if bot failed to send the message
         if (messageToEdit == null) {
@@ -85,7 +85,7 @@ public class WeatherCommand implements CommandExecutor {
      * @return user's city
      * @throws NoCitySpecifiedException if the city is found neither in message text, neither in db
      */
-    private String getCityFromMessageOrDb(LocalizedMessageContext ctx) throws NoCitySpecifiedException {
+    private String getCityFromMessageOrDb(L10nMessageContext ctx) throws NoCitySpecifiedException {
         if (ctx.message().isReply() && ctx.message().getReplyToMessage().hasLocation()) {
             var location = ctx.message().getReplyToMessage().getLocation();
             return "%s,%s".formatted(location.getLatitude(), location.getLongitude());
@@ -106,7 +106,7 @@ public class WeatherCommand implements CommandExecutor {
     }
 
 
-    private String forecastToString(Forecast f, LocalizedMessageContext ctx) {
+    private String forecastToString(Forecast f, L10nMessageContext ctx) {
         return "<b>" + f.title() + "</b>\n\n" +
                 f.feelings() + "\n" +
                 "🌡: " + f.temperature() + "\n" +

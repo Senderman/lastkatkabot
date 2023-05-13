@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Named;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +29,7 @@ public class GetInfoCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(@NotNull LocalizedMessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         var message = ctx.message();
         if (!message.isReply()) {
             ctx.replyToMessage(ctx.getString("tracking.getinfo.mustBeReply")).callAsync(ctx.sender);

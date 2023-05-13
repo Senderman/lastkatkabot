@@ -11,7 +11,8 @@ public interface WeatherService {
     /**
      * Get weather forecast by city name
      *
-     * @param city name of city
+     * @param city   name of city
+     * @param locale desired locale of the response
      * @return Forecast object
      * @throws IOException           on connection error
      * @throws NoSuchCityException   if there's no such city

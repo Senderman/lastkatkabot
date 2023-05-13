@@ -1,9 +1,9 @@
-package com.senderman.lastkatkabot.feature.localization.command;
+package com.senderman.lastkatkabot.feature.l10n.command;
 
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import com.senderman.lastkatkabot.feature.localization.Locale;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
+import com.senderman.lastkatkabot.feature.l10n.Locale;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,7 +24,7 @@ public class SetLocaleCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(@NotNull LocalizedMessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         ctx.reply(ctx.getString("localization.setlocale.message"))
                 .setInlineKeyboard(List.of(Arrays.stream(Locale.values()).map(l -> ButtonBuilder.callbackButton()
                         .text(l.getName())

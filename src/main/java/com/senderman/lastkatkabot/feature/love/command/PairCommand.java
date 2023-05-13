@@ -5,7 +5,7 @@ import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.chatsettings.service.ChatInfoService;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.feature.tracking.model.ChatUser;
 import com.senderman.lastkatkabot.feature.tracking.service.ChatUserService;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
@@ -64,7 +64,7 @@ public class PairCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(@NotNull LocalizedMessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         long chatId = ctx.chatId();
 
         if (ctx.message().isUserMessage()) {

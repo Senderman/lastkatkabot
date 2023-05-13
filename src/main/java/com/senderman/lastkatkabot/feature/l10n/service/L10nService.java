@@ -1,15 +1,16 @@
-package com.senderman.lastkatkabot.feature.localization.service;
+package com.senderman.lastkatkabot.feature.l10n.service;
 
 import com.annimon.tgbotsmodule.services.ResourceBundleLocalizationService;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import jakarta.inject.Singleton;
 
 @Singleton
-public class LocalizationService extends ResourceBundleLocalizationService {
+public class L10nService extends ResourceBundleLocalizationService {
 
+    public static final String DEFAULT_LOCALE = "ru";
     private final UserStatsService users;
 
-    public LocalizationService(UserStatsService users) {
+    public L10nService(UserStatsService users) {
         super("locale/lang");
         this.users = users;
     }

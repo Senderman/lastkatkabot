@@ -1,7 +1,7 @@
-package com.senderman.lastkatkabot.feature.localization.command;
+package com.senderman.lastkatkabot.feature.l10n.command;
 
 import com.senderman.lastkatkabot.command.CallbackExecutor;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedCallbackQueryContext;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nCallbackQueryContext;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +22,7 @@ public class LocaleCallback implements CallbackExecutor {
     }
 
     @Override
-    public void accept(@NotNull LocalizedCallbackQueryContext ctx) {
+    public void accept(@NotNull L10nCallbackQueryContext ctx) {
         final var userId = ctx.user().getId();
         final var locale = ctx.argument(0);
 

@@ -1,7 +1,7 @@
 package com.senderman.lastkatkabot.feature.members.command;
 
 import com.senderman.lastkatkabot.command.CallbackExecutor;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedCallbackQueryContext;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nCallbackQueryContext;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,7 +16,7 @@ public class GreetingCallback implements CallbackExecutor {
     }
 
     @Override
-    public void accept(@NotNull LocalizedCallbackQueryContext context) {
+    public void accept(@NotNull L10nCallbackQueryContext context) {
         context.answer(context.getString("members.greeting.callback"))
                 .setShowAlert(false)
                 .callAsync(context.sender);

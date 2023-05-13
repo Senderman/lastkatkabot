@@ -2,7 +2,7 @@ package com.senderman.lastkatkabot.feature.bnc.command;
 
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
@@ -28,7 +28,7 @@ public class BncStopCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(@NotNull LocalizedMessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         long chatId = ctx.chatId();
         if (!gameHandler.hasGame(chatId)) {
             ctx.replyToMessage(ctx.getString("bnc.bncstop.noGame")).callAsync(ctx.sender);

@@ -8,7 +8,7 @@ import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.feature.feedback.exception.FeedbackValidationException;
 import com.senderman.lastkatkabot.feature.feedback.model.Feedback;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackService;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.TelegramUsersHelper;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
@@ -39,7 +39,7 @@ public class AnswerFeedbackCommand implements CommandExecutor {
         return "/fresp";
     }
 
-    private static void notifyResponseIsSent(LocalizedMessageContext ctx, int feedbackId) {
+    private static void notifyResponseIsSent(L10nMessageContext ctx, int feedbackId) {
         ctx.replyToMessage(ctx.getString("feedback.fresp.success"))
                 .setSingleColumnInlineKeyboard(
                         ButtonBuilder.callbackButton()
@@ -65,7 +65,7 @@ public class AnswerFeedbackCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(@NotNull LocalizedMessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         ctx.setArgumentsLimit(2);
         if (ctx.argumentsLength() < 2) {
             ctx.replyToMessage(ctx.getString("common.invalidArgumentsNumber")).callAsync(ctx.sender);
@@ -81,7 +81,7 @@ public class AnswerFeedbackCommand implements CommandExecutor {
         }
     }
 
-    private void answerFeedback(LocalizedMessageContext ctx, Feedback feedback, @Nullable Integer detailMessageId) {
+    private void answerFeedback(L10nMessageContext ctx, Feedback feedback, @Nullable Integer detailMessageId) {
         markAnswered(feedback);
 
         // Send the message explaining that this is a developer's feedback
@@ -105,7 +105,7 @@ public class AnswerFeedbackCommand implements CommandExecutor {
         }
     }
 
-    private Feedback getFeedbackByMessage(LocalizedMessageContext ctx) throws FeedbackValidationException {
+    private Feedback getFeedbackByMessage(L10nMessageContext ctx) throws FeedbackValidationException {
         int feedbackId;
         try {
             feedbackId = Integer.parseInt(ctx.argument(0));
@@ -120,7 +120,7 @@ public class AnswerFeedbackCommand implements CommandExecutor {
     }
 
     @Nullable
-    private Integer getDetailsMessageId(LocalizedMessageContext ctx) throws FeedbackValidationException {
+    private Integer getDetailsMessageId(L10nMessageContext ctx) throws FeedbackValidationException {
         if (!ctx.message().isReply()) return null;
 
         final var reply = ctx.message().getReplyToMessage();
@@ -137,7 +137,7 @@ public class AnswerFeedbackCommand implements CommandExecutor {
         feedbackService.update(feedback);
     }
 
-    private void copyMessageIfExists(LocalizedMessageContext ctx, long toChatId, @Nullable Integer fromMessageId) {
+    private void copyMessageIfExists(L10nMessageContext ctx, long toChatId, @Nullable Integer fromMessageId) {
         if (fromMessageId != null) {
             Methods.copyMessage(toChatId, ctx.chatId(), fromMessageId)
                     .callAsync(ctx.sender);

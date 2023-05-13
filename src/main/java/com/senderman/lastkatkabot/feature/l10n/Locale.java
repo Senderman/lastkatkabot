@@ -1,4 +1,4 @@
-package com.senderman.lastkatkabot.feature.localization;
+package com.senderman.lastkatkabot.feature.l10n;
 
 public enum Locale {
     RUSSIAN("\uD83C\uDDF7\uD83C\uDDFA Русский", "ru"),

@@ -5,7 +5,7 @@ import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.access.model.BlacklistedUser;
 import com.senderman.lastkatkabot.feature.access.service.UserManager;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Named;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +37,7 @@ public class BadNekoCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(@NotNull LocalizedMessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         var message = ctx.message();
         if (!message.isReply() || message.isUserMessage()) {
             ctx.replyToMessage(ctx.getString("access.badneko.wrongUsage")).callAsync(ctx.sender);

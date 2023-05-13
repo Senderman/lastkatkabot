@@ -3,7 +3,7 @@ package com.senderman.lastkatkabot.feature.bnc.command;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.bnc.model.BncGameState;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Collectors;
@@ -28,7 +28,7 @@ public class BncStartCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(@NotNull LocalizedMessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         // if there's game in this chat already, send state
         if (gamesHandler.hasGame(ctx.chatId())) {
             sendGameState(ctx, gamesHandler.getGameState(ctx.chatId()));
@@ -56,7 +56,7 @@ public class BncStartCommand implements CommandExecutor {
 
     }
 
-    private void sendGameState(LocalizedMessageContext ctx, BncGameState state) {
+    private void sendGameState(L10nMessageContext ctx, BncGameState state) {
         var historyText = state.history().stream()
                 .map(e -> "%s: %dБ %dК".formatted(e.number(), e.bulls(), e.cows()))
                 .collect(Collectors.joining("\n"));
@@ -71,7 +71,7 @@ public class BncStartCommand implements CommandExecutor {
         gamesHandler.sendGameMessage(ctx.chatId(), textToSend, ctx.sender);
     }
 
-    private void wrongLength(LocalizedMessageContext ctx, int maxLength) {
+    private void wrongLength(L10nMessageContext ctx, int maxLength) {
         ctx.replyToMessage(ctx.getString("bnc.bncstart.wrongLength").formatted(maxLength)).callAsync(ctx.sender);
     }
 }

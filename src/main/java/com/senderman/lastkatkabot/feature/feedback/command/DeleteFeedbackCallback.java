@@ -5,7 +5,7 @@ import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CallbackExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackService;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedCallbackQueryContext;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nCallbackQueryContext;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +40,7 @@ public class DeleteFeedbackCallback implements CallbackExecutor {
         return EnumSet.of(Role.ADMIN, Role.MAIN_ADMIN);
     }
 
-    private static void editSourceMessage(LocalizedCallbackQueryContext ctx, String text) {
+    private static void editSourceMessage(L10nCallbackQueryContext ctx, String text) {
         getMessage(ctx).ifPresent(msg ->
                 ctx.editMessage(msg.getText() + "\n" + text)
                         .setChatId(msg.getChatId())
@@ -48,7 +48,7 @@ public class DeleteFeedbackCallback implements CallbackExecutor {
                         .callAsync(ctx.sender));
     }
 
-    private static Optional<Message> getMessage(LocalizedCallbackQueryContext ctx) {
+    private static Optional<Message> getMessage(L10nCallbackQueryContext ctx) {
         final var msg = ctx.message();
         if (msg == null || msg.getChatId() == null || msg.getMessageId() == null) {
             return Optional.empty();
@@ -57,7 +57,7 @@ public class DeleteFeedbackCallback implements CallbackExecutor {
     }
 
     @Override
-    public void accept(@NotNull LocalizedCallbackQueryContext ctx) {
+    public void accept(@NotNull L10nCallbackQueryContext ctx) {
         if (ctx.argumentsLength() < 1) return;
 
         var arg = ctx.argument(0);
@@ -76,7 +76,7 @@ public class DeleteFeedbackCallback implements CallbackExecutor {
         }
     }
 
-    private void notifySuccess(LocalizedCallbackQueryContext ctx, String text) {
+    private void notifySuccess(L10nCallbackQueryContext ctx, String text) {
         ctx.answerAsAlert(text).callAsync(ctx.sender);
         editSourceMessage(ctx, text);
 
@@ -90,7 +90,7 @@ public class DeleteFeedbackCallback implements CallbackExecutor {
                     .callAsync(ctx.sender);
     }
 
-    private void notifyNoFeedbacksFound(LocalizedCallbackQueryContext ctx) {
+    private void notifyNoFeedbacksFound(L10nCallbackQueryContext ctx) {
         editSourceMessage(ctx, ctx.getString("feedback.fdel.noFeedbacksFound"));
     }
 }

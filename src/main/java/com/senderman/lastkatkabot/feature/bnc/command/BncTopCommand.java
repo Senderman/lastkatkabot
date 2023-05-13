@@ -3,7 +3,7 @@ package com.senderman.lastkatkabot.feature.bnc.command;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
 import org.jetbrains.annotations.NotNull;
@@ -33,7 +33,7 @@ public class BncTopCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(@NotNull LocalizedMessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
 
         boolean chatTop = ctx.argument(0, "").equals("chat");
         if (chatTop && ctx.message().isUserMessage()) {
@@ -60,7 +60,7 @@ public class BncTopCommand implements CommandExecutor {
         ctx.reply(top.toString()).callAsync(ctx.sender);
     }
 
-    private String formatUser(long userId, int score, LocalizedMessageContext ctx) {
+    private String formatUser(long userId, int score, L10nMessageContext ctx) {
         Function<User, String> userPrinter =
                 ctx.message().isUserMessage() ? Html::getUserLink : u -> Html.htmlSafe(u.getFirstName());
         String user = Optional.ofNullable(Methods.getChatMember(userId, userId).call(ctx.sender))

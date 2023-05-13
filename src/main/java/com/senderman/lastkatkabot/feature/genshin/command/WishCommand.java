@@ -6,7 +6,7 @@ import com.senderman.lastkatkabot.feature.genshin.model.GenshinChatUser;
 import com.senderman.lastkatkabot.feature.genshin.model.Item;
 import com.senderman.lastkatkabot.feature.genshin.service.GenshinChatUserService;
 import com.senderman.lastkatkabot.feature.genshin.service.GenshinUserInventoryItemService;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.util.CurrentTime;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Named;
@@ -49,7 +49,7 @@ public class WishCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(@NotNull LocalizedMessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         if (ctx.message().isUserMessage()) {
             ctx.replyToMessage(ctx.getString("common.noUsageInPM")).callAsync(ctx.sender);
             return;
@@ -135,7 +135,7 @@ public class WishCommand implements CommandExecutor {
         return getClass().getResourceAsStream("/genshin/images/" + id + ".webp");
     }
 
-    private String getFormattedItemReceiveMessage(User user, Item item, LocalizedMessageContext ctx) {
+    private String getFormattedItemReceiveMessage(User user, Item item, L10nMessageContext ctx) {
         return ctx.getString("genshin.wish.itemRecieve").formatted(
                 item.description(),
                 Html.getUserLink(user),

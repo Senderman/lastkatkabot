@@ -2,7 +2,7 @@ package com.senderman.lastkatkabot.feature.tracking.command;
 
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.management.ManagementFactory;
@@ -22,11 +22,11 @@ public class UptimeCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(@NotNull LocalizedMessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         ctx.replyToMessage(formatHealth(ctx)).callAsync(ctx.sender);
     }
 
-    private String formatHealth(LocalizedMessageContext ctx) {
+    private String formatHealth(L10nMessageContext ctx) {
         var r = Runtime.getRuntime();
         double delimiter = 1048576f;
         return ctx.getString("tracking.uptime.text")
@@ -50,7 +50,7 @@ public class UptimeCommand implements CommandExecutor {
                 .sum();
     }
 
-    private String formatTime(long millis, LocalizedMessageContext ctx) {
+    private String formatTime(long millis, L10nMessageContext ctx) {
         long secs = millis / 1000;
 
         long mins = secs / 60;

@@ -6,7 +6,7 @@ import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackService;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.util.Html;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,7 +42,7 @@ public class DeleteFeedbackCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(@NotNull LocalizedMessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         if (ctx.argumentsLength() < 1) {
             ctx.replyToMessage(ctx.getString("common.invalidArgumentsNumber")).callAsync(ctx.sender);
             return;
@@ -61,7 +61,7 @@ public class DeleteFeedbackCommand implements CommandExecutor {
     }
 
 
-    private void deleteSingleFeedback(LocalizedMessageContext ctx, int feedbackId) {
+    private void deleteSingleFeedback(L10nMessageContext ctx, int feedbackId) {
         if (!feedbackRepo.existsById(feedbackId)) {
             notifyNoFeedbacksFound(ctx);
             return;
@@ -71,7 +71,7 @@ public class DeleteFeedbackCommand implements CommandExecutor {
         notifySuccess(ctx, ctx.getString("feedback.fdel.feedbackDeleted"));
     }
 
-    private void deleteFeedbackInRange(LocalizedMessageContext ctx, int from, int to) {
+    private void deleteFeedbackInRange(L10nMessageContext ctx, int from, int to) {
         long result = feedbackRepo.deleteByIdBetween(from, to);
         if (result == 0) {
             notifyNoFeedbacksFound(ctx);
@@ -80,7 +80,7 @@ public class DeleteFeedbackCommand implements CommandExecutor {
         notifySuccess(ctx, ctx.getString("feedback.fdel.feedbacksDeleted").formatted(result, from, to));
     }
 
-    private void notifySuccess(LocalizedMessageContext ctx, String text) {
+    private void notifySuccess(L10nMessageContext ctx, String text) {
         ctx.replyToMessage(text).callAsync(ctx.sender);
         if (!ctx.chatId().equals(config.getFeedbackChannelId()))
             Methods.sendMessage()
@@ -90,7 +90,7 @@ public class DeleteFeedbackCommand implements CommandExecutor {
                     .callAsync(ctx.sender);
     }
 
-    private void notifyNoFeedbacksFound(LocalizedMessageContext ctx) {
+    private void notifyNoFeedbacksFound(L10nMessageContext ctx) {
         ctx.replyToMessage(ctx.getString("feedback.fdel.noFeedbacksFound")).callAsync(ctx.sender);
     }
 }

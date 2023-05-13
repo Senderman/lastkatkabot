@@ -5,8 +5,8 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.feature.access.service.ChatPolicyEnsuringService;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
-import com.senderman.lastkatkabot.feature.localization.service.LocalizationService;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
+import com.senderman.lastkatkabot.feature.l10n.service.L10nService;
 import com.senderman.lastkatkabot.feature.members.service.NewMemberHandler;
 import com.senderman.lastkatkabot.feature.tracking.service.ChatUserService;
 import com.senderman.lastkatkabot.feature.tracking.service.UserActivityTrackerService;
@@ -51,7 +51,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     private final ExecutorService threadPool;
     private final TelegramUsersHelper telegramUsersHelper;
     private final ObjectMapper messageToJsonMapper;
-    private final LocalizationService localizationService;
+    private final L10nService localizationService;
 
     public BotHandler(
             DefaultBotOptions botOptions,
@@ -62,7 +62,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             ChatPolicyEnsuringService chatPolicyEnsuringService,
             NewMemberHandler newMemberHandler,
             TelegramUsersHelper telegramUsersHelper,
-            LocalizationService localizationService,
+            L10nService localizationService,
             @Named("generalNeedsPool") ExecutorService threadPool,
             @Named("messageToJsonMapper") ObjectMapper messageToJsonMapper
     ) {
@@ -172,7 +172,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
                 var newMembers = message.getNewChatMembers();
                 if (!newMembers.isEmpty()) {
                     threadPool.execute(() -> newMemberHandler.accept(
-                            new LocalizedMessageContext(this, update, "", localizationService)));
+                            new L10nMessageContext(this, update, "", localizationService)));
                     return null;
                 }
             }

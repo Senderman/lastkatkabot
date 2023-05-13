@@ -2,7 +2,7 @@ package com.senderman.lastkatkabot.feature.love.command;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.command.CallbackExecutor;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedCallbackQueryContext;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nCallbackQueryContext;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +26,7 @@ public class DivorceCallback implements CallbackExecutor {
     }
 
     @Override
-    public void accept(@NotNull LocalizedCallbackQueryContext ctx) {
+    public void accept(@NotNull L10nCallbackQueryContext ctx) {
         var userId = ctx.user().getId();
 
         if (!userId.equals(Long.parseLong(ctx.argument(1)))) {
@@ -42,7 +42,7 @@ public class DivorceCallback implements CallbackExecutor {
 
     }
 
-    private void acceptDivorce(LocalizedCallbackQueryContext ctx) {
+    private void acceptDivorce(L10nCallbackQueryContext ctx) {
         var userId = ctx.user().getId();
         var userStats = users.findById(userId);
         var loverId = userStats.getLoverId();
@@ -65,7 +65,7 @@ public class DivorceCallback implements CallbackExecutor {
         Methods.sendMessage(loverId, ctx.getString("love.divorce.notifyLover")).callAsync(ctx.sender);
     }
 
-    private void declineDivorce(LocalizedCallbackQueryContext ctx) {
+    private void declineDivorce(L10nCallbackQueryContext ctx) {
         ctx.answer(ctx.getString("love.divorce.cancelNotify")).callAsync(ctx.sender);
         ctx.editMessage(ctx.getString("love.divorce.canceled"))
                 .disableWebPagePreview()

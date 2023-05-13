@@ -2,7 +2,7 @@ package com.senderman.lastkatkabot.feature.love.command;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.command.CallbackExecutor;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedCallbackQueryContext;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nCallbackQueryContext;
 import com.senderman.lastkatkabot.feature.love.model.MarriageRequest;
 import com.senderman.lastkatkabot.feature.love.service.MarriageRequestService;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
@@ -30,7 +30,7 @@ public class MarriageCallback implements CallbackExecutor {
     }
 
     @Override
-    public void accept(LocalizedCallbackQueryContext ctx) {
+    public void accept(L10nCallbackQueryContext ctx) {
         var requestId = Integer.parseInt(ctx.argument(1));
         var requestOptional = marriages.findById(requestId);
 
@@ -56,7 +56,7 @@ public class MarriageCallback implements CallbackExecutor {
             declineMarriage(ctx, r);
     }
 
-    private void acceptMarriage(LocalizedCallbackQueryContext ctx, MarriageRequest r) {
+    private void acceptMarriage(L10nCallbackQueryContext ctx, MarriageRequest r) {
 
         var proposeeStats = userStats.findById(r.getProposeeId());
         // proposee should not have lover
@@ -98,7 +98,7 @@ public class MarriageCallback implements CallbackExecutor {
                 .callAsync(ctx.sender);
     }
 
-    private void declineMarriage(LocalizedCallbackQueryContext ctx, MarriageRequest r) {
+    private void declineMarriage(L10nCallbackQueryContext ctx, MarriageRequest r) {
         marriages.delete(r);
         ctx.answer(ctx.getString("love.marriage.cancelNotify")).callAsync(ctx.sender);
         ctx.editMessage(ctx.getString("love.marriage.cancelMessage").formatted(Html.getUserLink(ctx.user())))

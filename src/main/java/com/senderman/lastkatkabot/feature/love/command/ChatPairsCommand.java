@@ -2,7 +2,7 @@ package com.senderman.lastkatkabot.feature.love.command;
 
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.feature.tracking.model.ChatUser;
 import com.senderman.lastkatkabot.feature.tracking.service.ChatUserService;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
@@ -37,11 +37,11 @@ public class ChatPairsCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(@NotNull LocalizedMessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         threadPool.execute(() -> execute(ctx));
     }
 
-    private void execute(LocalizedMessageContext ctx) {
+    private void execute(L10nMessageContext ctx) {
         if (ctx.message().isUserMessage()) {
             ctx.replyToMessage(ctx.getString("common.noUsageInPM")).callAsync(ctx.sender);
             return;

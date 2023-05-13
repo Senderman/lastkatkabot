@@ -6,8 +6,7 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.feature.access.model.AdminUser;
 import com.senderman.lastkatkabot.feature.access.service.UserManager;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
-import com.senderman.lastkatkabot.feature.localization.service.LocalizationService;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
@@ -26,20 +25,18 @@ public class HelpCommand implements CommandExecutor {
     private final Set<CommandExecutor> executors;
     private final UserManager<AdminUser> admins;
     private final BotConfig config;
-    private final LocalizationService l;
 
     public HelpCommand(
             Set<CommandExecutor> commands,
             UserManager<AdminUser> admins,
-            BotConfig config,
-            LocalizationService l) {
+            BotConfig config
+    ) {
         this.executors = commands
                 .stream()
                 .filter(CommandExecutor::showInHelp)
                 .collect(Collectors.toSet());
         this.admins = admins;
         this.config = config;
-        this.l = l;
     }
 
     @Override
@@ -63,7 +60,7 @@ public class HelpCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(@NotNull LocalizedMessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         try {
             trySendHelpToPm(ctx.user().getId(), ctx.sender, ctx);
             if (!ctx.message().isUserMessage())
@@ -73,7 +70,7 @@ public class HelpCommand implements CommandExecutor {
         }
     }
 
-    private void trySendHelpToPm(long userId, CommonAbsSender telegram, LocalizedMessageContext ctx) throws TelegramApiException {
+    private void trySendHelpToPm(long userId, CommonAbsSender telegram, L10nMessageContext ctx) throws TelegramApiException {
         var sentMessage = telegram.execute(new SendMessage(String.valueOf(userId), ctx.getString("help.wait")));
         telegram.executeAsync(EditMessageText
                 .builder()
@@ -85,7 +82,7 @@ public class HelpCommand implements CommandExecutor {
         );
     }
 
-    private String prepareHelpText(long userId, LocalizedMessageContext ctx) {
+    private String prepareHelpText(long userId, L10nMessageContext ctx) {
         var locale = ctx.getLocale();
         var userHelp = new StringBuilder(ctx.getString("help.userCommands"));
         var adminHelp = new StringBuilder(ctx.getString("help.adminCommands"));
@@ -98,11 +95,11 @@ public class HelpCommand implements CommandExecutor {
             var exe = exeIterator.next();
             var roles = exe.authority();
             if (roles.contains(Role.USER)) {
-                userHelp.append(formatExecutor(exe, locale)).append("\n");
+                userHelp.append(formatExecutor(exe, ctx)).append("\n");
             } else if (userIsAdmin && roles.contains(Role.ADMIN))
-                adminHelp.append(formatExecutor(exe, locale)).append("\n");
+                adminHelp.append(formatExecutor(exe, ctx)).append("\n");
             else if (userIsMainAdmin && roles.contains(Role.MAIN_ADMIN))
-                mainAdminHelp.append(formatExecutor(exe, locale)).append("\n");
+                mainAdminHelp.append(formatExecutor(exe, ctx)).append("\n");
 
         }
 
@@ -116,7 +113,7 @@ public class HelpCommand implements CommandExecutor {
         return userHelp.toString();
     }
 
-    private String formatExecutor(CommandExecutor executor, String locale) {
-        return executor.command() + " - " + Html.htmlSafe(l.getString(executor.getDescription(), locale));
+    private String formatExecutor(CommandExecutor executor, L10nMessageContext ctx) {
+        return executor.command() + " - " + Html.htmlSafe(ctx.getString(executor.getDescription()));
     }
 }

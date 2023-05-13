@@ -1,5 +1,6 @@
 package com.senderman.lastkatkabot.feature.userstats.model;
 
+import com.senderman.lastkatkabot.feature.l10n.service.L10nService;
 import io.micronaut.core.annotation.Creator;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.MappedEntity;
@@ -27,7 +28,7 @@ public class UserStats {
         this.duelsTotal = 0;
         this.duelWins = 0;
         this.bncScore = 0;
-        this.locale = "uk";
+        this.locale = L10nService.DEFAULT_LOCALE;
     }
 
     public long getUserId() {

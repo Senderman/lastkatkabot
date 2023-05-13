@@ -2,7 +2,6 @@ package com.senderman.lastkatkabot.feature.bnc.command;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.RegexCommand;
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.commands.context.RegexMessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
@@ -13,8 +12,8 @@ import com.senderman.lastkatkabot.feature.bnc.model.BncGameState;
 import com.senderman.lastkatkabot.feature.bnc.model.BncResult;
 import com.senderman.lastkatkabot.feature.bnc.service.BncGameMessageService;
 import com.senderman.lastkatkabot.feature.bnc.service.BncGamesManager;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
-import com.senderman.lastkatkabot.feature.localization.service.LocalizationService;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
+import com.senderman.lastkatkabot.feature.l10n.service.L10nService;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Named;
@@ -35,12 +34,12 @@ public class BncTelegramHandler implements RegexCommand {
     private final BncGamesManager gamesManager;
     private final UserStatsService usersRepo;
     private final BncGameMessageService gameMessageService;
-    private final LocalizationService localizationService;
+    private final L10nService localizationService;
 
     public BncTelegramHandler(
             @Named("bncDatabaseManager") BncGamesManager gamesManager,
             UserStatsService usersRepo,
-            BncGameMessageService gameMessageService, LocalizationService localizationService) {
+            BncGameMessageService gameMessageService, L10nService localizationService) {
         this.gamesManager = gamesManager;
         this.usersRepo = usersRepo;
         this.gameMessageService = gameMessageService;
@@ -58,7 +57,7 @@ public class BncTelegramHandler implements RegexCommand {
     }
 
     public void accept(RegexMessageContext ctx) {
-        var lctx = new LocalizedMessageContext(ctx.sender, ctx.update(), ctx.argumentsAsString(), localizationService);
+        var l10Ctx = new L10nMessageContext(ctx.sender, ctx.update(), ctx.argumentsAsString(), localizationService);
         var message = ctx.message();
         var telegram = ctx.sender;
         long chatId = ctx.chatId();
@@ -68,23 +67,23 @@ public class BncTelegramHandler implements RegexCommand {
             addMessageToDelete(message);
             if (result.isWin()) {
 
-                processWin(gamesManager.getGameState(chatId), ctx, result);
+                processWin(gamesManager.getGameState(chatId), l10Ctx, result);
             } else {
-                sendGameMessage(ctx.chatId(), formatResult(result, lctx), ctx.sender);
+                sendGameMessage(ctx.chatId(), formatResult(result, l10Ctx), ctx.sender);
             }
         } catch (NumberAlreadyCheckedException e) {
             addMessageToDelete(message);
             sendGameMessage(
                     chatId,
-                    lctx.getString("bnc.handler.alreadyChecked").formatted(formatResult(e.getResult(), lctx)),
+                    l10Ctx.getString("bnc.handler.alreadyChecked").formatted(formatResult(e.getResult(), l10Ctx)),
                     telegram
             );
         } catch (RepeatingDigitsException e) {
             addMessageToDelete(message);
-            sendGameMessage(chatId, lctx.getString("bnc.handler.noRepeatingDigits"), telegram);
+            sendGameMessage(chatId, l10Ctx.getString("bnc.handler.noRepeatingDigits"), telegram);
         } catch (GameOverException e) {
             addMessageToDelete(message);
-            processGameOver(lctx);
+            processGameOver(l10Ctx);
         } catch (InvalidLengthException | InvalidCharacterException | NoSuchElementException ignored) {
         }
     }
@@ -124,7 +123,7 @@ public class BncTelegramHandler implements RegexCommand {
         gameMessageService.deleteByGameId(chatId);
     }
 
-    public void processWin(BncGameState game, MessageContext ctx, BncResult result) {
+    public void processWin(BncGameState game, L10nMessageContext ctx, BncResult result) {
         long chatId = ctx.chatId();
         var userId = ctx.user().getId();
         var userStats = usersRepo.findById(userId);
@@ -136,7 +135,7 @@ public class BncTelegramHandler implements RegexCommand {
         gamesManager.deleteGame(chatId);
 
         var username = Html.htmlSafe(ctx.user().getFirstName());
-        var text = localizationService.getString("bnc.handler.userWon", userStats.getLocale()).formatted(
+        var text = ctx.getString("bnc.handler.userWon").formatted(
                 username,
                 BncGame.totalAttempts(gameState.length(), gameState.isHexadecimal()) - result.attempts(),
                 score
@@ -145,18 +144,17 @@ public class BncTelegramHandler implements RegexCommand {
         ctx.reply(text).callAsync(ctx.sender);
     }
 
-    public void processGameOver(LocalizedMessageContext ctx) {
+    public void processGameOver(L10nMessageContext ctx) {
         long chatId = ctx.chatId();
         var gameState = gamesManager.getGameState(chatId);
-        var locale = localizationService.getLocale(ctx.user().getId());
         gamesManager.deleteGame(chatId);
         deleteGameMessages(chatId, ctx.sender);
-        var text = localizationService.getString("bnc.handler.gameOver", locale)
+        var text = ctx.getString("bnc.handler.gameOver")
                 .formatted(gameState.answer(), formatGameStateStats(gameState, ctx));
         ctx.reply(text).callAsync(ctx.sender);
     }
 
-    public void forceFinishGame(LocalizedMessageContext ctx, long chatId) {
+    public void forceFinishGame(L10nMessageContext ctx, long chatId) {
         if (!gamesManager.hasGame(chatId))
             return;
 
@@ -169,7 +167,7 @@ public class BncTelegramHandler implements RegexCommand {
         Methods.sendMessage(chatId, text).callAsync(ctx.sender);
     }
 
-    private String formatGameStateStats(BncGameState state, LocalizedMessageContext ctx) {
+    private String formatGameStateStats(BncGameState state, L10nMessageContext ctx) {
         return ctx.getString("bnc.handler.gameStateStats")
                 .formatted(
                         formatHistory(state.history(), ctx),
@@ -177,7 +175,7 @@ public class BncTelegramHandler implements RegexCommand {
                 );
     }
 
-    private String formatHistory(List<BncResult> history, LocalizedMessageContext ctx) {
+    private String formatHistory(List<BncResult> history, L10nMessageContext ctx) {
         return history.stream()
                 .map(e -> ctx.getString("bnc.handler.historyLine").formatted(e.number(), e.bulls(), e.cows()))
                 .collect(Collectors.joining("\n"));
@@ -192,7 +190,7 @@ public class BncTelegramHandler implements RegexCommand {
         return "%02d:%02d:%02d".formatted(hours, mins, sec);
     }
 
-    private String formatResult(BncResult result, LocalizedMessageContext ctx) {
+    private String formatResult(BncResult result, L10nMessageContext ctx) {
         return ctx.getString("bnc.handler.result").formatted(
                 result.number(),
                 result.bulls(),

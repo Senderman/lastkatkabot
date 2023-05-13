@@ -8,7 +8,7 @@ import com.senderman.lastkatkabot.feature.access.service.AdminService;
 import com.senderman.lastkatkabot.feature.feedback.model.Feedback;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackFormatterService;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackService;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.TelegramUsersHelper;
 import org.jetbrains.annotations.NotNull;
@@ -51,7 +51,7 @@ public class SendFeedbackCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(@NotNull LocalizedMessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         ctx.setArgumentsLimit(1);
         if (ctx.argumentsLength() < 1) {
             ctx.replyToMessage(ctx.getString("common.invalidArgumentsNumber")).callAsync(ctx.sender);

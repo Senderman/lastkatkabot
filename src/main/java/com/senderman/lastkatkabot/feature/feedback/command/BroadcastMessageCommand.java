@@ -5,7 +5,7 @@ import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.feature.tracking.service.ChatUserService;
 import com.senderman.lastkatkabot.util.Threads;
 import org.jetbrains.annotations.NotNull;
@@ -44,7 +44,7 @@ public class BroadcastMessageCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(@NotNull LocalizedMessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         var chatId = ctx.chatId();
         ctx.setArgumentsLimit(1);
         if (ctx.argumentsLength() < 1) {
@@ -102,11 +102,11 @@ public class BroadcastMessageCommand implements CommandExecutor {
         private final long total;
         private final CommonAbsSender sender;
         private final Message messageToEdit;
-        private final LocalizedMessageContext ctx;
+        private final L10nMessageContext ctx;
         private int successful = 0;
         private int done = 0;
 
-        public CounterMessage(long total, Message messageToEdit, LocalizedMessageContext ctx) {
+        public CounterMessage(long total, Message messageToEdit, L10nMessageContext ctx) {
             this.total = total;
             this.sender = ctx.sender;
             this.messageToEdit = messageToEdit;

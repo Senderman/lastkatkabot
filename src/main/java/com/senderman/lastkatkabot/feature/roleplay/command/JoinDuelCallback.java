@@ -2,7 +2,7 @@ package com.senderman.lastkatkabot.feature.roleplay.command;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.command.CallbackExecutor;
-import com.senderman.lastkatkabot.feature.localization.context.LocalizedCallbackQueryContext;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nCallbackQueryContext;
 import com.senderman.lastkatkabot.feature.userstats.model.UserStats;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
@@ -29,7 +29,7 @@ public class JoinDuelCallback implements CallbackExecutor {
     }
 
     @Override
-    public void accept(LocalizedCallbackQueryContext ctx) {
+    public void accept(L10nCallbackQueryContext ctx) {
         var firstUserId = Long.parseLong(ctx.argument(0));
         var secondUser = ctx.user();
         if (secondUser.getId().equals(firstUserId)) {
@@ -60,7 +60,7 @@ public class JoinDuelCallback implements CallbackExecutor {
         return new DuelResult(winner, loser, draw);
     }
 
-    private void processDuelResultToMessage(LocalizedCallbackQueryContext ctx, DuelResult result) {
+    private void processDuelResultToMessage(L10nCallbackQueryContext ctx, DuelResult result) {
         var winnerName = Html.htmlSafe(result.winner.getFirstName());
         var loserName = Html.htmlSafe(result.loser.getFirstName());
         var text = ctx.getString("roleplay.duel.resultTitle");
