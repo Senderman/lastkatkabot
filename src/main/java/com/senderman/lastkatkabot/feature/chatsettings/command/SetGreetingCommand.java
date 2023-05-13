@@ -1,10 +1,10 @@
 package com.senderman.lastkatkabot.feature.chatsettings.command;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.chatsettings.service.ChatInfoService;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -25,22 +25,22 @@ public class SetGreetingCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "(reply на стикер) сделать стикер приветствием";
+        return "chatsettings.greeting.description";
     }
 
     @Override
-    public void accept(@NotNull MessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         long chatId = ctx.chatId();
         var userId = ctx.user().getId();
         var chatMember = Methods.getChatMember(chatId, userId).call(ctx.sender);
         if (chatMember == null || !Set.of("administrator", "creator").contains(chatMember.getStatus())) {
-            ctx.replyToMessage("❌ Вы должны быть админом чата, чтобы использовать эту команду!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("mustBeChatAdmin")).callAsync(ctx.sender);
             return;
         }
 
         var reply = ctx.message().getReplyToMessage();
         if (reply == null || !reply.hasSticker()) {
-            ctx.replyToMessage("❌ Вы должны отправить эту команду на стикер, который станет приветствием!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("chatsettings.greeting.wrongUsage")).callAsync(ctx.sender);
             return;
         }
 
@@ -49,6 +49,6 @@ public class SetGreetingCommand implements CommandExecutor {
         chatSettings.setGreetingStickerId(stickerId);
         chatInfoService.save(chatSettings);
 
-        ctx.replyToMessage("✅ Стикер для приветствия успешно задан!").callAsync(ctx.sender);
+        ctx.replyToMessage(ctx.getString("chatsettings.greeting.success")).callAsync(ctx.sender);
     }
 }

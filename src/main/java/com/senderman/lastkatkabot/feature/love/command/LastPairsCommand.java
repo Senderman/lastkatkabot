@@ -1,9 +1,10 @@
 package com.senderman.lastkatkabot.feature.love.command;
 
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.chatsettings.service.ChatInfoService;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
+import org.jetbrains.annotations.NotNull;
 
 @Command
 public class LastPairsCommand implements CommandExecutor {
@@ -21,24 +22,24 @@ public class LastPairsCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "последние 10 пар чата";
+        return "love.lastpairs.description";
     }
 
     @Override
-    public void accept(MessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         if (ctx.message().isUserMessage()) {
-            ctx.replyToMessage("Команду нельзя использовать в ЛС!").callAsync(ctx.sender);
+            ctx.replyToMessage("love.lastpairs.wrongUsage").callAsync(ctx.sender);
             return;
         }
 
         var chatInfo = chats.findById(ctx.chatId());
         var pairs = chatInfo.getLastPairs();
         if (pairs == null || pairs.isEmpty()) {
-            ctx.replyToMessage("В этом чате еще ни разу не запускали /pair!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("love.lastpairs.emptyList")).callAsync(ctx.sender);
             return;
         }
 
-        var text = "<b>Последние 10 пар:</b>\n\n" + String.join("\n", pairs);
+        var text = ctx.getString("love.lastpairs.listTitle") + String.join("\n", pairs);
         ctx.reply(text).callAsync(ctx.sender);
     }
 }

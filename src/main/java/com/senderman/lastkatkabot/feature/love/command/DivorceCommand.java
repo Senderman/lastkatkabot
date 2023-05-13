@@ -1,10 +1,11 @@
 package com.senderman.lastkatkabot.feature.love.command;
 
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
+import org.jetbrains.annotations.NotNull;
 
 @Command
 public class DivorceCommand implements CommandExecutor {
@@ -22,29 +23,29 @@ public class DivorceCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "подать на развод";
+        return "love.divorce.description";
     }
 
     @Override
-    public void accept(MessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
 
         var userId = ctx.user().getId();
         var userStats = users.findById(userId);
         var loverId = userStats.getLoverId();
 
         if (loverId == null) {
-            ctx.replyToMessage("У вас и так никого нет!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("love.divorce.noLover")).callAsync(ctx.sender);
             return;
         }
 
-        ctx.replyToMessage("Вы точно уверены, что хотите развестись со своей половинкой?")
+        ctx.replyToMessage(ctx.getString("love.divorce.areYouSure"))
                 .setSingleRowInlineKeyboard(
                         ButtonBuilder.callbackButton()
-                                .text("Развестись")
+                                .text(ctx.getString("love.divorce.divorceButton"))
                                 .payload(DivorceCallback.NAME, "a", userId, loverId)
                                 .create(),
                         ButtonBuilder.callbackButton()
-                                .text("Отмена")
+                                .text(ctx.getString("love.divorce.cancelButton"))
                                 .payload(DivorceCallback.NAME, "d", userId)
                                 .create()
                 )

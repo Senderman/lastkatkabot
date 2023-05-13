@@ -1,12 +1,12 @@
 package com.senderman.lastkatkabot.feature.genshin.command;
 
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.genshin.model.GenshinChatUser;
 import com.senderman.lastkatkabot.feature.genshin.model.Item;
 import com.senderman.lastkatkabot.feature.genshin.service.GenshinChatUserService;
 import com.senderman.lastkatkabot.feature.genshin.service.GenshinUserInventoryItemService;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.util.CurrentTime;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Named;
@@ -45,13 +45,13 @@ public class WishCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "молитва (Genshin). Можно раз в день";
+        return "genshin.wish.description";
     }
 
     @Override
-    public void accept(@NotNull MessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         if (ctx.message().isUserMessage()) {
-            ctx.replyToMessage("Команду нельзя использовать в ЛС!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("common.noUsageInPM")).callAsync(ctx.sender);
             return;
         }
 
@@ -62,7 +62,7 @@ public class WishCommand implements CommandExecutor {
         var currentDay = Integer.parseInt(currentTime.getCurrentDay());
 
         if (genshinUser.getLastRollDate() == currentDay) {
-            ctx.replyToMessage("Вы уже молились сегодня! Можно только раз в день!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("genshin.wish.wishedToday")).callAsync(ctx.sender);
             return;
         }
 
@@ -82,7 +82,7 @@ public class WishCommand implements CommandExecutor {
         inventoryItem.incAmount();
 
 
-        String text = getFormattedItemReceiveMessage(ctx.user(), receivedItem);
+        String text = getFormattedItemReceiveMessage(ctx.user(), receivedItem, ctx);
         var itemPicture = getItemPictureById(itemId);
         var answer = ctx.replyToMessageWithPhoto()
                 .setCaption(text)
@@ -135,8 +135,8 @@ public class WishCommand implements CommandExecutor {
         return getClass().getResourceAsStream("/genshin/images/" + id + ".webp");
     }
 
-    private String getFormattedItemReceiveMessage(User user, Item item) {
-        return "%s\n\n%s, ваша награда - %d⭐ <b>️%s</b>".formatted(
+    private String getFormattedItemReceiveMessage(User user, Item item, L10nMessageContext ctx) {
+        return ctx.getString("genshin.wish.itemRecieve").formatted(
                 item.description(),
                 Html.getUserLink(user),
                 item.stars(),

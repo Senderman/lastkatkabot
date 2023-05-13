@@ -1,7 +1,7 @@
 package com.senderman.lastkatkabot.feature.genshin.command;
 
-import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
 import com.senderman.lastkatkabot.command.CallbackExecutor;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nCallbackQueryContext;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
@@ -17,16 +17,16 @@ public class CloseInvCallback implements CallbackExecutor {
     }
 
     @Override
-    public void accept(@NotNull CallbackQueryContext ctx) {
+    public void accept(@NotNull L10nCallbackQueryContext ctx) {
         final var userId = ctx.user().getId();
         final var ownerId = Long.parseLong(ctx.argument(0));
 
         if (!userId.equals(ownerId)) {
-            ctx.answerAsAlert("Это не ваш инвентарь!").callAsync(ctx.sender);
+            ctx.answerAsAlert(ctx.getString("genshin.inv.notYourInv")).callAsync(ctx.sender);
             return;
         }
-        ctx.editMessage("Здесь был инвентарь, но его закрыл %s".formatted(Html.htmlSafe(ctx.user().getFirstName())))
+        ctx.editMessage(ctx.getString("genshin.inv.deletedInv").formatted(Html.htmlSafe(ctx.user().getFirstName())))
                 .callAsync(ctx.sender);
-        ctx.answer("Инвентарь закрыт").callAsync(ctx.sender);
+        ctx.answer(ctx.getString("genshin.inv.invClosedNotify")).callAsync(ctx.sender);
     }
 }

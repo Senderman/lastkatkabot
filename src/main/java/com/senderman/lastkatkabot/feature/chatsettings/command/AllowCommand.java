@@ -1,9 +1,9 @@
 package com.senderman.lastkatkabot.feature.chatsettings.command;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.chatsettings.service.CommandAccessManager;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -24,28 +24,30 @@ public class AllowCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "разрешить команды. Использование: /callow /command1 command2";
+        return "chatsettings.callow.description";
     }
 
     @Override
-    public void accept(@NotNull MessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         long chatId = ctx.chatId();
         var userId = ctx.user().getId();
         var chatMember = Methods.getChatMember(chatId, userId).call(ctx.sender);
         if (chatMember == null || !Set.of("administrator", "creator").contains(chatMember.getStatus())) {
-            ctx.replyToMessage("❌ Вы должны быть админом чата, чтобы использовать эту команду!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("common.mustBeChatAdmin")).callAsync(ctx.sender);
             return;
         }
         if (ctx.argumentsLength() == 0) {
-            ctx.replyToMessage("Неверное количество аргументов!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("common.invalidArgumentsNumber")).callAsync(ctx.sender);
             return;
         }
 
         try {
             commandAccessManager.allowCommands(chatId, Arrays.asList(ctx.arguments()));
-            ctx.replyToMessage("✅ Указанные команды успешно разрешены!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("chatsettings.callow.success")).callAsync(ctx.sender);
         } catch (CommandAccessManager.CommandsNotExistsException e) {
-            ctx.replyToMessage("❌ Ошибка! Следующие команды не существуют:\n\n" + String.join("\n", e.getCommands()))
+            ctx.replyToMessage(
+                            ctx.getString("chatsettings.callow.failure")
+                                    .formatted(String.join("\n", e.getCommands())))
                     .callAsync(ctx.sender);
         }
     }

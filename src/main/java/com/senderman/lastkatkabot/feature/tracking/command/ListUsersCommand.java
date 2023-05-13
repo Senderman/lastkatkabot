@@ -1,13 +1,14 @@
 package com.senderman.lastkatkabot.feature.tracking.command;
 
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.access.model.AdminUser;
 import com.senderman.lastkatkabot.feature.access.model.BlacklistedUser;
 import com.senderman.lastkatkabot.feature.access.service.UserManager;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.util.Html;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 import java.util.stream.Collectors;
@@ -31,7 +32,7 @@ public class ListUsersCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "показать списки пользователей (админы/чс)";
+        return "tracking.ulist.description";
     }
 
     @Override
@@ -40,13 +41,13 @@ public class ListUsersCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(MessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
 
-        String text = "<b>Списки пользователей</b>:\n\n" +
-                "<b>Админы</b>\n\n" +
+        String text = ctx.getString("tracking.ulist.listTitle") +
+                ctx.getString("tracking.ulist.adminList") +
                 formatUsers(admins) +
                 "\n\n" +
-                "<b>Плохие кисы</b>\n\n" +
+                ctx.getString("tracking.ulist.bannedList") +
                 formatUsers(blacklist);
         ctx.replyToMessage(text).callAsync(ctx.sender);
 

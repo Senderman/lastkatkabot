@@ -1,8 +1,9 @@
 package com.senderman.lastkatkabot.feature.tracking.command;
 
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
+import org.jetbrains.annotations.NotNull;
 
 @Command
 public class ShortInfoCommand implements CommandExecutor {
@@ -14,36 +15,26 @@ public class ShortInfoCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "краткая инфа о сообщении. Поддерживается реплай";
+        return "tracking.shortinfo.description";
     }
 
     @Override
-    public void accept(MessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         var chatId = ctx.chatId();
         var userId = ctx.user().getId();
 
-        String info = """
-                ==== Информация ====
-
-                💬 ID чата: <code>%d</code>
-                🙍‍♂️ Ваш ID: <code>%d</code>"""
-                .formatted(chatId, userId);
+        String info = ctx.getString("tracking.shortinfo.text").formatted(chatId, userId);
 
         var message = ctx.message();
         if (message.isReply()) {
             var reply = message.getReplyToMessage();
             var replyMessageId = reply.getMessageId();
             var replyUserId = reply.getFrom().getId();
-            info += """
-
-
-                    ✉️ ID reply: <code>%d</code>
-                    🙍‍♂ ID юзера из reply: <code>%d</code>"""
-                    .formatted(replyMessageId, replyUserId);
+            info += ctx.getString("tracking.shortinfo.replyText").formatted(replyMessageId, replyUserId);
 
             var forward = reply.getForwardFromChat();
             if (forward != null && forward.isChannelChat()) {
-                info += "\n\uD83D\uDCE2 ID канала: <code>%d</code>".formatted(forward.getId());
+                info += ctx.getString("tracking.shortinfo.forwardText").formatted(forward.getId());
             }
         }
         ctx.reply(info).callAsync(ctx.sender);

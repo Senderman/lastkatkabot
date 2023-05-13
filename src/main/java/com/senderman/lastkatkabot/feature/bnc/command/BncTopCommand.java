@@ -1,10 +1,9 @@
 package com.senderman.lastkatkabot.feature.bnc.command;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
-import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
 import org.jetbrains.annotations.NotNull;
@@ -30,21 +29,23 @@ public class BncTopCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "топ игроков в Быки и Коровы. /bnctop chat для топа чата";
+        return "bnc.bnctop.description";
     }
 
     @Override
-    public void accept(@NotNull MessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
 
         boolean chatTop = ctx.argument(0, "").equals("chat");
         if (chatTop && ctx.message().isUserMessage()) {
-            ctx.replyToMessage("Команду /bnctop chat нельзя использовать в лс!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("bnc.bnctop.wrongUsage")).callAsync(ctx.sender);
             return;
         }
-        String title = (chatTop ? "<b>Топ-10 задротов чата в bnc:</b>" : "<b>Топ-10 задротов в bnc:</b>") + "\n\n";
+        String title = (
+                chatTop ? ctx.getString("bnc.bnctop.chatTop") : ctx.getString("bnc.bnctop.top")
+        ) + "\n\n";
         var topUsers = chatTop ? users.findTop10BncPlayersByChat(ctx.chatId()) : users.findTop10BncPlayers();
         if (topUsers.isEmpty()) {
-            ctx.replyToMessage("В этом чате никто не играет в быки и коровы :(").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("bnc.bnctop.emptyList")).callAsync(ctx.sender);
             return;
         }
         int counter = 0;
@@ -52,20 +53,20 @@ public class BncTopCommand implements CommandExecutor {
         for (var user : topUsers) {
             top.append(++counter)
                     .append(": ")
-                    .append(formatUser(user.getUserId(), user.getBncScore(), ctx.message().isUserMessage(), ctx.sender))
+                    .append(formatUser(user.getUserId(), user.getBncScore(), ctx))
                     .append("\n");
         }
 
         ctx.reply(top.toString()).callAsync(ctx.sender);
     }
 
-    private String formatUser(long userId, int score, boolean printLink, CommonAbsSender telegram) {
-        Function<User, String> userPrinter = printLink ? Html::getUserLink : u -> Html.htmlSafe(u.getFirstName());
-
-        String user = Optional.ofNullable(Methods.getChatMember(userId, userId).call(telegram))
+    private String formatUser(long userId, int score, L10nMessageContext ctx) {
+        Function<User, String> userPrinter =
+                ctx.message().isUserMessage() ? Html::getUserLink : u -> Html.htmlSafe(u.getFirstName());
+        String user = Optional.ofNullable(Methods.getChatMember(userId, userId).call(ctx.sender))
                 .map(ChatMember::getUser)
                 .map(userPrinter)
-                .orElse("Без имени");
+                .orElse(ctx.getString("common.noName"));
 
         return user + " (" + score + ")";
     }

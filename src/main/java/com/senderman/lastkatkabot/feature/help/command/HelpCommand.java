@@ -1,14 +1,15 @@
 package com.senderman.lastkatkabot.feature.help.command;
 
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.feature.access.model.AdminUser;
 import com.senderman.lastkatkabot.feature.access.service.UserManager;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Singleton;
+import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -45,7 +46,7 @@ public class HelpCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "помощь";
+        return "help.description";
     }
 
     @Override
@@ -59,32 +60,33 @@ public class HelpCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(MessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         try {
-            trySendHelpToPm(ctx.user().getId(), ctx.sender);
+            trySendHelpToPm(ctx.user().getId(), ctx.sender, ctx);
             if (!ctx.message().isUserMessage())
-                ctx.replyToMessage("✅ Помощь отправлена вам в лс!").callAsync(ctx.sender);
+                ctx.replyToMessage(ctx.getString("help.success")).callAsync(ctx.sender);
         } catch (TelegramApiException e) {
-            ctx.replyToMessage("Пожалуйста, начните диалог со мной в лс").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("help.openPMsPlease")).callAsync(ctx.sender);
         }
     }
 
-    private void trySendHelpToPm(long userId, CommonAbsSender telegram) throws TelegramApiException {
-        var sentMessage = telegram.execute(new SendMessage(String.valueOf(userId), "Подождите..."));
+    private void trySendHelpToPm(long userId, CommonAbsSender telegram, L10nMessageContext ctx) throws TelegramApiException {
+        var sentMessage = telegram.execute(new SendMessage(String.valueOf(userId), ctx.getString("help.wait")));
         telegram.executeAsync(EditMessageText
                 .builder()
                 .chatId(Long.toString(userId))
-                .text(prepareHelpText(userId))
+                .text(prepareHelpText(userId, ctx))
                 .messageId(sentMessage.getMessageId())
                 .parseMode(ParseMode.HTML)
                 .build()
         );
     }
 
-    private String prepareHelpText(long userId) {
-        var userHelp = new StringBuilder("<b>Основные команды:</b>\n\n");
-        var adminHelp = new StringBuilder("<b>Команды админов:</b>\n\n");
-        var mainAdminHelp = new StringBuilder("<b>Команды главного админа:</b>\n\n");
+    private String prepareHelpText(long userId, L10nMessageContext ctx) {
+        var locale = ctx.getLocale();
+        var userHelp = new StringBuilder(ctx.getString("help.userCommands"));
+        var adminHelp = new StringBuilder(ctx.getString("help.adminCommands"));
+        var mainAdminHelp = new StringBuilder(ctx.getString("help.mainAdminCommands"));
         boolean userIsMainAdmin = userId == config.getMainAdminId();
         boolean userIsAdmin = userIsMainAdmin || admins.hasUser(userId);
 
@@ -93,11 +95,11 @@ public class HelpCommand implements CommandExecutor {
             var exe = exeIterator.next();
             var roles = exe.authority();
             if (roles.contains(Role.USER)) {
-                userHelp.append(formatExecutor(exe)).append("\n");
+                userHelp.append(formatExecutor(exe, ctx)).append("\n");
             } else if (userIsAdmin && roles.contains(Role.ADMIN))
-                adminHelp.append(formatExecutor(exe)).append("\n");
+                adminHelp.append(formatExecutor(exe, ctx)).append("\n");
             else if (userIsMainAdmin && roles.contains(Role.MAIN_ADMIN))
-                mainAdminHelp.append(formatExecutor(exe)).append("\n");
+                mainAdminHelp.append(formatExecutor(exe, ctx)).append("\n");
 
         }
 
@@ -111,7 +113,7 @@ public class HelpCommand implements CommandExecutor {
         return userHelp.toString();
     }
 
-    private String formatExecutor(CommandExecutor executor) {
-        return executor.command() + " - " + Html.htmlSafe(executor.getDescription());
+    private String formatExecutor(CommandExecutor executor, L10nMessageContext ctx) {
+        return executor.command() + " - " + Html.htmlSafe(ctx.getString(executor.getDescription()));
     }
 }

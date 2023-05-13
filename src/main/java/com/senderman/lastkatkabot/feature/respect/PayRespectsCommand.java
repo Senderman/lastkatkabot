@@ -1,10 +1,11 @@
 package com.senderman.lastkatkabot.feature.respect;
 
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
+import org.jetbrains.annotations.NotNull;
 
 @Command
 public class PayRespectsCommand implements CommandExecutor {
@@ -16,11 +17,11 @@ public class PayRespectsCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "(reply) press f to pay respects. А можно вот так: /f штаны за 40 хривень. Или просто /f";
+        return "respect.description";
     }
 
     @Override
-    public void accept(MessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         ctx.setArgumentsLimit(1);
         String object;
 

@@ -1,11 +1,11 @@
 package com.senderman.lastkatkabot.feature.tracking.command;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.feature.tracking.model.ChatUser;
 import com.senderman.lastkatkabot.feature.tracking.service.ChatUserService;
 import com.senderman.lastkatkabot.util.Html;
@@ -33,7 +33,7 @@ public class WhoInChatCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "посмотреть, кто есть в чате. /wic chatId";
+        return "tracking.wic.description";
     }
 
     @Override
@@ -42,16 +42,16 @@ public class WhoInChatCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(@NotNull MessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         if (ctx.argumentsLength() < 1) {
-            ctx.replyToMessage("Введите Id чата: /wic chatId").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("tracking.wic.wrongUsage")).callAsync(ctx.sender);
             return;
         }
         long chatId;
         try {
             chatId = Long.parseLong(ctx.argument(0));
         } catch (NumberFormatException e) {
-            ctx.replyToMessage("Id чата - это число!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("common.chatIdIsNumber")).callAsync(ctx.sender);
             return;
         }
 
@@ -62,11 +62,11 @@ public class WhoInChatCommand implements CommandExecutor {
                     .toList();
 
             if (users.isEmpty()) {
-                ctx.replyToMessage("\uD83D\uDD75️\u200D♂ В чате нет ни одного юзера!!️").callAsync(ctx.sender);
+                ctx.replyToMessage(ctx.getString("tracking.wic.chatIsEmpty")).callAsync(ctx.sender);
                 return;
             }
 
-            var text = new StringBuilder("🕵️‍♂ В чате %s замечены следующие юзеры:\n\n️"
+            var text = new StringBuilder(ctx.getString("tracking.wic.usersFound")
                     .formatted(getChatNameOrChatId(chatId, ctx.sender)));
             for (var user : users) {
                 if (text.length() + "\n".length() + user.length() >= 4096) {

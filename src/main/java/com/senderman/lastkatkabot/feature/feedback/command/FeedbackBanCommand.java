@@ -1,13 +1,14 @@
 package com.senderman.lastkatkabot.feature.feedback.command;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.access.model.BlacklistedUser;
 import com.senderman.lastkatkabot.feature.access.service.UserManager;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackService;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 
@@ -29,7 +30,7 @@ public class FeedbackBanCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "бан по фидбеку. /fban feedbackId причина (opt)";
+        return "feedback.fban.description";
     }
 
     @Override
@@ -38,10 +39,10 @@ public class FeedbackBanCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(MessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         ctx.setArgumentsLimit(2);
         if (ctx.argumentsLength() < 1) {
-            ctx.replyToMessage("Неверное кол-во аргументов!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("common.invalidArgumentsNumber")).callAsync(ctx.sender);
             return;
         }
 
@@ -49,25 +50,29 @@ public class FeedbackBanCommand implements CommandExecutor {
         try {
             feedbackId = Integer.parseInt(ctx.argument(0));
         } catch (NumberFormatException e) {
-            ctx.replyToMessage("id фидбека - это число!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("feedback.common.feedbackIdIsNumber")).callAsync(ctx.sender);
             return;
         }
 
         var feedbackOptional = feedbackService.findById(feedbackId);
         if (feedbackOptional.isEmpty()) {
-            ctx.replyToMessage("Фидбека с таким id не существует!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("feedback.common.noSuchFeedback")).callAsync(ctx.sender);
             return;
         }
         var feedback = feedbackOptional.get();
         var badPersonId = feedback.getUserId();
         if (!blackUsers.addUser(new BlacklistedUser(badPersonId, feedback.getUserName()))) {
-            ctx.replyToMessage("Этот пользователь уже плохая киса!").callAsync(ctx.sender);
+            ctx.replyToMessage(
+                    ctx.getString("common.alreadyBadNeko")
+                            .formatted(feedback.getUserName())
+            ).callAsync(ctx.sender);
             return;
         }
-        var reason = ctx.argument(1, "&lt;причина не указана&gt;");
-        ctx.replyToMessage("Теперь %s — плохая киса! Причина: %s".formatted(feedback.getUserName(), reason))
+        var reason = ctx.argument(1, ctx.getString("feedback.fban.noReason"));
+        ctx.replyToMessage(ctx.getString("feedback.fban.notifySuccess").formatted(feedback.getUserName(), reason))
                 .callAsync(ctx.sender);
-        Methods.sendMessage(feedback.getChatId(), "Разработчики добавили вас в ЧС бота. Причина: " + reason)
+        Methods.sendMessage(feedback.getChatId(),
+                        ctx.getString("feedback.fban.notifyUser").formatted(reason))
                 .setReplyToMessageId(feedback.getMessageId())
                 .callAsync(ctx.sender);
     }

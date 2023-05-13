@@ -1,12 +1,13 @@
 package com.senderman.lastkatkabot.feature.access.command;
 
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.access.model.AdminUser;
 import com.senderman.lastkatkabot.feature.access.service.UserManager;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import jakarta.inject.Named;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 
@@ -26,7 +27,7 @@ public class GrantAdminCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "выдача админа реплаем.";
+        return "access.grantadmin.description";
     }
 
     @Override
@@ -35,25 +36,22 @@ public class GrantAdminCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(MessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         if (!ctx.message().isReply() || ctx.message().isUserMessage()) {
-            ctx.replyToMessage("Посвящать в админы нужно в группе и реплаем!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("access.grantadmin.wrongUsage")).callAsync(ctx.sender);
             return;
         }
         var user = ctx.message().getReplyToMessage().getFrom();
 
         if (user.getIsBot()) {
-            ctx.replyToMessage(
-                            "Но это же просто бот, имитация человека! " +
-                                    "Разве может бот написать симфонию, иметь статистику, участвовать в дуэлях, быть админом?")
-                    .callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("access.grantadmin.bot")).callAsync(ctx.sender);
             return;
         }
 
         if (admins.addUser(new AdminUser(user.getId(), user.getFirstName())))
-            ctx.replyToMessage("Пользователь успешно посвящен в админы!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("access.grantadmin.success")).callAsync(ctx.sender);
         else
-            ctx.replyToMessage("Не следует посвящать в админы дважды!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("access.grantadmin.failure")).callAsync(ctx.sender);
     }
 }
 

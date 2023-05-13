@@ -11,12 +11,13 @@ public interface WeatherService {
     /**
      * Get weather forecast by city name
      *
-     * @param city name of city
+     * @param city   name of city
+     * @param locale desired locale of the response
      * @return Forecast object
      * @throws IOException           on connection error
      * @throws NoSuchCityException   if there's no such city
      * @throws WeatherParseException on parse error
      */
-    Forecast getWeatherByCity(String city) throws IOException, NoSuchCityException, WeatherParseException;
+    Forecast getWeatherByCity(String city, String locale) throws IOException, NoSuchCityException, WeatherParseException;
 
 }

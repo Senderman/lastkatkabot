@@ -1,9 +1,9 @@
 package com.senderman.lastkatkabot.feature.chatsettings.command;
 
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.chatsettings.service.ChatInfoService;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
@@ -25,15 +25,15 @@ public class ChatSettingsCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "настройки чата";
+        return "chatsettings.settings.description";
     }
 
     @Override
-    public void accept(@NotNull MessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
 
         var chatId = ctx.chatId();
-        var sb = new StringBuilder("<b>Настройки чата</b>\n\n");
-        sb.append("Запрещенные команды:\n");
+        var sb = new StringBuilder(ctx.getString("chatsettings.settings.chatSettings") + "\n\n");
+        sb.append(ctx.getString("chatsettings.settings.forbiddenCommands")).append("\n");
         var chatInfo = chatInfoService.findById(chatId);
 
 

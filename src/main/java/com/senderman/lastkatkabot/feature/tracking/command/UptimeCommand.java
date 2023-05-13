@@ -1,8 +1,9 @@
 package com.senderman.lastkatkabot.feature.tracking.command;
 
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryType;
@@ -17,35 +18,25 @@ public class UptimeCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "посмотреть нагрузку на бота";
+        return "tracking.uptime.description";
     }
 
     @Override
-    public void accept(MessageContext ctx) {
-        ctx.replyToMessage(formatHealth()).callAsync(ctx.sender);
+    public void accept(@NotNull L10nMessageContext ctx) {
+        ctx.replyToMessage(formatHealth(ctx)).callAsync(ctx.sender);
     }
 
-    private String formatHealth() {
+    private String formatHealth(L10nMessageContext ctx) {
         var r = Runtime.getRuntime();
         double delimiter = 1048576f;
-        return """
-                🖥 <b>Нагрузка:</b>
-
-                Занято: <code>%.2f MiB</code>
-                Свободно: <code>%.2f MiB</code>
-                Выделено JVM: <code>%.2f MiB</code>
-                Доступно JVM: <code>%.2f MiB</code>
-                Нативная память: <code>%.2f MiB</code>
-                Аптайм: <code>%s</code>
-                Потоки: <code>%d</code>
-                CPUs: <code>%d</code>"""
+        return ctx.getString("tracking.uptime.text")
                 .formatted(
                         (r.totalMemory() - r.freeMemory()) / delimiter,
                         r.freeMemory() / delimiter,
                         r.totalMemory() / delimiter,
                         r.maxMemory() / delimiter,
                         getNativeMemory() / delimiter,
-                        formatTime(ManagementFactory.getRuntimeMXBean().getUptime()),
+                        formatTime(ManagementFactory.getRuntimeMXBean().getUptime(), ctx),
                         ManagementFactory.getThreadMXBean().getThreadCount(),
                         ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors()
                 );
@@ -59,7 +50,7 @@ public class UptimeCommand implements CommandExecutor {
                 .sum();
     }
 
-    private String formatTime(long millis) {
+    private String formatTime(long millis, L10nMessageContext ctx) {
         long secs = millis / 1000;
 
         long mins = secs / 60;
@@ -71,6 +62,6 @@ public class UptimeCommand implements CommandExecutor {
         long days = hours / 24;
         hours -= days * 24;
 
-        return "%dдн, %dч, %dмин, %dсек".formatted(days, hours, mins, secs);
+        return ctx.getString("tracking.uptime.time").formatted(days, hours, mins, secs);
     }
 }

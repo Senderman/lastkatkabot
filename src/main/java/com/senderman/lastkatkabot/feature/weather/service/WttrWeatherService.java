@@ -21,16 +21,16 @@ public class WttrWeatherService implements WeatherService {
     private static final Pattern windPattern = Pattern.compile("(\\D+)(\\d+)\\D+");
 
     @Override
-    public Forecast getWeatherByCity(String city) throws IOException, NoSuchCityException, WeatherParseException {
+    public Forecast getWeatherByCity(String city, String locale) throws IOException, NoSuchCityException, WeatherParseException {
         if (!city.matches("^~?[\\p{L}\\d\\s-,.+]+"))
             throw new NoSuchCityException(city);
 
         var response = requestWeather(city);
-        return parseResponse(response);
+        return parseResponse(response, locale);
     }
 
 
-    private Forecast parseResponse(String response) throws WeatherParseException {
+    private Forecast parseResponse(String response, String locale) throws WeatherParseException {
         String[] content = response.split("\n");
         try {
             var title = content[0];
@@ -41,7 +41,8 @@ public class WttrWeatherService implements WeatherService {
             var humidity = content[5];
             var pressure = formatPressure(content[6]);
             var moonPhase = content[7];
-            return new Forecast(title, temperature, feelsLike, feelings, wind, humidity, pressure, moonPhase, getImageLink(title));
+            return new Forecast(title, temperature, feelsLike, feelings,
+                    wind, humidity, pressure, moonPhase, getImageLink(title, locale));
         } catch (Exception e) {
             throw new WeatherParseException("Error while parsing content: " + response, e);
         }
@@ -85,10 +86,10 @@ public class WttrWeatherService implements WeatherService {
         return URLEncoder.encode(city, StandardCharsets.UTF_8);
     }
 
-    private String getImageLink(String city) {
+    private String getImageLink(String city, String locale) {
         // prevent telegram caching
         long tsHours = System.currentTimeMillis() / 3600000;
-        return domain + urlEncodeCity(city) + ".png?lang=ru&ts=" + tsHours;
+        return domain + urlEncodeCity(city) + ".png?lang=%s&ts=".formatted(locale) + tsHours;
     }
 
 }

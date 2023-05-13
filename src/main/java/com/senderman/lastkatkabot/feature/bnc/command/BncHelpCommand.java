@@ -1,9 +1,9 @@
 package com.senderman.lastkatkabot.feature.bnc.command;
 
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import org.jetbrains.annotations.NotNull;
 
 @Command
@@ -22,11 +22,11 @@ public class BncHelpCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "помощь по игре Быки и Коровы";
+        return "bnc.bnchelp.description";
     }
 
     @Override
-    public void accept(@NotNull MessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         ctx.replyWithPhoto()
                 .setFile(config.getBncHelpPictureId())
                 .callAsync(ctx.sender);

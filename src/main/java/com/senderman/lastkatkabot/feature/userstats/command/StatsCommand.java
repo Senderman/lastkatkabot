@@ -1,13 +1,14 @@
 package com.senderman.lastkatkabot.feature.userstats.command;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.feature.tracking.service.ChatUserService;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
+import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
 
@@ -32,16 +33,15 @@ public class StatsCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "статистика. Реплаем можно узнать статистику реплайнутого";
+        return "userstats.description";
     }
 
     @Override
-    public void accept(MessageContext ctx) {
+    public void accept(@NotNull L10nMessageContext ctx) {
         User user = (ctx.message().isReply()) ? ctx.message().getReplyToMessage().getFrom() : ctx.user();
 
         if (user.getIsBot()) {
-            ctx.replyToMessage("Но это же просто бот, имитация человека! " +
-                            "Разве может бот написать симфонию, иметь статистику, играть в BnC, участвовать в дуэлях?")
+            ctx.replyToMessage(ctx.getString("userstats.isBot"))
                     .callAsync(ctx.sender);
             return;
         }
@@ -49,16 +49,8 @@ public class StatsCommand implements CommandExecutor {
         var stats = users.findById(user.getId());
         String name = Html.htmlSafe(user.getFirstName());
         int winRate = stats.getDuelsTotal() == 0 ? 0 : 100 * stats.getDuelWins() / stats.getDuelsTotal();
-        String text = """
-                📊 Статистика %s:
-
-                👑 Дуэлей выиграно: %d
-                ⚔️ Всего дуэлей: %d
-                📈 Винрейт: %d%%
-
-                🐮 Баллов за быки и коровы: %d"""
-                .formatted(name, stats.getDuelWins(), stats.getDuelsTotal(), winRate, stats.getBncScore());
-
+        String text = ctx.getString("userstats.text")
+                .formatted(name, stats.getDuelWins(), stats.getDuelsTotal(), winRate, stats.getBncScore(), stats.getLocale());
         var loverId = stats.getLoverId();
         if (loverId == null) {
             ctx.reply(text).callAsync(ctx.sender);
@@ -68,9 +60,9 @@ public class StatsCommand implements CommandExecutor {
         User lover = chatUsers.findNewestUserData(loverId)
                 .map(l -> new User(l.getUserId(), l.getName(), false)) // get actual username from chatUsers table
                 .or(() -> getUserDataFromTelegram(loverId, ctx.sender)) // fallback to request it from telegram
-                .orElseGet(() -> new User(loverId, "Unknown User", false)); // give up and set the name to "Unknown user"
+                .orElseGet(() -> new User(loverId, ctx.getString("common.unknownUser"), false)); // give up and set the name to "Unknown user"
         String loverLink = Html.getUserLink(lover);
-        text += "\n\n❤️ Вторая половинка: " + loverLink;
+        text += ctx.getString("userstats.lover").formatted(loverLink);
         ctx.reply(text).callAsync(ctx.sender);
     }
 
