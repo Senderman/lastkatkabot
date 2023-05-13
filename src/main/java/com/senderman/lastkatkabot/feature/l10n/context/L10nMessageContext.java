@@ -3,10 +3,8 @@ package com.senderman.lastkatkabot.feature.l10n.context;
 import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.feature.l10n.service.L10nService;
-import io.micronaut.context.annotation.Prototype;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-@Prototype
 public class L10nMessageContext extends MessageContext {
 
     private final L10nService localizationService;
