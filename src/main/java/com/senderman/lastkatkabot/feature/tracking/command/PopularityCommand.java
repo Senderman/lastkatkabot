@@ -1,9 +1,9 @@
 package com.senderman.lastkatkabot.feature.tracking.command;
 
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
 import com.senderman.lastkatkabot.feature.tracking.service.ChatUserService;
 import jakarta.inject.Named;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +29,7 @@ public class PopularityCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "популярность бота";
+        return "tracking.popularity.description";
     }
 
     @Override
@@ -38,13 +38,13 @@ public class PopularityCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(@NotNull MessageContext ctx) {
+    public void accept(@NotNull LocalizedMessageContext ctx) {
         threadPool.execute(() -> {
-            var text = "📊 <b>Популярность бота:</b>\n\n";
+            var text = ctx.getString("tracking.popularity.title");
             var chatsWithUsers = chatUsers.getTotalChats();
-            text += "👥 Активные чаты: " + chatsWithUsers + "\n\n";
+            text += ctx.getString("tracking.popularity.activeChats").formatted(chatsWithUsers);
             var users = chatUsers.getTotalUsers();
-            text += "👤 Уникальные пользователи: " + users;
+            text += ctx.getString("tracking.popularity.activeUsers").formatted(users);
             ctx.reply(text).callAsync(ctx.sender);
         });
     }

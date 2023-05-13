@@ -15,6 +15,7 @@ public class UserStats {
     private int duelsTotal;
     private int duelWins;
     private int bncScore;
+    private String locale;
     @Nullable
     private String cityLink; // TODO rename to City
     @Nullable
@@ -26,10 +27,19 @@ public class UserStats {
         this.duelsTotal = 0;
         this.duelWins = 0;
         this.bncScore = 0;
+        this.locale = "uk";
     }
 
     public long getUserId() {
         return userId;
+    }
+
+    public String getLocale() {
+        return locale;
+    }
+
+    public void setLocale(String locale) {
+        this.locale = locale;
     }
 
     public int getDuelsTotal() {

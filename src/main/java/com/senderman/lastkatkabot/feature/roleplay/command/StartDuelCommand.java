@@ -1,10 +1,11 @@
 package com.senderman.lastkatkabot.feature.roleplay.command;
 
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
+import org.jetbrains.annotations.NotNull;
 
 @Command
 public class StartDuelCommand implements CommandExecutor {
@@ -16,16 +17,16 @@ public class StartDuelCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "начать дуэль";
+        return "roleplay.duel.description";
     }
 
     @Override
-    public void accept(MessageContext ctx) {
+    public void accept(@NotNull LocalizedMessageContext ctx) {
         var user = ctx.user();
         var name = Html.htmlSafe(user.getFirstName());
-        ctx.reply("🎯 Пользователь " + name + " начинает набор на дуэль!")
+        ctx.reply(ctx.getString("roleplay.duel.startMessage").formatted(name))
                 .setInlineKeyboard(ButtonBuilder.callbackButton()
-                        .text("Присоединиться")
+                        .text(ctx.getString("roleplay.duel.joinButton"))
                         .payload(JoinDuelCallback.NAME, user.getId())
                         .create())
                 .callAsync(ctx.sender);

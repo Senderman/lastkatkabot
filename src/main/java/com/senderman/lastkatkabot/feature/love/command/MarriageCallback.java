@@ -1,8 +1,8 @@
 package com.senderman.lastkatkabot.feature.love.command;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
 import com.senderman.lastkatkabot.command.CallbackExecutor;
+import com.senderman.lastkatkabot.feature.localization.context.LocalizedCallbackQueryContext;
 import com.senderman.lastkatkabot.feature.love.model.MarriageRequest;
 import com.senderman.lastkatkabot.feature.love.service.MarriageRequestService;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
@@ -30,13 +30,13 @@ public class MarriageCallback implements CallbackExecutor {
     }
 
     @Override
-    public void accept(CallbackQueryContext ctx) {
+    public void accept(LocalizedCallbackQueryContext ctx) {
         var requestId = Integer.parseInt(ctx.argument(1));
         var requestOptional = marriages.findById(requestId);
 
         if (requestOptional.isEmpty()) {
-            ctx.answerAsAlert("Вашу заявку потеряли в ЗАГСе!").callAsync(ctx.sender);
-            ctx.editMessage("К сожалению, в ЗАГСе потеряли вашу запись. Попробуйте еще раз")
+            ctx.answerAsAlert(ctx.getString("love.marriage.errorNotify")).callAsync(ctx.sender);
+            ctx.editMessage(ctx.getString("love.marriage.errorMessage"))
                     .disableWebPagePreview()
                     .callAsync(ctx.sender);
             return;
@@ -45,7 +45,7 @@ public class MarriageCallback implements CallbackExecutor {
         var r = requestOptional.get();
         // query user id should match with proposee id
         if (!ctx.user().getId().equals(r.getProposeeId())) {
-            ctx.answerAsAlert("Это не вам!").callAsync(ctx.sender);
+            ctx.answerAsAlert(ctx.getString("love.marriage.notForYou")).callAsync(ctx.sender);
             return;
         }
 
@@ -56,13 +56,13 @@ public class MarriageCallback implements CallbackExecutor {
             declineMarriage(ctx, r);
     }
 
-    private void acceptMarriage(CallbackQueryContext ctx, MarriageRequest r) {
+    private void acceptMarriage(LocalizedCallbackQueryContext ctx, MarriageRequest r) {
 
         var proposeeStats = userStats.findById(r.getProposeeId());
         // proposee should not have lover
         if (proposeeStats.hasLover()) {
-            ctx.answerAsAlert("Вы уже имеете вторую половинку!").callAsync(ctx.sender);
-            ctx.editMessage("Пользователь " + r.getProposeeName() + " уже имеет вторую половинку!")
+            ctx.answerAsAlert(ctx.getString("love.marriage.proposeeHasLoverNotify")).callAsync(ctx.sender);
+            ctx.editMessage(ctx.getString("love.marriage.proposeeHasLoverMessage").formatted(r.getProposeeName()))
                     .disableWebPagePreview()
                     .callAsync(ctx.sender);
             marriages.delete(r);
@@ -71,8 +71,8 @@ public class MarriageCallback implements CallbackExecutor {
         var proposerStats = userStats.findById(r.getProposerId());
         // proposer also should not have lover
         if (proposerStats.hasLover()) {
-            ctx.answerAsAlert("Слишком поздно, у пользователя уже есть другой!").callAsync(ctx.sender);
-            ctx.answerAsAlert("Пользователь " + r.getProposerName() + " уже имеет вторую половинку!").callAsync(ctx.sender);
+            ctx.answerAsAlert(ctx.getString("love.marriage.proposerHasLoverNotify")).callAsync(ctx.sender);
+            ctx.answerAsAlert(ctx.getString("love.marriage.proposerHasLoverMessage").formatted(r.getProposerName())).callAsync(ctx.sender);
             marriages.delete(r);
             return;
         }
@@ -82,26 +82,26 @@ public class MarriageCallback implements CallbackExecutor {
         // all marriage request with these are obsolete now
         marriages.deleteByProposerIdOrProposeeId(r.getProposerId(), r.getProposeeId());
         userStats.saveAll(List.of(proposerStats, proposeeStats));
-        ctx.answer("Вы приняли предложение!").callAsync(ctx.sender);
-        ctx.editMessage("Пользователь " + r.getProposeeName() + " принял предложение!")
+        ctx.answer(ctx.getString("love.marriage.acceptNotify")).callAsync(ctx.sender);
+        ctx.editMessage(ctx.getString("love.marriage.acceptMessage").formatted(r.getProposeeName()))
                 .disableWebPagePreview()
                 .callAsync(ctx.sender);
         Methods.sendMessage()
                 .setChatId(r.getProposerId())
-                .setText("Пользователь " + r.getProposeeName() + " принял предложение!")
+                .setText(ctx.getString("love.marriage.acceptMessage").formatted(r.getProposeeName()))
                 .callAsync(ctx.sender);
 
         Methods.sendMessage()
                 .setChatId(ctx.message().getChatId())
-                .setText(String.format("💐 У %s и %s свадьба! Давайте их поздравим и съедим шавуху 🌯 !!!",
+                .setText(String.format(ctx.getString("love.marriage.message"),
                         r.getProposerName(), r.getProposeeName()))
                 .callAsync(ctx.sender);
     }
 
-    private void declineMarriage(CallbackQueryContext ctx, MarriageRequest r) {
+    private void declineMarriage(LocalizedCallbackQueryContext ctx, MarriageRequest r) {
         marriages.delete(r);
-        ctx.answer("Вы отказались от брака!").callAsync(ctx.sender);
-        ctx.editMessage("Пользователь " + Html.getUserLink(ctx.user()) + " отказался от брака!")
+        ctx.answer(ctx.getString("love.marriage.cancelNotify")).callAsync(ctx.sender);
+        ctx.editMessage(ctx.getString("love.marriage.cancelMessage").formatted(Html.getUserLink(ctx.user())))
                 .disableWebPagePreview()
                 .callAsync(ctx.sender);
     }

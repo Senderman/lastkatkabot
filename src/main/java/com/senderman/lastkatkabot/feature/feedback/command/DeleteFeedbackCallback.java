@@ -1,11 +1,11 @@
 package com.senderman.lastkatkabot.feature.feedback.command;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CallbackExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackService;
+import com.senderman.lastkatkabot.feature.localization.context.LocalizedCallbackQueryContext;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
@@ -40,8 +40,24 @@ public class DeleteFeedbackCallback implements CallbackExecutor {
         return EnumSet.of(Role.ADMIN, Role.MAIN_ADMIN);
     }
 
+    private static void editSourceMessage(LocalizedCallbackQueryContext ctx, String text) {
+        getMessage(ctx).ifPresent(msg ->
+                ctx.editMessage(msg.getText() + "\n" + text)
+                        .setChatId(msg.getChatId())
+                        .setMessageId(msg.getMessageId())
+                        .callAsync(ctx.sender));
+    }
+
+    private static Optional<Message> getMessage(LocalizedCallbackQueryContext ctx) {
+        final var msg = ctx.message();
+        if (msg == null || msg.getChatId() == null || msg.getMessageId() == null) {
+            return Optional.empty();
+        }
+        return Optional.of(msg);
+    }
+
     @Override
-    public void accept(@NotNull CallbackQueryContext ctx) {
+    public void accept(@NotNull LocalizedCallbackQueryContext ctx) {
         if (ctx.argumentsLength() < 1) return;
 
         var arg = ctx.argument(0);
@@ -54,13 +70,13 @@ public class DeleteFeedbackCallback implements CallbackExecutor {
         int feedbackId = Integer.parseInt(arg);
         if (feedbackRepo.existsById(feedbackId)) {
             feedbackRepo.deleteById(feedbackId);
-            notifySuccess(ctx, "✅ Фидбек #" + feedbackId + " удален");
+            notifySuccess(ctx, ctx.getString("feedback.fdel.feedbackDeleted").formatted(feedbackId));
         } else {
             notifyNoFeedbacksFound(ctx);
         }
     }
 
-    private void notifySuccess(CallbackQueryContext ctx, String text) {
+    private void notifySuccess(LocalizedCallbackQueryContext ctx, String text) {
         ctx.answerAsAlert(text).callAsync(ctx.sender);
         editSourceMessage(ctx, text);
 
@@ -69,27 +85,12 @@ public class DeleteFeedbackCallback implements CallbackExecutor {
         if (!msg.orElseThrow().getChatId().equals(config.getFeedbackChannelId()))
             Methods.sendMessage()
                     .setChatId(config.getFeedbackChannelId())
-                    .setText(text + " пользователем " + Html.getUserLink(ctx.user()))
+                    .setText(ctx.getString("feedback.fdel.notifySuccess")
+                            .formatted(text, Html.getUserLink(ctx.user())))
                     .callAsync(ctx.sender);
     }
 
-    private void notifyNoFeedbacksFound(CallbackQueryContext ctx) {
-        editSourceMessage(ctx, "ℹ️ Ни одного фидбека не найдено");
-    }
-
-    private static void editSourceMessage(CallbackQueryContext ctx, String text) {
-        getMessage(ctx).ifPresent(msg ->
-                ctx.editMessage(msg.getText() + "\n" + text)
-                        .setChatId(msg.getChatId())
-                        .setMessageId(msg.getMessageId())
-                        .callAsync(ctx.sender));
-    }
-
-    private static Optional<Message> getMessage(CallbackQueryContext ctx) {
-        final var msg = ctx.message();
-        if (msg == null || msg.getChatId() == null || msg.getMessageId() == null) {
-            return Optional.empty();
-        }
-        return Optional.of(msg);
+    private void notifyNoFeedbacksFound(LocalizedCallbackQueryContext ctx) {
+        editSourceMessage(ctx, ctx.getString("feedback.fdel.noFeedbacksFound"));
     }
 }

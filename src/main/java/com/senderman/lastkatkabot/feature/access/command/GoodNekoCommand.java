@@ -1,13 +1,14 @@
 package com.senderman.lastkatkabot.feature.access.command;
 
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.access.model.BlacklistedUser;
 import com.senderman.lastkatkabot.feature.access.service.UserManager;
+import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Named;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 
@@ -27,7 +28,7 @@ public class GoodNekoCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "повышение до хорошей кисы. реплаем.";
+        return "access.goodneko.description";
     }
 
     @Override
@@ -36,24 +37,21 @@ public class GoodNekoCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(MessageContext ctx) {
+    public void accept(@NotNull LocalizedMessageContext ctx) {
         if (!ctx.message().isReply() || ctx.message().isUserMessage()) {
-            ctx.replyToMessage("Позвышать до хороших кис нужно в группе и реплаем!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("access.goodneko.wrongUsage")).callAsync(ctx.sender);
             return;
         }
         var user = ctx.message().getReplyToMessage().getFrom();
         if (user.getIsBot()) {
-            ctx.replyToMessage(
-                            "Но это же просто бот, имитация человека! " +
-                                    "Разве может бот написать симфонию, иметь статистику, участвовать в дуэлях, быть хорошей кисой?")
-                    .callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("access.goodneko.bot")).callAsync(ctx.sender);
             return;
         }
         var userLink = Html.getUserLink(user);
         if (blackUsers.deleteById(user.getId()))
-            ctx.replyToMessage("Теперь " + userLink + " -  хорошая киса!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("access.goodneko.success").formatted(userLink)).callAsync(ctx.sender);
         else
-            ctx.replyToMessage(userLink + " уже хорошая киса!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("access.goodneko.failure").formatted(userLink)).callAsync(ctx.sender);
 
     }
 }

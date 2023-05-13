@@ -5,9 +5,7 @@ import com.annimon.tgbotsmodule.commands.InlineQueryCommand;
 import com.annimon.tgbotsmodule.commands.RegexCommand;
 import com.annimon.tgbotsmodule.commands.TextCommand;
 import com.annimon.tgbotsmodule.commands.authority.Authority;
-import com.annimon.tgbotsmodule.commands.context.CallbackQueryContext;
 import com.annimon.tgbotsmodule.commands.context.InlineQueryContext;
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.commands.context.RegexMessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.google.common.collect.ArrayListMultimap;
@@ -17,6 +15,9 @@ import com.senderman.lastkatkabot.command.CallbackExecutor;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.feature.bnc.command.BncTelegramHandler;
+import com.senderman.lastkatkabot.feature.localization.context.LocalizedCallbackQueryContext;
+import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
+import com.senderman.lastkatkabot.feature.localization.service.LocalizationService;
 import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
@@ -37,6 +38,7 @@ public class UpdateHandler implements com.annimon.tgbotsmodule.analytics.UpdateH
     private final ListMultimap<String, InlineQueryCommand> inlineCommands;
     private final Authority<Role> authority;
     private final MeterRegistry meterRegistry;
+    private final LocalizationService localizationService;
     private String callbackCommandSplitPattern;
 
     public UpdateHandler(
@@ -45,11 +47,12 @@ public class UpdateHandler implements com.annimon.tgbotsmodule.analytics.UpdateH
             MeterRegistry meterRegistry,
             Set<CommandExecutor> commands,
             Set<CallbackExecutor> callbacks,
-            BncTelegramHandler bncTelegramHandler
-    ) {
+            BncTelegramHandler bncTelegramHandler,
+            LocalizationService localizationService) {
         this.authority = authority;
         this.meterRegistry = meterRegistry;
         this.botUsername = "@" + config.getUsername().toLowerCase(Locale.ENGLISH);
+        this.localizationService = localizationService;
         textCommands = ArrayListMultimap.create();
         regexCommands = new ArrayList<>();
         callbackCommands = ArrayListMultimap.create();
@@ -133,7 +136,7 @@ public class UpdateHandler implements com.annimon.tgbotsmodule.analytics.UpdateH
         }
 
         final var commandArguments = args.length >= 2 ? args[1] : "";
-        final var context = new MessageContext(sender, update, commandArguments);
+        final var context = new LocalizedMessageContext(sender, update, commandArguments, localizationService);
         for (TextCommand cmd : commands) {
             cmd.accept(context);
             meterRegistry.counter(COMMAND_METER_NAME, "command", cmd.command().replaceFirst("/", "")).increment();
@@ -170,7 +173,7 @@ public class UpdateHandler implements com.annimon.tgbotsmodule.analytics.UpdateH
         }
 
         final var commandArguments = args.length >= 2 ? args[1] : "";
-        final var context = new CallbackQueryContext(sender, update, commandArguments);
+        final var context = new LocalizedCallbackQueryContext(sender, update, commandArguments, localizationService);
         for (CallbackQueryCommand cmd : commands) {
             cmd.accept(context);
             meterRegistry.counter(CALLBACK_METER_NAME, "command", cmd.command()).increment();

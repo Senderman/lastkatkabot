@@ -1,12 +1,12 @@
 package com.senderman.lastkatkabot.feature.access.command;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.access.model.BlacklistedChat;
 import com.senderman.lastkatkabot.feature.access.service.BlacklistedChatService;
+import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
@@ -27,7 +27,7 @@ public class BadChatCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "добавить чат в чс. /badchat <chatId>";
+        return "access.badchat.description";
     }
 
     @Override
@@ -36,9 +36,9 @@ public class BadChatCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(@NotNull MessageContext ctx) {
+    public void accept(@NotNull LocalizedMessageContext ctx) {
         if (ctx.argumentsLength() == 0) {
-            ctx.replyToMessage("Неверное количество аргументов!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("common.invalidArgumentsNumber")).callAsync(ctx.sender);
             return;
         }
 
@@ -46,13 +46,13 @@ public class BadChatCommand implements CommandExecutor {
         try {
             chatId = Long.parseLong(ctx.argument(0));
         } catch (NumberFormatException e) {
-            ctx.replyToMessage("ChatId - это число!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("common.chatIdIsNumber")).callAsync(ctx.sender);
             return;
         }
 
         database.save(new BlacklistedChat(chatId));
-        Methods.sendMessage(chatId, "📛 Ваш чат в списке спамеров! Бот не хочет здесь работать!").callAsync(ctx.sender);
+        Methods.sendMessage(chatId, ctx.getString("common.yourChatIsBad")).callAsync(ctx.sender);
         Methods.leaveChat(chatId).callAsync(ctx.sender);
-        ctx.replyToMessage("✅ Чат успешно добавлен в чс!").callAsync(ctx.sender);
+        ctx.replyToMessage(ctx.getString("access.badchat.success")).callAsync(ctx.sender);
     }
 }

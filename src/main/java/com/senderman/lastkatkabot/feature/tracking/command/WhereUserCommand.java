@@ -1,11 +1,11 @@
 package com.senderman.lastkatkabot.feature.tracking.command;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
+import com.senderman.lastkatkabot.feature.localization.context.LocalizedMessageContext;
 import com.senderman.lastkatkabot.feature.tracking.service.ChatUserService;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Named;
@@ -33,7 +33,7 @@ public class WhereUserCommand implements CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "в каких чатах сидит юзер. реплай или /wru userId";
+        return "tracking.wru.description";
     }
 
     @Override
@@ -42,15 +42,15 @@ public class WhereUserCommand implements CommandExecutor {
     }
 
     @Override
-    public void accept(@NotNull MessageContext ctx) {
+    public void accept(@NotNull LocalizedMessageContext ctx) {
         long userId;
         try {
             userId = ctx.argumentsLength() > 0 ? Long.parseLong(ctx.argument(0)) : ctx.message().getReplyToMessage().getFrom().getId();
         } catch (NumberFormatException e) {
-            ctx.replyToMessage("Id юзера - это число!").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("tracking.wru.idIsNumber")).callAsync(ctx.sender);
             return;
         } catch (NullPointerException e) {
-            ctx.replyToMessage("Введите Id юзера, либо используйте реплай").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("tracking.wru.userIdOrReply")).callAsync(ctx.sender);
             return;
         }
         threadPool.execute(() -> {
@@ -60,11 +60,11 @@ public class WhereUserCommand implements CommandExecutor {
                     .collect(Collectors.joining("\n"));
 
             if (chatNames.isEmpty()) {
-                ctx.replyToMessage("\uD83D\uDD75️\u200D♂ Юзера нет ни в одном чате с ботом!️").callAsync(ctx.sender);
+                ctx.replyToMessage(ctx.getString("tracking.wru.userNotFound")).callAsync(ctx.sender);
                 return;
             }
 
-            ctx.replyToMessage("🕵️‍♂ Юзер замечен в следующих чатах:\n\n️" + chatNames).callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("tracking.wru.userFound").formatted(chatNames)).callAsync(ctx.sender);
         });
     }
 
