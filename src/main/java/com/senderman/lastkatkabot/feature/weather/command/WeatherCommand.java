@@ -58,7 +58,7 @@ public class WeatherCommand implements CommandExecutor {
 
         threadPool.execute(() -> {
             try {
-                editMessageConsumer.accept("weather.connecting");
+                editMessageConsumer.accept(ctx.getString("weather.connecting"));
                 String city = getCityFromMessageOrDb(ctx);
                 var text = forecastToString(weatherService.getWeatherByCity(city, ctx.getLocale()), ctx);
                 editMessageConsumer.accept(text);
