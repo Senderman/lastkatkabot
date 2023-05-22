@@ -34,7 +34,7 @@ public class SetGreetingCommand implements CommandExecutor {
         var userId = ctx.user().getId();
         var chatMember = Methods.getChatMember(chatId, userId).call(ctx.sender);
         if (chatMember == null || !Set.of("administrator", "creator").contains(chatMember.getStatus())) {
-            ctx.replyToMessage(ctx.getString("mustBeChatAdmin")).callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("common.mustBeChatAdmin")).callAsync(ctx.sender);
             return;
         }
 
