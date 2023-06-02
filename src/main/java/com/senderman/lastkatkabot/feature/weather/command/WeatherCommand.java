@@ -61,7 +61,17 @@ public class WeatherCommand implements CommandExecutor {
                 editMessageConsumer.accept(ctx.getString("weather.connecting"));
                 String city = getCityFromMessageOrDb(ctx);
                 var text = forecastToString(weatherService.getWeatherByCity(city, ctx.getLocale()), ctx);
-                editMessageConsumer.accept(text);
+                // send result as new message to notify user
+                var newMessage = ctx.replyToMessage(text).call(ctx.sender);
+                if (newMessage == null)
+                    return;
+                // since there's a method preprocessor that disables webPagePreview on SendMessage method,
+                // we use EditMessage to re-enable it
+                Methods
+                        .editMessageText(newMessage.getChatId(), newMessage.getMessageId(), text).enableWebPagePreview()
+                        .callAsync(ctx.sender);
+                // delete previous "connecting" message
+                Methods.deleteMessage(messageToEdit.getChatId(), messageToEdit.getMessageId()).callAsync(ctx.sender);
                 // save last defined city in db (we won't get here if exception is occurred)
                 updateUserCity(ctx.user().getId(), city);
             } catch (NoCitySpecifiedException e) {

@@ -81,7 +81,7 @@ public class PairCommand implements CommandExecutor {
 
         // pair of today already exists
         if (!lastPairs.isEmpty() && lastPairGenerationDate == currentDay) {
-            ctx.reply(ctx.getString("love.pair.message") + lastPairs.get(0)).callAsync(ctx.sender);
+            ctx.reply(ctx.getString("love.pair.message") + " " + lastPairs.get(0)).callAsync(ctx.sender);
             return;
         }
 
