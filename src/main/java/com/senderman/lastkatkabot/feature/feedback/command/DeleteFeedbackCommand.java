@@ -68,7 +68,7 @@ public class DeleteFeedbackCommand implements CommandExecutor {
         }
 
         feedbackRepo.deleteById(feedbackId);
-        notifySuccess(ctx, ctx.getString("feedback.fdel.feedbackDeleted"));
+        notifySuccess(ctx, ctx.getString("feedback.fdel.feedbackDeleted").formatted(feedbackId));
     }
 
     private void deleteFeedbackInRange(L10nMessageContext ctx, int from, int to) {
