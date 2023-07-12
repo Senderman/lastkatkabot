@@ -4,8 +4,9 @@ import com.annimon.tgbotsmodule.BotModule;
 import com.annimon.tgbotsmodule.Runner;
 import com.annimon.tgbotsmodule.beans.Config;
 import com.senderman.lastkatkabot.handler.BotHandler;
+import io.micronaut.context.event.StartupEvent;
 import io.micronaut.runtime.Micronaut;
-import io.micronaut.scheduling.annotation.Scheduled;
+import io.micronaut.runtime.event.annotation.EventListener;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,9 +38,9 @@ public class LastkatkaBot implements BotModule {
                 .start();
     }
 
-    @Scheduled(initialDelay = "1s")
-    public void runBot() {
-        new Thread(() -> Runner.run(List.of(this))).start();
+    @EventListener
+    public void run(StartupEvent event) {
+        Runner.run(List.of(this));
     }
 
     @Override
