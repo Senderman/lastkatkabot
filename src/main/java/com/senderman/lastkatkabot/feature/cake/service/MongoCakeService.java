@@ -32,6 +32,8 @@ public class MongoCakeService implements CakeService {
 
     @Override
     public Cake insert(Cake cake) {
+        int id = repo.findFirstOrderByIdDesc().map(c -> c.getId() + 1).orElse(1);
+        cake.setId(id);
         return repo.save(cake);
     }
 
