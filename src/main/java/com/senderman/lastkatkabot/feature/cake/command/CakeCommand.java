@@ -1,4 +1,4 @@
-package com.senderman.lastkatkabot.feature.roleplay.command;
+package com.senderman.lastkatkabot.feature.cake.command;
 
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;

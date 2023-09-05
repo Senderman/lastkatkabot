@@ -1,4 +1,4 @@
-package com.senderman.lastkatkabot.feature.roleplay.command;
+package com.senderman.lastkatkabot.feature.cake.command;
 
 import com.senderman.lastkatkabot.command.CallbackExecutor;
 import com.senderman.lastkatkabot.feature.l10n.context.L10nCallbackQueryContext;
