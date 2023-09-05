@@ -15,4 +15,6 @@ public interface CakeRepository extends CrudRepository<Cake, Integer> {
     @MongoFindOptions(limit = 1)
     Optional<Cake> findFirstOrderByIdDesc();
 
+    long deleteByCreatedAtLessThan(int createdAt);
+
 }

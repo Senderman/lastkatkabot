@@ -4,6 +4,7 @@ import com.mongodb.client.MongoDatabase;
 import com.senderman.lastkatkabot.feature.bnc.model.BncGameSave;
 import com.senderman.lastkatkabot.feature.bnc.repository.BncRepository;
 import com.senderman.lastkatkabot.feature.bnc.service.BncGameMessageService;
+import com.senderman.lastkatkabot.feature.cake.repository.CakeRepository;
 import com.senderman.lastkatkabot.feature.chatsettings.repository.ChatInfoRepository;
 import com.senderman.lastkatkabot.feature.cleanup.model.DbCleanupResults;
 import com.senderman.lastkatkabot.feature.love.repository.MarriageRequestRepository;
@@ -23,6 +24,7 @@ public class MongoCleanupService implements DatabaseCleanupService {
     private final BncRepository bncRepo;
     private final BncGameMessageService bncGameMessageService;
     private final MarriageRequestRepository marriageRequestRepo;
+    private final CakeRepository cakeRepo;
     private final MongoDatabase mongoDatabase;
 
     public MongoCleanupService(
@@ -31,6 +33,7 @@ public class MongoCleanupService implements DatabaseCleanupService {
             BncRepository bncRepo,
             BncGameMessageService bncGameMessageService,
             MarriageRequestRepository marriageRequestRepo,
+            CakeRepository cakeRepo,
             MongoDatabase mongoDatabase
     ) {
         this.chatUserRepo = chatUserRepo;
@@ -38,6 +41,7 @@ public class MongoCleanupService implements DatabaseCleanupService {
         this.bncRepo = bncRepo;
         this.bncGameMessageService = bncGameMessageService;
         this.marriageRequestRepo = marriageRequestRepo;
+        this.cakeRepo = cakeRepo;
         this.mongoDatabase = mongoDatabase;
     }
 
@@ -49,7 +53,7 @@ public class MongoCleanupService implements DatabaseCleanupService {
      */
     @Override
     public long cleanInactiveUsers() {
-        return chatUserRepo.deleteByLastMessageDateLessThan(DatabaseCleanupService.inactivePeriod());
+        return chatUserRepo.deleteByLastMessageDateLessThan(DatabaseCleanupService.inactivePeriodGeneral());
     }
 
     @Override
@@ -64,7 +68,7 @@ public class MongoCleanupService implements DatabaseCleanupService {
 
     @Override
     public long cleanOldBncGames() {
-        var gamesToDelete = bncRepo.findByEditDateLessThan(DatabaseCleanupService.inactivePeriod());
+        var gamesToDelete = bncRepo.findByEditDateLessThan(DatabaseCleanupService.inactivePeriodGeneral());
         bncRepo.deleteAll(gamesToDelete);
         var gameIds = gamesToDelete.stream().map(BncGameSave::getId).collect(Collectors.toList());
         if (!gameIds.isEmpty())
@@ -74,7 +78,12 @@ public class MongoCleanupService implements DatabaseCleanupService {
 
     @Override
     public long cleanOldMarriageRequests() {
-        return marriageRequestRepo.deleteByRequestDateLessThan(DatabaseCleanupService.inactivePeriod());
+        return marriageRequestRepo.deleteByRequestDateLessThan(DatabaseCleanupService.inactivePeriodGeneral());
+    }
+
+    @Override
+    public long cleanOldCakes() {
+        return cakeRepo.deleteByCreatedAtLessThan(DatabaseCleanupService.INACTIVE_PERIOD_CAKE);
     }
 
     @Override
@@ -84,6 +93,7 @@ public class MongoCleanupService implements DatabaseCleanupService {
         long chats = cleanEmptyChats();
         long bncGames = cleanOldBncGames();
         long marriageRequests = cleanOldMarriageRequests();
-        return new DbCleanupResults(users, chats, bncGames, marriageRequests);
+        long cakes = cleanOldCakes();
+        return new DbCleanupResults(users, chats, bncGames, marriageRequests, cakes);
     }
 }

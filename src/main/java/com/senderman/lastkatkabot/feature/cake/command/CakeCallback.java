@@ -3,6 +3,7 @@ package com.senderman.lastkatkabot.feature.cake.command;
 import com.senderman.lastkatkabot.command.CallbackExecutor;
 import com.senderman.lastkatkabot.feature.cake.model.Cake;
 import com.senderman.lastkatkabot.feature.cake.service.CakeService;
+import com.senderman.lastkatkabot.feature.cleanup.service.DatabaseCleanupService;
 import com.senderman.lastkatkabot.feature.l10n.context.L10nCallbackQueryContext;
 import jakarta.inject.Singleton;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -13,7 +14,6 @@ import java.util.Objects;
 public class CakeCallback implements CallbackExecutor {
 
     public static final String NAME = "CAKE";
-    private static final int CAKE_TIMEOUT_SECONDS = 2400;
 
     private final CakeService cakeService;
 
@@ -41,7 +41,7 @@ public class CakeCallback implements CallbackExecutor {
         cakeService.deleteById(cakeId);
 
         // if no cake in database or it's too late
-        if (cakeOptional.isEmpty() || query.getMessage().getDate() + CAKE_TIMEOUT_SECONDS < System.currentTimeMillis() / 1000) {
+        if (cakeOptional.isEmpty() || query.getMessage().getDate() < DatabaseCleanupService.inactivePeriodCake()) {
             cakeIsRotten(ctx);
             return;
         }

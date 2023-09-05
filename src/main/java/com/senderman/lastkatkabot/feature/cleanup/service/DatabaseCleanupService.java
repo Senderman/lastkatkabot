@@ -6,10 +6,15 @@ import java.util.concurrent.TimeUnit;
 
 public interface DatabaseCleanupService {
 
-    int INACTIVE_PERIOD = (int) TimeUnit.DAYS.toSeconds(14);
+    int INACTIVE_PERIOD_GENERAL = (int) TimeUnit.DAYS.toSeconds(14);
+    int INACTIVE_PERIOD_CAKE = (int) TimeUnit.MINUTES.toSeconds(40);
 
-    static int inactivePeriod() {
-        return (int) (System.currentTimeMillis() / 1000 - INACTIVE_PERIOD);
+    static int inactivePeriodGeneral() {
+        return (int) (System.currentTimeMillis() / 1000 - INACTIVE_PERIOD_GENERAL);
+    }
+
+    static int inactivePeriodCake() {
+        return (int) (System.currentTimeMillis() / 1000 - INACTIVE_PERIOD_CAKE);
     }
 
     long cleanInactiveUsers();
@@ -19,6 +24,8 @@ public interface DatabaseCleanupService {
     long cleanOldBncGames();
 
     long cleanOldMarriageRequests();
+
+    long cleanOldCakes();
 
     DbCleanupResults cleanAll();
 
