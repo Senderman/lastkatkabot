@@ -37,7 +37,7 @@ public class MarryMeCommand implements CommandExecutor {
     public void accept(@NotNull L10nMessageContext ctx) {
         var message = ctx.message();
         if (message.isUserMessage() || !message.isReply()) {
-            ctx.replyToMessage("love.marryme.mustBeReply").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("love.marryme.mustBeReply")).callAsync(ctx.sender);
             return;
         }
 
