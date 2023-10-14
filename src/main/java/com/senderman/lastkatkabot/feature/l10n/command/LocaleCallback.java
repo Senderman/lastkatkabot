@@ -2,6 +2,7 @@ package com.senderman.lastkatkabot.feature.l10n.command;
 
 import com.senderman.lastkatkabot.command.CallbackExecutor;
 import com.senderman.lastkatkabot.feature.l10n.context.L10nCallbackQueryContext;
+import com.senderman.lastkatkabot.feature.l10n.service.L10nService;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
@@ -11,9 +12,11 @@ public class LocaleCallback implements CallbackExecutor {
 
     public static final String NAME = "LOCALE";
     private final UserStatsService users;
+    private final L10nService l;
 
-    public LocaleCallback(UserStatsService users) {
+    public LocaleCallback(UserStatsService users, L10nService localizationService) {
         this.users = users;
+        this.l = localizationService;
     }
 
     @Override
@@ -30,7 +33,9 @@ public class LocaleCallback implements CallbackExecutor {
         userStats.setLocale(locale);
         users.save(userStats);
 
-        ctx.editMessage(ctx.getString("localization.setlocale.notify")).callAsync(ctx.sender);
-        ctx.answer(ctx.getString("localization.setlocale.notify")).callAsync(ctx.sender);
+        var answer = l.getString("localization.setlocale.notify", locale);
+
+        ctx.editMessage(answer).callAsync(ctx.sender);
+        ctx.answer(answer).callAsync(ctx.sender);
     }
 }
