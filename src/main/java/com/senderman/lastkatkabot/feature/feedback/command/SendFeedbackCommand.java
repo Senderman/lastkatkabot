@@ -64,7 +64,14 @@ public class SendFeedbackCommand implements CommandExecutor {
         }
 
         var user = ctx.user();
-        var feedback = new Feedback(feedbackText, user.getId(), user.getFirstName(), ctx.chatId(), ctx.message().getMessageId());
+        var feedback = new Feedback(
+                feedbackText,
+                user.getId(),
+                user.getFirstName(),
+                ctx.chatId(),
+                ctx.message().getChat().getTitle(),
+                ctx.message().getMessageId()
+        );
         feedback = feedbackRepo.insert(feedback);
 
         // If possible send a reply message as a context first
