@@ -1,14 +1,13 @@
 package com.senderman.lastkatkabot.feature.feedback.repository;
 
 import com.senderman.lastkatkabot.feature.feedback.model.Feedback;
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.data.mongodb.annotation.MongoFindOptions;
 import io.micronaut.data.mongodb.annotation.MongoFindQuery;
 import io.micronaut.data.mongodb.annotation.MongoRepository;
 import io.micronaut.data.mongodb.annotation.MongoUpdateOptions;
 import io.micronaut.data.repository.CrudRepository;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
 @MongoRepository
@@ -22,5 +21,5 @@ public interface FeedbackRepository extends CrudRepository<Feedback, Integer> {
 
     @Override
     @MongoUpdateOptions(upsert = true)
-    <S extends Feedback> S update(@Valid @NotNull S entity);
+    <S extends Feedback> S update(@NonNull S entity);
 }

@@ -31,8 +31,12 @@ public class BncDatabaseManager implements BncGamesManager {
         if (gameSave.isEmpty())
             throw new NoSuchElementException();
         var game = deserialize(gameSave.get());
-        var result = game.check(number);
-        saveToDb(game);
+        BncResult result;
+        try {
+            result = game.check(number);
+        } finally { // save to db even on game over
+            saveToDb(game);
+        }
         return result;
     }
 

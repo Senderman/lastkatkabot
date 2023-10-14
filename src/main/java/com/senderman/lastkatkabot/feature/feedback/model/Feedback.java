@@ -16,15 +16,17 @@ public class Feedback {
     private final long userId;
     private final String userName;
     private final long chatId;
+    private final String chatTitle;
     private final int messageId;
     private boolean replied;
 
     @Creator
-    public Feedback(String message, long userId, String userName, long chatId, int messageId) {
+    public Feedback(String message, long userId, String userName, long chatId, String chatTitle, int messageId) {
         this.message = message;
         this.userId = userId;
         this.userName = userName;
         this.chatId = chatId;
+        this.chatTitle = chatTitle;
         this.messageId = messageId;
         this.replied = false;
     }
@@ -51,6 +53,10 @@ public class Feedback {
 
     public long getChatId() {
         return chatId;
+    }
+
+    public String getChatTitle() {
+        return chatTitle;
     }
 
     public int getMessageId() {
