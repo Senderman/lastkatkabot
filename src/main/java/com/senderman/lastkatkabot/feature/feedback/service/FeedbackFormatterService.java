@@ -29,7 +29,7 @@ public class FeedbackFormatterService {
 
     private String formatChatLine(Feedback feedback, String locale) {
         if (feedback.getUserId() != feedback.getChatId()) {
-            return l.getString("feedback.fromChat", locale).formatted(feedback.getChatId());
+            return l.getString("feedback.fromChat", locale).formatted(feedback.getChatTitle(), feedback.getChatId());
         }
         return "";
     }

@@ -1,14 +1,13 @@
 package com.senderman.lastkatkabot.feature.userstats.repository;
 
 import com.senderman.lastkatkabot.feature.userstats.model.UserStats;
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.data.mongodb.annotation.MongoFindOptions;
 import io.micronaut.data.mongodb.annotation.MongoFindQuery;
 import io.micronaut.data.mongodb.annotation.MongoRepository;
 import io.micronaut.data.mongodb.annotation.MongoUpdateOptions;
 import io.micronaut.data.repository.CrudRepository;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -31,9 +30,9 @@ public interface UserStatsRepository extends CrudRepository<UserStats, Long> {
 
     @Override
     @MongoUpdateOptions(upsert = true)
-    <S extends UserStats> S update(@Valid @NotNull S entity);
+    <S extends UserStats> S update(@NonNull S entity);
 
     @Override
     @MongoUpdateOptions(upsert = true)
-    <S extends UserStats> Iterable<S> updateAll(@Valid @NotNull Iterable<S> entities);
+    <S extends UserStats> List<S> updateAll(@NonNull Iterable<S> entities);
 }
