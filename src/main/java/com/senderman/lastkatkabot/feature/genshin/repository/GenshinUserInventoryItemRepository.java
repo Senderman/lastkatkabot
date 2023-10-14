@@ -1,13 +1,12 @@
 package com.senderman.lastkatkabot.feature.genshin.repository;
 
 import com.senderman.lastkatkabot.feature.genshin.model.GenshinUserInventoryItem;
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.data.mongodb.annotation.MongoFindQuery;
 import io.micronaut.data.mongodb.annotation.MongoRepository;
 import io.micronaut.data.mongodb.annotation.MongoUpdateOptions;
 import io.micronaut.data.repository.CrudRepository;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,5 +20,5 @@ public interface GenshinUserInventoryItemRepository extends CrudRepository<Gensh
 
     @Override
     @MongoUpdateOptions(upsert = true)
-    <S extends GenshinUserInventoryItem> S update(@Valid @NotNull S entity);
+    <S extends GenshinUserInventoryItem> S update(@NonNull S entity);
 }
