@@ -51,7 +51,7 @@ public class DeleteFeedbackCommand implements CommandExecutor {
         var reason = ctx.getString("feedback.fdel.missing");
 
         if (ctx.argumentsLength() > 1) {
-            String[] args = ctx.argumentsAsString().split(" ", 2);
+            String[] args = ctx.argumentsAsString().split("\\s+", 2);
             reason = args[1];
         }
 
