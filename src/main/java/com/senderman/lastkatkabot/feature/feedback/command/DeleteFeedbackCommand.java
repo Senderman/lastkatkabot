@@ -48,8 +48,15 @@ public class DeleteFeedbackCommand implements CommandExecutor {
             return;
         }
         var arg = ctx.argument(0);
+        var reason = ctx.getString("feedback.fdel.missing");
+
+        if (ctx.argumentsLength() > 1) {
+            String[] args = ctx.argumentsAsString().split("\\s+", 2);
+            reason = args[1];
+        }
+
         if (arg.matches("\\d+")) {
-            deleteSingleFeedback(ctx, Integer.parseInt(arg));
+            deleteSingleFeedback(ctx, Integer.parseInt(arg), reason);
         } else if (arg.matches("\\d+-\\d+")) {
             var args = arg.split("-");
             int from = Integer.parseInt(args[0]);
@@ -61,14 +68,14 @@ public class DeleteFeedbackCommand implements CommandExecutor {
     }
 
 
-    private void deleteSingleFeedback(L10nMessageContext ctx, int feedbackId) {
+    private void deleteSingleFeedback(L10nMessageContext ctx, int feedbackId, String reason) {
         if (!feedbackRepo.existsById(feedbackId)) {
             notifyNoFeedbacksFound(ctx);
             return;
         }
 
         feedbackRepo.deleteById(feedbackId);
-        notifySuccess(ctx, ctx.getString("feedback.fdel.feedbackDeleted").formatted(feedbackId));
+        notifySuccess(ctx, ctx.getString("feedback.fdel.feedbackDeleted").formatted(feedbackId, reason));
     }
 
     private void deleteFeedbackInRange(L10nMessageContext ctx, int from, int to) {

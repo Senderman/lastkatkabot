@@ -52,7 +52,7 @@ public class MarryMeCommand implements CommandExecutor {
         var proposerStats = users.findById(proposerId);
 
         if (Objects.equals(proposerStats.getLoverId(), proposeeId)) {
-            ctx.replyToMessage("love.marryme.alreadyMarried").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("love.marryme.alreadyMarried")).callAsync(ctx.sender);
             return;
         }
 
