@@ -30,7 +30,7 @@ dependencies {
 
     annotationProcessor("io.micronaut.data:micronaut-data-document-processor")
     implementation("io.micronaut.data:micronaut-data-mongodb")
-    implementation("org.mongodb:mongodb-driver-sync:4.9.0")
+    implementation("org.mongodb:mongodb-driver-sync:4.11.0")
     runtimeOnly('com.github.jnr:jnr-unixsocket:0.38.17')
 
     runtimeOnly("ch.qos.logback:logback-classic:1.4.5")
