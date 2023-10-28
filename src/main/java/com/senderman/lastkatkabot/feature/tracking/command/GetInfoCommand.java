@@ -38,11 +38,10 @@ public class GetInfoCommand implements CommandExecutor {
 
         String serializedMessage;
         try {
-            serializedMessage = Html.htmlSafe(objectMapper.writeValueAsString(message.getReplyToMessage()))
-                    .replaceAll(":\\s(\"?)([^{\\[\\n]*?)(\",\\n|\"\\n|,\\n|\\n)", ": $1<code>$2</code>$3");
+            serializedMessage = Html.htmlSafe(objectMapper.writeValueAsString(message.getReplyToMessage()));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        ctx.replyToMessage(serializedMessage).callAsync(ctx.sender);
+        ctx.replyToMessage("<pre><code class=\"language-json\">" + serializedMessage + "</code></pre>").callAsync(ctx.sender);
     }
 }
