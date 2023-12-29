@@ -70,7 +70,7 @@ public class DeleteFeedbackCallback implements CallbackExecutor {
         int feedbackId = Integer.parseInt(arg);
         if (feedbackRepo.existsById(feedbackId)) {
             feedbackRepo.deleteById(feedbackId);
-            notifySuccess(ctx, ctx.getString("feedback.fdel.feedbackDeleted").formatted(feedbackId));
+            notifySuccess(ctx, ctx.getString("feedback.fdel.feedbackDeleted").formatted(feedbackId, ""));
         } else {
             notifyNoFeedbacksFound(ctx);
         }
