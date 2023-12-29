@@ -138,7 +138,8 @@ public class BncTelegramHandler implements RegexCommand {
         var text = ctx.getString("bnc.handler.userWon").formatted(
                 username,
                 BncGame.totalAttempts(gameState.length(), gameState.isHexadecimal()) - result.attempts(),
-                score
+                score,
+                formatGameStateStats(gameState, ctx)
         );
         deleteGameMessages(chatId, ctx.sender);
         ctx.reply(text).callAsync(ctx.sender);
