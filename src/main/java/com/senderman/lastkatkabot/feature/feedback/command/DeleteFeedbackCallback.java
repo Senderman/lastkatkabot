@@ -30,16 +30,6 @@ public class DeleteFeedbackCallback implements CallbackExecutor {
         this.config = config;
     }
 
-    @Override
-    public String command() {
-        return NAME;
-    }
-
-    @Override
-    public EnumSet<Role> authority() {
-        return EnumSet.of(Role.ADMIN, Role.MAIN_ADMIN);
-    }
-
     private static void editSourceMessage(L10nCallbackQueryContext ctx, String text) {
         getMessage(ctx).ifPresent(msg ->
                 ctx.editMessage(msg.getText() + "\n" + text)
@@ -57,6 +47,16 @@ public class DeleteFeedbackCallback implements CallbackExecutor {
     }
 
     @Override
+    public String command() {
+        return NAME;
+    }
+
+    @Override
+    public EnumSet<Role> authority() {
+        return EnumSet.of(Role.ADMIN, Role.MAIN_ADMIN);
+    }
+
+    @Override
     public void accept(@NotNull L10nCallbackQueryContext ctx) {
         if (ctx.argumentsLength() < 1) return;
 
@@ -70,7 +70,10 @@ public class DeleteFeedbackCallback implements CallbackExecutor {
         int feedbackId = Integer.parseInt(arg);
         if (feedbackRepo.existsById(feedbackId)) {
             feedbackRepo.deleteById(feedbackId);
-            notifySuccess(ctx, ctx.getString("feedback.fdel.feedbackDeleted").formatted(feedbackId, ""));
+            notifySuccess(ctx, ctx
+                    .getString("feedback.fdel.feedbackDeleted")
+                    .formatted(feedbackId, ctx.getString("feedback.fdel.missing"))
+            );
         } else {
             notifyNoFeedbacksFound(ctx);
         }
