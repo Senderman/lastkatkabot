@@ -138,7 +138,8 @@ public class BncTelegramHandler implements RegexCommand {
         var text = ctx.getString("bnc.handler.userWon").formatted(
                 username,
                 BncGame.totalAttempts(gameState.length(), gameState.isHexadecimal()) - result.attempts(),
-                score
+                score,
+                formattedHistoryAndTime(gameState, ctx)
         );
         deleteGameMessages(chatId, ctx.sender);
         ctx.reply(text).callAsync(ctx.sender);
@@ -150,7 +151,7 @@ public class BncTelegramHandler implements RegexCommand {
         gamesManager.deleteGame(chatId);
         deleteGameMessages(chatId, ctx.sender);
         var text = ctx.getString("bnc.handler.gameOver")
-                .formatted(gameState.answer(), formatGameStateStats(gameState, ctx));
+                .formatted(gameState.answer(), formattedHistoryAndTime(gameState, ctx));
         ctx.reply(text).callAsync(ctx.sender);
     }
 
@@ -163,11 +164,11 @@ public class BncTelegramHandler implements RegexCommand {
         deleteGameMessages(chatId, ctx.sender);
 
         var text = ctx.getString("bnc.handler.forceFinish")
-                .formatted(gameState.answer(), formatGameStateStats(gameState, ctx));
+                .formatted(gameState.answer(), formattedHistoryAndTime(gameState, ctx));
         Methods.sendMessage(chatId, text).callAsync(ctx.sender);
     }
 
-    private String formatGameStateStats(BncGameState state, L10nMessageContext ctx) {
+    private String formattedHistoryAndTime(BncGameState state, L10nMessageContext ctx) {
         return ctx.getString("bnc.handler.gameStateStats")
                 .formatted(
                         formatHistory(state.history(), ctx),

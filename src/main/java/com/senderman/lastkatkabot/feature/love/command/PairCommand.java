@@ -14,7 +14,9 @@ import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.Threads;
 import jakarta.inject.Named;
 import org.jetbrains.annotations.NotNull;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.User;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -107,7 +109,6 @@ public class PairCommand implements CommandExecutor {
                 chatInfo.setLastPairDate(currentDay);
                 lastPairs.add(0, pair.toString());
                 chatInfo.setLastPairs(lastPairs.stream().limit(10).collect(Collectors.toList()));
-                chatInfoService.save(chatInfo);
 
                 var text = loveStrings[loveStrings.length - 1].formatted(
                         Html.getUserLink(pair.first),
@@ -115,7 +116,17 @@ public class PairCommand implements CommandExecutor {
                 );
                 // wait while flood ends to prevent race condition
                 floodFuture.get();
-                ctx.reply(text).callAsync(ctx.sender);
+
+                try {
+                    var sm = new SendMessage();
+                    sm.setChatId(ctx.chatId());
+                    sm.setText(text);
+                    ctx.sender.execute(sm);
+                    // on success (we didn't fall into catch block), save result to db
+                    chatInfoService.save(chatInfo);
+                } catch (TelegramApiException ignored) {
+                    // failed to send message, do nothing
+                }
             } catch (InterruptedException | ExecutionException e) {
                 floodFuture.cancel(true);
                 ctx.reply(ctx.getString("love.pair.error")).callAsync(ctx.sender);
