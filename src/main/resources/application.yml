@@ -36,7 +36,7 @@ bot:
 
   timezone: "Europe/Kiev" # timezone for /pair, /wish and other time-based features
 
-  mainAdminId: ${main-admin} # id of main admin
+  mainAdminId: ${main-admin-id} # id of main admin
   feedbackChannelId: ${feedback-channel-id} # id of channel/group for feedbacks
   notificationChannelId: ${notification-channel-id} # id of channel/group where notifications stacktraces will be sent
 
