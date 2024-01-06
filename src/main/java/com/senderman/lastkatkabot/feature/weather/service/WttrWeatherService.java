@@ -7,7 +7,7 @@ import jakarta.inject.Singleton;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
@@ -71,7 +71,7 @@ public class WttrWeatherService implements WeatherService {
     }
 
     private String requestWeather(String city) throws IOException, NoSuchCityException {
-        var url = new URL(domain + urlEncodeCity(city) + wttrOptions);
+        var url = URI.create(domain + urlEncodeCity(city) + wttrOptions).toURL();
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         conn.connect();
