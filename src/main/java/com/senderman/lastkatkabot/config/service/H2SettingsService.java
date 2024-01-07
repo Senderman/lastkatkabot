@@ -7,11 +7,11 @@ import jakarta.inject.Singleton;
 import java.util.Optional;
 
 @Singleton
-public class MongoSettingsService implements SettingsService {
+public class H2SettingsService implements SettingsService {
 
     private final SettingsRepository repo;
 
-    public MongoSettingsService(SettingsRepository repo) {
+    public H2SettingsService(SettingsRepository repo) {
         this.repo = repo;
     }
 
@@ -27,6 +27,6 @@ public class MongoSettingsService implements SettingsService {
 
     @Override
     public Settings save(Settings s) {
-        return repo.update(s);
+        return repo.existsById(s.getId()) ? repo.update(s) : repo.save(s);
     }
 }
