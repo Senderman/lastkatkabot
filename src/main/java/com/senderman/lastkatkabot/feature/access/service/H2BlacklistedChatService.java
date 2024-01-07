@@ -8,17 +8,17 @@ import java.util.Collection;
 import java.util.List;
 
 @Singleton
-public class MongoBlacklistedChatService implements BlacklistedChatService {
+public class H2BlacklistedChatService implements BlacklistedChatService {
 
     private final BlacklistedChatRepository repo;
 
-    public MongoBlacklistedChatService(BlacklistedChatRepository repo) {
+    public H2BlacklistedChatService(BlacklistedChatRepository repo) {
         this.repo = repo;
     }
 
     @Override
     public BlacklistedChat save(BlacklistedChat chat) {
-        return repo.save(chat);
+        return repo.existsById(chat.getChatId()) ? repo.update(chat) : repo.save(chat);
     }
 
     @Override

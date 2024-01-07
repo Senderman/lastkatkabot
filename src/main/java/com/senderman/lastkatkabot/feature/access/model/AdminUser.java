@@ -4,14 +4,18 @@ package com.senderman.lastkatkabot.feature.access.model;
 import io.micronaut.core.annotation.Creator;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.MappedEntity;
+import io.micronaut.data.annotation.MappedProperty;
 
 import java.util.Objects;
 
-@MappedEntity("adminUser")
+@MappedEntity("ADMIN_USER")
 public class AdminUser implements UserIdAndName<Long> {
 
     @Id
+    @MappedProperty("user_id")
     private final long userId;
+
+    @MappedProperty("name")
     private final String name;
 
     @Creator

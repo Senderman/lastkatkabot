@@ -25,7 +25,7 @@ public class MediaIdService {
      */
     public void setMedia(InputFileMethod<?, ?> method, Media media) {
         repo.findById(media.getKey()).ifPresentOrElse(
-                fileId -> method.setFile(fileId.getValue()),
+                fileId -> method.setFile(fileId.getData()),
                 () -> method.setFile(media.getName(), getClass().getResourceAsStream(media.getPath()))
         );
     }

@@ -7,31 +7,31 @@ import jakarta.inject.Singleton;
 import java.util.Optional;
 
 @Singleton
-public class MongoBncService implements BncService {
+public class H2BncService implements BncService {
 
-    private final BncRepository repository;
+    private final BncRepository repo;
 
-    public MongoBncService(BncRepository repository) {
-        this.repository = repository;
+    public H2BncService(BncRepository repo) {
+        this.repo = repo;
     }
 
     @Override
     public Optional<BncGameSave> findById(long id) {
-        return repository.findById(id);
+        return repo.findById(id);
     }
 
     @Override
     public boolean existsById(long id) {
-        return repository.existsById(id);
+        return repo.existsById(id);
     }
 
     @Override
     public void deleteById(long id) {
-        repository.deleteById(id);
+        repo.deleteById(id);
     }
 
     @Override
     public BncGameSave save(BncGameSave bncGameSave) {
-        return repository.update(bncGameSave);
+        return repo.existsById(bncGameSave.getId()) ? repo.update(bncGameSave) : repo.save(bncGameSave);
     }
 }

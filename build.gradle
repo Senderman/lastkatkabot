@@ -12,6 +12,7 @@ repositories {
 }
 
 dependencies {
+    // telegram
     implementation('com.annimon:tgbots-module:6.5.1') {
         exclude group: 'org.glassfish.grizzly', module: 'grizzly-http-server'
         exclude group: 'org.glassfish.jersey.core', module: 'jersey-server'
@@ -19,19 +20,29 @@ dependencies {
 
     implementation("jakarta.annotation:jakarta.annotation-api")
 
+    // serialization
     annotationProcessor("io.micronaut:micronaut-http-validation")
     implementation("io.micronaut:micronaut-http-client")
     implementation("io.micronaut:micronaut-jackson-databind")
 
+    // monitoring
     annotationProcessor("io.micronaut.micrometer:micronaut-micrometer-annotation")
     implementation("io.micronaut:micronaut-management")
     implementation("io.micronaut.micrometer:micronaut-micrometer-core")
     implementation("io.micronaut.micrometer:micronaut-micrometer-registry-prometheus")
 
+    // mongodb
     annotationProcessor("io.micronaut.data:micronaut-data-document-processor")
     implementation("io.micronaut.data:micronaut-data-mongodb")
     implementation("org.mongodb:mongodb-driver-sync:4.11.0")
     runtimeOnly('com.github.jnr:jnr-unixsocket:0.38.17')
+
+    // h2
+    annotationProcessor("io.micronaut.data:micronaut-data-processor")
+    implementation("io.micronaut.data:micronaut-data-jdbc")
+    implementation("io.micronaut.flyway:micronaut-flyway")
+    implementation("io.micronaut.sql:micronaut-jdbc-hikari")
+    runtimeOnly("com.h2database:h2:2.2.224")
 
     runtimeOnly("ch.qos.logback:logback-classic:1.4.14")
 

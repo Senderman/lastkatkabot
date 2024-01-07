@@ -3,29 +3,33 @@ package com.senderman.lastkatkabot.config.model;
 import io.micronaut.core.annotation.Creator;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.MappedEntity;
+import io.micronaut.data.annotation.MappedProperty;
 
-@MappedEntity("settings")
+@MappedEntity("SETTINGS")
 public class Settings {
 
     @Id
+    @MappedProperty("id")
     private final String id;
-    private String value;
+
+    @MappedProperty("data")
+    private String data;
 
     @Creator
-    public Settings(String id, String value) {
+    public Settings(String id, String data) {
         this.id = id;
-        this.value = value;
+        this.data = data;
     }
 
     public String getId() {
         return id;
     }
 
-    public String getValue() {
-        return value;
+    public String getData() {
+        return data;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setData(String data) {
+        this.data = data;
     }
 }

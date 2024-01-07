@@ -7,11 +7,11 @@ import jakarta.inject.Singleton;
 import java.util.Optional;
 
 @Singleton
-public class MongoCakeService implements CakeService {
+public class H2CakeService implements CakeService {
 
     private final CakeRepository repo;
 
-    public MongoCakeService(CakeRepository repo) {
+    public H2CakeService(CakeRepository repo) {
         this.repo = repo;
     }
 
@@ -32,13 +32,7 @@ public class MongoCakeService implements CakeService {
 
     @Override
     public Cake insert(Cake cake) {
-        int id = repo.findFirstOrderByIdDesc().map(c -> c.getId() + 1).orElse(1);
-        cake.setId(id);
         return repo.save(cake);
     }
 
-    @Override
-    public Optional<Cake> findFirstOrderByIdDesc() {
-        return repo.findFirstOrderByIdDesc();
-    }
 }

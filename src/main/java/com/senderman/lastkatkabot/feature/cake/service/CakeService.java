@@ -20,6 +20,4 @@ public interface CakeService {
      */
     Cake insert(Cake cake);
 
-    Optional<Cake> findFirstOrderByIdDesc();
-
 }

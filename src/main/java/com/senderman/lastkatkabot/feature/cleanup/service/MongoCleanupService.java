@@ -68,7 +68,7 @@ public class MongoCleanupService implements DatabaseCleanupService {
 
     @Override
     public long cleanOldBncGames() {
-        var gamesToDelete = bncRepo.findByEditDateLessThan(DatabaseCleanupService.inactivePeriodGeneral());
+        var gamesToDelete = bncRepo.findByEditDateLessThan(DatabaseCleanupService.inactivePeriodGeneralTs());
         bncRepo.deleteAll(gamesToDelete);
         var gameIds = gamesToDelete.stream().map(BncGameSave::getId).collect(Collectors.toList());
         if (!gameIds.isEmpty())
@@ -83,7 +83,7 @@ public class MongoCleanupService implements DatabaseCleanupService {
 
     @Override
     public long cleanOldCakes() {
-        return cakeRepo.deleteByCreatedAtLessThan(DatabaseCleanupService.INACTIVE_PERIOD_CAKE);
+        return cakeRepo.deleteByCreatedAtLessThan(DatabaseCleanupService.inactivePeriodCake());
     }
 
     @Override

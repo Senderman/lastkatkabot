@@ -1,15 +1,11 @@
 package com.senderman.lastkatkabot.feature.access.repository;
 
 import com.senderman.lastkatkabot.feature.access.model.AdminUser;
-import io.micronaut.core.annotation.NonNull;
-import io.micronaut.data.mongodb.annotation.MongoRepository;
-import io.micronaut.data.mongodb.annotation.MongoUpdateOptions;
+import io.micronaut.data.jdbc.annotation.JdbcRepository;
+import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 
-@MongoRepository
+@JdbcRepository(dialect = Dialect.H2)
 public interface AdminUserRepository extends CrudRepository<AdminUser, Long> {
 
-    @Override
-    @MongoUpdateOptions(upsert = true)
-    <S extends AdminUser> S update(@NonNull S entity);
 }

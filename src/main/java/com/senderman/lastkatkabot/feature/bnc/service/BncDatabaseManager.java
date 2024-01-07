@@ -88,7 +88,7 @@ public class BncDatabaseManager implements BncGamesManager {
     }
 
     private BncGameSave serialize(BncGame game) {
-        return new BncGameSave(game.getId(), serializer.serialize(game), (int) (System.currentTimeMillis() / 1000));
+        return new BncGameSave(game.getId(), serializer.serialize(game));
     }
 
     private BncGame deserialize(BncGameSave save) {
