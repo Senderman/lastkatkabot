@@ -83,7 +83,7 @@ public class PairCommand implements CommandExecutor {
 
         // pair of today already exists
         if (!lastPairs.isEmpty() && lastPairGenerationDate == currentDay) {
-            ctx.reply(ctx.getString("love.pair.message") + " " + lastPairs.get(0)).callAsync(ctx.sender);
+            ctx.reply(ctx.getString("love.pair.message") + " " + lastPairs.getFirst()).callAsync(ctx.sender);
             return;
         }
 
@@ -107,7 +107,7 @@ public class PairCommand implements CommandExecutor {
                 PairData pair = generateNewPair(chatId, usersForPair);
                 // save new generated pair and date to DB
                 chatInfo.setLastPairDate(currentDay);
-                lastPairs.add(0, pair.toString());
+                lastPairs.addFirst(pair.toString());
                 chatInfo.setLastPairs(lastPairs.stream().limit(10).collect(Collectors.toList()));
 
                 var text = loveStrings[loveStrings.length - 1].formatted(

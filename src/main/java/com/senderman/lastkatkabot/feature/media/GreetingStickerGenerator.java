@@ -1,6 +1,5 @@
-package com.senderman.lastkatkabot.feature.members.service;
+package com.senderman.lastkatkabot.feature.media;
 
-import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.feature.members.exception.TooWideNicknameException;
 import jakarta.inject.Singleton;
 
@@ -13,13 +12,7 @@ import java.io.InputStream;
 import java.util.Objects;
 
 @Singleton
-public class ImageService {
-
-    private final BotConfig config;
-
-    public ImageService(BotConfig config) {
-        this.config = config;
-    }
+public class GreetingStickerGenerator {
 
     /**
      * Generate sticker with greeting
@@ -30,7 +23,7 @@ public class ImageService {
      * @throws TooWideNicknameException if the given nickname is too wide to attach to sticker
      */
     public InputStream generateGreetingSticker(String nickname) throws IOException, TooWideNicknameException {
-        var orig = getClass().getResourceAsStream("/greeting.png");
+        var orig = getClass().getResourceAsStream("/media/greeting.png");
         var img = ImageIO.read(Objects.requireNonNull(orig));
         orig.close();
         var g = img.createGraphics();
@@ -59,9 +52,5 @@ public class ImageService {
             out.flush();
             return new ByteArrayInputStream(out.toByteArray());
         }
-    }
-
-    public String getHelloGifId() {
-        return config.getHelloGifId();
     }
 }

@@ -2,17 +2,18 @@ package com.senderman.lastkatkabot.feature.bnc.command;
 
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
-import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
+import com.senderman.lastkatkabot.feature.media.Media;
+import com.senderman.lastkatkabot.feature.media.MediaIdService;
 import org.jetbrains.annotations.NotNull;
 
 @Command
 public class BncHelpCommand implements CommandExecutor {
 
-    private final BotConfig config;
+    private final MediaIdService mediaIdService;
 
-    public BncHelpCommand(BotConfig config) {
-        this.config = config;
+    public BncHelpCommand(MediaIdService mediaIdService) {
+        this.mediaIdService = mediaIdService;
     }
 
     @Override
@@ -27,8 +28,11 @@ public class BncHelpCommand implements CommandExecutor {
 
     @Override
     public void accept(@NotNull L10nMessageContext ctx) {
-        ctx.replyWithPhoto()
-                .setFile(config.getBncHelpPictureId())
-                .callAsync(ctx.sender);
+        var method = ctx.replyWithPhoto();
+        mediaIdService.setMedia(method, Media.BNCHELP);
+        method.callAsync(
+                ctx.sender,
+                m -> mediaIdService.setFileId(Media.BNCHELP, m.getPhoto().getFirst().getFileId())
+        );
     }
 }

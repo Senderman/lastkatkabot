@@ -61,7 +61,7 @@ public class ShowFeedbacksCommand implements CommandExecutor {
             text.append(feedbackSeparator).append(formattedFeedback);
         }
         // send remaining feedbacks
-        if (text.length() != 0) {
+        if (!text.isEmpty()) {
             ctx.reply(text.toString())
                     .disableNotification()
                     .callAsync(ctx.sender);

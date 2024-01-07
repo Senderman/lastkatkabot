@@ -97,11 +97,11 @@ public class AnswerFeedbackCommand implements CommandExecutor {
         notifyResponseIsSent(ctx, feedback.getId());
 
         // notify others about answer
-        if (!ctx.chatId().equals(config.getFeedbackChannelId())) {
+        if (!ctx.chatId().equals(config.getNotificationChannelId())) {
             var replierUsername = Html.htmlSafe(ctx.user().getFirstName());
             var answerReport = ctx.getString("feedback.fresp.answerReport").formatted(replierUsername, feedback.getId(), answer);
-            Methods.sendMessage(config.getFeedbackChannelId(), answerReport).call(ctx.sender);
-            copyMessageIfExists(ctx, config.getFeedbackChannelId(), detailMessageId);
+            Methods.sendMessage(config.getNotificationChannelId(), answerReport).call(ctx.sender);
+            copyMessageIfExists(ctx, config.getNotificationChannelId(), detailMessageId);
         }
     }
 

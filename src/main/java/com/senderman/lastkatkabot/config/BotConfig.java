@@ -13,14 +13,6 @@ public interface BotConfig {
 
     long getMainAdminId();
 
-    long getFeedbackChannelId();
-
     long getNotificationChannelId();
-
-    String getBncHelpPictureId();
-
-    String getHelloGifId();
-
-    String getLeaveStickerId();
 
 }
