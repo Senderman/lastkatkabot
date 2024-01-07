@@ -30,7 +30,7 @@ public class LastkatkaBot implements BotModule {
                         "MONGODB_URI",
                         "BOT_USERNAME",
                         "BOT_TOKEN",
-                        "main-admin",
+                        "main-admin-id",
                         "feedback-channel-id",
                         "notification-channel-id"
                 )
