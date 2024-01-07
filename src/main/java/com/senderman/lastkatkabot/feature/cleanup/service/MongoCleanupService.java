@@ -83,7 +83,7 @@ public class MongoCleanupService implements DatabaseCleanupService {
 
     @Override
     public long cleanOldCakes() {
-        return cakeRepo.deleteByCreatedAtLessThan(DatabaseCleanupService.INACTIVE_PERIOD_CAKE);
+        return cakeRepo.deleteByCreatedAtLessThan(DatabaseCleanupService.inactivePeriodCake());
     }
 
     @Override

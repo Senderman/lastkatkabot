@@ -20,8 +20,8 @@ public interface DatabaseCleanupService {
         return Timestamp.valueOf(LocalDateTime.now().minusDays(14));
     }
 
-    static int inactivePeriodCake() {
-        return (int) (System.currentTimeMillis() / 1000 - INACTIVE_PERIOD_CAKE);
+    static Timestamp inactivePeriodCake() {
+        return Timestamp.valueOf(LocalDateTime.now().minusMinutes(40));
     }
 
     long cleanInactiveUsers();

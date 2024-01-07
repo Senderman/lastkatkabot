@@ -2,26 +2,39 @@ package com.senderman.lastkatkabot.feature.feedback.model;
 
 
 import io.micronaut.core.annotation.Creator;
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.annotation.GeneratedValue;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.MappedEntity;
+import io.micronaut.data.annotation.MappedProperty;
 
 import java.util.Objects;
 
-@MappedEntity("feedback")
+@MappedEntity("FEEDBACK")
 public class Feedback {
 
-    @Id
-    private int id;
+    @MappedProperty("message")
     private final String message;
+    @MappedProperty("user_id")
     private final long userId;
+    @MappedProperty("user_name")
     private final String userName;
+    @MappedProperty("chat_id")
     private final long chatId;
+    @MappedProperty("chat_title")
+    @Nullable
     private final String chatTitle;
+    @MappedProperty("message_id")
     private final int messageId;
+    @Id
+    @GeneratedValue
+    @MappedProperty("id")
+    private int id;
+    @MappedProperty("replied")
     private boolean replied;
 
     @Creator
-    public Feedback(String message, long userId, String userName, long chatId, String chatTitle, int messageId) {
+    public Feedback(String message, long userId, String userName, long chatId, @Nullable String chatTitle, int messageId) {
         this.message = message;
         this.userId = userId;
         this.userName = userName;
@@ -55,6 +68,7 @@ public class Feedback {
         return chatId;
     }
 
+    @Nullable
     public String getChatTitle() {
         return chatTitle;
     }

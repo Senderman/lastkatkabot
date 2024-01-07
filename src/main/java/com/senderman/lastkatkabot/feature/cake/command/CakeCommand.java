@@ -9,6 +9,9 @@ import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
 @Command
 public class CakeCommand implements CommandExecutor {
 
@@ -34,7 +37,7 @@ public class CakeCommand implements CommandExecutor {
             return;
         ctx.setArgumentsLimit(1);
 
-        var cake = cakeService.insert(new Cake(0, ctx.argument(0), ctx.message().getDate()));
+        var cake = cakeService.insert(new Cake(ctx.argument(0), Timestamp.valueOf(LocalDateTime.now())));
         var subjectName = Html.htmlSafe(ctx.user().getFirstName());
         var target = ctx.message().getReplyToMessage().getFrom();
         var targetName = Html.htmlSafe(target.getFirstName());

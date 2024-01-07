@@ -7,11 +7,11 @@ import jakarta.inject.Singleton;
 import java.util.Optional;
 
 @Singleton
-public class MongoFeedbackService implements FeedbackService {
+public class H2FeedbackService implements FeedbackService {
 
     private final FeedbackRepository repository;
 
-    public MongoFeedbackService(FeedbackRepository repository) {
+    public H2FeedbackService(FeedbackRepository repository) {
         this.repository = repository;
     }
 
@@ -42,9 +42,6 @@ public class MongoFeedbackService implements FeedbackService {
 
     @Override
     public Feedback insert(Feedback feedback) {
-        // id as counter
-        int id = repository.findFirstOrderByIdDesc().map(f -> f.getId() + 1).orElse(1);
-        feedback.setId(id);
         return repository.save(feedback);
     }
 
