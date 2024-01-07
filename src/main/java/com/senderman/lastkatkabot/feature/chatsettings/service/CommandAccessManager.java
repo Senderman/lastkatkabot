@@ -27,7 +27,7 @@ public class CommandAccessManager {
     }
 
     public void allowCommands(long chatId, List<String> commands) throws CommandsNotExistsException {
-        if (commands.size() == 0)
+        if (commands.isEmpty())
             return;
 
         validateCommandList(commands);
@@ -42,7 +42,7 @@ public class CommandAccessManager {
     }
 
     public void forbidCommands(long chatId, List<String> commands) throws CommandsNotExistsException {
-        if (commands.size() == 0)
+        if (commands.isEmpty())
             return;
         validateCommandList(commands);
         var chatInfo = chatInfoService.findById(chatId);

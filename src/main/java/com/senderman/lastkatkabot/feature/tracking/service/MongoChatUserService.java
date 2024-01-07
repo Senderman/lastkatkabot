@@ -25,7 +25,7 @@ public class MongoChatUserService implements ChatUserService {
 
     @Override
     public Stream<ChatUser> findAll() {
-        return StreamSupport.stream(repository.findAll().spliterator(), false);
+        return repository.findAll().stream();
     }
 
     @Override

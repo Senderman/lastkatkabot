@@ -79,7 +79,7 @@ public class SendFeedbackCommand implements CommandExecutor {
         Integer contextMessageId = null;
         if (replyMessageId != null) {
             contextMessageId = getMessageId(
-                    Methods.forwardMessage(config.getFeedbackChannelId(), ctx.chatId(), replyMessageId)
+                    Methods.forwardMessage(config.getNotificationChannelId(), ctx.chatId(), replyMessageId)
                             .call(ctx.sender)
             );
         }
@@ -87,7 +87,7 @@ public class SendFeedbackCommand implements CommandExecutor {
         // Send feedback to developers
         var text = ctx.getString("feedback.feedback.message")
                 .formatted(feedbackFormatter.format(feedback), feedback.getId(), listAdmins());
-        Methods.sendMessage(config.getFeedbackChannelId(), text)
+        Methods.sendMessage(config.getNotificationChannelId(), text)
                 .setReplyToMessageId(contextMessageId)
                 .callAsync(ctx.sender);
 

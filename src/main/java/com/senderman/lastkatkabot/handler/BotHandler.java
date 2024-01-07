@@ -7,6 +7,8 @@ import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.feature.access.service.ChatPolicyEnsuringService;
 import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.feature.l10n.service.L10nService;
+import com.senderman.lastkatkabot.feature.media.MediaId;
+import com.senderman.lastkatkabot.feature.media.MediaIdService;
 import com.senderman.lastkatkabot.feature.members.service.NewMemberHandler;
 import com.senderman.lastkatkabot.feature.tracking.service.ChatUserService;
 import com.senderman.lastkatkabot.feature.tracking.service.UserActivityTrackerService;
@@ -52,6 +54,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     private final TelegramUsersHelper telegramUsersHelper;
     private final ObjectMapper messageToJsonMapper;
     private final L10nService localizationService;
+    private final MediaIdService mediaIdService;
 
     public BotHandler(
             DefaultBotOptions botOptions,
@@ -64,7 +67,8 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             TelegramUsersHelper telegramUsersHelper,
             L10nService localizationService,
             @Named("generalNeedsPool") ExecutorService threadPool,
-            @Named("messageToJsonMapper") ObjectMapper messageToJsonMapper
+            @Named("messageToJsonMapper") ObjectMapper messageToJsonMapper,
+            MediaIdService mediaIdService
     ) {
         super(botOptions, config.getToken());
         this.config = config;
@@ -77,6 +81,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         this.threadPool = threadPool;
         this.messageToJsonMapper = messageToJsonMapper;
         this.localizationService = localizationService;
+        this.mediaIdService = mediaIdService;
 
         addMethodPreprocessor(SendMessage.class, m -> {
             m.enableHtml(true);
@@ -143,7 +148,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
                         .call(this);
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            logger.error("Exception during saving exception info to file", ex);
         }
     }
 
@@ -204,10 +209,9 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
     private void processLeftChatMember(Message message) {
         chatUsers.deleteByChatIdAndUserId(message.getChatId(), message.getLeftChatMember().getId());
-        Methods.sendDocument(message.getChatId())
-                .setReplyToMessageId(message.getMessageId())
-                .setFile(config.getLeaveStickerId())
-                .callAsync(this);
+        var method = Methods.Stickers.sendSticker(message.getChatId()).setReplyToMessageId(message.getMessageId());
+        mediaIdService.setMedia(method, MediaId.LEAVE_STICKER);
+        method.callAsync(this, m -> mediaIdService.setFileId(MediaId.LEAVE_STICKER, m.getSticker().getFileId()));
     }
 
     @Override

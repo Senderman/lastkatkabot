@@ -37,9 +37,4 @@ bot:
   timezone: "Europe/Kiev" # timezone for /pair, /wish and other time-based features
 
   mainAdminId: ${main-admin-id} # id of main admin
-  feedbackChannelId: ${feedback-channel-id} # id of channel/group for feedbacks
-  notificationChannelId: ${notification-channel-id} # id of channel/group where notifications stacktraces will be sent
-
-  bncHelpPictureId: "AgADAgAD2qkxG1TVaUjH0X-0YjLur08E9Q4ABAG8AAEj0FdnA6d7AgABAg" # picture for /bnchelp
-  helloGifId: "CgADAQADiwAD0r04RoeZTv5wklZNAg" # gif for new members
-  leaveStickerId: "CAADAgADDAADea1UE9LCz-IGyKZhAg" # sticker that bot will send after someone leaves the chat
+  notificationChannelId: ${notification-channel-id} # id of channel/group where feedbacks and error logs will be sent

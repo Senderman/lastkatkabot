@@ -8,7 +8,7 @@ import jakarta.inject.Singleton;
 @Singleton
 public class FeedbackFormatterService {
 
-    public L10nService l;
+    public final L10nService l;
 
     public FeedbackFormatterService(L10nService l) {
         this.l = l;

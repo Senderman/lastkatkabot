@@ -5,7 +5,6 @@ import io.micronaut.data.repository.CrudRepository;
 
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 public abstract class UserManager<TUserEntity extends UserIdAndName<Long>> {
 
@@ -14,7 +13,7 @@ public abstract class UserManager<TUserEntity extends UserIdAndName<Long>> {
 
     public UserManager(CrudRepository<TUserEntity, Long> repository) {
         this.repository = repository;
-        this.userIds = StreamSupport.stream(repository.findAll().spliterator(), false)
+        this.userIds = repository.findAll().stream()
                 .map(UserIdAndName::getUserId)
                 .collect(Collectors.toSet());
     }

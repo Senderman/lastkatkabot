@@ -54,7 +54,7 @@ public class InvCommand implements CommandExecutor {
         long userId = ctx.user().getId();
 
         var items = inventoryItemService.findByChatIdAndUserId(chatId, userId);
-        if (items.size() == 0) {
+        if (items.isEmpty()) {
             ctx.replyToMessage(ctx.getString("genshin.inv.emptyInv")).callAsync(ctx.sender);
             return;
         }
