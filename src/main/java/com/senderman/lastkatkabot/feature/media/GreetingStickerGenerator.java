@@ -1,4 +1,4 @@
-package com.senderman.lastkatkabot.feature.members.service;
+package com.senderman.lastkatkabot.feature.media;
 
 import com.senderman.lastkatkabot.feature.members.exception.TooWideNicknameException;
 import jakarta.inject.Singleton;

@@ -4,7 +4,8 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.feature.access.service.BlacklistedChatService;
 import com.senderman.lastkatkabot.feature.chatsettings.service.ChatInfoService;
 import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
-import com.senderman.lastkatkabot.feature.media.MediaId;
+import com.senderman.lastkatkabot.feature.media.GreetingStickerGenerator;
+import com.senderman.lastkatkabot.feature.media.Media;
 import com.senderman.lastkatkabot.feature.media.MediaIdService;
 import com.senderman.lastkatkabot.feature.members.command.GreetingCallback;
 import com.senderman.lastkatkabot.feature.members.exception.TooWideNicknameException;
@@ -88,10 +89,10 @@ public class NewMemberHandler implements Consumer<L10nMessageContext> {
 
     private void fallbackWithGreetingGif(L10nMessageContext ctx) {
         var method = ctx.replyToMessageWithAnimation();
-        mediaIdService.setMedia(method, MediaId.GREETING_GIF);
+        mediaIdService.setMedia(method, Media.GREETING_GIF);
         method.callAsync(
                 ctx.sender,
-                m -> mediaIdService.setFileId(MediaId.GREETING_GIF, m.getDocument().getFileId())
+                m -> mediaIdService.setFileId(Media.GREETING_GIF, m.getDocument().getFileId())
         );
     }
 }

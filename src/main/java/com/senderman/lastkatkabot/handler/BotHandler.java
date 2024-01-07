@@ -7,7 +7,7 @@ import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.feature.access.service.ChatPolicyEnsuringService;
 import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.feature.l10n.service.L10nService;
-import com.senderman.lastkatkabot.feature.media.MediaId;
+import com.senderman.lastkatkabot.feature.media.Media;
 import com.senderman.lastkatkabot.feature.media.MediaIdService;
 import com.senderman.lastkatkabot.feature.members.service.NewMemberHandler;
 import com.senderman.lastkatkabot.feature.tracking.service.ChatUserService;
@@ -210,8 +210,8 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     private void processLeftChatMember(Message message) {
         chatUsers.deleteByChatIdAndUserId(message.getChatId(), message.getLeftChatMember().getId());
         var method = Methods.Stickers.sendSticker(message.getChatId()).setReplyToMessageId(message.getMessageId());
-        mediaIdService.setMedia(method, MediaId.LEAVE_STICKER);
-        method.callAsync(this, m -> mediaIdService.setFileId(MediaId.LEAVE_STICKER, m.getSticker().getFileId()));
+        mediaIdService.setMedia(method, Media.LEAVE_STICKER);
+        method.callAsync(this, m -> mediaIdService.setFileId(Media.LEAVE_STICKER, m.getSticker().getFileId()));
     }
 
     @Override
