@@ -5,17 +5,21 @@ import io.micronaut.core.annotation.Creator;
 import io.micronaut.data.annotation.GeneratedValue;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.MappedEntity;
+import io.micronaut.data.annotation.MappedProperty;
 
 import java.util.Objects;
 
-@MappedEntity("bncGameMessage")
+@MappedEntity("BNC_GAME_MESSAGE")
 public class BncGameMessage {
 
+    @MappedProperty("game_id")
+    private final long gameId;
+    @MappedProperty("message_id")
+    private final int messageId;
     @Id
     @GeneratedValue
-    private String id;
-    private final long gameId;
-    private final int messageId;
+    @MappedProperty("id")
+    private long id;
 
     @Creator
     public BncGameMessage(long gameId, int messageId) {
@@ -23,11 +27,11 @@ public class BncGameMessage {
         this.messageId = messageId;
     }
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 

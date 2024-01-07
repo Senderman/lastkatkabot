@@ -1,14 +1,15 @@
 package com.senderman.lastkatkabot.feature.bnc.repository;
 
 import com.senderman.lastkatkabot.feature.bnc.model.BncGameMessage;
-import io.micronaut.data.mongodb.annotation.MongoRepository;
+import io.micronaut.data.jdbc.annotation.JdbcRepository;
+import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 
 import java.util.Collection;
 import java.util.List;
 
-@MongoRepository
-public interface BncGameMessageRepository extends CrudRepository<BncGameMessage, String> {
+@JdbcRepository(dialect = Dialect.H2)
+public interface BncGameMessageRepository extends CrudRepository<BncGameMessage, Long> {
 
     void deleteByGameId(long gameId);
 

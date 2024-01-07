@@ -4,19 +4,26 @@ package com.senderman.lastkatkabot.feature.bnc.model;
 import io.micronaut.core.annotation.Creator;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.MappedEntity;
+import io.micronaut.data.annotation.MappedProperty;
 
+import java.sql.Timestamp;
 import java.util.Objects;
 
-@MappedEntity("bncGameSave")
+@MappedEntity("BNC_GAME_SAVE")
 public class BncGameSave {
 
     @Id
+    @MappedProperty("id")
     private final long id;
+
+    @MappedProperty("game")
     private final String game;
-    private final int editDate;
+
+    @MappedProperty("edit_date")
+    private final Timestamp editDate;
 
     @Creator
-    public BncGameSave(long id, String game, int editDate) {
+    public BncGameSave(long id, String game, Timestamp editDate) {
         this.id = id;
         this.game = game;
         this.editDate = editDate;
@@ -30,7 +37,7 @@ public class BncGameSave {
         return game;
     }
 
-    public int getEditDate() {
+    public Timestamp getEditDate() {
         return editDate;
     }
 
