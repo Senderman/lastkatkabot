@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 public class WttrWeatherService implements WeatherService {
 
     private static final String domain = "https://wttr.in/";
-    private static final String wttrOptions = "?m0AFTq&lang=ru&format=%l\\n%t\\n%f\\n%c%C\\n%w\\n%h\\n%P\\n%m";
+    private static final String wttrOptions = "?m0AFTq&lang=ru&format=" + URLEncoder.encode("%l\\n%t\\n%f\\n%c%C\\n%w\\n%h\\n%P\\n%m", StandardCharsets.UTF_8);
     private static final Pattern windPattern = Pattern.compile("(\\D+)(\\d+)\\D+");
 
     @Override
