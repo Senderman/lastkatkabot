@@ -8,8 +8,6 @@ import com.senderman.lastkatkabot.util.Serializer;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 
 @Singleton
@@ -90,7 +88,7 @@ public class BncDatabaseManager implements BncGamesManager {
     }
 
     private BncGameSave serialize(BncGame game) {
-        return new BncGameSave(game.getId(), serializer.serialize(game), Timestamp.valueOf(LocalDateTime.now()));
+        return new BncGameSave(game.getId(), serializer.serialize(game));
     }
 
     private BncGame deserialize(BncGameSave save) {

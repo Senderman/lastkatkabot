@@ -18,9 +18,9 @@ CREATE TABLE SETTINGS (
 );
 
 CREATE TABLE BNC_GAME_MESSAGE (
-    id IDENTITY PRIMARY KEY,
     game_id BIGINT NOT NULL,
-    message_id INT NOT NULL
+    message_id INT NOT NULL,
+    PRIMARY KEY (game_id, message_id)
 );
 
 CREATE TABLE BNC_GAME_SAVE (
@@ -43,5 +43,5 @@ CREATE TABLE FEEDBACK (
     chat_id BIGINT NOT NULL,
     chat_title VARCHAR(100),
     message_id INT NOT NULL,
-    replied BOOLEAN
+    replied BOOLEAN NOT NULL DEFAULT FALSE
 );

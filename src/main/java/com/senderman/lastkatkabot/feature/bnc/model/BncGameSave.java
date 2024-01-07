@@ -2,6 +2,7 @@ package com.senderman.lastkatkabot.feature.bnc.model;
 
 
 import io.micronaut.core.annotation.Creator;
+import io.micronaut.data.annotation.DateUpdated;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.MappedEntity;
 import io.micronaut.data.annotation.MappedProperty;
@@ -20,13 +21,13 @@ public class BncGameSave {
     private final String game;
 
     @MappedProperty("edit_date")
-    private final Timestamp editDate;
+    @DateUpdated
+    private Timestamp editDate;
 
     @Creator
-    public BncGameSave(long id, String game, Timestamp editDate) {
+    public BncGameSave(long id, String game) {
         this.id = id;
         this.game = game;
-        this.editDate = editDate;
     }
 
     public long getId() {
@@ -39,6 +40,10 @@ public class BncGameSave {
 
     public Timestamp getEditDate() {
         return editDate;
+    }
+
+    public void setEditDate(Timestamp editDate) {
+        this.editDate = editDate;
     }
 
     @Override

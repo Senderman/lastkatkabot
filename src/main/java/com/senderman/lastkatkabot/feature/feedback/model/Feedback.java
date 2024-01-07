@@ -41,7 +41,6 @@ public class Feedback {
         this.chatId = chatId;
         this.chatTitle = chatTitle;
         this.messageId = messageId;
-        this.replied = false;
     }
 
     public int getId() {

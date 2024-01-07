@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.List;
 
 @JdbcRepository(dialect = Dialect.H2)
-public interface BncGameMessageRepository extends CrudRepository<BncGameMessage, Long> {
+public interface BncGameMessageRepository extends CrudRepository<BncGameMessage, BncGameMessage.PrimaryKey> {
 
     void deleteByGameId(long gameId);
 

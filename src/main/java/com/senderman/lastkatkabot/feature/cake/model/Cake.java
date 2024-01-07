@@ -2,10 +2,7 @@ package com.senderman.lastkatkabot.feature.cake.model;
 
 import io.micronaut.core.annotation.Creator;
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.data.annotation.GeneratedValue;
-import io.micronaut.data.annotation.Id;
-import io.micronaut.data.annotation.MappedEntity;
-import io.micronaut.data.annotation.MappedProperty;
+import io.micronaut.data.annotation.*;
 
 import java.sql.Timestamp;
 import java.util.Objects;
@@ -16,17 +13,19 @@ public class Cake {
     @Nullable
     @MappedProperty("filling")
     private final String filling;
+
     @MappedProperty("created_at")
-    private final Timestamp createdAt;
+    @DateCreated
+    private Timestamp createdAt;
+
     @Id
     @GeneratedValue
     @MappedProperty("id")
     private int id;
 
     @Creator
-    public Cake(@Nullable String filling, Timestamp createdAt) {
+    public Cake(@Nullable String filling) {
         this.filling = filling;
-        this.createdAt = createdAt;
     }
 
     public int getId() {
@@ -44,6 +43,10 @@ public class Cake {
 
     public Timestamp getCreatedAt() {
         return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
     }
 
     @Override
