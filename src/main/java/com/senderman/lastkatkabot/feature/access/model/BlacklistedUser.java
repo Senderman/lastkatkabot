@@ -13,13 +13,13 @@ public class BlacklistedUser implements UserIdAndName<Long> {
 
     @Id
     @MappedProperty("user_id")
-    private Long userId;
+    private final Long userId;
 
     @MappedProperty("name")
     private String name;
 
     @Creator
-    public BlacklistedUser(@Id long userId, String name) {
+    public BlacklistedUser(@Id Long userId, String name) {
         this.userId = userId;
         this.name = name;
     }
@@ -53,11 +53,6 @@ public class BlacklistedUser implements UserIdAndName<Long> {
     @Override
     public String getName() {
         return name;
-    }
-
-    @Override
-    public void setUserId(Long userId) {
-        this.userId = userId;
     }
 
     @Override
