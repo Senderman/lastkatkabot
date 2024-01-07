@@ -6,4 +6,8 @@ public interface UserIdAndName<TId> {
 
     String getName();
 
+    void setUserId(TId userId);
+
+    void setName(String name);
+
 }
