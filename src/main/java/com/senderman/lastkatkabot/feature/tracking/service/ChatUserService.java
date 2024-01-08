@@ -28,7 +28,9 @@ public interface ChatUserService {
 
     void delete(ChatUser chatUser);
 
-    Iterable<ChatUser> saveAll(Iterable<ChatUser> chatUsers);
+    void saveAll(Iterable<ChatUser> chatUsers);
+
+    ChatUser save(ChatUser user);
 
     long getTotalUsers();
 

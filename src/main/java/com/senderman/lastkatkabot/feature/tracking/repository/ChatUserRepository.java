@@ -1,29 +1,23 @@
 package com.senderman.lastkatkabot.feature.tracking.repository;
 
 import com.senderman.lastkatkabot.feature.tracking.model.ChatUser;
-import io.micronaut.core.annotation.NonNull;
+import io.micronaut.data.annotation.Query;
+import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.Sort;
-import io.micronaut.data.mongodb.annotation.MongoAggregateQuery;
-import io.micronaut.data.mongodb.annotation.MongoRepository;
-import io.micronaut.data.mongodb.annotation.MongoUpdateOptions;
+import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-@MongoRepository
-public interface ChatUserRepository extends CrudRepository<ChatUser, String> {
+@JdbcRepository(dialect = Dialect.H2)
+public interface ChatUserRepository extends CrudRepository<ChatUser, ChatUser.PrimaryKey> {
 
-    @MongoAggregateQuery("""
-            [
-            { $match: { chatId: :chatId } },
-            { $sample: { size: :amount } }
-            ]""")
+    @Query("SELECT * FROM CHAT_USER WHERE CHAT_ID = :chatId ORDER BY RAND() LIMIT :amount")
     List<ChatUser> sampleOfChat(long chatId, int amount);
 
     List<ChatUser> findByUserId(long userId);
 
-    //@Query(value = "{ userId: ?0 }", sort = "{ lastMessageDate: -1} ")
     Optional<ChatUser> findFirstByUserId(long userId, Sort sort);
 
     List<ChatUser> findByChatId(long chatId);
@@ -40,7 +34,10 @@ public interface ChatUserRepository extends CrudRepository<ChatUser, String> {
 
     long countByChatId(long chatId);
 
-    @Override
-    @MongoUpdateOptions(upsert = true)
-    <S extends ChatUser> List<S> updateAll(@NonNull Iterable<S> entities);
+    long countDistinctUserId();
+
+    long countDistinctChatId();
+
+    List<Long> findDistinctChatId();
+
 }

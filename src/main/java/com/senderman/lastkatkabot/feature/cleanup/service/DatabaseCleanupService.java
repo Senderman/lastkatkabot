@@ -8,20 +8,19 @@ import java.util.concurrent.TimeUnit;
 
 public interface DatabaseCleanupService {
 
-    int INACTIVE_PERIOD_GENERAL = (int) TimeUnit.DAYS.toSeconds(14);
-    int INACTIVE_PERIOD_CAKE = (int) TimeUnit.MINUTES.toSeconds(40);
+    int INACTIVE_PERIOD_GENERAL_SECS = (int) TimeUnit.DAYS.toSeconds(14);
+    int INACTIVE_PERIOD_CAKE_SECS = (int) TimeUnit.MINUTES.toSeconds(40);
 
-    // TODO remove after full db migration
     static int inactivePeriodGeneral() {
-        return (int) (System.currentTimeMillis() / 1000 - INACTIVE_PERIOD_GENERAL);
+        return (int) (System.currentTimeMillis() / 1000 - INACTIVE_PERIOD_GENERAL_SECS);
     }
 
     static Timestamp inactivePeriodGeneralTs() {
-        return Timestamp.valueOf(LocalDateTime.now().minusDays(14));
+        return Timestamp.valueOf(LocalDateTime.now().minusSeconds(INACTIVE_PERIOD_GENERAL_SECS));
     }
 
     static Timestamp inactivePeriodCake() {
-        return Timestamp.valueOf(LocalDateTime.now().minusMinutes(40));
+        return Timestamp.valueOf(LocalDateTime.now().minusSeconds(INACTIVE_PERIOD_CAKE_SECS));
     }
 
     long cleanInactiveUsers();

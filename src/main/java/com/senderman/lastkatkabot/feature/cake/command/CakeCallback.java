@@ -41,7 +41,7 @@ public class CakeCallback implements CallbackExecutor {
         cakeService.deleteById(cakeId);
 
         // if no cake in database or it's too late
-        if (cakeOptional.isEmpty() || query.getMessage().getDate() < DatabaseCleanupService.INACTIVE_PERIOD_CAKE) {
+        if (cakeOptional.isEmpty() || query.getMessage().getDate() < DatabaseCleanupService.INACTIVE_PERIOD_CAKE_SECS) {
             cakeIsRotten(ctx);
             return;
         }
