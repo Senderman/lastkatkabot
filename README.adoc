@@ -1,0 +1,75 @@
+= Lastkatka Bot
+
+Useful multi-feature bot for telegram
+
+== Features
+
+=== For users
+
+- The "Bulls and Cows" game
+- Pair of the day, marriages
+- Roleplay, duels, and cakegiving (try `/cake` command to figure out what is it)
+- Genshin pull simulator (`/wish`, `/inv`)
+- `/f` implementation
+- Advanced `/weather` using `wttr.in` service
+- Sticker with text generation on new group member
+- Various group settings such as forbidden commands, custom greeting stickers and more
+- Localization (currently we only support Russian and Ukrainian)
+
+=== For admins
+
+- Simple bootstrap, no need for separate database, but you can have one if you want to!
+- Prometheus metrics (available on `/prometheus` endpoint) and advanced error logging (directly to your telegram group or channel, with logs, caused JSON and everything you need!)
+- Automatic database cleanup - forget about inactive users
+- Advanced feedback system - receive feedback from you users, answer anonymously, track actions
+- Blacklist for users and groups
+- Admin management
+- Tracking (Know in what groups are your users in)
+- `/broadcast` system
+- Low memory consumption - we had this bot running with 140000 users and 2k messages / sec on `-Xmx128M` for the whole month!
+- Cross-platform (it's written in java)
+- The `/help` command shows only those commands that the user (standard user/admin/main admin) can run
+
+== Requirements
+
+Java development kit 21+
+
+== Build
+
+First, you need to build the jar entering the following commands:
+
+- MacOS/Linux: `./gradlew shadowJar`
+- Windows: `gradlew.bat shadowJar`
+
+The "fat jar" with all dependencies will be stored in `/build/libs` directory
+
+== Configuration
+
+Configuration is done by setting environment variables.
+
+Look for `bot` section in the link:src/main/resources/application.yml[application.yml] file to get info about environment variables you need
+
+Also look at the permitted variables list in the link:src/main/java/com/senderman/lastkatkabot/LastkatkaBot.java[Main class] and link:https://docs.micronaut.io/latest/guide/configurationreference.html[Micronaut configuration reference], but you really don't have to.
+
+=== Database
+
+By default, bot creates and uses in-memory H2 database, which means the data is lost after program's shutdown.
+If you want to persist your data, you have to set a location for your database using the `DB` variable.
+
+For database authorization, use `DBUSER` and `DBPASS` environment variables.
+Default login:password is `sa:sa`
+
+Check out the examples in the link:http://www.h2database.com/html/features.html#database_url[official documentation] to figure out how to set up the `DB` variable
+
+== Run
+
+`java -jar build/libs/lastkatkabot-version.jar`
+
+Logs are redirected to stdin and stderr
+
+== We use:
+
+- link:https://central.sonatype.com/artifact/com.annimon/tgbots-module[aNNiMON's tgbots-module] official telegram library wrapper
+- link:http://www.h2database.com[H2 DB]
+- link:https://micronaut.io[Micronaut framework] for DI, IoC and ORM
+- link:https://logback.qos.ch/[Logback classic] for logging
