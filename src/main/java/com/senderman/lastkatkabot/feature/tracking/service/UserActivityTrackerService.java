@@ -16,7 +16,7 @@ public class UserActivityTrackerService {
     private final static String METER_NAME = "useractivitytracker.cache";
     public final static int MAX_CACHE_SIZE = 500;
     private final ChatUserService chatUserService;
-    private final Map<String, ChatUser> cache = new HashMap<>();
+    private final Map<ChatUser.PrimaryKey, ChatUser> cache = new HashMap<>();
     private final AtomicLong cacheSize;
 
     public UserActivityTrackerService(ChatUserService chatUserService, MeterRegistry meterRegistry) {
@@ -26,11 +26,11 @@ public class UserActivityTrackerService {
     }
 
     public synchronized void updateLastMessageDate(long chatId, long userId, String name, int lastMessageDate) {
-        String id = ChatUser.generateId(chatId, userId);
-        cache.compute(id, (k, v) -> {
+        var pk = new ChatUser.PrimaryKey(chatId, userId);
+        cache.compute(pk, (k, v) -> {
             if (v == null) {
                 cacheSize.incrementAndGet();
-                return new ChatUser(chatId, userId, name, lastMessageDate);
+                return new ChatUser(pk, name, lastMessageDate);
             }
             v.setLastMessageDate(lastMessageDate);
             return v;

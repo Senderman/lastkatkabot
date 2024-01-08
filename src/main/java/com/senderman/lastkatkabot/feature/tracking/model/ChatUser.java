@@ -2,83 +2,84 @@ package com.senderman.lastkatkabot.feature.tracking.model;
 
 
 import io.micronaut.core.annotation.Creator;
-import io.micronaut.data.annotation.Id;
-import io.micronaut.data.annotation.MappedEntity;
+import io.micronaut.data.annotation.*;
 
 import java.util.Objects;
 
-@MappedEntity("chatUser")
+@MappedEntity("CHAT_USER")
 public class ChatUser {
 
-    @Id
-    private final String id;
-    private final long chatId;
+    @EmbeddedId
+    private final PrimaryKey primaryKey;
     private final String name;
     private int lastMessageDate;
-    private long userId;
 
     @Creator
-    public ChatUser(long chatId, long userId, String name, int lastMessageDate) {
-        this.id = generateId(chatId, userId);
-        this.chatId = chatId;
-        this.userId = userId;
+    public ChatUser(PrimaryKey primaryKey, String name, int lastMessageDate) {
+        this.primaryKey = primaryKey;
         this.name = name;
         this.lastMessageDate = lastMessageDate;
     }
 
-    public String getId() {
-        return id;
+    public PrimaryKey getPrimaryKey() {
+        return primaryKey;
     }
 
-    public static String generateId(long chatId, long userId) {
-        return chatId + " " + userId;
-    }
-
+    @Transient
     public long getUserId() {
-        return userId;
+        return primaryKey.getUserId();
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
-    }
-
+    @Transient
     public long getChatId() {
-        return chatId;
+        return primaryKey.getChatId();
     }
 
     public String getName() {
         return name;
     }
 
-    public void setLastMessageDate(int lastMessageDate) {
-        this.lastMessageDate = lastMessageDate;
-    }
-
     public int getLastMessageDate() {
         return lastMessageDate;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ChatUser chatUser = (ChatUser) o;
-        return userId == chatUser.userId && chatId == chatUser.chatId;
+    public void setLastMessageDate(int lastMessageDate) {
+        this.lastMessageDate = lastMessageDate;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(userId, chatId);
-    }
+    @Embeddable
+    public static class PrimaryKey {
 
-    @Override
-    public String toString() {
-        return "ChatUser{" +
-                "id='" + id + '\'' +
-                ", userId=" + userId +
-                ", chatId=" + chatId +
-                ", name='" + name + '\'' +
-                ", lastMessageDate=" + lastMessageDate +
-                '}';
+        @MappedProperty("chat_id")
+        private final long chatId;
+
+        @MappedProperty("user_id")
+        private final long userId;
+
+        public PrimaryKey(long chatId, long userId) {
+            this.chatId = chatId;
+            this.userId = userId;
+        }
+
+        public long getChatId() {
+            return chatId;
+        }
+
+        public long getUserId() {
+            return userId;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            PrimaryKey that = (PrimaryKey) o;
+            return chatId == that.chatId && userId == that.userId;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(chatId, userId);
+        }
     }
 }
