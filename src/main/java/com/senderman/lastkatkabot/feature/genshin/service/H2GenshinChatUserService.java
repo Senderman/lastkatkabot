@@ -6,11 +6,11 @@ import jakarta.inject.Singleton;
 
 
 @Singleton
-public class MongoGenshinChatUserService implements GenshinChatUserService {
+public class H2GenshinChatUserService implements GenshinChatUserService {
 
     private final GenshinChatUserRepository repo;
 
-    public MongoGenshinChatUserService(GenshinChatUserRepository repo) {
+    public H2GenshinChatUserService(GenshinChatUserRepository repo) {
         this.repo = repo;
     }
 
@@ -21,6 +21,6 @@ public class MongoGenshinChatUserService implements GenshinChatUserService {
 
     @Override
     public GenshinChatUser save(GenshinChatUser user) {
-        return repo.update(user);
+        return repo.existsById(user.getPrimaryKey()) ? repo.update(user) : repo.save(user);
     }
 }
