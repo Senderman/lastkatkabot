@@ -1,38 +1,24 @@
 package com.senderman.lastkatkabot.feature.userstats.repository;
 
 import com.senderman.lastkatkabot.feature.userstats.model.UserStats;
-import io.micronaut.core.annotation.NonNull;
-import io.micronaut.data.mongodb.annotation.MongoFindOptions;
-import io.micronaut.data.mongodb.annotation.MongoFindQuery;
-import io.micronaut.data.mongodb.annotation.MongoRepository;
-import io.micronaut.data.mongodb.annotation.MongoUpdateOptions;
+import io.micronaut.data.annotation.Query;
+import io.micronaut.data.jdbc.annotation.JdbcRepository;
+import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
-@MongoRepository
+@JdbcRepository(dialect = Dialect.H2)
 public interface UserStatsRepository extends CrudRepository<UserStats, Long> {
 
-    Optional<UserStats> findByLoverId(int loverId);
-
-    @MongoFindQuery(value = "{ bncScore: { $ne: 0 } }", sort = "{ bncScore : -1 }")
-    @MongoFindOptions(limit = 10)
+    @Query("SELECT * FROM USER_STATS WHERE bnc_score != 0 ORDER BY bnc_score DESC LIMIT 10")
     List<UserStats> findTop10OrderByBncScoreDesc();
 
-    @MongoFindQuery(value = "{ _id: { $in: :ids }, bncScore: { $ne: 0 } }", sort = "{ bncScore : -1 }")
-    @MongoFindOptions(limit = 10)
+    @Query("SELECT * FROM USER_STATS WHERE bnc_score != 0 AND user_id IN (:ids) ORDER BY bnc_score DESC LIMIT 10")
     List<UserStats> findTop10ByUserIdInOrderByBncScoreDesc(List<Long> ids);
 
-    @MongoFindQuery("{ _id: { $in: :ids }, loverId: { $in: :ids } }")
+    @Query("SELECT * FROM USER_STATS WHERE user_id IN (:ids) AND lover_id IN (:ids)")
     List<UserStats> findByIdAndLoverIdIn(Collection<Long> ids);
 
-    @Override
-    @MongoUpdateOptions(upsert = true)
-    <S extends UserStats> S update(@NonNull S entity);
-
-    @Override
-    @MongoUpdateOptions(upsert = true)
-    <S extends UserStats> List<S> updateAll(@NonNull Iterable<S> entities);
 }

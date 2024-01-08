@@ -78,7 +78,7 @@ public class MongoCleanupService implements DatabaseCleanupService {
 
     @Override
     public long cleanOldMarriageRequests() {
-        return marriageRequestRepo.deleteByRequestDateLessThan(DatabaseCleanupService.inactivePeriodGeneral());
+        return marriageRequestRepo.deleteByCreatedAtLessThan(DatabaseCleanupService.inactivePeriodGeneralTs());
     }
 
     @Override

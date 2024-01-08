@@ -5,7 +5,7 @@ import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
-import com.senderman.lastkatkabot.feature.weather.exception.NoSuchCityException;
+import com.senderman.lastkatkabot.feature.weather.exception.NoSuchLocationException;
 import com.senderman.lastkatkabot.feature.weather.exception.WeatherParseException;
 import com.senderman.lastkatkabot.feature.weather.model.Forecast;
 import com.senderman.lastkatkabot.feature.weather.service.WeatherService;
@@ -59,8 +59,8 @@ public class WeatherCommand implements CommandExecutor {
         threadPool.execute(() -> {
             try {
                 editMessageConsumer.accept(ctx.getString("weather.connecting"));
-                String city = getCityFromMessageOrDb(ctx);
-                var text = forecastToString(weatherService.getWeatherByCity(city, ctx.getLocale()), ctx);
+                String location = getLocationFromMessageOrDb(ctx);
+                var text = forecastToString(weatherService.getWeatherByLocation(location, ctx.getLocale()), ctx);
                 // send result as new message to notify user
                 var newMessage = ctx.replyToMessage(text).call(ctx.sender);
                 if (newMessage == null)
@@ -72,12 +72,12 @@ public class WeatherCommand implements CommandExecutor {
                         .callAsync(ctx.sender);
                 // delete previous "connecting" message
                 Methods.deleteMessage(messageToEdit.getChatId(), messageToEdit.getMessageId()).callAsync(ctx.sender);
-                // save last defined city in db (we won't get here if exception is occurred)
-                updateUserCity(ctx.user().getId(), city);
-            } catch (NoCitySpecifiedException e) {
-                editMessageConsumer.accept(ctx.getString("weather.noCityGiven"));
-            } catch (NoSuchCityException e) {
-                editMessageConsumer.accept(ctx.getString("weather.cityNotFound").formatted(e.getCity()));
+                // save last defined location in db (we won't get here if exception is occurred)
+                updateUserLocation(ctx.user().getId(), location);
+            } catch (NoLocationSpecifiedException e) {
+                editMessageConsumer.accept(ctx.getString("weather.noLocationGiven"));
+            } catch (NoSuchLocationException e) {
+                editMessageConsumer.accept(ctx.getString("weather.locationNotFound").formatted(e.getLocation()));
             } catch (WeatherParseException e) {
                 editMessageConsumer.accept(ctx.getString("weather.queryError").formatted(e.getMessage()));
                 throw new RuntimeException(e);
@@ -89,13 +89,13 @@ public class WeatherCommand implements CommandExecutor {
     }
 
     /**
-     * Get city from message text. If it's empty, query db for it
+     * Get user's location from message text. If it's empty, query db for it
      *
      * @param ctx message context
-     * @return user's city
-     * @throws NoCitySpecifiedException if the city is found neither in message text, neither in db
+     * @return user's location
+     * @throws NoLocationSpecifiedException if the location is found neither in message text, neither in db
      */
-    private String getCityFromMessageOrDb(L10nMessageContext ctx) throws NoCitySpecifiedException {
+    private String getLocationFromMessageOrDb(L10nMessageContext ctx) throws NoLocationSpecifiedException {
         if (ctx.message().isReply() && ctx.message().getReplyToMessage().hasLocation()) {
             var location = ctx.message().getReplyToMessage().getLocation();
             return "%s,%s".formatted(location.getLatitude(), location.getLongitude());
@@ -104,14 +104,14 @@ public class WeatherCommand implements CommandExecutor {
         if (ctx.argumentsLength() != 0)
             return ctx.argument(0);
 
-        var city = userStats.findById(ctx.user().getId()).getCityLink();
-        if (city != null) return city;
-        throw new NoCitySpecifiedException();
+        var location = userStats.findById(ctx.user().getId()).getLocation();
+        if (location != null) return location;
+        throw new NoLocationSpecifiedException();
     }
 
-    private void updateUserCity(long userId, String city) {
+    private void updateUserLocation(long userId, String location) {
         var user = userStats.findById(userId);
-        user.setCityLink(city);
+        user.setLocation(location);
         userStats.save(user);
     }
 
@@ -128,7 +128,7 @@ public class WeatherCommand implements CommandExecutor {
                 "<a href=\"" + f.imageLink() + "\">\u200B</a>";
     }
 
-    private static class NoCitySpecifiedException extends Exception {
+    private static class NoLocationSpecifiedException extends Exception {
 
     }
 

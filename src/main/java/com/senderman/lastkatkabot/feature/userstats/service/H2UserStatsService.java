@@ -10,34 +10,34 @@ import java.util.Collection;
 import java.util.List;
 
 @Singleton
-public class MongoUserStatsService implements UserStatsService {
+public class H2UserStatsService implements UserStatsService {
 
-    private final UserStatsRepository repository;
+    private final UserStatsRepository repo;
     private final ChatUserService chatUserService;
 
-    public MongoUserStatsService(UserStatsRepository repository, ChatUserService chatUserService) {
-        this.repository = repository;
+    public H2UserStatsService(UserStatsRepository repo, ChatUserService chatUserService) {
+        this.repo = repo;
         this.chatUserService = chatUserService;
     }
 
     @Override
     public UserStats findById(long userId) {
-        return repository.findById(userId).orElseGet(() -> new UserStats(userId));
+        return repo.findById(userId).orElseGet(() -> new UserStats(userId));
     }
 
     @Override
     public UserStats save(UserStats userstats) {
-        return repository.update(userstats);
+        return repo.existsById(userstats.getUserId()) ? repo.update(userstats) : repo.save(userstats);
     }
 
     @Override
-    public Iterable<UserStats> saveAll(Iterable<UserStats> userstats) {
-        return repository.updateAll(userstats);
+    public void saveAll(Iterable<UserStats> userstats) {
+        userstats.forEach(this::save);
     }
 
     @Override
     public List<UserStats> findTop10BncPlayers() {
-        return repository.findTop10OrderByBncScoreDesc();
+        return repo.findTop10OrderByBncScoreDesc();
     }
 
     @Override
@@ -45,13 +45,11 @@ public class MongoUserStatsService implements UserStatsService {
         var userIds = chatUserService.findByChatId(chatId).stream().map(ChatUser::getUserId).toList();
         if (userIds.isEmpty())
             return List.of();
-        return repository.findTop10ByUserIdInOrderByBncScoreDesc(userIds).stream()
-                .limit(10)
-                .toList();
+        return repo.findTop10ByUserIdInOrderByBncScoreDesc(userIds);
     }
 
     @Override
     public List<UserStats> findByIdAndLoverIdIn(Collection<Long> ids) {
-        return repository.findByIdAndLoverIdIn(ids);
+        return repo.findByIdAndLoverIdIn(ids);
     }
 }
