@@ -1,19 +1,17 @@
 package com.senderman.lastkatkabot.feature.chatsettings.repository;
 
 import com.senderman.lastkatkabot.feature.chatsettings.model.ChatInfo;
-import io.micronaut.core.annotation.NonNull;
-import io.micronaut.data.mongodb.annotation.MongoRepository;
-import io.micronaut.data.mongodb.annotation.MongoUpdateOptions;
+import io.micronaut.data.jdbc.annotation.JdbcRepository;
+import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 
 import java.util.Collection;
+import java.util.List;
 
-@MongoRepository
+@JdbcRepository(dialect = Dialect.H2)
 public interface ChatInfoRepository extends CrudRepository<ChatInfo, Long> {
 
-    long deleteByChatIdIn(Collection<Long> chatIds);
+    long deleteByChatIdIn(Collection<Long> chatId);
 
-    @Override
-    @MongoUpdateOptions(upsert = true)
-    <S extends ChatInfo> S update(@NonNull S entity);
+    List<Long> findDistinctchatId();
 }
