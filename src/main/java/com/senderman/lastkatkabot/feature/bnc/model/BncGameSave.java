@@ -1,6 +1,8 @@
 package com.senderman.lastkatkabot.feature.bnc.model;
 
 
+import com.senderman.lastkatkabot.feature.bnc.BncGame;
+import com.senderman.lastkatkabot.util.convert.StringBncGameAttributeConverter;
 import io.micronaut.core.annotation.Creator;
 import io.micronaut.data.annotation.DateUpdated;
 import io.micronaut.data.annotation.Id;
@@ -17,15 +19,15 @@ public class BncGameSave {
     @MappedProperty("id")
     private final long id;
 
-    @MappedProperty("game")
-    private final String game;
+    @MappedProperty(value = "game", converter = StringBncGameAttributeConverter.class)
+    private final BncGame game;
 
     @MappedProperty("edit_date")
     @DateUpdated
     private Timestamp editDate;
 
     @Creator
-    public BncGameSave(long id, String game) {
+    public BncGameSave(long id, BncGame game) {
         this.id = id;
         this.game = game;
     }
@@ -34,7 +36,7 @@ public class BncGameSave {
         return id;
     }
 
-    public String getGame() {
+    public BncGame getGame() {
         return game;
     }
 

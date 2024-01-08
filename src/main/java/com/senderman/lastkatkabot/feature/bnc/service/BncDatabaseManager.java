@@ -4,7 +4,6 @@ import com.senderman.lastkatkabot.feature.bnc.BncGame;
 import com.senderman.lastkatkabot.feature.bnc.model.BncGameSave;
 import com.senderman.lastkatkabot.feature.bnc.model.BncGameState;
 import com.senderman.lastkatkabot.feature.bnc.model.BncResult;
-import com.senderman.lastkatkabot.util.Serializer;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,30 +13,21 @@ import java.util.NoSuchElementException;
 public class BncDatabaseManager implements BncGamesManager {
 
     private final BncService database;
-    private final Serializer serializer;
 
-    public BncDatabaseManager(
-            BncService database,
-            Serializer serializer
-    ) {
+    public BncDatabaseManager(BncService database) {
         this.database = database;
-        this.serializer = serializer;
     }
-
 
     @Override
     public BncResult check(long id, String number) {
-        var gameSave = database.findById(id);
-        if (gameSave.isEmpty())
-            throw new NoSuchElementException();
-        var game = deserialize(gameSave.get());
-        BncResult result;
+        var game = database.findById(id)
+                .map(BncGameSave::getGame)
+                .orElseThrow(NoSuchElementException::new);
         try {
-            result = game.check(number);
+            return game.check(number);
         } finally { // save to db even on game over
             saveToDb(game);
         }
-        return result;
     }
 
     @Override
@@ -45,18 +35,16 @@ public class BncDatabaseManager implements BncGamesManager {
         if (database.existsById(id)) return false;
 
         var game = new BncGame(id, creatorId, length, isHexadecimal);
-        addGame(game);
+        saveToDb(game);
         return true;
     }
-
 
     @Override
     @NotNull
     public BncGameState getGameState(long id) {
-        var gameSave = database.findById(id);
-        if (gameSave.isEmpty()) throw new NoSuchElementException();
-        var game = deserialize(gameSave.get());
-        return game.getGameState();
+        return database.findById(id)
+                .map(g -> g.getGame().getGameState())
+                .orElseThrow(NoSuchElementException::new);
     }
 
     @Override
@@ -69,29 +57,7 @@ public class BncDatabaseManager implements BncGamesManager {
         database.deleteById(id);
     }
 
-    @Override
-    public boolean addGame(BncGame game) {
-        if (database.existsById(game.getId())) return false;
-        saveToDb(game);
-        return true;
-    }
-
-    @Override
-    public @NotNull BncGame getGame(long id) {
-        var gameSave = database.findById(id);
-        if (gameSave.isEmpty()) throw new NoSuchElementException();
-        return deserialize(gameSave.get());
-    }
-
     private void saveToDb(BncGame game) {
-        database.save(serialize(game));
-    }
-
-    private BncGameSave serialize(BncGame game) {
-        return new BncGameSave(game.getId(), serializer.serialize(game));
-    }
-
-    private BncGame deserialize(BncGameSave save) {
-        return serializer.deserialize(save.getGame(), BncGame.class);
+        database.save(new BncGameSave(game.getId(), game));
     }
 }

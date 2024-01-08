@@ -1,6 +1,5 @@
 package com.senderman.lastkatkabot.feature.bnc.service;
 
-import com.senderman.lastkatkabot.feature.bnc.BncGame;
 import com.senderman.lastkatkabot.feature.bnc.exception.*;
 import com.senderman.lastkatkabot.feature.bnc.model.BncGameState;
 import com.senderman.lastkatkabot.feature.bnc.model.BncResult;
@@ -8,6 +7,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.NoSuchElementException;
 
+/**
+ * Interface for storing bnc games, providing ways to interact with them, but without direct game object access
+ */
 public interface BncGamesManager {
 
     /**
@@ -60,22 +62,4 @@ public interface BncGamesManager {
      */
     void deleteGame(long id);
 
-    /**
-     * Add game to manager's storage. If the games' id already in the storage, do nothing
-     *
-     * @param game a game to add
-     * @return true if id of the game was not present, else false
-     */
-    boolean addGame(BncGame game);
-
-
-    /**
-     * Get instance of the BnC game with given id
-     *
-     * @param id id of the game
-     * @return instance of the game
-     * @throws NoSuchElementException if there's no game with given id
-     */
-    @NotNull
-    BncGame getGame(long id);
 }

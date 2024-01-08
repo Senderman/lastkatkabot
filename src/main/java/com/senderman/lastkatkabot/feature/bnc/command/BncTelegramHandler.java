@@ -66,7 +66,6 @@ public class BncTelegramHandler implements RegexCommand {
             var result = gamesManager.check(chatId, number);
             addMessageToDelete(message);
             if (result.isWin()) {
-
                 processWin(gamesManager.getGameState(chatId), l10Ctx, result);
             } else {
                 sendGameMessage(ctx.chatId(), formatResult(result, l10Ctx), ctx.sender);
