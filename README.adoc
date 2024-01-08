@@ -69,7 +69,7 @@ Logs are redirected to stdin and stderr
 
 == We use:
 
-- link:https://central.sonatype.com/artifact/com.annimon/tgbots-module[aNNiMON's tgbots-module] official telegram library wrapper
+- link:https://github.com/aNNiMON/tgbots-module[aNNiMON's tgbots-module] official telegram library wrapper
 - link:http://www.h2database.com[H2 DB]
 - link:https://micronaut.io[Micronaut framework] for DI, IoC and ORM
 - link:https://logback.qos.ch/[Logback classic] for logging
