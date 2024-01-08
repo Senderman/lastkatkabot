@@ -19,14 +19,6 @@ endpoints:
   prometheus:
     sensitive: false
 
-# you can also use unix domain socket connection:
-
-# mongodb:
-#  uri: mongodb://user:password@%2Ftmp%2Fmongodb-27017.sock/database?directConnection=true&authSource=admin
-
-mongodb:
-  uri: "mongodb://user:password@host:port/database?directConnection=true&authSource=admin"
-
 jackson:
   serializationInclusion: ALWAYS
 

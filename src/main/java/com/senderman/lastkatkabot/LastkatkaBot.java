@@ -27,7 +27,6 @@ public class LastkatkaBot implements BotModule {
                         "MICRONAUT_SERVER_HOST",
                         "MICRONAUT_SERVER_PORT",
                         "MICRONAUT_METRICS_ENABLED",
-                        "MONGODB_URI",
                         "DB",
                         "DBUSER",
                         "DBPASS",

@@ -5,19 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import com.mongodb.ConnectionString;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoDatabase;
 import com.senderman.lastkatkabot.feature.genshin.model.Item;
 import io.micronaut.context.annotation.Factory;
-import io.micronaut.context.annotation.Value;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 @Factory
 public class Beans {
@@ -54,11 +49,4 @@ public class Beans {
                 .enable(SerializationFeature.INDENT_OUTPUT)
                 .build();
     }
-
-    @Singleton
-    public MongoDatabase mongoDatabase(@Value("${mongodb.uri}") String uri, MongoClient client) {
-        var connectionString = new ConnectionString(uri);
-        return client.getDatabase(Objects.requireNonNull(connectionString.getDatabase()));
-    }
-
 }

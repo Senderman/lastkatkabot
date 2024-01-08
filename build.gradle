@@ -31,12 +31,6 @@ dependencies {
     implementation("io.micronaut.micrometer:micronaut-micrometer-core")
     implementation("io.micronaut.micrometer:micronaut-micrometer-registry-prometheus")
 
-    // mongodb
-    annotationProcessor("io.micronaut.data:micronaut-data-document-processor")
-    implementation("io.micronaut.data:micronaut-data-mongodb")
-    implementation("org.mongodb:mongodb-driver-sync:4.11.0")
-    runtimeOnly('com.github.jnr:jnr-unixsocket:0.38.17')
-
     // h2
     annotationProcessor("io.micronaut.data:micronaut-data-processor")
     implementation("io.micronaut.data:micronaut-data-jdbc")
