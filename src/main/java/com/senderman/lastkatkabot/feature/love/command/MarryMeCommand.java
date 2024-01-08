@@ -75,7 +75,6 @@ public class MarryMeCommand implements CommandExecutor {
                 .setProposerName(proposerLink)
                 .setProposeeId(proposeeId)
                 .setProposeeName(Html.getUserLink(message.getReplyToMessage().getFrom()))
-                .setRequestDate(message.getDate())
                 .createMarriageRequest();
 
         request = marriages.insert(request);

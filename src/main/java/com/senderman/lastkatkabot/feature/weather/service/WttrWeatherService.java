@@ -1,6 +1,6 @@
 package com.senderman.lastkatkabot.feature.weather.service;
 
-import com.senderman.lastkatkabot.feature.weather.exception.NoSuchCityException;
+import com.senderman.lastkatkabot.feature.weather.exception.NoSuchLocationException;
 import com.senderman.lastkatkabot.feature.weather.exception.WeatherParseException;
 import com.senderman.lastkatkabot.feature.weather.model.Forecast;
 import jakarta.inject.Singleton;
@@ -21,11 +21,11 @@ public class WttrWeatherService implements WeatherService {
     private static final Pattern windPattern = Pattern.compile("(\\D+)(\\d+)\\D+");
 
     @Override
-    public Forecast getWeatherByCity(String city, String locale) throws IOException, NoSuchCityException, WeatherParseException {
-        if (!city.matches("^~?[\\p{L}\\d\\s-,.+]+"))
-            throw new NoSuchCityException(city);
+    public Forecast getWeatherByLocation(String location, String locale) throws IOException, NoSuchLocationException, WeatherParseException {
+        if (!location.matches("^~?[\\p{L}\\d\\s-,.+]+"))
+            throw new NoSuchLocationException(location);
 
-        var response = requestWeather(city);
+        var response = requestWeather(location);
         return parseResponse(response, locale);
     }
 
@@ -70,26 +70,26 @@ public class WttrWeatherService implements WeatherService {
         return "%d гПа (%d мм.рт.ст.)".formatted(hPa, mmHg);
     }
 
-    private String requestWeather(String city) throws IOException, NoSuchCityException {
-        var url = URI.create(domain + urlEncodeCity(city) + wttrOptions).toURL();
+    private String requestWeather(String location) throws IOException, NoSuchLocationException {
+        var url = URI.create(domain + urlEncodeLocation(location) + wttrOptions).toURL();
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         conn.connect();
         if (conn.getResponseCode() == 404)
-            throw new NoSuchCityException(city);
+            throw new NoSuchLocationException(location);
         try (var out = conn.getInputStream()) {
             return new String(out.readAllBytes(), StandardCharsets.UTF_8);
         }
     }
 
-    private String urlEncodeCity(String city) {
-        return URLEncoder.encode(city, StandardCharsets.UTF_8);
+    private String urlEncodeLocation(String location) {
+        return URLEncoder.encode(location, StandardCharsets.UTF_8);
     }
 
-    private String getImageLink(String city, String locale) {
+    private String getImageLink(String location, String locale) {
         // prevent telegram caching
         long tsHours = System.currentTimeMillis() / 3600000;
-        return domain + urlEncodeCity(city) + ".png?lang=%s&ts=".formatted(locale) + tsHours;
+        return domain + urlEncodeLocation(location) + ".png?lang=%s&ts=".formatted(locale) + tsHours;
     }
 
 }

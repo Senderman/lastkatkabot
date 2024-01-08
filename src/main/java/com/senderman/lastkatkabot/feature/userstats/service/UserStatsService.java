@@ -11,7 +11,7 @@ public interface UserStatsService {
 
     UserStats save(UserStats userstats);
 
-    Iterable<UserStats> saveAll(Iterable<UserStats> userstats);
+    void saveAll(Iterable<UserStats> userstats);
 
     List<UserStats> findTop10BncPlayers();
 

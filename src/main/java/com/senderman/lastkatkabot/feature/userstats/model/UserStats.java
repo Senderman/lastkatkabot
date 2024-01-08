@@ -4,22 +4,36 @@ import com.senderman.lastkatkabot.feature.l10n.service.L10nService;
 import io.micronaut.core.annotation.Creator;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.MappedEntity;
+import io.micronaut.data.annotation.MappedProperty;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-@MappedEntity("userstats")
+@MappedEntity("USER_STATS")
 public class UserStats {
 
     @Id
+    @MappedProperty("user_id")
     private final long userId;
+
+    @MappedProperty("duels_total")
     private int duelsTotal;
+
+    @MappedProperty("duel_wins")
     private int duelWins;
+
+    @MappedProperty("bnc_score")
     private int bncScore;
+
+    @MappedProperty("locale")
     private String locale;
+
     @Nullable
-    private String cityLink; // TODO rename to City
+    @MappedProperty("location")
+    private String location;
+
     @Nullable
+    @MappedProperty("lover_id")
     private Long loverId;
 
     @Creator
@@ -67,12 +81,12 @@ public class UserStats {
         this.bncScore = bncScore;
     }
 
-    public @Nullable String getCityLink() {
-        return cityLink;
+    public @Nullable String getLocation() {
+        return location;
     }
 
-    public void setCityLink(@Nullable String cityLink) {
-        this.cityLink = cityLink;
+    public void setLocation(@Nullable String location) {
+        this.location = location;
     }
 
     public @Nullable Long getLoverId() {

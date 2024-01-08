@@ -7,11 +7,11 @@ import jakarta.inject.Singleton;
 import java.util.Optional;
 
 @Singleton
-public class MongoMarriageRequestService implements MarriageRequestService {
+public class H2MarriageRequestService implements MarriageRequestService {
 
     private final MarriageRequestRepository repository;
 
-    public MongoMarriageRequestService(MarriageRequestRepository repository) {
+    public H2MarriageRequestService(MarriageRequestRepository repository) {
         this.repository = repository;
     }
 
@@ -37,8 +37,6 @@ public class MongoMarriageRequestService implements MarriageRequestService {
 
     @Override
     public MarriageRequest insert(MarriageRequest marriageRequest) {
-        int id = repository.findFirstOrderByIdDesc().map(r -> r.getId() + 1).orElse(1);
-        marriageRequest.setId(id);
         return repository.save(marriageRequest);
     }
 }
