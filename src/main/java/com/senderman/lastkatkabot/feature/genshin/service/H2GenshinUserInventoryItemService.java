@@ -7,11 +7,11 @@ import jakarta.inject.Singleton;
 import java.util.List;
 
 @Singleton
-public class MongoGenshinUserInventoryItemService implements GenshinUserInventoryItemService {
+public class H2GenshinUserInventoryItemService implements GenshinUserInventoryItemService {
 
     private final GenshinUserInventoryItemRepository repo;
 
-    public MongoGenshinUserInventoryItemService(GenshinUserInventoryItemRepository repo) {
+    public H2GenshinUserInventoryItemService(GenshinUserInventoryItemRepository repo) {
         this.repo = repo;
     }
 
@@ -29,6 +29,6 @@ public class MongoGenshinUserInventoryItemService implements GenshinUserInventor
 
     @Override
     public GenshinUserInventoryItem save(GenshinUserInventoryItem item) {
-        return repo.update(item);
+        return repo.existsById(item.getPrimaryKey()) ? repo.update(item) : repo.save(item);
     }
 }
