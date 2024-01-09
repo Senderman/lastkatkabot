@@ -99,9 +99,10 @@ public class PairCommand implements CommandExecutor {
         }
 
         // start chat flooding to make users wait for pair generation
-        String[] loveStrings = love
-                .get(ctx.getLocale())
-                .get(ThreadLocalRandom.current().nextInt(love.size())).split("\n");
+        var localizedLove = love.get(ctx.getLocale());
+        String[] loveStrings = localizedLove
+                .get(ThreadLocalRandom.current().nextInt(localizedLove.size()))
+                .split("\n");
         Future<?> floodFuture = threadPool.submit(() -> sendRandomShitWithDelay(chatId, loveStrings, ctx.sender));
 
         threadPool.execute(() -> {
