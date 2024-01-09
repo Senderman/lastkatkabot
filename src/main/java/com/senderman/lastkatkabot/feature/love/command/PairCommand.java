@@ -41,7 +41,7 @@ public class PairCommand implements CommandExecutor {
             UserStatsService userStatsService,
             ChatUserService chatUsersService,
             ChatInfoService chatInfoService,
-            Map<String, List<String>> love,
+            @Named("love") Map<String, List<String>> love,
             CurrentTime currentTime,
             @Named("pairPool") ExecutorService threadPool
     ) {

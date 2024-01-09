@@ -30,16 +30,16 @@ public class Beans {
     @Singleton
     @Named("love")
     public Map<String, List<String>> love() throws IOException {
-        var loveFiles = ResourceFiles.getResourceFiles("/love");
-        Map<String, List<String>> stringMap = new HashMap<>();
-
-        for (String element : loveFiles) {
-            List<String> loveStrings = new YAMLMapper()
-                    .readValue(getClass().getResourceAsStream("/love/" + element), new TypeReference<>() {
-                    });
-            stringMap.put(element.substring(0, element.indexOf('.')), loveStrings);
+        var typeRef = new TypeReference<List<String>>() {
+        };
+        var mapper = new YAMLMapper();
+        String basePath = "/love/";
+        var result = new HashMap<String, List<String>>();
+        for (var name : ResourceFiles.listResourcePaths(basePath)) {
+            var value = mapper.readValue(getClass().getResourceAsStream(basePath + name), typeRef);
+            result.put(name.substring(0, name.lastIndexOf('.')), value);
         }
-        return stringMap;
+        return result;
     }
 
     @Singleton

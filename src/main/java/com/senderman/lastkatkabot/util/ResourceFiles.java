@@ -7,7 +7,15 @@ import java.util.List;
 import java.util.Objects;
 
 public class ResourceFiles {
-    public static List<String> getResourceFiles(String path) throws IOException {
+
+    /**
+     * List path to all resources in the specified resource directory
+     *
+     * @param path base path
+     * @return list of resource paths
+     * @throws IOException if unable to access resource path
+     */
+    public static List<String> listResourcePaths(String path) throws IOException {
         try (
                 var in = ResourceFiles.class.getResourceAsStream(path);
                 var br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(in)))
@@ -16,8 +24,4 @@ public class ResourceFiles {
         }
     }
 
-    private static String extractName(String fileName) {
-        int dotIndex = fileName.indexOf('.');
-        return fileName.substring(0, dotIndex);
-    }
 }
