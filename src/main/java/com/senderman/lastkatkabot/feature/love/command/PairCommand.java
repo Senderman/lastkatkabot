@@ -32,7 +32,7 @@ public class PairCommand implements CommandExecutor {
     private final UserStatsService userStatsService;
     private final ChatUserService chatUsersService;
     private final ChatInfoService chatInfoService;
-    private final List<String> love;
+    private final Map<String, List<String>> love;
     private final CurrentTime currentTime;
     private final Set<Long> runningChatPairsGenerations;
     private final ExecutorService threadPool;
@@ -41,7 +41,7 @@ public class PairCommand implements CommandExecutor {
             UserStatsService userStatsService,
             ChatUserService chatUsersService,
             ChatInfoService chatInfoService,
-            List<String> love,
+            @Named("love") Map<String, List<String>> love,
             CurrentTime currentTime,
             @Named("pairPool") ExecutorService threadPool
     ) {
@@ -99,7 +99,9 @@ public class PairCommand implements CommandExecutor {
         }
 
         // start chat flooding to make users wait for pair generation
-        String[] loveStrings = love.get(ThreadLocalRandom.current().nextInt(love.size())).split("\n");
+        String[] loveStrings = love
+                .get(ctx.getLocale())
+                .get(ThreadLocalRandom.current().nextInt(love.size())).split("\n");
         Future<?> floodFuture = threadPool.submit(() -> sendRandomShitWithDelay(chatId, loveStrings, ctx.sender));
 
         threadPool.execute(() -> {
