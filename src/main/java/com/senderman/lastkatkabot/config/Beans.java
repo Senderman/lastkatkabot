@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.senderman.lastkatkabot.feature.genshin.model.Item;
-import com.senderman.lastkatkabot.util.ResourceFiles;
 import io.micronaut.context.annotation.Factory;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
@@ -30,14 +29,15 @@ public class Beans {
     @Singleton
     @Named("love")
     public Map<String, List<String>> love() throws IOException {
+        String[] locales = {"ru", "uk"};
         var typeRef = new TypeReference<List<String>>() {
         };
         var mapper = new YAMLMapper();
         String basePath = "/love/";
         var result = new HashMap<String, List<String>>();
-        for (var name : ResourceFiles.listResourcePaths(basePath)) {
-            var value = mapper.readValue(getClass().getResourceAsStream(basePath + name), typeRef);
-            result.put(name.substring(0, name.lastIndexOf('.')), value);
+        for (var locale : locales) {
+            var value = mapper.readValue(getClass().getResourceAsStream(basePath + locale + ".yml"), typeRef);
+            result.put(locale, value);
         }
         return result;
     }
