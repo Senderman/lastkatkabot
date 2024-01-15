@@ -78,7 +78,7 @@ public class PairCommand implements CommandExecutor {
         // ArrayList::new because we will use this list below
         List<String> lastPairs = Objects.requireNonNullElseGet(chatInfo.getLastPairs(), ArrayList::new);
         var lastPairGenerationDate = Objects.requireNonNullElse(chatInfo.getLastPairDate(), -1);
-        int currentDay = Integer.parseInt(currentTime.getCurrentDay());
+        int currentDay = currentTime.getCurrentDay();
 
         // pair of today already exists
         if (!lastPairs.isEmpty() && lastPairGenerationDate == currentDay) {

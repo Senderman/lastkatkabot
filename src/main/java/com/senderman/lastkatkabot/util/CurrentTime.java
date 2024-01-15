@@ -19,11 +19,11 @@ public class CurrentTime {
     }
 
     /**
-     * Get current day as String in format yyyyMMdd
+     * Get current day as int in format yyyyMMdd
      *
-     * @return current day as String in format yyyyMMdd
+     * @return current day as int in format yyyyMMdd
      */
-    public String getCurrentDay() {
-        return ZonedDateTime.now(timeZone).format(dayFormat);
+    public int getCurrentDay() {
+        return Integer.parseInt(ZonedDateTime.now(timeZone).format(dayFormat));
     }
 }
