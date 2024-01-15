@@ -1,25 +1,25 @@
 package com.senderman.lastkatkabot.feature.bnc.command;
 
-import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
+import com.senderman.lastkatkabot.util.TelegramUsersHelper;
 import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.objects.User;
-import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
 
-import java.util.Optional;
 import java.util.function.Function;
 
 @Command
 public class BncTopCommand implements CommandExecutor {
 
     private final UserStatsService users;
+    private final TelegramUsersHelper usersHelper;
 
-    public BncTopCommand(UserStatsService users) {
+    public BncTopCommand(UserStatsService users, TelegramUsersHelper usersHelper) {
         this.users = users;
+        this.usersHelper = usersHelper;
     }
 
     @Override
@@ -63,11 +63,8 @@ public class BncTopCommand implements CommandExecutor {
     private String formatUser(long userId, int score, L10nMessageContext ctx) {
         Function<User, String> userPrinter =
                 ctx.message().isUserMessage() ? Html::getUserLink : u -> Html.htmlSafe(u.getFirstName());
-        String user = Optional.ofNullable(Methods.getChatMember(userId, userId).call(ctx.sender))
-                .map(ChatMember::getUser)
-                .map(userPrinter)
-                .orElse(ctx.getString("common.noName"));
+        String user = userPrinter.apply(usersHelper.findUserFirstName(userId, ctx));
 
-        return user + " (" + score + ")";
+        return "%s (%d)".formatted(user, score);
     }
 }
