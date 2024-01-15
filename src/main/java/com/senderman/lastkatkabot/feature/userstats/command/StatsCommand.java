@@ -60,7 +60,7 @@ public class StatsCommand implements CommandExecutor {
         User lover = chatUsers.findNewestUserData(loverId)
                 .map(l -> new User(l.getUserId(), l.getName(), false)) // get actual username from chatUsers table
                 .or(() -> getUserDataFromTelegram(loverId, ctx.sender)) // fallback to request it from telegram
-                .orElseGet(() -> new User(loverId, ctx.getString("common.unknownUser"), false)); // give up and set the name to "Unknown user"
+                .orElseGet(() -> new User(loverId, ctx.getString("common.noName"), false)); // give up and set the name to "Unknown user"
         String loverLink = Html.getUserLink(lover);
         text += ctx.getString("userstats.lover").formatted(loverLink);
         ctx.reply(text).callAsync(ctx.sender);
