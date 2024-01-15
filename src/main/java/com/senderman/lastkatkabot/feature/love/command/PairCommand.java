@@ -6,6 +6,7 @@ import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.chatsettings.service.ChatInfoService;
 import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
+import com.senderman.lastkatkabot.feature.love.model.Love;
 import com.senderman.lastkatkabot.feature.tracking.model.ChatUser;
 import com.senderman.lastkatkabot.feature.tracking.service.ChatUserService;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
@@ -22,17 +23,15 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Command
 public class PairCommand implements CommandExecutor {
 
-    private static final String EMPTY_NAME_REPLACEMENT = "Без имени";
     private final UserStatsService userStatsService;
     private final ChatUserService chatUsersService;
     private final ChatInfoService chatInfoService;
-    private final Map<String, List<String>> love;
+    private final Love love;
     private final CurrentTime currentTime;
     private final Set<Long> runningChatPairsGenerations;
     private final ExecutorService threadPool;
@@ -41,7 +40,7 @@ public class PairCommand implements CommandExecutor {
             UserStatsService userStatsService,
             ChatUserService chatUsersService,
             ChatInfoService chatInfoService,
-            @Named("love") Map<String, List<String>> love,
+            Love love,
             CurrentTime currentTime,
             @Named("pairPool") ExecutorService threadPool
     ) {
@@ -79,7 +78,7 @@ public class PairCommand implements CommandExecutor {
         // ArrayList::new because we will use this list below
         List<String> lastPairs = Objects.requireNonNullElseGet(chatInfo.getLastPairs(), ArrayList::new);
         var lastPairGenerationDate = Objects.requireNonNullElse(chatInfo.getLastPairDate(), -1);
-        int currentDay = Integer.parseInt(currentTime.getCurrentDay());
+        int currentDay = currentTime.getCurrentDay();
 
         // pair of today already exists
         if (!lastPairs.isEmpty() && lastPairGenerationDate == currentDay) {
@@ -99,15 +98,12 @@ public class PairCommand implements CommandExecutor {
         }
 
         // start chat flooding to make users wait for pair generation
-        var localizedLove = love.get(ctx.getLocale());
-        String[] loveStrings = localizedLove
-                .get(ThreadLocalRandom.current().nextInt(localizedLove.size()))
-                .split("\n");
+        String[] loveStrings = love.forLocale(ctx.getLocale());
         Future<?> floodFuture = threadPool.submit(() -> sendRandomShitWithDelay(chatId, loveStrings, ctx.sender));
 
         threadPool.execute(() -> {
             try {
-                PairData pair = generateNewPair(chatId, usersForPair);
+                PairData pair = generateNewPair(chatId, usersForPair, ctx);
                 // save new generated pair and date to DB
                 chatInfo.setLastPairDate(currentDay);
                 lastPairs.addFirst(pair.toString());
@@ -142,16 +138,14 @@ public class PairCommand implements CommandExecutor {
 
 
     // usersForPair should contain 2 or more users, otherwise this method will fail
-    private PairData generateNewPair(long chatId, List<ChatUser> usersForPair) {
+    private PairData generateNewPair(long chatId, List<ChatUser> usersForPair, L10nMessageContext ctx) {
         var chatUser1 = usersForPair.get(0);
         var chatUser2 = usersForPair.get(1);
-        var user1 = userFromChatUser(chatUser1);
-        replaceNameIfBlank(user1);
-        var user2 = userFromChatUser(chatUser2);
-        replaceNameIfBlank(user2);
+        var user1 = userFromChatUser(chatUser1, ctx);
+        var user2 = userFromChatUser(chatUser2, ctx);
 
         // at this point, we can be sure that user1 and user2 are present in chat.
-        // now we have to change user2 to user1's lover if needed and if lover is present in chat
+        // now we have to change user2 to user1's lover if exists and if lover is present in chat
         var user1Stats = userStatsService.findById(chatUser1.getUserId());
         if (user1Stats.getLoverId() == null)
             return new PairData(user1, user2, false);
@@ -162,21 +156,17 @@ public class PairCommand implements CommandExecutor {
         } else {
             // lover is found
             chatUser2 = loverOptional.get();
-            user2 = userFromChatUser(chatUser2);
-            replaceNameIfBlank(user2);
+            user2 = userFromChatUser(chatUser2, ctx);
             return new PairData(user1, user2, true);
         }
 
     }
 
-    private User userFromChatUser(ChatUser chatUser) {
-        return new User(chatUser.getUserId(), chatUser.getName(), false);
-    }
-
-    private void replaceNameIfBlank(User user) {
-        if (user.getFirstName().isBlank()) {
-            user.setFirstName(EMPTY_NAME_REPLACEMENT);
-        }
+    private User userFromChatUser(ChatUser chatUser, L10nMessageContext ctx) {
+        var user = new User(chatUser.getUserId(), chatUser.getName(), false);
+        if (user.getFirstName().isBlank())
+            user.setFirstName(ctx.getString("common.noName"));
+        return user;
     }
 
     private void sendRandomShitWithDelay(long chatId, String[] shit, CommonAbsSender telegram) {

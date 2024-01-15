@@ -1,7 +1,5 @@
 package com.senderman.lastkatkabot.feature.userstats.service;
 
-import com.senderman.lastkatkabot.feature.tracking.model.ChatUser;
-import com.senderman.lastkatkabot.feature.tracking.service.ChatUserService;
 import com.senderman.lastkatkabot.feature.userstats.model.UserStats;
 import com.senderman.lastkatkabot.feature.userstats.repository.UserStatsRepository;
 import jakarta.inject.Singleton;
@@ -13,11 +11,9 @@ import java.util.List;
 public class H2UserStatsService implements UserStatsService {
 
     private final UserStatsRepository repo;
-    private final ChatUserService chatUserService;
 
-    public H2UserStatsService(UserStatsRepository repo, ChatUserService chatUserService) {
+    public H2UserStatsService(UserStatsRepository repo) {
         this.repo = repo;
-        this.chatUserService = chatUserService;
     }
 
     @Override
@@ -42,10 +38,7 @@ public class H2UserStatsService implements UserStatsService {
 
     @Override
     public List<UserStats> findTop10BncPlayersByChat(long chatId) {
-        var userIds = chatUserService.findByChatId(chatId).stream().map(ChatUser::getUserId).toList();
-        if (userIds.isEmpty())
-            return List.of();
-        return repo.findTop10ByUserIdInOrderByBncScoreDesc(userIds);
+        return repo.findTop10ByChatIdOrderByBncScoreDesc(chatId);
     }
 
     @Override

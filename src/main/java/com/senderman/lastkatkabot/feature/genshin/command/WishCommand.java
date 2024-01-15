@@ -59,7 +59,7 @@ public class WishCommand implements CommandExecutor {
         long userId = ctx.user().getId();
 
         var genshinUser = userService.findByChatIdAndUserId(chatId, userId);
-        var currentDay = Integer.parseInt(currentTime.getCurrentDay());
+        var currentDay = currentTime.getCurrentDay();
 
         if (genshinUser.getLastRollDate() == currentDay) {
             ctx.replyToMessage(ctx.getString("genshin.wish.wishedToday")).callAsync(ctx.sender);

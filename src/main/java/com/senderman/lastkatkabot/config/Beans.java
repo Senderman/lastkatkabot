@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.senderman.lastkatkabot.feature.genshin.model.Item;
+import com.senderman.lastkatkabot.feature.love.model.Love;
 import io.micronaut.context.annotation.Factory;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
@@ -14,7 +15,6 @@ import org.telegram.telegrambots.bots.DefaultBotOptions;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Factory
 public class Beans {
@@ -27,8 +27,7 @@ public class Beans {
     }
 
     @Singleton
-    @Named("love")
-    public Map<String, List<String>> love() throws IOException {
+    public Love love() throws IOException {
         String[] locales = {"ru", "uk"};
         var typeRef = new TypeReference<List<String>>() {
         };
@@ -39,7 +38,7 @@ public class Beans {
             var value = mapper.readValue(getClass().getResourceAsStream(basePath + locale + ".yml"), typeRef);
             result.put(locale, value);
         }
-        return result;
+        return new Love(result);
     }
 
     @Singleton

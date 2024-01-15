@@ -1,29 +1,24 @@
 package com.senderman.lastkatkabot.feature.userstats.command;
 
-import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
-import com.senderman.lastkatkabot.feature.tracking.service.ChatUserService;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
+import com.senderman.lastkatkabot.util.TelegramUsersHelper;
 import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.objects.User;
-import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
-
-import java.util.Optional;
 
 @Command
 public class StatsCommand implements CommandExecutor {
 
     private final UserStatsService users;
-    private final ChatUserService chatUsers;
+    private final TelegramUsersHelper usersHelper;
 
 
-    public StatsCommand(UserStatsService users, ChatUserService chatUsers) {
+    public StatsCommand(UserStatsService users, TelegramUsersHelper usersHelper) {
         this.users = users;
-        this.chatUsers = chatUsers;
+        this.usersHelper = usersHelper;
     }
 
     @Override
@@ -57,17 +52,10 @@ public class StatsCommand implements CommandExecutor {
             return;
         }
 
-        User lover = chatUsers.findNewestUserData(loverId)
-                .map(l -> new User(l.getUserId(), l.getName(), false)) // get actual username from chatUsers table
-                .or(() -> getUserDataFromTelegram(loverId, ctx.sender)) // fallback to request it from telegram
-                .orElseGet(() -> new User(loverId, ctx.getString("common.unknownUser"), false)); // give up and set the name to "Unknown user"
+        User lover = usersHelper.findUserFirstName(loverId, ctx);
         String loverLink = Html.getUserLink(lover);
         text += ctx.getString("userstats.lover").formatted(loverLink);
         ctx.reply(text).callAsync(ctx.sender);
     }
 
-    private Optional<User> getUserDataFromTelegram(long userId, CommonAbsSender sender) {
-        var member = Methods.getChatMember(userId, userId).call(sender);
-        return Optional.ofNullable(member).map(ChatMember::getUser);
-    }
 }
