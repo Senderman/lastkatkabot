@@ -48,7 +48,7 @@ public class UserActivityTrackerService {
         if (cache.isEmpty()) return;
         cache.forEach((k, v) -> {
             // if not in PM
-            if (k.getUserId() != k.getUserId())
+            if (k.getUserId() != k.getChatId())
                 chatUserService.save(new ChatUser(k, v.lastMessageDate));
             userStatsService.updateOrCreateByUserId(k.getUserId(), v.name);
         });
