@@ -6,6 +6,7 @@ import jakarta.inject.Singleton;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Singleton
 public class H2UserStatsService implements UserStatsService {
@@ -44,5 +45,28 @@ public class H2UserStatsService implements UserStatsService {
     @Override
     public List<UserStats> findByIdAndLoverIdIn(Collection<Long> ids) {
         return repo.findByIdAndLoverIdIn(ids);
+    }
+
+    @Override
+    public void updateOrCreateByUserId(long userId, String name) {
+        if (repo.existsById(userId))
+            repo.updateByUserId(userId, name);
+        else
+            repo.save(new UserStats(userId, name));
+    }
+
+    @Override
+    public List<UserStats> findByChatId(long chatId) {
+        return repo.findByChatId(chatId);
+    }
+
+    @Override
+    public List<UserStats> findRandomUsersOfChat(long chatId, int amount) {
+        return repo.findRandomUsersOfChat(chatId, amount);
+    }
+
+    @Override
+    public Optional<UserStats> findByChatIdAndUserId(long chatId, long userId) {
+        return repo.findByChatIdAndUserId(chatId, userId);
     }
 }

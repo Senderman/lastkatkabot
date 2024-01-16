@@ -3,7 +3,6 @@ package com.senderman.lastkatkabot.feature.tracking.service;
 import com.senderman.lastkatkabot.feature.cleanup.service.DatabaseCleanupService;
 import com.senderman.lastkatkabot.feature.tracking.model.ChatUser;
 import com.senderman.lastkatkabot.feature.tracking.repository.ChatUserRepository;
-import io.micronaut.data.model.Sort;
 import jakarta.inject.Singleton;
 
 import java.util.List;
@@ -35,18 +34,8 @@ public class H2ChatUserService implements ChatUserService {
     }
 
     @Override
-    public List<ChatUser> getTwoOrLessUsersOfChat(long chatId) {
-        return repo.sampleOfChat(chatId, 2);
-    }
-
-    @Override
     public List<ChatUser> findByUserId(long userId) {
         return repo.findByUserId(userId);
-    }
-
-    @Override
-    public Optional<ChatUser> findNewestUserData(long userId) {
-        return repo.findFirstByUserId(userId, Sort.of(Sort.Order.desc("lastMessageDate")));
     }
 
     @Override

@@ -14,11 +14,7 @@ public interface ChatUserService {
 
     void deleteByChatIdAndUserId(long chatId, long userId);
 
-    List<ChatUser> getTwoOrLessUsersOfChat(long chatId);
-
     List<ChatUser> findByUserId(long userId);
-
-    Optional<ChatUser> findNewestUserData(long userId);
 
     List<ChatUser> findByChatId(long chatId);
 

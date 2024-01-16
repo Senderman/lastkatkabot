@@ -4,7 +4,7 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
-import com.senderman.lastkatkabot.feature.tracking.service.ChatUserService;
+import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -19,11 +19,11 @@ public class TelegramUsersHelper {
 
     private final BotConfig botConfig;
     private final Set<Long> telegramServiceUserIds;
-    private final ChatUserService chatUserService;
+    private final UserStatsService userStatsService;
 
-    public TelegramUsersHelper(BotConfig config, ChatUserService chatUserService) {
+    public TelegramUsersHelper(BotConfig config, UserStatsService userStatsService) {
         this.botConfig = config;
-        this.chatUserService = chatUserService;
+        this.userStatsService = userStatsService;
         telegramServiceUserIds = Set.of(
                 777000L, // attached channel's messages
                 1087968824L, // anonymous group admin @GroupAnonymousBot
@@ -61,7 +61,7 @@ public class TelegramUsersHelper {
      * @return {@link User} object with user's firstName
      */
     public User findUserFirstName(long userId, L10nMessageContext ctx) {
-        return chatUserService.findNewestUserData(userId)
+        return Optional.of(userStatsService.findById(userId))
                 .map(u -> new User(u.getUserId(), u.getName(), false))
                 .or(() -> getUserDataFromTelegram(userId, ctx.sender))
                 .map(u -> {

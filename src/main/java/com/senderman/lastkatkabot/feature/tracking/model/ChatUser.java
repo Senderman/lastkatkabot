@@ -11,13 +11,11 @@ public class ChatUser {
 
     @EmbeddedId
     private final PrimaryKey primaryKey;
-    private final String name;
     private int lastMessageDate;
 
     @Creator
-    public ChatUser(PrimaryKey primaryKey, String name, int lastMessageDate) {
+    public ChatUser(PrimaryKey primaryKey, int lastMessageDate) {
         this.primaryKey = primaryKey;
-        this.name = name;
         this.lastMessageDate = lastMessageDate;
     }
 
@@ -33,10 +31,6 @@ public class ChatUser {
     @Transient
     public long getChatId() {
         return primaryKey.getChatId();
-    }
-
-    public String getName() {
-        return name;
     }
 
     public int getLastMessageDate() {
