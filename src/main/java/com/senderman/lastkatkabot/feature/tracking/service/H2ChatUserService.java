@@ -1,13 +1,11 @@
 package com.senderman.lastkatkabot.feature.tracking.service;
 
-import com.senderman.lastkatkabot.feature.cleanup.service.DatabaseCleanupService;
 import com.senderman.lastkatkabot.feature.tracking.model.ChatUser;
 import com.senderman.lastkatkabot.feature.tracking.repository.ChatUserRepository;
 import jakarta.inject.Singleton;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 @Singleton
 public class H2ChatUserService implements ChatUserService {
@@ -16,16 +14,6 @@ public class H2ChatUserService implements ChatUserService {
 
     public H2ChatUserService(ChatUserRepository repo) {
         this.repo = repo;
-    }
-
-    @Override
-    public Stream<ChatUser> findAll() {
-        return repo.findAll().stream();
-    }
-
-    @Override
-    public long countByChatId(long chatId) {
-        return repo.countByChatId(chatId);
     }
 
     @Override
@@ -39,29 +27,8 @@ public class H2ChatUserService implements ChatUserService {
     }
 
     @Override
-    public List<ChatUser> findByChatId(long chatId) {
-        return repo.findByChatId(chatId);
-    }
-
-    @Override
     public Optional<ChatUser> findByChatIdAndUserId(long chatId, long userId) {
         return repo.findByChatIdAndUserId(chatId, userId);
-    }
-
-    @Override
-    public void deleteInactiveChatUsers(long chatId) {
-        repo.deleteByChatIdAndLastMessageDateLessThan(chatId, DatabaseCleanupService.inactivePeriodGeneral());
-    }
-
-    @Override
-    public void delete(ChatUser chatUser) {
-        repo.delete(chatUser);
-    }
-
-    @Override
-    public void saveAll(Iterable<ChatUser> chatUsers) {
-        // TODO split to saveAll and updateAll
-        chatUsers.forEach(this::save);
     }
 
     @Override

@@ -6,6 +6,7 @@ import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -54,5 +55,7 @@ public interface UserStatsRepository extends CrudRepository<UserStats, Long> {
     Optional<UserStats> findByChatIdAndUserId(long chatId, long userId);
 
     void updateByUserId(long userId, String name);
+
+    void deleteByUpdatedAtLessThan(Timestamp updatedAt);
 
 }

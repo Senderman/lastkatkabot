@@ -7,7 +7,6 @@ import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.chatsettings.service.ChatInfoService;
 import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.feature.love.model.Love;
-import com.senderman.lastkatkabot.feature.tracking.service.ChatUserService;
 import com.senderman.lastkatkabot.feature.userstats.model.UserStats;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import com.senderman.lastkatkabot.util.CurrentTime;
@@ -29,7 +28,6 @@ import java.util.stream.Collectors;
 public class PairCommand implements CommandExecutor {
 
     private final UserStatsService userStatsService;
-    private final ChatUserService chatUsersService;
     private final ChatInfoService chatInfoService;
     private final Love love;
     private final CurrentTime currentTime;
@@ -38,14 +36,12 @@ public class PairCommand implements CommandExecutor {
 
     public PairCommand(
             UserStatsService userStatsService,
-            ChatUserService chatUsersService,
             ChatInfoService chatInfoService,
             Love love,
             CurrentTime currentTime,
             @Named("pairPool") ExecutorService threadPool
     ) {
         this.userStatsService = userStatsService;
-        this.chatUsersService = chatUsersService;
         this.chatInfoService = chatInfoService;
         this.love = love;
         this.currentTime = currentTime;
@@ -87,8 +83,6 @@ public class PairCommand implements CommandExecutor {
         }
 
         if (!runningChatPairsGenerations.add(chatId)) return;
-
-        chatUsersService.deleteInactiveChatUsers(chatId);
 
         final var usersForPair = userStatsService.findRandomUsersOfChat(chatId, 2);
         if (usersForPair.size() < 2) {

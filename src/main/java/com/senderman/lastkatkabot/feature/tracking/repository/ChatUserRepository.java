@@ -13,19 +13,11 @@ public interface ChatUserRepository extends CrudRepository<ChatUser, ChatUser.Pr
 
     List<ChatUser> findByUserId(long userId);
 
-    List<ChatUser> findByChatId(long chatId);
-
     Optional<ChatUser> findByChatIdAndUserId(long chatId, long userId);
 
-    void deleteByChatIdAndLastMessageDateLessThan(long chatId, int lastMessageDate);
-
-    long deleteByLastMessageDateLessThan(int lastMessageDate);
+    void deleteByLastMessageDateLessThan(int lastMessageDate);
 
     void deleteByChatIdAndUserId(long chatId, long userId);
-
-    boolean existsByChatIdAndUserId(long chatId, long userId);
-
-    long countByChatId(long chatId);
 
     long countDistinctUserId();
 

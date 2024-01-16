@@ -10,6 +10,6 @@ import java.sql.Timestamp;
 @JdbcRepository(dialect = Dialect.H2)
 public interface CakeRepository extends CrudRepository<Cake, Integer> {
 
-    long deleteByCreatedAtLessThan(Timestamp createdAt);
+    void deleteByCreatedAtLessThan(Timestamp createdAt);
 
 }
