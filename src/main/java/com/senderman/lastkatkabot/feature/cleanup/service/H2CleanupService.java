@@ -4,6 +4,8 @@ import com.senderman.lastkatkabot.feature.bnc.repository.BncGameMessageRepositor
 import com.senderman.lastkatkabot.feature.bnc.repository.BncRepository;
 import com.senderman.lastkatkabot.feature.cake.repository.CakeRepository;
 import com.senderman.lastkatkabot.feature.chatsettings.repository.ChatInfoRepository;
+import com.senderman.lastkatkabot.feature.genshin.repository.GenshinChatUserRepository;
+import com.senderman.lastkatkabot.feature.genshin.repository.GenshinUserInventoryItemRepository;
 import com.senderman.lastkatkabot.feature.love.repository.MarriageRequestRepository;
 import com.senderman.lastkatkabot.feature.tracking.repository.ChatUserRepository;
 import com.senderman.lastkatkabot.feature.userstats.repository.UserStatsRepository;
@@ -19,6 +21,9 @@ public class H2CleanupService extends DatabaseCleanupService {
     private final MarriageRequestRepository marriageRequestRepo;
     private final CakeRepository cakeRepo;
     private final UserStatsRepository userStatsRepo;
+    private final GenshinChatUserRepository genshinChatUserRepo;
+    private final GenshinUserInventoryItemRepository genshinUserInventoryItemRepo;
+
 
     public H2CleanupService(
             ChatUserRepository chatUserRepo,
@@ -27,7 +32,9 @@ public class H2CleanupService extends DatabaseCleanupService {
             BncGameMessageRepository bncGameMessageRepo,
             MarriageRequestRepository marriageRequestRepo,
             CakeRepository cakeRepo,
-            UserStatsRepository userStatsRepo
+            UserStatsRepository userStatsRepo,
+            GenshinChatUserRepository genshinChatUserRepo,
+            GenshinUserInventoryItemRepository genshinUserInventoryItemRepo
     ) {
         this.chatUserRepo = chatUserRepo;
         this.chatInfoRepo = chatInfoRepo;
@@ -36,8 +43,9 @@ public class H2CleanupService extends DatabaseCleanupService {
         this.marriageRequestRepo = marriageRequestRepo;
         this.cakeRepo = cakeRepo;
         this.userStatsRepo = userStatsRepo;
+        this.genshinChatUserRepo = genshinChatUserRepo;
+        this.genshinUserInventoryItemRepo = genshinUserInventoryItemRepo;
     }
-
 
     /**
      * Deletes all users from CHAT_USER table without given activity period
@@ -71,6 +79,12 @@ public class H2CleanupService extends DatabaseCleanupService {
     @Override
     public void cleanInactiveUserStats() {
         userStatsRepo.deleteByUpdatedAtLessThan(inactivePeriodUserStats());
+    }
+
+    @Override
+    public void cleanOldGenshinData() {
+        genshinChatUserRepo.deleteByUpdatedAtLessThan(inactivePeriodUserStats());
+        genshinUserInventoryItemRepo.deleteInactiveInventories();
     }
 
 }

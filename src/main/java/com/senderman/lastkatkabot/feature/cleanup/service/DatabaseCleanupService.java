@@ -10,7 +10,9 @@ import java.util.concurrent.TimeUnit;
 public abstract class DatabaseCleanupService {
 
     public static final int INACTIVE_PERIOD_CAKE_SECS = (int) TimeUnit.MINUTES.toSeconds(40);
+    // chatuser, marriages, bnc games
     private final int INACTIVE_PERIOD_GENERAL_SECS = (int) TimeUnit.DAYS.toSeconds(14);
+    // userstats and genshin
     private final long INACTIVE_PERIOD_USER_STATS = TimeUnit.DAYS.toSeconds(365);
 
     protected int inactivePeriodGeneral() {
@@ -41,6 +43,8 @@ public abstract class DatabaseCleanupService {
 
     public abstract void cleanInactiveUserStats();
 
+    public abstract void cleanOldGenshinData();
+
     @Scheduled(fixedDelay = "2h")
     public void cleanAll() {
         cleanInactiveChatUsers();
@@ -49,6 +53,7 @@ public abstract class DatabaseCleanupService {
         cleanOldMarriageRequests();
         cleanOldCakes();
         cleanInactiveUserStats();
+        cleanOldGenshinData();
     }
 
 }

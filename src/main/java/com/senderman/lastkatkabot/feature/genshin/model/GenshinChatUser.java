@@ -2,11 +2,9 @@ package com.senderman.lastkatkabot.feature.genshin.model;
 
 
 import io.micronaut.core.annotation.Creator;
-import io.micronaut.data.annotation.Embeddable;
-import io.micronaut.data.annotation.EmbeddedId;
-import io.micronaut.data.annotation.MappedEntity;
-import io.micronaut.data.annotation.MappedProperty;
+import io.micronaut.data.annotation.*;
 
+import java.sql.Timestamp;
 import java.util.Objects;
 
 @MappedEntity("GENSHIN_CHAT_USER")
@@ -17,6 +15,10 @@ public class GenshinChatUser {
     private int lastRollDate;
     private int fourPity;
     private int fivePity;
+
+    @MappedProperty("updated_at")
+    @DateUpdated
+    private Timestamp updatedAt;
 
     public GenshinChatUser(long chatId, long userId) {
         this.primaryKey = new PrimaryKey(chatId, userId);
@@ -54,6 +56,14 @@ public class GenshinChatUser {
 
     public void setFivePity(int fivePity) {
         this.fivePity = fivePity;
+    }
+
+    public Timestamp getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Timestamp updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public void incFourPity() {
