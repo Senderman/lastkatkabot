@@ -1,93 +1,90 @@
 package com.senderman.lastkatkabot.feature.cleanup.service;
 
-import com.senderman.lastkatkabot.feature.bnc.model.BncGameSave;
+import com.senderman.lastkatkabot.feature.bnc.repository.BncGameMessageRepository;
 import com.senderman.lastkatkabot.feature.bnc.repository.BncRepository;
-import com.senderman.lastkatkabot.feature.bnc.service.BncGameMessageService;
 import com.senderman.lastkatkabot.feature.cake.repository.CakeRepository;
 import com.senderman.lastkatkabot.feature.chatsettings.repository.ChatInfoRepository;
-import com.senderman.lastkatkabot.feature.cleanup.model.DbCleanupResults;
+import com.senderman.lastkatkabot.feature.genshin.repository.GenshinChatUserRepository;
+import com.senderman.lastkatkabot.feature.genshin.repository.GenshinUserInventoryItemRepository;
 import com.senderman.lastkatkabot.feature.love.repository.MarriageRequestRepository;
 import com.senderman.lastkatkabot.feature.tracking.repository.ChatUserRepository;
-import io.micronaut.scheduling.annotation.Scheduled;
+import com.senderman.lastkatkabot.feature.userstats.repository.UserStatsRepository;
 import jakarta.inject.Singleton;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Singleton
-public class H2CleanupService implements DatabaseCleanupService {
+public class H2CleanupService extends DatabaseCleanupService {
 
     private final ChatUserRepository chatUserRepo;
     private final ChatInfoRepository chatInfoRepo;
     private final BncRepository bncRepo;
-    private final BncGameMessageService bncGameMessageService;
+    private final BncGameMessageRepository bncGameMessageRepo;
     private final MarriageRequestRepository marriageRequestRepo;
     private final CakeRepository cakeRepo;
+    private final UserStatsRepository userStatsRepo;
+    private final GenshinChatUserRepository genshinChatUserRepo;
+    private final GenshinUserInventoryItemRepository genshinUserInventoryItemRepo;
+
 
     public H2CleanupService(
             ChatUserRepository chatUserRepo,
             ChatInfoRepository chatInfoRepo,
             BncRepository bncRepo,
-            BncGameMessageService bncGameMessageService,
+            BncGameMessageRepository bncGameMessageRepo,
             MarriageRequestRepository marriageRequestRepo,
-            CakeRepository cakeRepo
+            CakeRepository cakeRepo,
+            UserStatsRepository userStatsRepo,
+            GenshinChatUserRepository genshinChatUserRepo,
+            GenshinUserInventoryItemRepository genshinUserInventoryItemRepo
     ) {
         this.chatUserRepo = chatUserRepo;
         this.chatInfoRepo = chatInfoRepo;
         this.bncRepo = bncRepo;
-        this.bncGameMessageService = bncGameMessageService;
+        this.bncGameMessageRepo = bncGameMessageRepo;
         this.marriageRequestRepo = marriageRequestRepo;
         this.cakeRepo = cakeRepo;
+        this.userStatsRepo = userStatsRepo;
+        this.genshinChatUserRepo = genshinChatUserRepo;
+        this.genshinUserInventoryItemRepo = genshinUserInventoryItemRepo;
     }
-
 
     /**
-     * Deletes all users from DB without given activity period
-     *
-     * @return amount of users deleted
+     * Deletes all users from CHAT_USER table without given activity period
      */
     @Override
-    public long cleanInactiveUsers() {
-        return chatUserRepo.deleteByLastMessageDateLessThan(DatabaseCleanupService.inactivePeriodGeneral());
+    public void cleanInactiveChatUsers() {
+        chatUserRepo.deleteByLastMessageDateLessThan(inactivePeriodGeneral());
     }
 
     @Override
-    public long cleanEmptyChats() {
-        List<Long> chatIds = new ArrayList<>(chatInfoRepo.findDistinctchatId());
-        List<Long> chatsWithUsersIds = chatUserRepo.findDistinctChatId();
-        chatsWithUsersIds.forEach(chatIds::remove);
-        return chatInfoRepo.deleteByChatIdIn(chatIds);
+    public void cleanEmptyChats() {
+        chatInfoRepo.deleteEmptyChats();
     }
 
     @Override
-    public long cleanOldBncGames() {
-        var gamesToDelete = bncRepo.findByEditDateLessThan(DatabaseCleanupService.inactivePeriodGeneralTs());
-        bncRepo.deleteAll(gamesToDelete);
-        var gameIds = gamesToDelete.stream().map(BncGameSave::getId).collect(Collectors.toList());
-        if (!gameIds.isEmpty())
-            bncGameMessageService.deleteByGameIdIn(gameIds);
-        return gameIds.size();
+    public void cleanOldBncGames() {
+        bncRepo.deleteByEditDateLessThan(inactivePeriodGeneralTs());
+        bncGameMessageRepo.deleteOrphanMessages();
     }
 
     @Override
-    public long cleanOldMarriageRequests() {
-        return marriageRequestRepo.deleteByCreatedAtLessThan(DatabaseCleanupService.inactivePeriodGeneralTs());
+    public void cleanOldMarriageRequests() {
+        marriageRequestRepo.deleteByCreatedAtLessThan(inactivePeriodGeneralTs());
     }
 
     @Override
-    public long cleanOldCakes() {
-        return cakeRepo.deleteByCreatedAtLessThan(DatabaseCleanupService.inactivePeriodCake());
+    public void cleanOldCakes() {
+        cakeRepo.deleteByCreatedAtLessThan(inactivePeriodCake());
     }
 
     @Override
-    @Scheduled(fixedDelay = "2h")
-    public DbCleanupResults cleanAll() {
-        long users = cleanInactiveUsers();
-        long chats = cleanEmptyChats();
-        long bncGames = cleanOldBncGames();
-        long marriageRequests = cleanOldMarriageRequests();
-        long cakes = cleanOldCakes();
-        return new DbCleanupResults(users, chats, bncGames, marriageRequests, cakes);
+    public void cleanInactiveUserStats() {
+        userStatsRepo.deleteByUpdatedAtLessThan(inactivePeriodUserStats());
     }
+
+    @Override
+    public void cleanOldGenshinData() {
+        genshinChatUserRepo.deleteByUpdatedAtLessThan(inactivePeriodUserStats());
+        genshinUserInventoryItemRepo.deleteInactiveInventories();
+    }
+
 }

@@ -2,11 +2,13 @@ package com.senderman.lastkatkabot.feature.userstats.model;
 
 import com.senderman.lastkatkabot.feature.l10n.service.L10nService;
 import io.micronaut.core.annotation.Creator;
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.annotation.DateUpdated;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.MappedEntity;
 import io.micronaut.data.annotation.MappedProperty;
-import org.jetbrains.annotations.Nullable;
 
+import java.sql.Timestamp;
 import java.util.Objects;
 
 @MappedEntity("USER_STATS")
@@ -15,6 +17,10 @@ public class UserStats {
     @Id
     @MappedProperty("user_id")
     private final long userId;
+
+    @MappedProperty("name")
+    @Nullable
+    private String name;
 
     @MappedProperty("duels_total")
     private int duelsTotal;
@@ -36,17 +42,37 @@ public class UserStats {
     @MappedProperty("lover_id")
     private Long loverId;
 
+    @Nullable
+    @MappedProperty("updated_at")
+    @DateUpdated
+    private Timestamp updatedAt;
+
     @Creator
     public UserStats(long userId) {
         this.userId = userId;
+        this.name = null;
         this.duelsTotal = 0;
         this.duelWins = 0;
         this.bncScore = 0;
         this.locale = L10nService.DEFAULT_LOCALE;
     }
 
+    public UserStats(long userId, String name) {
+        this(userId);
+        this.name = name;
+    }
+
     public long getUserId() {
         return userId;
+    }
+
+    @Nullable
+    public String getName() {
+        return name;
+    }
+
+    public void setName(@Nullable String name) {
+        this.name = name;
     }
 
     public String getLocale() {
@@ -95,6 +121,14 @@ public class UserStats {
 
     public void setLoverId(@Nullable Long loverId) {
         this.loverId = loverId;
+    }
+
+    public Timestamp getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Timestamp updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public void increaseDuelWins() {

@@ -6,8 +6,8 @@ import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
-import com.senderman.lastkatkabot.feature.tracking.model.ChatUser;
-import com.senderman.lastkatkabot.feature.tracking.service.ChatUserService;
+import com.senderman.lastkatkabot.feature.userstats.model.UserStats;
+import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
 import jakarta.inject.Named;
 import org.jetbrains.annotations.NotNull;
@@ -18,11 +18,11 @@ import java.util.concurrent.ExecutorService;
 @Command
 public class WhoInChatCommand implements CommandExecutor {
 
-    private final ChatUserService chatUsers;
+    private final UserStatsService userStats;
     private final ExecutorService threadPool;
 
-    public WhoInChatCommand(ChatUserService chatUsers, @Named("generalNeedsPool") ExecutorService threadPool) {
-        this.chatUsers = chatUsers;
+    public WhoInChatCommand(UserStatsService userStats, @Named("generalNeedsPool") ExecutorService threadPool) {
+        this.userStats = userStats;
         this.threadPool = threadPool;
     }
 
@@ -56,7 +56,7 @@ public class WhoInChatCommand implements CommandExecutor {
         }
 
         threadPool.execute(() -> {
-            var users = chatUsers.findByChatId(chatId)
+            var users = userStats.findByChatId(chatId)
                     .stream()
                     .map(this::formatUser)
                     .toList();
@@ -83,7 +83,7 @@ public class WhoInChatCommand implements CommandExecutor {
 
     }
 
-    private String formatUser(ChatUser user) {
+    private String formatUser(UserStats user) {
         return "%s (<code>%d</code>)".formatted(Html.getUserLink(user.getUserId(), user.getName()), user.getUserId());
     }
 

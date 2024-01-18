@@ -191,9 +191,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
                 return null;
             }
 
-            if (!message.isUserMessage()) {
-                threadPool.execute(() -> updateUserLastMessageDate(message));
-            }
+            threadPool.execute(() -> updateActualUserData(message));
         }
 
         commandRegistry.handleUpdate(this, update);
@@ -220,13 +218,13 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     }
 
 
-    private void updateUserLastMessageDate(Message message) {
+    private void updateActualUserData(Message message) {
         var chatId = message.getChatId();
         var user = message.getFrom();
         var userId = user.getId();
         var name = user.getFirstName();
         var date = message.getDate();
-        activityTrackerService.updateLastMessageDate(chatId, userId, name, date);
+        activityTrackerService.updateActualUserData(chatId, userId, name, date);
     }
 
     private void onChatViolation(long chatId) {

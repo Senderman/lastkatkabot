@@ -1,38 +1,59 @@
 package com.senderman.lastkatkabot.feature.cleanup.service;
 
-import com.senderman.lastkatkabot.feature.cleanup.model.DbCleanupResults;
+
+import io.micronaut.scheduling.annotation.Scheduled;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
-public interface DatabaseCleanupService {
+public abstract class DatabaseCleanupService {
 
-    int INACTIVE_PERIOD_GENERAL_SECS = (int) TimeUnit.DAYS.toSeconds(14);
-    int INACTIVE_PERIOD_CAKE_SECS = (int) TimeUnit.MINUTES.toSeconds(40);
+    public static final int INACTIVE_PERIOD_CAKE_SECS = (int) TimeUnit.MINUTES.toSeconds(40);
+    // chatuser, marriages, bnc games
+    private final int INACTIVE_PERIOD_GENERAL_SECS = (int) TimeUnit.DAYS.toSeconds(14);
+    // userstats and genshin
+    private final long INACTIVE_PERIOD_USER_STATS = TimeUnit.DAYS.toSeconds(365);
 
-    static int inactivePeriodGeneral() {
+    protected int inactivePeriodGeneral() {
         return (int) (System.currentTimeMillis() / 1000 - INACTIVE_PERIOD_GENERAL_SECS);
     }
 
-    static Timestamp inactivePeriodGeneralTs() {
+    protected Timestamp inactivePeriodGeneralTs() {
         return Timestamp.valueOf(LocalDateTime.now().minusSeconds(INACTIVE_PERIOD_GENERAL_SECS));
     }
 
-    static Timestamp inactivePeriodCake() {
+    protected Timestamp inactivePeriodCake() {
         return Timestamp.valueOf(LocalDateTime.now().minusSeconds(INACTIVE_PERIOD_CAKE_SECS));
     }
 
-    long cleanInactiveUsers();
+    protected Timestamp inactivePeriodUserStats() {
+        return Timestamp.valueOf(LocalDateTime.now().minusSeconds(INACTIVE_PERIOD_USER_STATS));
+    }
 
-    long cleanEmptyChats();
+    public abstract void cleanInactiveChatUsers();
 
-    long cleanOldBncGames();
+    public abstract void cleanEmptyChats();
 
-    long cleanOldMarriageRequests();
+    public abstract void cleanOldBncGames();
 
-    long cleanOldCakes();
+    public abstract void cleanOldMarriageRequests();
 
-    DbCleanupResults cleanAll();
+    public abstract void cleanOldCakes();
+
+    public abstract void cleanInactiveUserStats();
+
+    public abstract void cleanOldGenshinData();
+
+    @Scheduled(fixedDelay = "2h")
+    public void cleanAll() {
+        cleanInactiveChatUsers();
+        cleanEmptyChats();
+        cleanOldBncGames();
+        cleanOldMarriageRequests();
+        cleanOldCakes();
+        cleanInactiveUserStats();
+        cleanOldGenshinData();
+    }
 
 }

@@ -3,8 +3,7 @@ package com.senderman.lastkatkabot.feature.love.command;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
-import com.senderman.lastkatkabot.feature.tracking.model.ChatUser;
-import com.senderman.lastkatkabot.feature.tracking.service.ChatUserService;
+import com.senderman.lastkatkabot.feature.userstats.model.UserStats;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import jakarta.inject.Named;
 import org.jetbrains.annotations.NotNull;
@@ -16,12 +15,10 @@ import java.util.stream.Collectors;
 @Command
 public class ChatPairsCommand implements CommandExecutor {
 
-    private final ChatUserService chatUsers;
     private final ExecutorService threadPool;
     private final UserStatsService userStats;
 
-    public ChatPairsCommand(ChatUserService chatUsers, @Named("generalNeedsPool") ExecutorService threadPool, UserStatsService userStats) {
-        this.chatUsers = chatUsers;
+    public ChatPairsCommand(@Named("generalNeedsPool") ExecutorService threadPool, UserStatsService userStats) {
         this.threadPool = threadPool;
         this.userStats = userStats;
     }
@@ -48,9 +45,9 @@ public class ChatPairsCommand implements CommandExecutor {
         }
 
         var text = new StringBuilder(ctx.getString("love.chatpairs.loverList"));
-        var users = chatUsers.findByChatId(ctx.chatId())
+        var users = userStats.findByChatId(ctx.chatId())
                 .stream()
-                .collect(Collectors.toMap(ChatUser::getUserId, ChatUser::getName));
+                .collect(Collectors.toMap(UserStats::getUserId, UserStats::getName));
         var lovers = userStats.findByIdAndLoverIdIn(users.keySet());
         if (lovers.isEmpty()) {
             ctx.reply(ctx.getString("love.chatpairs.loversEmpty")).callAsync(ctx.sender);

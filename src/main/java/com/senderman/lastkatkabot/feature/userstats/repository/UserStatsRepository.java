@@ -6,8 +6,10 @@ import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @JdbcRepository(dialect = Dialect.H2)
 public interface UserStatsRepository extends CrudRepository<UserStats, Long> {
@@ -27,5 +29,33 @@ public interface UserStatsRepository extends CrudRepository<UserStats, Long> {
 
     @Query("SELECT * FROM USER_STATS WHERE user_id IN (:ids) AND lover_id IN (:ids)")
     List<UserStats> findByIdAndLoverIdIn(Collection<Long> ids);
+
+    @Query("""
+            SELECT s.* FROM USER_STATS s
+            JOIN CHAT_USER u ON s.USER_ID = u.USER_ID
+            WHERE u.CHAT_ID = :chatId;
+            """)
+    List<UserStats> findByChatId(long chatId);
+
+    @Query("""
+            SELECT s.* FROM USER_STATS s
+            JOIN CHAT_USER u ON s.USER_ID = u.USER_ID
+            WHERE u.CHAT_ID = :chatId
+            ORDER BY RAND()
+            LIMIT :amount
+            """)
+    List<UserStats> findRandomUsersOfChat(long chatId, int amount);
+
+    @Query("""
+            SELECT s.* FROM USER_STATS s
+            JOIN CHAT_USER u ON s.USER_ID = u.USER_ID
+            WHERE u.CHAT_ID = :chatId
+            AND s.USER_ID = :userId;
+            """)
+    Optional<UserStats> findByChatIdAndUserId(long chatId, long userId);
+
+    void updateByUserId(long userId, String name);
+
+    void deleteByUpdatedAtLessThan(Timestamp updatedAt);
 
 }
