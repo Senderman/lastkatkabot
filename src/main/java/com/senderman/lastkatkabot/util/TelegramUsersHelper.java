@@ -62,7 +62,7 @@ public class TelegramUsersHelper {
      */
     public User findUserFirstName(long userId, L10nMessageContext ctx) {
         return Optional.of(userStatsService.findById(userId))
-                .map(u -> new User(u.getUserId(), u.getName(), false))
+                .map(u -> new User(u.getUserId(), Objects.requireNonNull(u.getName(), ""), false))
                 .or(() -> getUserDataFromTelegram(userId, ctx.sender))
                 .map(u -> {
                     if (u.getFirstName().isBlank())
