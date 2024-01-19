@@ -69,8 +69,10 @@ public class BncTopCommand implements CommandExecutor {
                     .append("\n");
         }
         var bncRecords = bncRecordsRepo.findAll();
-        if (bncRecords.isEmpty())
+        if (bncRecords.isEmpty()) {
+            ctx.reply(top.toString()).callAsync(ctx.sender);
             return;
+        }
 
         top.append("\n")
                 .append(ctx.getString("bnc.bnctop.speedRunTop"))
