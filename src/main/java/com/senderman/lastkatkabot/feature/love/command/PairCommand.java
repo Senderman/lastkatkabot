@@ -9,9 +9,9 @@ import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.feature.love.model.Love;
 import com.senderman.lastkatkabot.feature.userstats.model.UserStats;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
-import com.senderman.lastkatkabot.util.CurrentTime;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.Threads;
+import com.senderman.lastkatkabot.util.TimeUtils;
 import jakarta.inject.Named;
 import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -30,7 +30,7 @@ public class PairCommand implements CommandExecutor {
     private final UserStatsService userStatsService;
     private final ChatInfoService chatInfoService;
     private final Love love;
-    private final CurrentTime currentTime;
+    private final TimeUtils timeUtils;
     private final Set<Long> runningChatPairsGenerations;
     private final ExecutorService threadPool;
 
@@ -38,13 +38,13 @@ public class PairCommand implements CommandExecutor {
             UserStatsService userStatsService,
             ChatInfoService chatInfoService,
             Love love,
-            CurrentTime currentTime,
+            TimeUtils timeUtils,
             @Named("pairPool") ExecutorService threadPool
     ) {
         this.userStatsService = userStatsService;
         this.chatInfoService = chatInfoService;
         this.love = love;
-        this.currentTime = currentTime;
+        this.timeUtils = timeUtils;
         this.runningChatPairsGenerations = Collections.synchronizedSet(new HashSet<>());
         // I don't use pool from BotConfig, because it's already overloaded. /pair needs its own pool
         this.threadPool = threadPool;
@@ -74,7 +74,7 @@ public class PairCommand implements CommandExecutor {
         // ArrayList::new because we will use this list below
         List<String> lastPairs = Objects.requireNonNullElseGet(chatInfo.getLastPairs(), ArrayList::new);
         var lastPairGenerationDate = Objects.requireNonNullElse(chatInfo.getLastPairDate(), -1);
-        int currentDay = currentTime.getCurrentDay();
+        int currentDay = timeUtils.getCurrentDay();
 
         // pair of today already exists
         if (!lastPairs.isEmpty() && lastPairGenerationDate == currentDay) {

@@ -1,10 +1,7 @@
 package com.senderman.lastkatkabot.feature.bnc.model;
 
 import io.micronaut.core.annotation.Creator;
-import io.micronaut.data.annotation.Embeddable;
-import io.micronaut.data.annotation.EmbeddedId;
-import io.micronaut.data.annotation.MappedEntity;
-import io.micronaut.data.annotation.MappedProperty;
+import io.micronaut.data.annotation.*;
 
 import java.util.Objects;
 
@@ -53,6 +50,16 @@ public class BncRecord {
 
     public void setTimeSpent(long timeSpent) {
         this.timeSpent = timeSpent;
+    }
+
+    @Transient
+    public int getLength() {
+        return this.primaryKey.length;
+    }
+
+    @Transient
+    public boolean isHexadecimal() {
+        return this.primaryKey.hexadecimal;
     }
 
     @Embeddable

@@ -18,6 +18,7 @@ import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.feature.l10n.service.L10nService;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
+import com.senderman.lastkatkabot.util.TimeUtils;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -38,18 +39,22 @@ public class BncTelegramHandler implements RegexCommand {
     private final BncGameMessageService gameMessageRepo;
     private final BncRecordService recordRepo;
     private final L10nService localizationService;
+    private final TimeUtils timeUtils;
 
     public BncTelegramHandler(
             @Named("bncDatabaseManager") BncGamesManager gamesManager,
             UserStatsService usersRepo,
             BncGameMessageService gameMessageRepo,
             BncRecordService recordRepo,
-            L10nService localizationService) {
+            L10nService localizationService,
+            TimeUtils timeUtils
+    ) {
         this.gamesManager = gamesManager;
         this.usersRepo = usersRepo;
         this.gameMessageRepo = gameMessageRepo;
         this.recordRepo = recordRepo;
         this.localizationService = localizationService;
+        this.timeUtils = timeUtils;
     }
 
     @Override
@@ -158,7 +163,7 @@ public class BncTelegramHandler implements RegexCommand {
             newRecord.setUserId(userId);
             newRecord.setName(username);
             recordRepo.save(newRecord);
-            var recordText = ctx.getString("bnc.handler.firstRecord").formatted(formatTimeSpent(timeSpent));
+            var recordText = ctx.getString("bnc.handler.firstRecord").formatted(timeUtils.formatTimeSpent(timeSpent));
             ctx.replyToMessage(recordText).callAsync(ctx.sender);
             return;
         }
@@ -171,8 +176,8 @@ public class BncTelegramHandler implements RegexCommand {
             previousRecord.setTimeSpent(timeSpent);
             recordRepo.save(previousRecord);
             var recordText = ctx.getString("bnc.handler.newRecord").formatted(
-                    formatTimeSpent(previousTime),
-                    formatTimeSpent(timeSpent)
+                    timeUtils.formatTimeSpent(previousTime),
+                    timeUtils.formatTimeSpent(timeSpent)
             );
             ctx.reply(recordText).callAsync(ctx.sender);
         }
@@ -205,7 +210,7 @@ public class BncTelegramHandler implements RegexCommand {
         return ctx.getString("bnc.handler.gameStateStats")
                 .formatted(
                         formatHistory(history, ctx),
-                        formatTimeSpent(timeSpent)
+                        timeUtils.formatTimeSpent(timeSpent)
                 );
     }
 
@@ -217,15 +222,6 @@ public class BncTelegramHandler implements RegexCommand {
 
     private long getTimeSpent(BncGameState gameState) {
         return (System.currentTimeMillis() - gameState.startTime()) / 1000;
-    }
-
-    private String formatTimeSpent(long timeSpent) {
-        var sec = timeSpent;
-        var mins = sec / 60;
-        sec -= mins * 60;
-        var hours = mins / 60;
-        mins -= hours * 60;
-        return "%02d:%02d:%02d".formatted(hours, mins, sec);
     }
 
     private String formatResult(BncResult result, L10nMessageContext ctx) {

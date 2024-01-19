@@ -8,12 +8,12 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Singleton
-public class CurrentTime {
+public class TimeUtils {
 
     private final ZoneId timeZone;
     private final DateTimeFormatter dayFormat;
 
-    public CurrentTime(BotConfig config) {
+    public TimeUtils(BotConfig config) {
         this.timeZone = ZoneId.of(config.getTimezone());
         this.dayFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
     }
@@ -25,5 +25,14 @@ public class CurrentTime {
      */
     public int getCurrentDay() {
         return Integer.parseInt(ZonedDateTime.now(timeZone).format(dayFormat));
+    }
+
+    public String formatTimeSpent(long timeSpent) {
+        var sec = timeSpent;
+        var mins = sec / 60;
+        sec -= mins * 60;
+        var hours = mins / 60;
+        mins -= hours * 60;
+        return "%02d:%02d:%02d".formatted(hours, mins, sec);
     }
 }
