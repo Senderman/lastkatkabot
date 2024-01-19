@@ -7,8 +7,8 @@ import com.senderman.lastkatkabot.feature.genshin.model.Item;
 import com.senderman.lastkatkabot.feature.genshin.service.GenshinChatUserService;
 import com.senderman.lastkatkabot.feature.genshin.service.GenshinUserInventoryItemService;
 import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
-import com.senderman.lastkatkabot.util.CurrentTime;
 import com.senderman.lastkatkabot.util.Html;
+import com.senderman.lastkatkabot.util.TimeUtils;
 import jakarta.inject.Named;
 import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -23,18 +23,18 @@ public class WishCommand implements CommandExecutor {
 
     private final GenshinChatUserService userService;
     private final GenshinUserInventoryItemService inventoryItemService;
-    private final CurrentTime currentTime;
+    private final TimeUtils timeUtils;
     private final List<Item> genshinItems;
 
     public WishCommand(
             GenshinChatUserService userService,
             GenshinUserInventoryItemService inventoryItemService,
-            CurrentTime currentTime,
+            TimeUtils timeUtils,
             @Named("genshinItems") List<Item> genshinItems
     ) {
         this.userService = userService;
         this.inventoryItemService = inventoryItemService;
-        this.currentTime = currentTime;
+        this.timeUtils = timeUtils;
         this.genshinItems = genshinItems;
     }
 
@@ -59,7 +59,7 @@ public class WishCommand implements CommandExecutor {
         long userId = ctx.user().getId();
 
         var genshinUser = userService.findByChatIdAndUserId(chatId, userId);
-        var currentDay = currentTime.getCurrentDay();
+        var currentDay = timeUtils.getCurrentDay();
 
         if (genshinUser.getLastRollDate() == currentDay) {
             ctx.replyToMessage(ctx.getString("genshin.wish.wishedToday")).callAsync(ctx.sender);
