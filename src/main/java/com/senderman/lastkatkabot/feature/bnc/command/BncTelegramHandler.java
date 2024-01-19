@@ -9,9 +9,11 @@ import com.senderman.lastkatkabot.feature.bnc.BncGame;
 import com.senderman.lastkatkabot.feature.bnc.exception.*;
 import com.senderman.lastkatkabot.feature.bnc.model.BncGameMessage;
 import com.senderman.lastkatkabot.feature.bnc.model.BncGameState;
+import com.senderman.lastkatkabot.feature.bnc.model.BncRecord;
 import com.senderman.lastkatkabot.feature.bnc.model.BncResult;
 import com.senderman.lastkatkabot.feature.bnc.service.BncGameMessageService;
 import com.senderman.lastkatkabot.feature.bnc.service.BncGamesManager;
+import com.senderman.lastkatkabot.feature.bnc.service.BncRecordService;
 import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.feature.l10n.service.L10nService;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
@@ -33,16 +35,20 @@ public class BncTelegramHandler implements RegexCommand {
     private final Pattern pattern = Pattern.compile("(\\d|[a-fA-F]){4,16}");
     private final BncGamesManager gamesManager;
     private final UserStatsService usersRepo;
-    private final BncGameMessageService gameMessageService;
+    private final BncGameMessageService gameMessageRepo;
+    private final BncRecordService recordRepo;
     private final L10nService localizationService;
 
     public BncTelegramHandler(
             @Named("bncDatabaseManager") BncGamesManager gamesManager,
             UserStatsService usersRepo,
-            BncGameMessageService gameMessageService, L10nService localizationService) {
+            BncGameMessageService gameMessageRepo,
+            BncRecordService recordRepo,
+            L10nService localizationService) {
         this.gamesManager = gamesManager;
         this.usersRepo = usersRepo;
-        this.gameMessageService = gameMessageService;
+        this.gameMessageRepo = gameMessageRepo;
+        this.recordRepo = recordRepo;
         this.localizationService = localizationService;
     }
 
@@ -109,17 +115,17 @@ public class BncTelegramHandler implements RegexCommand {
     private void addMessageToDelete(Message message) {
         var chatId = message.getChatId();
         var messageId = message.getMessageId();
-        gameMessageService.save(new BncGameMessage(chatId, messageId));
+        gameMessageRepo.save(new BncGameMessage(chatId, messageId));
     }
 
     private void deleteGameMessages(long chatId, CommonAbsSender telegram) {
-        var gameMessages = gameMessageService.findByGameId(chatId);
+        var gameMessages = gameMessageRepo.findByGameId(chatId);
         if (gameMessages.isEmpty()) return;
 
         gameMessages.stream()
                 .map(BncGameMessage::getMessageId)
                 .forEach(msgId -> Methods.deleteMessage(chatId, msgId).callAsync(telegram));
-        gameMessageService.deleteByGameId(chatId);
+        gameMessageRepo.deleteByGameId(chatId);
     }
 
     public void processWin(BncGameState game, L10nMessageContext ctx, BncResult result) {
@@ -134,14 +140,42 @@ public class BncTelegramHandler implements RegexCommand {
         gamesManager.deleteGame(chatId);
 
         var username = Html.htmlSafe(ctx.user().getFirstName());
+        long timeSpent = getTimeSpent(gameState);
         var text = ctx.getString("bnc.handler.userWon").formatted(
                 username,
                 BncGame.totalAttempts(gameState.length(), gameState.isHexadecimal()) - result.attempts(),
                 score,
-                formattedHistoryAndTime(gameState, ctx)
+                formattedHistoryAndTime(gameState.history(), timeSpent, ctx)
         );
         deleteGameMessages(chatId, ctx.sender);
         ctx.reply(text).callAsync(ctx.sender);
+
+        var previousRecordOptional = recordRepo.findByLengthAndHexadecimal(gameState.length(), gameState.isHexadecimal());
+        // if there wasn't any record before
+        if (previousRecordOptional.isEmpty()) {
+            var newRecord = new BncRecord(gameState.length(), gameState.isHexadecimal());
+            newRecord.setTimeSpent(timeSpent);
+            newRecord.setUserId(userId);
+            newRecord.setName(username);
+            recordRepo.save(newRecord);
+            var recordText = ctx.getString("bnc.handler.firstRecord").formatted(formatTimeSpent(timeSpent));
+            ctx.replyToMessage(recordText).callAsync(ctx.sender);
+            return;
+        }
+        // if there's a new record taken
+        var previousRecord = previousRecordOptional.get();
+        long previousTime = previousRecord.getTimeSpent();
+        if (timeSpent < previousTime) {
+            previousRecord.setName(username);
+            previousRecord.setUserId(userId);
+            previousRecord.setTimeSpent(timeSpent);
+            recordRepo.save(previousRecord);
+            var recordText = ctx.getString("bnc.handler.newRecord").formatted(
+                    formatTimeSpent(previousTime),
+                    formatTimeSpent(timeSpent)
+            );
+            ctx.reply(recordText).callAsync(ctx.sender);
+        }
     }
 
     public void processGameOver(L10nMessageContext ctx) {
@@ -150,7 +184,7 @@ public class BncTelegramHandler implements RegexCommand {
         gamesManager.deleteGame(chatId);
         deleteGameMessages(chatId, ctx.sender);
         var text = ctx.getString("bnc.handler.gameOver")
-                .formatted(gameState.answer(), formattedHistoryAndTime(gameState, ctx));
+                .formatted(gameState.answer(), formattedHistoryAndTime(gameState.history(), getTimeSpent(gameState), ctx));
         ctx.reply(text).callAsync(ctx.sender);
     }
 
@@ -163,15 +197,15 @@ public class BncTelegramHandler implements RegexCommand {
         deleteGameMessages(chatId, ctx.sender);
 
         var text = ctx.getString("bnc.handler.forceFinish")
-                .formatted(gameState.answer(), formattedHistoryAndTime(gameState, ctx));
+                .formatted(gameState.answer(), formattedHistoryAndTime(gameState.history(), getTimeSpent(gameState), ctx));
         Methods.sendMessage(chatId, text).callAsync(ctx.sender);
     }
 
-    private String formattedHistoryAndTime(BncGameState state, L10nMessageContext ctx) {
+    private String formattedHistoryAndTime(List<BncResult> history, long timeSpent, L10nMessageContext ctx) {
         return ctx.getString("bnc.handler.gameStateStats")
                 .formatted(
-                        formatHistory(state.history(), ctx),
-                        formatTimeSpent((System.currentTimeMillis() - state.startTime()) / 1000)
+                        formatHistory(history, ctx),
+                        formatTimeSpent(timeSpent)
                 );
     }
 
@@ -179,6 +213,10 @@ public class BncTelegramHandler implements RegexCommand {
         return history.stream()
                 .map(e -> ctx.getString("bnc.handler.historyLine").formatted(e.number(), e.bulls(), e.cows()))
                 .collect(Collectors.joining("\n"));
+    }
+
+    private long getTimeSpent(BncGameState gameState) {
+        return (System.currentTimeMillis() - gameState.startTime()) / 1000;
     }
 
     private String formatTimeSpent(long timeSpent) {
