@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface BncRecordService {
 
-    List<BncRecord> findAllOrderByLengthAndHexadecimal();
+    List<BncRecord> findAllOrderByHexadecimalAndLength();
 
     Optional<BncRecord> findByLengthAndHexadecimal(int length, boolean hexadecimal);
 

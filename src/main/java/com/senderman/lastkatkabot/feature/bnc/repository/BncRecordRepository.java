@@ -10,6 +10,6 @@ import java.util.List;
 @JdbcRepository(dialect = Dialect.H2)
 public interface BncRecordRepository extends CrudRepository<BncRecord, BncRecord.PrimaryKey> {
 
-    List<BncRecord> findAllOrderByLengthAndHexadecimal();
+    List<BncRecord> findAllOrderByHexadecimalAndLength();
 
 }
