@@ -68,6 +68,11 @@ public class BncTopCommand implements CommandExecutor {
                     .append(formatUser(user.getUserId(), user.getBncScore(), ctx))
                     .append("\n");
         }
+        // do not send speedrun top if requested local group stats
+        if (chatTop) {
+            ctx.reply(top.toString()).callAsync(ctx.sender);
+            return;
+        }
         var bncRecords = bncRecordsRepo.findAll();
         if (bncRecords.isEmpty()) {
             ctx.reply(top.toString()).callAsync(ctx.sender);
