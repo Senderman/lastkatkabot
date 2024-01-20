@@ -164,7 +164,7 @@ public class BncTelegramHandler implements RegexCommand {
             newRecord.setName(username);
             recordRepo.save(newRecord);
             var recordText = ctx.getString("bnc.handler.firstRecord").formatted(timeUtils.formatTimeSpent(timeSpent));
-            ctx.replyToMessage(recordText).callAsync(ctx.sender);
+            ctx.reply(recordText).callAsync(ctx.sender);
             return;
         }
         // if there's a new record taken

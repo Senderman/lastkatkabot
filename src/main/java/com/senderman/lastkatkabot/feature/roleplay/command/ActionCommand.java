@@ -26,7 +26,7 @@ public class ActionCommand implements CommandExecutor {
         ctx.setArgumentsLimit(1);
         if (ctx.argumentsLength() < 1) return;
 
-        var action = Html.htmlSafe(ctx.user().getFirstName()) + " " + ctx.argument(0);
+        var action = "<i>" + Html.htmlSafe(ctx.user().getFirstName()) + " " + ctx.argument(0) + "</i>";
         var sm = Methods.sendMessage(ctx.chatId(), action);
         if (ctx.message().isReply()) {
             sm.inReplyTo(ctx.message().getReplyToMessage());

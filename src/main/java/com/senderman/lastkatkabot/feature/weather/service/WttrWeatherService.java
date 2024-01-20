@@ -83,7 +83,7 @@ public class WttrWeatherService implements WeatherService {
     }
 
     private String urlEncodeLocation(String location) {
-        return URLEncoder.encode(location, StandardCharsets.UTF_8);
+        return URLEncoder.encode(location, StandardCharsets.UTF_8).replace("+", "%20");
     }
 
     private String getImageLink(String location, String locale) {
