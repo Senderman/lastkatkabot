@@ -17,9 +17,10 @@ public class H2BncRecordService implements BncRecordService {
     }
 
     @Override
-    public List<BncRecord> findAll() {
-        return repo.findAll();
+    public List<BncRecord> findAllOrderByLengthAndHexadecimal() {
+        return repo.findAllOrderByLengthAndHexadecimal();
     }
+
 
     @Override
     public Optional<BncRecord> findByLengthAndHexadecimal(int length, boolean hexadecimal) {

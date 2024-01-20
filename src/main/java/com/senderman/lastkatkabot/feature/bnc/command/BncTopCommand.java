@@ -73,7 +73,7 @@ public class BncTopCommand implements CommandExecutor {
             ctx.reply(top.toString()).callAsync(ctx.sender);
             return;
         }
-        var bncRecords = bncRecordsRepo.findAll();
+        var bncRecords = bncRecordsRepo.findAllOrderByLengthAndHexadecimal();
         if (bncRecords.isEmpty()) {
             ctx.reply(top.toString()).callAsync(ctx.sender);
             return;
