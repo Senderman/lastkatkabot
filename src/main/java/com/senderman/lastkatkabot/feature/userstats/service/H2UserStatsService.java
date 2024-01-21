@@ -19,7 +19,7 @@ public class H2UserStatsService implements UserStatsService {
 
     @Override
     public UserStats findById(long userId) {
-        return repo.findById(userId).orElseGet(() -> new UserStats(userId));
+        return repo.findById(userId).orElseGet(() -> new UserStats(userId, ""));
     }
 
     @Override

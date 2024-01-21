@@ -55,7 +55,7 @@ public class TelegramUsersHelper {
      */
     public User findUserFirstName(long userId, L10nMessageContext ctx) {
         var user = userStatsService.findById(userId);
-        if (user.getName() == null || user.getName().isBlank()) {
+        if (user.getName().isBlank()) {
             user.setName(ctx.getString("common.noName"));
         }
         return new User(user.getUserId(), user.getName(), false);

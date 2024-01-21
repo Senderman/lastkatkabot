@@ -19,7 +19,6 @@ public class UserStats {
     private final long userId;
 
     @MappedProperty("name")
-    @Nullable
     private String name;
 
     @MappedProperty("duels_total")
@@ -66,7 +65,6 @@ public class UserStats {
         return userId;
     }
 
-    @Nullable
     public String getName() {
         return name;
     }
