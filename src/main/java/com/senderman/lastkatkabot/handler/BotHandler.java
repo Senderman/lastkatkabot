@@ -102,7 +102,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             } catch (Throwable e) {
                 logger.error(e.getMessage(), e);
                 notifyUserAboutError(update);
-                sendUpdateErrorAsFile(update, e, config.getNotificationChannelId());
+                sendUpdateErrorAsFile(update, e);
             }
         }
     }
@@ -127,11 +127,10 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     /**
      * Send error stacktrace and the update that caused it somewhere, as file
      *
-     * @param update update that causes the error. Maybe be null, so it won't be shown in the sent logs
+     * @param update update that causes the error. Could be null, so it won't be shown in the sent logs
      * @param e      the error
-     * @param chatId where to send
      */
-    private void sendUpdateErrorAsFile(@Nullable Update update, Throwable e, long chatId) {
+    public void sendUpdateErrorAsFile(@Nullable Update update, Throwable e) {
         try (var baos = new ByteArrayOutputStream()) {
             var pw = new PrintWriter(baos);
             e.printStackTrace(pw);
@@ -141,7 +140,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             try (var bais = new ByteArrayInputStream(baos.toByteArray())) {
                 var date = ZonedDateTime.now(ZoneId.of(config.getTimezone())).format(DateTimeFormatter.ISO_INSTANT);
                 Methods.sendDocument()
-                        .setChatId(chatId)
+                        .setChatId(config.getNotificationChannelId())
                         .setFile(config.getUsername() + "-" + date + ".log", bais)
                         .setCaption("⚠️ <b>Ошибка обработки апдейта</b>\n" + e.getMessage())
                         .enableHtml()

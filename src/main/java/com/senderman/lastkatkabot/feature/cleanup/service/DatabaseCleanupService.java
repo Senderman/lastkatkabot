@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.feature.cleanup.service;
 
 
+import com.senderman.lastkatkabot.handler.BotHandler;
 import io.micronaut.scheduling.annotation.Scheduled;
 
 import java.sql.Timestamp;
@@ -14,6 +15,12 @@ public abstract class DatabaseCleanupService {
     private final int INACTIVE_PERIOD_GENERAL_SECS = (int) TimeUnit.DAYS.toSeconds(14);
     // userstats and genshin
     private final long INACTIVE_PERIOD_USER_STATS = TimeUnit.DAYS.toSeconds(365);
+
+    private final BotHandler botHandler;
+
+    public DatabaseCleanupService(BotHandler botHandler) {
+        this.botHandler = botHandler;
+    }
 
     protected int inactivePeriodGeneral() {
         return (int) (System.currentTimeMillis() / 1000 - INACTIVE_PERIOD_GENERAL_SECS);
@@ -49,14 +56,18 @@ public abstract class DatabaseCleanupService {
 
     @Scheduled(fixedDelay = "2h")
     public void cleanAll() {
-        cleanInactiveChatUsers();
-        cleanEmptyChats();
-        cleanOldBncGames();
-        cleanOldMarriageRequests();
-        cleanOldCakes();
-        cleanInactiveUserStats();
-        cleanOldGenshinData();
-        defragmentFeedbackIds();
+        try {
+            cleanInactiveChatUsers();
+            cleanEmptyChats();
+            cleanOldBncGames();
+            cleanOldMarriageRequests();
+            cleanOldCakes();
+            cleanInactiveUserStats();
+            cleanOldGenshinData();
+            defragmentFeedbackIds();
+        } catch (Throwable t) {
+            botHandler.sendUpdateErrorAsFile(null, t);
+        }
     }
 
 }

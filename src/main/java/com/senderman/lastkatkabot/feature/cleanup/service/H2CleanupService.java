@@ -10,6 +10,7 @@ import com.senderman.lastkatkabot.feature.genshin.repository.GenshinUserInventor
 import com.senderman.lastkatkabot.feature.love.repository.MarriageRequestRepository;
 import com.senderman.lastkatkabot.feature.tracking.repository.ChatUserRepository;
 import com.senderman.lastkatkabot.feature.userstats.repository.UserStatsRepository;
+import com.senderman.lastkatkabot.handler.BotHandler;
 import io.micronaut.data.connection.annotation.Connectable;
 import jakarta.inject.Singleton;
 
@@ -43,8 +44,10 @@ public class H2CleanupService extends DatabaseCleanupService {
             GenshinChatUserRepository genshinChatUserRepo,
             GenshinUserInventoryItemRepository genshinUserInventoryItemRepo,
             FeedbackRepository feedbackRepo,
-            DataSource dataSource
+            DataSource dataSource,
+            BotHandler botHandler
     ) {
+        super(botHandler);
         this.chatUserRepo = chatUserRepo;
         this.chatInfoRepo = chatInfoRepo;
         this.bncRepo = bncRepo;
@@ -103,11 +106,9 @@ public class H2CleanupService extends DatabaseCleanupService {
     @Connectable
     public void defragmentFeedbackIds() {
         var feedbacks = feedbackRepo.findAll();
-        feedbackRepo.deleteAll();
         var sql = "TRUNCATE TABLE FEEDBACK RESTART IDENTITY";
         try (var conn = dataSource.getConnection()) {
-            var st = conn.prepareStatement(sql);
-            st.execute();
+            conn.prepareStatement(sql).execute();
             feedbackRepo.saveAll(feedbacks);
         } catch (SQLException e) {
             throw new RuntimeException(e);
