@@ -58,4 +58,11 @@ public interface UserStatsRepository extends CrudRepository<UserStats, Long> {
 
     void deleteByUpdatedAtLessThan(Timestamp updatedAt);
 
+    @Query("""
+            UPDATE USER_STATS
+            SET LOVER_ID = NULL
+            WHERE LOVER_ID NOT IN (SELECT USER_ID FROM USER_STATS)
+            """)
+    void updateNonExistentLovers();
+
 }

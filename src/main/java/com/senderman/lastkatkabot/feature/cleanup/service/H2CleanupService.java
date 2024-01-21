@@ -79,6 +79,7 @@ public class H2CleanupService extends DatabaseCleanupService {
     @Override
     public void cleanInactiveUserStats() {
         userStatsRepo.deleteByUpdatedAtLessThan(inactivePeriodUserStats());
+        userStatsRepo.updateNonExistentLovers();
     }
 
     @Override
