@@ -4,12 +4,17 @@ import com.senderman.lastkatkabot.feature.bnc.repository.BncGameMessageRepositor
 import com.senderman.lastkatkabot.feature.bnc.repository.BncRepository;
 import com.senderman.lastkatkabot.feature.cake.repository.CakeRepository;
 import com.senderman.lastkatkabot.feature.chatsettings.repository.ChatInfoRepository;
+import com.senderman.lastkatkabot.feature.feedback.repository.FeedbackRepository;
 import com.senderman.lastkatkabot.feature.genshin.repository.GenshinChatUserRepository;
 import com.senderman.lastkatkabot.feature.genshin.repository.GenshinUserInventoryItemRepository;
 import com.senderman.lastkatkabot.feature.love.repository.MarriageRequestRepository;
 import com.senderman.lastkatkabot.feature.tracking.repository.ChatUserRepository;
 import com.senderman.lastkatkabot.feature.userstats.repository.UserStatsRepository;
+import io.micronaut.data.connection.annotation.Connectable;
 import jakarta.inject.Singleton;
+
+import javax.sql.DataSource;
+import java.sql.SQLException;
 
 @Singleton
 public class H2CleanupService extends DatabaseCleanupService {
@@ -23,6 +28,8 @@ public class H2CleanupService extends DatabaseCleanupService {
     private final UserStatsRepository userStatsRepo;
     private final GenshinChatUserRepository genshinChatUserRepo;
     private final GenshinUserInventoryItemRepository genshinUserInventoryItemRepo;
+    private final FeedbackRepository feedbackRepo;
+    private final DataSource dataSource;
 
 
     public H2CleanupService(
@@ -34,7 +41,9 @@ public class H2CleanupService extends DatabaseCleanupService {
             CakeRepository cakeRepo,
             UserStatsRepository userStatsRepo,
             GenshinChatUserRepository genshinChatUserRepo,
-            GenshinUserInventoryItemRepository genshinUserInventoryItemRepo
+            GenshinUserInventoryItemRepository genshinUserInventoryItemRepo,
+            FeedbackRepository feedbackRepo,
+            DataSource dataSource
     ) {
         this.chatUserRepo = chatUserRepo;
         this.chatInfoRepo = chatInfoRepo;
@@ -45,6 +54,8 @@ public class H2CleanupService extends DatabaseCleanupService {
         this.userStatsRepo = userStatsRepo;
         this.genshinChatUserRepo = genshinChatUserRepo;
         this.genshinUserInventoryItemRepo = genshinUserInventoryItemRepo;
+        this.feedbackRepo = feedbackRepo;
+        this.dataSource = dataSource;
     }
 
     /**
@@ -86,6 +97,21 @@ public class H2CleanupService extends DatabaseCleanupService {
     public void cleanOldGenshinData() {
         genshinChatUserRepo.deleteByUpdatedAtLessThan(inactivePeriodUserStats());
         genshinUserInventoryItemRepo.deleteInactiveInventories();
+    }
+
+    @Override
+    @Connectable
+    public void defragmentFeedbackIds() {
+        var feedbacks = feedbackRepo.findAll();
+        feedbackRepo.deleteAll();
+        var sql = "TRUNCATE TABLE FEEDBACK RESTART IDENTITY";
+        try (var conn = dataSource.getConnection()) {
+            var st = conn.prepareStatement(sql);
+            st.execute();
+            feedbackRepo.saveAll(feedbacks);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

@@ -45,6 +45,8 @@ public abstract class DatabaseCleanupService {
 
     public abstract void cleanOldGenshinData();
 
+    public abstract void defragmentFeedbackIds();
+
     @Scheduled(fixedDelay = "2h")
     public void cleanAll() {
         cleanInactiveChatUsers();
@@ -54,6 +56,7 @@ public abstract class DatabaseCleanupService {
         cleanOldCakes();
         cleanInactiveUserStats();
         cleanOldGenshinData();
+        defragmentFeedbackIds();
     }
 
 }
