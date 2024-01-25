@@ -96,11 +96,10 @@ public class RunSqlCommand implements CommandExecutor {
             colWidth[i] = getMaxColumnSize(rs, i + 1);
             sb.append(String.format("| %" + colWidth[i] + "s", meta.getColumnLabel(i + 1)));
         }
-        sb.append("|\n");
         String horizontalLine = getHorizontalLine(colWidth);
+        sb.append("|\n").append(horizontalLine);
         rs.beforeFirst();
         while (rs.next()) {
-            sb.append(horizontalLine);
             for (int i = 0; i < totalColumns; i++) {
                 sb.append(String.format("| %" + colWidth[i] + "s", rs.getString(i + 1)));
             }
