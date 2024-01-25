@@ -3,7 +3,6 @@ package com.senderman.lastkatkabot.feature.access.command;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
-import com.senderman.lastkatkabot.util.Html;
 import io.micronaut.data.connection.annotation.Connectable;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
@@ -90,11 +89,8 @@ public class RunSqlCommand implements CommandExecutor {
 
     private String formatResultSet(ResultSet rs) throws SQLException {
         var meta = rs.getMetaData();
-        int totalColumns = meta.getColumnCount();
-        if (totalColumns == 1 && rs.next()) {
-            return Html.htmlSafe(rs.getString(1));
-        }
         var sb = new StringBuilder("<code>");
+        int totalColumns = meta.getColumnCount();
         int[] colWidth = new int[totalColumns];
         for (int i = 0; i < totalColumns; i++) {
             colWidth[i] = getMaxColumnSize(rs, i + 1);
