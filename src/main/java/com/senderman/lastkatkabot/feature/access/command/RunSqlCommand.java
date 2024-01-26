@@ -47,7 +47,7 @@ public class RunSqlCommand implements CommandExecutor {
             return;
         }
         var query = ctx.argument(0);
-        var firstKeyword = query.split("\\s+", 2)[0];
+        var firstKeyword = query.split("\\s+", 2)[0].toUpperCase();
         switch (firstKeyword) {
             case "SELECT" -> ctx.replyToMessage(executeQuery(query)).callAsync(ctx.sender);
             case "INSERT", "UPDATE", "DELETE" ->
