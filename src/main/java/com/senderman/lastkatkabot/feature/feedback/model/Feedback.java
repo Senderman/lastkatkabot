@@ -15,32 +15,50 @@ public class Feedback {
 
     @MappedProperty("message")
     private final String message;
+
     @MappedProperty("user_id")
     private final long userId;
+
     @MappedProperty("user_name")
     private final String userName;
+
     @MappedProperty("chat_id")
     private final long chatId;
+
     @MappedProperty("chat_title")
     @Nullable
     private final String chatTitle;
+
     @MappedProperty("message_id")
     private final int messageId;
+
     @Id
     @GeneratedValue
     @MappedProperty("id")
     private int id;
+
     @MappedProperty("replied")
     private boolean replied;
 
+    @MappedProperty("user_locale")
+    private String userLocale;
+
     @Creator
-    public Feedback(String message, long userId, String userName, long chatId, @Nullable String chatTitle, int messageId) {
+    public Feedback(
+            String message,
+            long userId,
+            String userName,
+            long chatId,
+            @Nullable String chatTitle,
+            int messageId,
+            String userLocale) {
         this.message = message;
         this.userId = userId;
         this.userName = userName;
         this.chatId = chatId;
         this.chatTitle = chatTitle;
         this.messageId = messageId;
+        this.userLocale = userLocale;
     }
 
     public int getId() {
@@ -82,6 +100,14 @@ public class Feedback {
 
     public void setReplied(boolean replied) {
         this.replied = replied;
+    }
+
+    public String getUserLocale() {
+        return userLocale;
+    }
+
+    public void setUserLocale(String userLocale) {
+        this.userLocale = userLocale;
     }
 
     @Override

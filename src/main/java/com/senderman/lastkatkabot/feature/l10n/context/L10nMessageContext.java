@@ -13,7 +13,7 @@ public class L10nMessageContext extends MessageContext {
     public L10nMessageContext(CommonAbsSender sender, Update update, String arguments, L10nService localizationService) {
         super(sender, update, arguments);
         this.localizationService = localizationService;
-        this.locale = localizationService.getLocale(user().getId());
+        this.locale = localizationService.getLocale(user().getId(), user().getFirstName(), user().getLanguageCode());
     }
 
     public String getLocale() {

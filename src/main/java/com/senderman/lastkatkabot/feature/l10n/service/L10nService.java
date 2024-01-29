@@ -7,7 +7,6 @@ import jakarta.inject.Singleton;
 @Singleton
 public class L10nService extends ResourceBundleLocalizationService {
 
-    public static final String DEFAULT_LOCALE = "ru";
     private final UserStatsService users;
 
     public L10nService(UserStatsService users) {
@@ -15,7 +14,7 @@ public class L10nService extends ResourceBundleLocalizationService {
         this.users = users;
     }
 
-    public String getLocale(long userId) {
-        return users.findById(userId).getLocale();
+    public String getLocale(long userId, String name, String locale) {
+        return users.findById(userId, name, locale).getLocale();
     }
 }

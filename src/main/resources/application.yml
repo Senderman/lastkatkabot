@@ -44,3 +44,10 @@ bot:
 
   mainAdminId: ${main-admin-id} # id of main admin
   notificationChannelId: ${notification-channel-id} # id of channel/group where feedbacks and error logs will be sent
+
+  locale:
+    defaultLocale: ru
+    supportedLocales: [ "ru", "uk" ]
+
+
+

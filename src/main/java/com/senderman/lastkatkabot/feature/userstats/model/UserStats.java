@@ -1,6 +1,5 @@
 package com.senderman.lastkatkabot.feature.userstats.model;
 
-import com.senderman.lastkatkabot.feature.l10n.service.L10nService;
 import io.micronaut.core.annotation.Creator;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.DateUpdated;
@@ -18,6 +17,7 @@ public class UserStats {
     @MappedProperty("user_id")
     private final long userId;
 
+    // Has to be updated every time the entity is accessed
     @MappedProperty("name")
     private String name;
 
@@ -30,6 +30,7 @@ public class UserStats {
     @MappedProperty("bnc_score")
     private int bncScore;
 
+    // has to be set to the one of the supported locales on entity insert, and changed only by user request
     @MappedProperty("locale")
     private String locale;
 
@@ -47,18 +48,13 @@ public class UserStats {
     private Timestamp updatedAt;
 
     @Creator
-    public UserStats(long userId) {
+    public UserStats(long userId, String name, String locale) {
         this.userId = userId;
-        this.name = null;
+        this.name = name;
+        this.locale = locale;
         this.duelsTotal = 0;
         this.duelWins = 0;
         this.bncScore = 0;
-        this.locale = L10nService.DEFAULT_LOCALE;
-    }
-
-    public UserStats(long userId, String name) {
-        this(userId);
-        this.name = name;
     }
 
     public long getUserId() {

@@ -2,6 +2,8 @@ package com.senderman.lastkatkabot.config;
 
 import io.micronaut.context.annotation.ConfigurationProperties;
 
+import java.util.List;
+
 @ConfigurationProperties("bot")
 public interface BotConfig {
 
@@ -14,5 +16,16 @@ public interface BotConfig {
     long getMainAdminId();
 
     long getNotificationChannelId();
+
+    LocaleConfig getLocale();
+
+    @ConfigurationProperties("locale")
+    interface LocaleConfig {
+
+        String getDefaultLocale();
+
+        List<String> getSupportedLocales();
+
+    }
 
 }

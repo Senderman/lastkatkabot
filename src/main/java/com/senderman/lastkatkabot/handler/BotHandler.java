@@ -36,6 +36,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -223,7 +224,8 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         var userId = user.getId();
         var name = user.getFirstName();
         var date = message.getDate();
-        activityTrackerService.updateActualUserData(chatId, userId, name, date);
+        var locale = Objects.requireNonNullElse(message.getFrom().getLanguageCode(), config.getLocale().getDefaultLocale());
+        activityTrackerService.updateActualUserData(chatId, userId, name, locale, date);
     }
 
     private void onChatViolation(long chatId) {
