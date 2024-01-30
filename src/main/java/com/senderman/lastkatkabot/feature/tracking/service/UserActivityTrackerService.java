@@ -3,6 +3,7 @@ package com.senderman.lastkatkabot.feature.tracking.service;
 import com.senderman.lastkatkabot.feature.tracking.model.ChatUser;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.scheduling.annotation.Scheduled;
 import jakarta.inject.Singleton;
 
@@ -28,14 +29,21 @@ public class UserActivityTrackerService {
         meterRegistry.gauge(METER_NAME, cacheSize);
     }
 
-    public synchronized void updateActualUserData(long chatId, long userId, String name, int lastMessageDate) {
+    public synchronized void updateActualUserData(
+            long chatId,
+            long userId,
+            String name,
+            @Nullable String locale,
+            int lastMessageDate
+    ) {
         var pk = new ChatUser.PrimaryKey(chatId, userId);
         cache.compute(pk, (k, v) -> {
             if (v == null) {
                 cacheSize.incrementAndGet();
-                return new TrackData(name, lastMessageDate);
+                return new TrackData(name, locale, lastMessageDate);
             }
             v.name = name;
+            v.locale = locale;
             v.lastMessageDate = lastMessageDate;
             return v;
         });
@@ -50,7 +58,7 @@ public class UserActivityTrackerService {
             // if not in PM
             if (k.getUserId() != k.getChatId())
                 chatUserService.save(new ChatUser(k, v.lastMessageDate));
-            userStatsService.updateOrCreateByUserId(k.getUserId(), v.name);
+            userStatsService.updateOrCreateByUserId(k.getUserId(), v.name, v.locale);
         });
         cache.clear();
         cacheSize.set(0);
@@ -58,10 +66,12 @@ public class UserActivityTrackerService {
 
     private static class TrackData {
         private String name;
+        private String locale;
         private int lastMessageDate;
 
-        public TrackData(String name, int lastMessageDate) {
+        public TrackData(String name, String locale, int lastMessageDate) {
             this.name = name;
+            this.locale = locale;
             this.lastMessageDate = lastMessageDate;
         }
     }

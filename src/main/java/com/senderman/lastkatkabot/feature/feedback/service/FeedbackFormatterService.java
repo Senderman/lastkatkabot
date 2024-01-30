@@ -15,7 +15,7 @@ public class FeedbackFormatterService {
     }
 
     public String format(Feedback feedback) {
-        String locale = l.getLocale(feedback.getUserId());
+        String locale = feedback.getUserLocale();
         return l.getString("feedback.text", locale)
                 .formatted(
                         feedback.getId(),

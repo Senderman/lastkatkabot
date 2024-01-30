@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -70,7 +71,8 @@ public class SendFeedbackCommand implements CommandExecutor {
                 user.getFirstName(),
                 ctx.chatId(),
                 ctx.message().getChat().getTitle(),
-                ctx.message().getMessageId()
+                ctx.message().getMessageId(),
+                Objects.requireNonNullElse(user.getLanguageCode(), config.getLocale().getDefaultLocale())
         );
         feedback = feedbackRepo.insert(feedback);
 

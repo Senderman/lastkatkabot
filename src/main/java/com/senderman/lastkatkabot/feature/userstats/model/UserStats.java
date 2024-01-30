@@ -1,6 +1,5 @@
 package com.senderman.lastkatkabot.feature.userstats.model;
 
-import com.senderman.lastkatkabot.feature.l10n.service.L10nService;
 import io.micronaut.core.annotation.Creator;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.DateUpdated;
@@ -30,6 +29,7 @@ public class UserStats {
     @MappedProperty("bnc_score")
     private int bncScore;
 
+    @Nullable
     @MappedProperty("locale")
     private String locale;
 
@@ -49,11 +49,9 @@ public class UserStats {
     @Creator
     public UserStats(long userId) {
         this.userId = userId;
-        this.name = null;
         this.duelsTotal = 0;
         this.duelWins = 0;
         this.bncScore = 0;
-        this.locale = L10nService.DEFAULT_LOCALE;
     }
 
     public UserStats(long userId, String name) {
@@ -73,6 +71,7 @@ public class UserStats {
         this.name = name;
     }
 
+    @Nullable
     public String getLocale() {
         return locale;
     }

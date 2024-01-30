@@ -27,18 +27,17 @@ public class Beans {
     }
 
     @Singleton
-    public Love love() throws IOException {
-        String[] locales = {"ru", "uk"};
+    public Love love(BotConfig config) throws IOException {
         var typeRef = new TypeReference<List<String>>() {
         };
         var mapper = new YAMLMapper();
         String basePath = "/love/";
         var result = new HashMap<String, List<String>>();
-        for (var locale : locales) {
+        for (var locale : config.getLocale().getSupportedLocales()) {
             var value = mapper.readValue(getClass().getResourceAsStream(basePath + locale + ".yml"), typeRef);
             result.put(locale, value);
         }
-        return new Love(result);
+        return new Love(result, config);
     }
 
     @Singleton

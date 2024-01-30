@@ -223,7 +223,8 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         var userId = user.getId();
         var name = user.getFirstName();
         var date = message.getDate();
-        activityTrackerService.updateActualUserData(chatId, userId, name, date);
+        var locale = user.getLanguageCode();
+        activityTrackerService.updateActualUserData(chatId, userId, name, locale, date);
     }
 
     private void onChatViolation(long chatId) {

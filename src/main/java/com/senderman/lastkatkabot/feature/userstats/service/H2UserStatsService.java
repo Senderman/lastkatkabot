@@ -2,6 +2,7 @@ package com.senderman.lastkatkabot.feature.userstats.service;
 
 import com.senderman.lastkatkabot.feature.userstats.model.UserStats;
 import com.senderman.lastkatkabot.feature.userstats.repository.UserStatsRepository;
+import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Singleton;
 
 import java.util.Collection;
@@ -48,11 +49,14 @@ public class H2UserStatsService implements UserStatsService {
     }
 
     @Override
-    public void updateOrCreateByUserId(long userId, String name) {
+    public void updateOrCreateByUserId(long userId, String name, @Nullable String locale) {
         if (repo.existsById(userId))
-            repo.updateByUserId(userId, name);
-        else
-            repo.save(new UserStats(userId, name));
+            repo.updateByUserId(userId, name, locale);
+        else {
+            var user = new UserStats(userId, name);
+            user.setLocale(locale);
+            repo.save(user);
+        }
     }
 
     @Override
