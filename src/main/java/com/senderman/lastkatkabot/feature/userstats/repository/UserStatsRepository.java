@@ -1,6 +1,7 @@
 package com.senderman.lastkatkabot.feature.userstats.repository;
 
 import com.senderman.lastkatkabot.feature.userstats.model.UserStats;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
@@ -58,7 +59,7 @@ public interface UserStatsRepository extends CrudRepository<UserStats, Long> {
             UPDATE USER_STATS SET name = :name WHERE user_id = :userId;
             UPDATE USER_STATS SET locale = :locale WHERE user_id = :userId AND locale IS NULL;
             """)
-    void updateByUserId(long userId, String name, String locale);
+    void updateByUserId(long userId, String name, @Nullable String locale);
 
     void deleteByUpdatedAtLessThan(Timestamp updatedAt);
 
