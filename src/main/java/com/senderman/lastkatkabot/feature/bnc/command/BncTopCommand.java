@@ -9,9 +9,15 @@ import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.TelegramUsersHelper;
 import com.senderman.lastkatkabot.util.TimeUtils;
+import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
+import com.senderman.lastkatkabot.util.callback.MarkupBuilder;
+import com.senderman.lastkatkabot.util.callback.NoOpCallback;
 import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.objects.User;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
+import java.util.List;
 import java.util.function.Function;
 
 @Command
@@ -79,26 +85,33 @@ public class BncTopCommand implements CommandExecutor {
             return;
         }
 
-        top.append("\n")
-                .append(ctx.getString("bnc.bnctop.speedRunTop"))
-                .append("\n")
-                .append(ctx.getString("bnc.bnctop.speedRunDescription"))
-                .append("\n\n");
+        top.append("\n").append(ctx.getString("bnc.bnctop.speedRunTop"));
 
-        for (var r : bncRecords) {
-            top.append(formatRecord(r)).append("\n");
-        }
-
-        ctx.reply(top.toString()).callAsync(ctx.sender);
+        ctx.reply(top.toString()).setReplyMarkup(createKeyboard(ctx, bncRecords)).callAsync(ctx.sender);
     }
 
-    private String formatRecord(BncRecord r) {
-        return "<code>%-2d %s</code> %s: %s".formatted(
-                r.getLength(),
-                r.isHexadecimal() ? "hex" : "dec",
-                Html.getUserLink(new User(r.getUserId(), r.getName(), false)),
-                timeUtils.formatTimeSpent(r.getTimeSpent())
-        );
+    private InlineKeyboardMarkup createKeyboard(L10nMessageContext ctx, List<BncRecord> bncRecords) {
+        var builder = new MarkupBuilder();
+        for (var descItem : ctx.getString("bnc.bnctop.speedRunDescription").split(",\\s*")) {
+            builder.addButton(noOpButton(descItem));
+        }
+        builder.newRow();
+        for (var r : bncRecords) {
+            builder.addButton(noOpButton("%d %s".formatted(r.getLength(), r.isHexadecimal() ? "hex" : "dec")));
+            builder.addButton(ButtonBuilder.urlButton()
+                    .text(r.getName())
+                    .payload("tg://user?id=" + r.getUserId()));
+            builder.addButton(noOpButton(timeUtils.formatTimeSpent(r.getTimeSpent())));
+            builder.newRow();
+        }
+        return builder.build();
+    }
+
+    private InlineKeyboardButton noOpButton(String text) {
+        return ButtonBuilder.callbackButton()
+                .text(text)
+                .payload(NoOpCallback.NAME)
+                .create();
     }
 
     private String formatUser(long userId, int score, L10nMessageContext ctx) {
