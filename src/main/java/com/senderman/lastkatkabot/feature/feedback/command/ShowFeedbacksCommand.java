@@ -52,7 +52,7 @@ public class ShowFeedbacksCommand implements CommandExecutor {
 
         var text = new StringBuilder(ctx.getString("feedback.feedbacks.listTitle"));
         for (Feedback feedback : feedbackService.findAll()) {
-            String formattedFeedback = feedbackFormatter.format(feedback);
+            String formattedFeedback = feedbackFormatter.format(feedback, ctx.getLocale());
             // if maximum text length reached
             if (text.length() + feedbackSeparator.length() + formattedFeedback.length() >= 4096) {
                 ctx.reply(text.toString()).callAsync(ctx.sender);

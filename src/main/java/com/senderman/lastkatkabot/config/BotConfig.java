@@ -22,6 +22,8 @@ public interface BotConfig {
     @ConfigurationProperties("locale")
     interface LocaleConfig {
 
+        String getAdminLocale();
+
         String getDefaultLocale();
 
         List<String> getSupportedLocales();

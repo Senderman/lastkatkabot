@@ -1,28 +1,44 @@
 package com.senderman.lastkatkabot.feature.feedback.service;
 
+import com.senderman.lastkatkabot.config.BotConfig;
 import com.senderman.lastkatkabot.feature.feedback.model.Feedback;
 import com.senderman.lastkatkabot.feature.l10n.service.L10nService;
 import com.senderman.lastkatkabot.util.Html;
+import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Singleton;
 
 @Singleton
 public class FeedbackFormatterService {
 
-    public final L10nService l;
+    private final L10nService l;
+    private final BotConfig config;
 
-    public FeedbackFormatterService(L10nService l) {
+
+    public FeedbackFormatterService(L10nService l, BotConfig config) {
         this.l = l;
+        this.config = config;
     }
 
-    public String format(Feedback feedback) {
-        String locale = feedback.getUserLocale();
-        return l.getString("feedback.text", locale)
+    /**
+     * Format feedback
+     *
+     * @param feedback feedback to format
+     * @param locale   locale for formatting. Use adminLocale if null
+     * @return formatted feedback
+     */
+    public String format(Feedback feedback, @Nullable String locale) {
+
+        String formatLocale = locale != null ? locale : config.getLocale().getAdminLocale();
+
+
+        return l.getString("feedback.text", formatLocale)
                 .formatted(
                         feedback.getId(),
                         Html.getUserLink(feedback.getUserId(), feedback.getUserName()),
                         feedback.getUserId(),
-                        formatChatLine(feedback, locale),
+                        formatChatLine(feedback, formatLocale),
                         formatRepliedLine(feedback),
+                        feedback.getUserLocale(),
                         feedback.getMessage()
                 );
     }
