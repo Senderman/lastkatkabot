@@ -9,6 +9,8 @@ import com.senderman.lastkatkabot.util.TelegramUsersHelper;
 import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.objects.User;
 
+import java.util.Objects;
+
 @Command
 public class StatsCommand implements CommandExecutor {
 
@@ -45,7 +47,13 @@ public class StatsCommand implements CommandExecutor {
         String name = Html.htmlSafe(user.getFirstName());
         int winRate = stats.getDuelsTotal() == 0 ? 0 : 100 * stats.getDuelWins() / stats.getDuelsTotal();
         String text = ctx.getString("userstats.text")
-                .formatted(name, stats.getDuelWins(), stats.getDuelsTotal(), winRate, stats.getBncScore(), stats.getLocale());
+                .formatted(name,
+                        stats.getDuelWins(),
+                        stats.getDuelsTotal(),
+                        winRate,
+                        stats.getBncScore(),
+                        Objects.requireNonNull(stats.getLocale(), user.getLanguageCode())
+                );
         var loverId = stats.getLoverId();
         if (loverId == null) {
             ctx.reply(text).callAsync(ctx.sender);

@@ -54,7 +54,11 @@ public interface UserStatsRepository extends CrudRepository<UserStats, Long> {
             """)
     Optional<UserStats> findByChatIdAndUserId(long chatId, long userId);
 
-    void updateByUserId(long userId, String name);
+    @Query("""
+            UPDATE USER_STATS SET name = :name WHERE user_id = :userId;
+            UPDATE USER_STATS SET locale = :locale WHERE user_id = :userId AND locale IS NULL;
+            """)
+    void updateByUserId(long userId, String name, String locale);
 
     void deleteByUpdatedAtLessThan(Timestamp updatedAt);
 

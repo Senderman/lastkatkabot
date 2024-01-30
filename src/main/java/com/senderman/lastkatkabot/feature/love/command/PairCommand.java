@@ -133,14 +133,13 @@ public class PairCommand implements CommandExecutor {
 
     // usersForPair should contain 2 or more users, otherwise this method will fail
     private PairData generateNewPair(long chatId, List<UserStats> usersForPair, L10nMessageContext ctx) {
-        var chatUser1 = usersForPair.get(0);
-        var chatUser2 = usersForPair.get(1);
-        var user1 = userFromUserStats(chatUser1, ctx);
-        var user2 = userFromUserStats(chatUser2, ctx);
+        var user1Stats = usersForPair.get(0);
+        var user2Stats = usersForPair.get(1);
+        var user1 = userFromUserStats(user1Stats, ctx);
+        var user2 = userFromUserStats(user2Stats, ctx);
 
         // at this point, we can be sure that user1 and user2 are present in chat.
         // now we have to change user2 to user1's lover if exists and if lover is present in chat
-        var user1Stats = userStatsService.findById(chatUser1.getUserId());
         if (user1Stats.getLoverId() == null)
             return new PairData(user1, user2, false);
 
@@ -149,8 +148,8 @@ public class PairCommand implements CommandExecutor {
             return new PairData(user1, user2, false);
         } else {
             // lover is found
-            chatUser2 = loverOptional.get();
-            user2 = userFromUserStats(chatUser2, ctx);
+            user2Stats = loverOptional.get();
+            user2 = userFromUserStats(user2Stats, ctx);
             return new PairData(user1, user2, true);
         }
 

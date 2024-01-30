@@ -9,12 +9,15 @@ import com.senderman.lastkatkabot.feature.feedback.model.Feedback;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackFormatterService;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackService;
 import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
+import com.senderman.lastkatkabot.feature.l10n.service.L10nService;
+import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.TelegramUsersHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -22,22 +25,24 @@ import java.util.stream.StreamSupport;
 public class SendFeedbackCommand implements CommandExecutor {
 
     private final FeedbackService feedbackRepo;
+    private final UserStatsService userStatsRepo;
     private final FeedbackFormatterService feedbackFormatter;
     private final TelegramUsersHelper telegramUsersHelper;
     private final AdminService adminRepo;
     private final BotConfig config;
+    private final L10nService l10n;
 
     public SendFeedbackCommand(
-            FeedbackService feedbackRepo,
-            FeedbackFormatterService feedbackFormatter,
-            TelegramUsersHelper telegramUsersHelper,
-            AdminService adminRepo, BotConfig config
+            FeedbackService feedbackRepo, UserStatsService userStatsRepo, FeedbackFormatterService feedbackFormatter,
+            TelegramUsersHelper telegramUsersHelper, AdminService adminRepo, BotConfig config, L10nService l10n
     ) {
         this.feedbackRepo = feedbackRepo;
+        this.userStatsRepo = userStatsRepo;
         this.feedbackFormatter = feedbackFormatter;
         this.telegramUsersHelper = telegramUsersHelper;
         this.adminRepo = adminRepo;
         this.config = config;
+        this.l10n = l10n;
     }
 
     @Override
@@ -64,13 +69,17 @@ public class SendFeedbackCommand implements CommandExecutor {
         }
 
         var user = ctx.user();
+        var feedbackLocale = Optional.ofNullable(userStatsRepo.findById(user.getId()).getLocale())
+                .or(() -> Optional.ofNullable(user.getLanguageCode()))
+                .orElseGet(() -> config.getLocale().getDefaultLocale());
         var feedback = new Feedback(
                 feedbackText,
                 user.getId(),
                 user.getFirstName(),
                 ctx.chatId(),
                 ctx.message().getChat().getTitle(),
-                ctx.message().getMessageId()
+                ctx.message().getMessageId(),
+                feedbackLocale
         );
         feedback = feedbackRepo.insert(feedback);
 
@@ -85,8 +94,8 @@ public class SendFeedbackCommand implements CommandExecutor {
         }
 
         // Send feedback to developers
-        var text = ctx.getString("feedback.feedback.message")
-                .formatted(feedbackFormatter.format(feedback), feedback.getId(), listAdmins());
+        var text = l10n.getString("feedback.feedback.message", config.getLocale().getAdminLocale())
+                .formatted(feedbackFormatter.format(feedback, null), feedback.getId(), listAdmins());
         Methods.sendMessage(config.getNotificationChannelId(), text)
                 .setReplyToMessageId(contextMessageId)
                 .callAsync(ctx.sender);

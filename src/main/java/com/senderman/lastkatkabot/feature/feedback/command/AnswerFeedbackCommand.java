@@ -9,6 +9,7 @@ import com.senderman.lastkatkabot.feature.feedback.exception.FeedbackValidationE
 import com.senderman.lastkatkabot.feature.feedback.model.Feedback;
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackService;
 import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
+import com.senderman.lastkatkabot.feature.l10n.service.L10nService;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.TelegramUsersHelper;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
@@ -23,20 +24,16 @@ public class AnswerFeedbackCommand implements CommandExecutor {
     private final FeedbackService feedbackService;
     private final TelegramUsersHelper telegramUsersHelper;
     private final BotConfig config;
+    private final L10nService l10n;
 
     public AnswerFeedbackCommand(
-            FeedbackService feedbackService,
-            TelegramUsersHelper telegramUsersHelper,
-            BotConfig config
+            FeedbackService feedbackService, TelegramUsersHelper telegramUsersHelper,
+            BotConfig config, L10nService l10n
     ) {
         this.feedbackService = feedbackService;
         this.telegramUsersHelper = telegramUsersHelper;
         this.config = config;
-    }
-
-    @Override
-    public String command() {
-        return "/fresp";
+        this.l10n = l10n;
     }
 
     private static void notifyResponseIsSent(L10nMessageContext ctx, int feedbackId) {
@@ -52,6 +49,11 @@ public class AnswerFeedbackCommand implements CommandExecutor {
                                 .create()
                 )
                 .callAsync(ctx.sender);
+    }
+
+    @Override
+    public String command() {
+        return "/fresp";
     }
 
     @Override
@@ -88,7 +90,7 @@ public class AnswerFeedbackCommand implements CommandExecutor {
         var answer = Html.htmlSafe(ctx.argument(1));
         Methods.sendMessage()
                 .setChatId(feedback.getChatId())
-                .setText(ctx.getString("feedback.fresp.developerReply").formatted(answer))
+                .setText(l10n.getString("feedback.fresp.developerReply", feedback.getUserLocale()).formatted(answer))
                 .setReplyToMessageId(feedback.getMessageId())
                 .call(ctx.sender);
         // Send the second detail message if exists
