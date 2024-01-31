@@ -98,7 +98,9 @@ public class BncTopCommand implements CommandExecutor {
         builder.newRow();
         for (var r : bncRecords) {
             builder.addButton(noOpButton("%d %s".formatted(r.getLength(), r.isHexadecimal() ? "hex" : "dec")));
-            builder.addButton(noOpButton(r.getName()));
+            builder.addButton(ButtonBuilder.urlButton()
+                    .text(r.getName())
+                    .payload("tg://user?id=" + r.getUserId()));
             builder.addButton(noOpButton(timeUtils.formatTimeSpent(r.getTimeSpent())));
             builder.newRow();
         }
