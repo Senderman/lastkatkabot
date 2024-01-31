@@ -3,7 +3,7 @@ package com.senderman.lastkatkabot.feature.cake.command;
 import com.senderman.lastkatkabot.command.CallbackExecutor;
 import com.senderman.lastkatkabot.feature.cake.model.Cake;
 import com.senderman.lastkatkabot.feature.cake.service.CakeService;
-import com.senderman.lastkatkabot.feature.cleanup.service.DatabaseCleanupService;
+import com.senderman.lastkatkabot.feature.data.service.DatabaseCleanupService;
 import com.senderman.lastkatkabot.feature.l10n.context.L10nCallbackQueryContext;
 import jakarta.inject.Singleton;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;

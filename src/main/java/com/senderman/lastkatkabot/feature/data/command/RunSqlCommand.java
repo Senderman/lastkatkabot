@@ -1,4 +1,4 @@
-package com.senderman.lastkatkabot.feature.access.command;
+package com.senderman.lastkatkabot.feature.data.command;
 
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CommandExecutor;

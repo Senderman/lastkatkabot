@@ -1,4 +1,4 @@
-package com.senderman.lastkatkabot.feature.cleanup.service;
+package com.senderman.lastkatkabot.feature.data.service;
 
 import com.senderman.lastkatkabot.feature.bnc.repository.BncGameMessageRepository;
 import com.senderman.lastkatkabot.feature.bnc.repository.BncRepository;
