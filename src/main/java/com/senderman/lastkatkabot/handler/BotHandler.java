@@ -45,6 +45,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     private final static Logger logger = LoggerFactory.getLogger(BotHandler.class);
 
     private final BotConfig config;
+    private final L10nService l10n;
     private final UpdateHandler commandRegistry;
     private final ChatUserService chatUsers;
     private final UserActivityTrackerService activityTrackerService;
@@ -59,6 +60,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     public BotHandler(
             DefaultBotOptions botOptions,
             BotConfig config,
+            L10nService l10n,
             UpdateHandler commandRegistry,
             ChatUserService chatUsers,
             UserActivityTrackerService activityTrackerService,
@@ -72,6 +74,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     ) {
         super(botOptions, config.getToken());
         this.config = config;
+        this.l10n = l10n;
         this.commandRegistry = commandRegistry;
         this.chatUsers = chatUsers;
         this.activityTrackerService = activityTrackerService;
@@ -90,7 +93,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
         addMethodPreprocessor(EditMessageText.class, m -> m.enableHtml(true));
 
-        Methods.sendMessage(config.getNotificationChannelId(), "\n\nБот запущен!").callAsync(this);
+        Methods.sendMessage(config.getNotificationChannelId(), l10n.getAdminString("common.botStarted")).callAsync(this);
     }
 
     @Override
@@ -108,17 +111,19 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     }
 
     private void notifyUserAboutError(Update update) {
-        final String errorText = "Произошла какая-то ошибка. Информация отправлена разработчикам";
         if (update.hasCallbackQuery()) {
             var query = update.getCallbackQuery();
             Methods.answerCallbackQuery(query.getId())
-                    .setText(errorText)
+                    .setText(l10n.getString("common.updateHandlingErrorUser", l10n.getLocale(query.getFrom().getId())))
                     .setShowAlert(true)
                     .callAsync(this);
         } else if (update.hasMessage()) {
             var message = update.getMessage();
             var chatId = message.getChatId();
-            Methods.sendMessage(chatId, errorText)
+            Methods.sendMessage(
+                            chatId,
+                            l10n.getString("common.updateHandlingErrorUser", l10n.getLocale(message.getFrom().getId()))
+                    )
                     .inReplyTo(message)
                     .callAsync(this);
         }
@@ -142,7 +147,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
                 Methods.sendDocument()
                         .setChatId(config.getNotificationChannelId())
                         .setFile(config.getUsername() + "-" + date + ".log", bais)
-                        .setCaption("⚠️ <b>Ошибка обработки апдейта</b>\n" + e.getMessage())
+                        .setCaption(l10n.getAdminString("common.updateHandlingError") + e.getMessage())
                         .enableHtml()
                         .call(this);
             }
@@ -228,7 +233,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     }
 
     private void onChatViolation(long chatId) {
-        Methods.sendMessage(chatId, "📛 Ваш чат в списке спамеров! Бот не хочет здесь работать!").callAsync(this);
+        Methods.sendMessage(chatId, l10n.getDefaultString("common.yourChatIsBad"));
         Methods.leaveChat(chatId).callAsync(this);
     }
 
