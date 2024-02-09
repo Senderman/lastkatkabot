@@ -2,7 +2,10 @@ package com.senderman.lastkatkabot.feature.love.model;
 
 
 import io.micronaut.core.annotation.Creator;
-import io.micronaut.data.annotation.*;
+import io.micronaut.data.annotation.DateCreated;
+import io.micronaut.data.annotation.Id;
+import io.micronaut.data.annotation.MappedEntity;
+import io.micronaut.data.annotation.MappedProperty;
 
 import java.sql.Timestamp;
 import java.util.Objects;
@@ -19,14 +22,14 @@ public class MarriageRequest {
     @MappedProperty("proposee_name")
     private final String proposeeName;
     @Id
-    @GeneratedValue
     private int id;
     @MappedProperty("created_at")
     @DateCreated
     private Timestamp createdAt;
 
     @Creator
-    public MarriageRequest(long proposerId, String proposerName, long proposeeId, String proposeeName) {
+    public MarriageRequest(int id, long proposerId, String proposerName, long proposeeId, String proposeeName) {
+        this.id = id;
         this.proposerId = proposerId;
         this.proposerName = proposerName;
         this.proposeeId = proposeeId;
@@ -78,34 +81,4 @@ public class MarriageRequest {
         return Objects.hash(id);
     }
 
-    public static class Builder {
-        private long proposerId;
-        private String proposerName;
-        private long proposeeId;
-        private String proposeeName;
-
-        public Builder setProposerId(long proposerId) {
-            this.proposerId = proposerId;
-            return this;
-        }
-
-        public Builder setProposerName(String proposerName) {
-            this.proposerName = proposerName;
-            return this;
-        }
-
-        public Builder setProposeeId(long proposeeId) {
-            this.proposeeId = proposeeId;
-            return this;
-        }
-
-        public Builder setProposeeName(String proposeeName) {
-            this.proposeeName = proposeeName;
-            return this;
-        }
-
-        public MarriageRequest createMarriageRequest() {
-            return new MarriageRequest(proposerId, proposerName, proposeeId, proposeeName);
-        }
-    }
 }

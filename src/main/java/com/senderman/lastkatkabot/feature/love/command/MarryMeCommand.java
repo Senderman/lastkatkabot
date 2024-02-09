@@ -70,14 +70,13 @@ public class MarryMeCommand implements CommandExecutor {
         var proposerLink = Html.getUserLink(message.getFrom());
         var text = ctx.getString("love.marryme.message").formatted(proposerLink);
 
-        var request = new MarriageRequest.Builder()
-                .setProposerId(proposerId)
-                .setProposerName(proposerLink)
-                .setProposeeId(proposeeId)
-                .setProposeeName(Html.getUserLink(message.getReplyToMessage().getFrom()))
-                .createMarriageRequest();
-
-        request = marriages.insert(request);
+        var request = marriages.insert(new MarriageRequest(
+                marriages.getLowestAvailableId(),
+                proposerId,
+                proposerLink,
+                proposeeId,
+                Html.getUserLink(message.getReplyToMessage().getFrom())
+        ));
 
         ctx.reply(text)
                 .inReplyTo(message.getReplyToMessage())

@@ -34,7 +34,7 @@ public class CakeCommand implements CommandExecutor {
             return;
         ctx.setArgumentsLimit(1);
 
-        var cake = cakeService.insert(new Cake(ctx.argument(0)));
+        var cake = cakeService.insert(new Cake(cakeService.getLowestAvailableId(), ctx.argument(0)));
         var subjectName = Html.htmlSafe(ctx.user().getFirstName());
         var target = ctx.message().getReplyToMessage().getFrom();
         var targetName = Html.htmlSafe(target.getFirstName());

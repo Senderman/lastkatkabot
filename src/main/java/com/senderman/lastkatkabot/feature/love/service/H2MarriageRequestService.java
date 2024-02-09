@@ -39,4 +39,9 @@ public class H2MarriageRequestService implements MarriageRequestService {
     public MarriageRequest insert(MarriageRequest marriageRequest) {
         return repository.save(marriageRequest);
     }
+
+    @Override
+    public int getLowestAvailableId() {
+        return repository.getLowestAvailableId().orElse(1);
+    }
 }

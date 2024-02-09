@@ -20,4 +20,6 @@ public interface CakeService {
      */
     Cake insert(Cake cake);
 
+    int getLowestAvailableId();
+
 }
