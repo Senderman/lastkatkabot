@@ -11,6 +11,8 @@ import java.util.concurrent.atomic.AtomicLong;
 @Singleton
 public class DatabaseMetricsService {
 
+    private final static String SCRAPE_INTERVAL = "30m";
+
     private final AtomicLong usersTotal;
     private final AtomicLong chatsTotal;
     private final AtomicLong feedbacksTotal;
@@ -49,12 +51,11 @@ public class DatabaseMetricsService {
         return feedbackService.count();
     }
 
-    @Scheduled(fixedDelay = "30m")
+    @Scheduled(fixedDelay = SCRAPE_INTERVAL, initialDelay = SCRAPE_INTERVAL)
     public void update() {
         usersTotal.set(usersTotal());
         chatsTotal.set(chatsTotal());
         feedbacksTotal.set(feedbacksTotal());
     }
-
 
 }
