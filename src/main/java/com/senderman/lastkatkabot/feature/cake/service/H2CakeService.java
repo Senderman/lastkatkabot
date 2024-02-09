@@ -35,4 +35,9 @@ public class H2CakeService implements CakeService {
         return repo.save(cake);
     }
 
+    @Override
+    public int getLowestAvailableId() {
+        return repo.getLowestAvailableId().orElse(1);
+    }
+
 }

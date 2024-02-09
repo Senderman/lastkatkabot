@@ -17,4 +17,6 @@ public interface MarriageRequestService {
     // id could be changed, so use the returned object
     MarriageRequest insert(MarriageRequest marriageRequest);
 
+    int getLowestAvailableId();
+
 }
