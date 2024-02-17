@@ -8,7 +8,7 @@ jobs:
   steps:
   - !UseTemplateStep
     name: Build docker image
-    templateName: Build docker image
+    templateName: Full docker image CI
     condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
   triggers:
   - !BranchUpdateTrigger
