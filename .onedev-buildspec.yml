@@ -1,0 +1,19 @@
+version: 27
+imports:
+- projectPath: public/templates
+  revision: main
+  accessTokenSecret: onedev_access_token
+jobs:
+- name: Build docker image
+  steps:
+  - !UseTemplateStep
+    name: Build docker image
+    templateName: Build docker image
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  triggers:
+  - !BranchUpdateTrigger
+    branches: master
+  retryCondition: never
+  maxRetries: 3
+  retryDelay: 30
+  timeout: 3600
