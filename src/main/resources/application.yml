@@ -2,7 +2,7 @@ micronaut:
   application:
     name: LastkatkaBot
   server:
-    port: 1457
+    port: 8080
   metrics:
     enabled: true
     export:
@@ -17,6 +17,9 @@ micronaut:
 
 endpoints:
   prometheus:
+    sensitive: false
+  health:
+    enabled: true
     sensitive: false
 
 jackson:
