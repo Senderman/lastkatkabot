@@ -9,9 +9,27 @@ jobs:
     name: Build docker image
     templateName: Full docker image CI
     condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !PublishArtifactStep
+    name: Publish artifacts
+    artifacts: buildVersion.txt
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  retryCondition: never
+  maxRetries: 3
+  retryDelay: 30
+  timeout: 3600
+- name: Update image tag
+  steps:
+  - !UseTemplateStep
+    name: Update image tag
+    templateName: Update image tag
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
   triggers:
   - !BranchUpdateTrigger
     branches: master
+  jobDependencies:
+  - jobName: Build docker image
+    requireSuccessful: true
+    artifacts: buildVersion.txt
   retryCondition: never
   maxRetries: 3
   retryDelay: 30
