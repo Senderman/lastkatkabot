@@ -47,7 +47,7 @@ public class WhereUserCommand implements CommandExecutor {
         try {
             userId = ctx.argumentsLength() > 0 ? Long.parseLong(ctx.argument(0)) : ctx.message().getReplyToMessage().getFrom().getId();
         } catch (NumberFormatException e) {
-            ctx.replyToMessage(ctx.getString("tracking.wru.idIsNumber")).callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("common.userIdIsNumber")).callAsync(ctx.sender);
             return;
         } catch (NullPointerException e) {
             ctx.replyToMessage(ctx.getString("tracking.wru.userIdOrReply")).callAsync(ctx.sender);

@@ -14,6 +14,7 @@ import java.util.EnumSet;
 
 public interface CommandExecutor extends TextCommand {
 
+    // Description locale key
     String getDescription();
 
     default boolean showInHelp() {
@@ -28,7 +29,7 @@ public interface CommandExecutor extends TextCommand {
     void accept(@NotNull L10nMessageContext context);
 
     @Override
-    default void accept(@NotNull MessageContext context) {
-        accept((L10nMessageContext) context);
+    default void accept(@NotNull MessageContext ctx) {
+        accept((L10nMessageContext) ctx);
     }
 }
