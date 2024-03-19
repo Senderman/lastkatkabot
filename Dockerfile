@@ -3,6 +3,7 @@ FROM eclipse-temurin:21-jdk-alpine as builder
 RUN mkdir /app
 WORKDIR /app
 COPY . ./
+RUN ./gradlew --no-daemon
 RUN ./gradlew shadowJar --no-daemon && sh -c "cp build/libs/*.jar ./lastkatkabot.jar"
 
 FROM eclipse-temurin:21-jdk-alpine
