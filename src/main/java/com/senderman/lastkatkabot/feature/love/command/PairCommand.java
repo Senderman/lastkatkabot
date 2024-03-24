@@ -112,6 +112,7 @@ public class PairCommand implements CommandExecutor {
                     var sm = new SendMessage();
                     sm.setChatId(ctx.chatId());
                     sm.setText(text);
+                    sm.setMessageThreadId(ctx.messageThreadIdForReplies());
                     ctx.sender.execute(sm);
                     // on success (we didn't fall into catch block), save result to db
                     chatInfoService.save(chatInfo);
