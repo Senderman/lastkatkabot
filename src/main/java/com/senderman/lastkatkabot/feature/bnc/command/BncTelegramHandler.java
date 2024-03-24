@@ -2,6 +2,7 @@ package com.senderman.lastkatkabot.feature.bnc.command;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.RegexCommand;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.commands.context.RegexMessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
@@ -71,7 +72,6 @@ public class BncTelegramHandler implements RegexCommand {
     public void accept(RegexMessageContext ctx) {
         var l10Ctx = new L10nMessageContext(ctx.sender, ctx.update(), ctx.argumentsAsString(), localizationService);
         var message = ctx.message();
-        var telegram = ctx.sender;
         long chatId = ctx.chatId();
         var number = message.getText().toUpperCase(Locale.ENGLISH);
         try {
@@ -80,18 +80,17 @@ public class BncTelegramHandler implements RegexCommand {
             if (result.isWin()) {
                 processWin(gamesManager.getGameState(chatId), l10Ctx, result);
             } else {
-                sendGameMessage(ctx.chatId(), formatResult(result, l10Ctx), ctx.sender);
+                sendGameMessage(formatResult(result, l10Ctx), ctx);
             }
         } catch (NumberAlreadyCheckedException e) {
             addMessageToDelete(message);
             sendGameMessage(
-                    chatId,
                     l10Ctx.getString("bnc.handler.alreadyChecked").formatted(formatResult(e.getResult(), l10Ctx)),
-                    telegram
+                    ctx
             );
         } catch (RepeatingDigitsException e) {
             addMessageToDelete(message);
-            sendGameMessage(chatId, l10Ctx.getString("bnc.handler.noRepeatingDigits"), telegram);
+            sendGameMessage(l10Ctx.getString("bnc.handler.noRepeatingDigits"), ctx);
         } catch (GameOverException e) {
             addMessageToDelete(message);
             processGameOver(l10Ctx);
@@ -112,8 +111,8 @@ public class BncTelegramHandler implements RegexCommand {
     }
 
     // Send message that will be deleted after game end
-    public void sendGameMessage(long chatId, String text, CommonAbsSender sender) {
-        var sentMessage = Methods.sendMessage(chatId, text).call(sender);
+    public void sendGameMessage(String text, MessageContext ctx) {
+        var sentMessage = ctx.reply(text).call(ctx.sender);
         if (sentMessage != null)
             addMessageToDelete(sentMessage);
     }
