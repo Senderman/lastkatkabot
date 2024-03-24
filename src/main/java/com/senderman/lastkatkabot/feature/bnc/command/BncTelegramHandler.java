@@ -19,6 +19,7 @@ import com.senderman.lastkatkabot.feature.l10n.service.L10nService;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.TimeUtils;
+import io.micronaut.core.annotation.NonNull;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -117,7 +118,7 @@ public class BncTelegramHandler implements RegexCommand {
             addMessageToDelete(sentMessage);
     }
 
-    private void addMessageToDelete(Message message) {
+    private void addMessageToDelete(@NonNull Message message) {
         var chatId = message.getChatId();
         var messageId = message.getMessageId();
         gameMessageRepo.save(new BncGameMessage(chatId, messageId));
@@ -126,11 +127,12 @@ public class BncTelegramHandler implements RegexCommand {
     private void deleteGameMessages(long chatId, CommonAbsSender telegram) {
         var gameMessages = gameMessageRepo.findByGameId(chatId);
         if (gameMessages.isEmpty()) return;
-
-        gameMessages.stream()
+        var messagesToDelete = gameMessages.stream()
                 .map(BncGameMessage::getMessageId)
-                .forEach(msgId -> Methods.deleteMessage(chatId, msgId).callAsync(telegram));
-        gameMessageRepo.deleteByGameId(chatId);
+                .toList();
+        var m = Methods.deleteMessages(chatId);
+        m.setMessageIds(messagesToDelete);
+        m.callAsync(telegram);
     }
 
     public void processWin(BncGameState game, L10nMessageContext ctx, BncResult result) {
