@@ -1,7 +1,5 @@
 package com.senderman.lastkatkabot.feature.love.command;
 
-import com.annimon.tgbotsmodule.api.methods.Methods;
-import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.chatsettings.service.ChatInfoService;
@@ -93,7 +91,7 @@ public class PairCommand implements CommandExecutor {
 
         // start chat flooding to make users wait for pair generation
         String[] loveStrings = love.forLocale(ctx.getLocale());
-        Future<?> floodFuture = threadPool.submit(() -> sendRandomShitWithDelay(chatId, loveStrings, ctx.sender));
+        Future<?> floodFuture = threadPool.submit(() -> sendRandomShitWithDelay(ctx, loveStrings));
 
         threadPool.execute(() -> {
             try {
@@ -162,9 +160,9 @@ public class PairCommand implements CommandExecutor {
         return user;
     }
 
-    private void sendRandomShitWithDelay(long chatId, String[] shit, CommonAbsSender telegram) {
+    private void sendRandomShitWithDelay(L10nMessageContext ctx, String[] shit) {
         for (int i = 0; i < shit.length - 1; i++) {
-            Methods.sendMessage(chatId, shit[i]).callAsync(telegram);
+            ctx.reply(shit[i]).callAsync(ctx.sender);
             Threads.sleep(1000);
         }
     }

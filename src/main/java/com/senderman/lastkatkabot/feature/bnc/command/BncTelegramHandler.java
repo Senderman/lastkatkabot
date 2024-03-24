@@ -193,7 +193,8 @@ public class BncTelegramHandler implements RegexCommand {
         ctx.reply(text).callAsync(ctx.sender);
     }
 
-    public void forceFinishGame(L10nMessageContext ctx, long chatId) {
+    public void forceFinishGame(L10nMessageContext ctx) {
+        long chatId = ctx.chatId();
         if (!gamesManager.hasGame(chatId))
             return;
 
@@ -203,7 +204,7 @@ public class BncTelegramHandler implements RegexCommand {
 
         var text = ctx.getString("bnc.handler.forceFinish")
                 .formatted(gameState.answer(), formattedHistoryAndTime(gameState.history(), getTimeSpent(gameState), ctx));
-        Methods.sendMessage(chatId, text).callAsync(ctx.sender);
+        ctx.replyToMessage(text).callAsync(ctx.sender);
     }
 
     private String formattedHistoryAndTime(List<BncResult> history, long timeSpent, L10nMessageContext ctx) {

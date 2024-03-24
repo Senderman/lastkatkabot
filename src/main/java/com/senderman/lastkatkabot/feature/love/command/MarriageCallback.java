@@ -95,6 +95,7 @@ public class MarriageCallback implements CallbackExecutor {
                 .setChatId(ctx.message().getChatId())
                 .setText(String.format(ctx.getString("love.marriage.message"),
                         r.getProposerName(), r.getProposeeName()))
+                .inReplyTo(ctx.message())
                 .callAsync(ctx.sender);
     }
 
