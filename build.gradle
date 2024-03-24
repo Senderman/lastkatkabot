@@ -1,7 +1,7 @@
 plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("io.micronaut.application") version "4.2.1"
-    id("io.micronaut.aot") version "4.2.1"
+    id("io.micronaut.application") version "4.3.5"
+    id("io.micronaut.aot") version "4.3.5"
 }
 
 group 'com.senderman'
@@ -13,7 +13,7 @@ repositories {
 
 dependencies {
     // telegram
-    implementation('com.annimon:tgbots-module:6.5.1') {
+    implementation('com.annimon:tgbots-module:7.1.0') {
         exclude group: 'org.glassfish.grizzly', module: 'grizzly-http-server'
         exclude group: 'org.glassfish.jersey.core', module: 'jersey-server'
     }
@@ -38,7 +38,7 @@ dependencies {
     implementation("io.micronaut.sql:micronaut-jdbc-hikari")
     runtimeOnly("com.h2database:h2:2.2.224")
 
-    runtimeOnly("ch.qos.logback:logback-classic:1.4.14")
+    runtimeOnly("ch.qos.logback:logback-classic")
 
 }
 

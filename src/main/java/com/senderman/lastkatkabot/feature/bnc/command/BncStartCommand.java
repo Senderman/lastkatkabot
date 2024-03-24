@@ -51,8 +51,7 @@ public class BncStartCommand implements CommandExecutor {
         }
 
         gamesHandler.createGameIfNotExists(ctx.chatId(), ctx.message().getFrom().getId(), length, isHexadecimal);
-        gamesHandler.sendGameMessage(ctx.chatId(), ctx.getString("bnc.bncstart.startText").formatted(length),
-                ctx.sender);
+        gamesHandler.sendGameMessage(ctx.getString("bnc.bncstart.startText").formatted(length), ctx);
 
     }
 
@@ -68,7 +67,7 @@ public class BncStartCommand implements CommandExecutor {
                 historyText
         );
 
-        gamesHandler.sendGameMessage(ctx.chatId(), textToSend, ctx.sender);
+        gamesHandler.sendGameMessage(textToSend, ctx);
     }
 
     private void wrongLength(L10nMessageContext ctx, int maxLength) {

@@ -47,6 +47,6 @@ public class BncStopCommand implements CommandExecutor {
             return;
         }
 
-        gameHandler.forceFinishGame(ctx, chatId);
+        gameHandler.forceFinishGame(ctx);
     }
 }

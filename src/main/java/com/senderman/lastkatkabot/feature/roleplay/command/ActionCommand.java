@@ -1,6 +1,5 @@
 package com.senderman.lastkatkabot.feature.roleplay.command;
 
-import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
@@ -27,10 +26,9 @@ public class ActionCommand implements CommandExecutor {
         if (ctx.argumentsLength() < 1) return;
 
         var action = "<i>" + Html.htmlSafe(ctx.user().getFirstName()) + " " + ctx.argument(0) + "</i>";
-        var sm = Methods.sendMessage(ctx.chatId(), action);
-        if (ctx.message().isReply()) {
+        var sm = ctx.reply(action);
+        if (ctx.message().isReply())
             sm.inReplyTo(ctx.message().getReplyToMessage());
-        }
         sm.callAsync(ctx.sender);
     }
 }

@@ -2,6 +2,7 @@ package com.senderman.lastkatkabot.feature.bnc.command;
 
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.annimon.tgbotsmodule.commands.RegexCommand;
+import com.annimon.tgbotsmodule.commands.context.MessageContext;
 import com.annimon.tgbotsmodule.commands.context.RegexMessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
 import com.senderman.lastkatkabot.Role;
@@ -19,6 +20,7 @@ import com.senderman.lastkatkabot.feature.l10n.service.L10nService;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.TimeUtils;
+import io.micronaut.core.annotation.NonNull;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -70,7 +72,6 @@ public class BncTelegramHandler implements RegexCommand {
     public void accept(RegexMessageContext ctx) {
         var l10Ctx = new L10nMessageContext(ctx.sender, ctx.update(), ctx.argumentsAsString(), localizationService);
         var message = ctx.message();
-        var telegram = ctx.sender;
         long chatId = ctx.chatId();
         var number = message.getText().toUpperCase(Locale.ENGLISH);
         try {
@@ -79,18 +80,17 @@ public class BncTelegramHandler implements RegexCommand {
             if (result.isWin()) {
                 processWin(gamesManager.getGameState(chatId), l10Ctx, result);
             } else {
-                sendGameMessage(ctx.chatId(), formatResult(result, l10Ctx), ctx.sender);
+                sendGameMessage(formatResult(result, l10Ctx), ctx);
             }
         } catch (NumberAlreadyCheckedException e) {
             addMessageToDelete(message);
             sendGameMessage(
-                    chatId,
                     l10Ctx.getString("bnc.handler.alreadyChecked").formatted(formatResult(e.getResult(), l10Ctx)),
-                    telegram
+                    ctx
             );
         } catch (RepeatingDigitsException e) {
             addMessageToDelete(message);
-            sendGameMessage(chatId, l10Ctx.getString("bnc.handler.noRepeatingDigits"), telegram);
+            sendGameMessage(l10Ctx.getString("bnc.handler.noRepeatingDigits"), ctx);
         } catch (GameOverException e) {
             addMessageToDelete(message);
             processGameOver(l10Ctx);
@@ -111,13 +111,13 @@ public class BncTelegramHandler implements RegexCommand {
     }
 
     // Send message that will be deleted after game end
-    public void sendGameMessage(long chatId, String text, CommonAbsSender sender) {
-        var sentMessage = Methods.sendMessage(chatId, text).call(sender);
+    public void sendGameMessage(String text, MessageContext ctx) {
+        var sentMessage = ctx.reply(text).call(ctx.sender);
         if (sentMessage != null)
             addMessageToDelete(sentMessage);
     }
 
-    private void addMessageToDelete(Message message) {
+    private void addMessageToDelete(@NonNull Message message) {
         var chatId = message.getChatId();
         var messageId = message.getMessageId();
         gameMessageRepo.save(new BncGameMessage(chatId, messageId));
@@ -126,11 +126,12 @@ public class BncTelegramHandler implements RegexCommand {
     private void deleteGameMessages(long chatId, CommonAbsSender telegram) {
         var gameMessages = gameMessageRepo.findByGameId(chatId);
         if (gameMessages.isEmpty()) return;
-
-        gameMessages.stream()
+        var messagesToDelete = gameMessages.stream()
                 .map(BncGameMessage::getMessageId)
-                .forEach(msgId -> Methods.deleteMessage(chatId, msgId).callAsync(telegram));
-        gameMessageRepo.deleteByGameId(chatId);
+                .toList();
+        var m = Methods.deleteMessages(chatId);
+        m.setMessageIds(messagesToDelete);
+        m.callAsync(telegram);
     }
 
     public void processWin(BncGameState game, L10nMessageContext ctx, BncResult result) {
@@ -193,7 +194,8 @@ public class BncTelegramHandler implements RegexCommand {
         ctx.reply(text).callAsync(ctx.sender);
     }
 
-    public void forceFinishGame(L10nMessageContext ctx, long chatId) {
+    public void forceFinishGame(L10nMessageContext ctx) {
+        long chatId = ctx.chatId();
         if (!gamesManager.hasGame(chatId))
             return;
 
@@ -203,7 +205,7 @@ public class BncTelegramHandler implements RegexCommand {
 
         var text = ctx.getString("bnc.handler.forceFinish")
                 .formatted(gameState.answer(), formattedHistoryAndTime(gameState.history(), getTimeSpent(gameState), ctx));
-        Methods.sendMessage(chatId, text).callAsync(ctx.sender);
+        ctx.replyToMessage(text).callAsync(ctx.sender);
     }
 
     private String formattedHistoryAndTime(List<BncResult> history, long timeSpent, L10nMessageContext ctx) {
