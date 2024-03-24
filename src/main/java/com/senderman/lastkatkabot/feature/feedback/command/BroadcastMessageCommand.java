@@ -52,15 +52,15 @@ public class BroadcastMessageCommand implements CommandExecutor {
             return;
         }
 
-        Methods.sendMessage(chatId, ctx.getString("feedback.broadcast.start")).call(ctx.sender);
+        ctx.replyToMessage(ctx.getString("feedback.broadcast.start")).call(ctx.sender);
 
         var messageToBroadcast = "🔔 %s\n\n"
                 .formatted(ctx.getString("feedback.broadcast.messageFromDevelopers")) + ctx.argument(0);
         var chatIds = StreamSupport.stream(chatUsers.getChatIds().spliterator(), false).toList();
         long total = chatIds.size();
-        var counterMessage = ctx.replyToMessage(ctx.getString("feedback.broadcast.status")
-                .formatted(0, 0, 0, total)
-        ).call(ctx.sender);
+        var counterMessage = ctx
+                .replyToMessage(ctx.getString("feedback.broadcast.status").formatted(0, 0, 0, total))
+                .call(ctx.sender);
 
         var counter = new CounterMessage(total, counterMessage, ctx);
 
