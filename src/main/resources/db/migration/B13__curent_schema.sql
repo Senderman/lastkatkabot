@@ -30,7 +30,7 @@ CREATE TABLE BNC_GAME_SAVE (
 );
 
 CREATE TABLE CAKE (
-    id PRIMARY KEY,
+    id INT PRIMARY KEY,
     filling VARCHAR(255) NOT NULL,
     created_at TIMESTAMP NOT NULL
 );
@@ -43,12 +43,12 @@ CREATE TABLE FEEDBACK (
     chat_id BIGINT NOT NULL,
     chat_title VARCHAR(500),
     message_id INT NOT NULL,
-    replied BOOLEAN NOT NULL DEFAULT FALSE.
+    replied BOOLEAN NOT NULL DEFAULT FALSE,
     user_locale VARCHAR(5) NOT NULL
 );
 
 CREATE TABLE MARRIAGE_REQUEST (
-    id PRIMARY KEY,
+    id INT PRIMARY KEY,
     proposer_id BIGINT NOT NULL,
     proposer_name VARCHAR(255) NOT NULL,
     proposee_id BIGINT NOT NULL,
