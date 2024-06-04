@@ -12,9 +12,7 @@ import com.senderman.lastkatkabot.feature.weather.service.WeatherService;
 import jakarta.inject.Named;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.util.concurrent.ExecutorService;
-import java.util.function.Consumer;
 
 @Command
 public class WeatherCommand implements CommandExecutor {
@@ -44,46 +42,47 @@ public class WeatherCommand implements CommandExecutor {
 
     @Override
     public void accept(@NotNull L10nMessageContext ctx) {
-        final var messageToEdit = ctx.replyToMessage(ctx.getString("weather.queue")).call(ctx.sender);
-        // if bot failed to send the message
-        if (messageToEdit == null) {
-            return;
-        }
-        final Consumer<String> editMessageConsumer = s -> Methods.editMessageText(
-                        messageToEdit.getChatId(),
-                        messageToEdit.getMessageId(),
-                        s)
-                .enableWebPagePreview()
+        final var messageToDelete = ctx.replyToMessage(ctx.getString("weather.connecting")).call(ctx.sender);
+
+        final Runnable deleteMessageConsumer = () -> Methods.deleteMessage(
+                        messageToDelete.getChatId(),
+                        messageToDelete.getMessageId())
                 .callAsync(ctx.sender);
 
         threadPool.execute(() -> {
             try {
-                editMessageConsumer.accept(ctx.getString("weather.connecting"));
+                Methods.editMessageText(
+                                messageToDelete.getChatId(),
+                                messageToDelete.getMessageId(),
+                                ctx.getString("weather.connecting"))
+                        .call(ctx.sender);
                 String location = getLocationFromMessageOrDb(ctx);
-                var text = forecastToString(weatherService.getWeatherByLocation(location, ctx.getLocale()), ctx);
-                // send result as new message to notify user
-                var newMessage = ctx.replyToMessage(text).call(ctx.sender);
-                if (newMessage == null)
-                    return;
-                // since there's a method preprocessor that disables webPagePreview on SendMessage method,
-                // we use EditMessage to re-enable it
-                Methods
-                        .editMessageText(newMessage.getChatId(), newMessage.getMessageId(), text).enableWebPagePreview()
-                        .callAsync(ctx.sender);
-                // delete previous "connecting" message
-                Methods.deleteMessage(messageToEdit.getChatId(), messageToEdit.getMessageId()).callAsync(ctx.sender);
+                var forecast = weatherService.getWeatherByLocation(location, ctx.getLocale());
+                var text = forecastToString(forecast, ctx);
+
+                if (forecast.image() == null) {// if there's no weather image, reply with text
+                    ctx.replyToMessage(text).callAsync(ctx.sender);
+                } else { // else reply with photo
+                    ctx.replyWithPhoto()
+                            .setFile("forecast.png", forecast.image())
+                            .setCaption(text)
+                            .enableHtml()
+                            .callAsync(ctx.sender);
+                }
                 // save last defined location in db (we won't get here if exception is occurred)
                 updateUserLocation(ctx.user().getId(), location);
             } catch (NoLocationSpecifiedException e) {
-                editMessageConsumer.accept(ctx.getString("weather.noLocationGiven"));
+                ctx.replyToMessage(ctx.getString("weather.noLocationGiven")).callAsync(ctx.sender);
             } catch (NoSuchLocationException e) {
-                editMessageConsumer.accept(ctx.getString("weather.locationNotFound").formatted(e.getLocation()));
+                ctx.replyToMessage(ctx.getString("weather.locationNotFound").formatted(e.getLocation())).callAsync(ctx.sender);
             } catch (WeatherParseException e) {
-                editMessageConsumer.accept(ctx.getString("weather.queryError").formatted(e.getMessage()));
+                ctx.replyToMessage(ctx.getString("weather.queryError").formatted(e.getMessage())).callAsync(ctx.sender);
                 throw new RuntimeException(e);
-            } catch (IOException e) {
-                editMessageConsumer.accept(ctx.getString("weather.connectionError"));
-                throw new RuntimeException(e);
+            } catch (Throwable t) {
+                ctx.replyToMessage(ctx.getString("weather.connectionError")).callAsync(ctx.sender);
+                throw new RuntimeException(t);
+            } finally {
+                deleteMessageConsumer.run();
             }
         });
     }
@@ -124,8 +123,7 @@ public class WeatherCommand implements CommandExecutor {
                 "💨: " + f.wind() + "\n" +
                 "💧: " + f.humidity() + "\n" +
                 "🧭: " + f.pressure() + "\n" +
-                "🌚: " + f.moonPhase() + "\n" +
-                "<a href=\"" + f.imageLink() + "\">\u200B</a>";
+                "🌚: " + f.moonPhase() + "\n";
     }
 
     private static class NoLocationSpecifiedException extends Exception {

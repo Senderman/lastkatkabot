@@ -5,6 +5,7 @@ import jakarta.inject.Singleton;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -12,7 +13,7 @@ import java.io.InputStream;
 import java.util.Objects;
 
 @Singleton
-public class GreetingStickerGenerator {
+public class MediaGenerationService {
 
     /**
      * Generate sticker with greeting
@@ -46,6 +47,31 @@ public class GreetingStickerGenerator {
         // and the text itself - white
         g.setColor(Color.white);
         g.fill(textOutline);
+        g.dispose();
+        try (var out = new ByteArrayOutputStream()) {
+            ImageIO.write(img, "png", out);
+            out.flush();
+            return new ByteArrayInputStream(out.toByteArray());
+        }
+    }
+
+    public InputStream generateWeatherImage(String[] input) throws IOException {
+        int width = 1600;
+        int height = 800;
+        var img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        var g = img.createGraphics();
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0, width, height);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
+        g.setColor(Color.WHITE);
+        int fontHeight = g.getFontMetrics().getHeight();
+        for (int i = 0; i < input.length; i++) {
+            int yPos = 50 + i * fontHeight;
+            String line = input[i];
+            g.drawString(line, 50, yPos);
+        }
         g.dispose();
         try (var out = new ByteArrayOutputStream()) {
             ImageIO.write(img, "png", out);

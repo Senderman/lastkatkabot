@@ -1,36 +1,44 @@
 package com.senderman.lastkatkabot.feature.weather.service;
 
+import com.senderman.lastkatkabot.feature.media.MediaGenerationService;
 import com.senderman.lastkatkabot.feature.weather.exception.NoSuchLocationException;
 import com.senderman.lastkatkabot.feature.weather.exception.WeatherParseException;
 import com.senderman.lastkatkabot.feature.weather.model.Forecast;
+import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Singleton;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.io.InputStream;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Singleton
 public class WttrWeatherService implements WeatherService {
 
-    private static final String domain = "https://wttr.in/";
-    private static final String wttrOptions = "?m0AFTq&lang=ru&format=" + URLEncoder.encode("%l\\n%t\\n%f\\n%c%C\\n%w\\n%h\\n%P\\n%m", StandardCharsets.UTF_8);
     private static final Pattern windPattern = Pattern.compile("(\\D+)(\\d+)\\D+");
+    private final WttrClient wttrClient;
+    private final MediaGenerationService mediaGenerationService;
+
+    public WttrWeatherService(WttrClient wttrClient, MediaGenerationService mediaGenerationService) {
+        this.wttrClient = wttrClient;
+        this.mediaGenerationService = mediaGenerationService;
+    }
 
     @Override
-    public Forecast getWeatherByLocation(String location, String locale) throws IOException, NoSuchLocationException, WeatherParseException {
+    public Forecast getWeatherByLocation(String location, String locale) throws NoSuchLocationException, WeatherParseException {
         if (!location.matches("^~?[\\p{L}\\d\\s-,.+]+"))
             throw new NoSuchLocationException(location);
 
-        var response = requestWeather(location);
-        return parseResponse(response, locale);
+        var response = wttrClient.getShortWeather(location, null);
+        if (response.isEmpty())
+            throw new NoSuchLocationException(location);
+
+        return parseResponse(response.get(), location, locale);
     }
 
 
-    private Forecast parseResponse(String response, String locale) throws WeatherParseException {
+    private Forecast parseResponse(String response, String location, String locale) throws WeatherParseException {
         String[] content = response.split("\n");
         try {
             var title = content[0];
@@ -41,8 +49,9 @@ public class WttrWeatherService implements WeatherService {
             var humidity = content[5];
             var pressure = formatPressure(content[6]);
             var moonPhase = content[7];
+            var image = getFullWeatherImage(location, locale);
             return new Forecast(title, temperature, feelsLike, feelings,
-                    wind, humidity, pressure, moonPhase, getImageLink(title, locale));
+                    wind, humidity, pressure, moonPhase, image);
         } catch (Exception e) {
             throw new WeatherParseException("Error while parsing content: " + response, e);
         }
@@ -70,26 +79,37 @@ public class WttrWeatherService implements WeatherService {
         return "%d гПа (%d мм.рт.ст.)".formatted(hPa, mmHg);
     }
 
-    private String requestWeather(String location) throws IOException, NoSuchLocationException {
-        var url = URI.create(domain + urlEncodeLocation(location) + wttrOptions).toURL();
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        conn.connect();
-        if (conn.getResponseCode() == 404)
-            throw new NoSuchLocationException(location);
-        try (var out = conn.getInputStream()) {
-            return new String(out.readAllBytes(), StandardCharsets.UTF_8);
+    @Nullable
+    private InputStream getFullWeatherImage(String location, String locale) {
+        var response = wttrClient.getFullWeatherAscii(location, locale);
+        if (response.isEmpty())
+            return null;
+
+        var strings = response.get().split("\n");
+        int start = findFirstWeatherTableIndex(strings);
+        int end = findLastWeatherTableIndex(strings, start);
+        String[] table = Arrays.copyOfRange(strings, start, end);
+        try {
+            return mediaGenerationService.generateWeatherImage(table);
+        } catch (IOException e) {
+            return null;
         }
     }
 
-    private String urlEncodeLocation(String location) {
-        return URLEncoder.encode(location, StandardCharsets.UTF_8).replace("+", "%20");
+    private int findFirstWeatherTableIndex(String[] input) {
+        for (int i = 0; i < input.length; i++) {
+            if (input[i].contains("┌─────"))
+                return i;
+        }
+        return -1;
     }
 
-    private String getImageLink(String location, String locale) {
-        // prevent telegram caching
-        long tsHours = System.currentTimeMillis() / 3600000;
-        return domain + urlEncodeLocation(location) + ".png?lang=%s&ts=".formatted(locale) + tsHours;
+    private int findLastWeatherTableIndex(String[] input, int start) {
+        for (int i = start + 1; i < input.length; i++) {
+            if (input[i].contains("@igor_chubin"))
+                return i;
+        }
+        return -1;
     }
 
 }
