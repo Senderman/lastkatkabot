@@ -10,6 +10,7 @@ import jakarta.inject.Singleton;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -81,9 +82,14 @@ public class WttrWeatherService implements WeatherService {
 
     @Nullable
     private InputStream getFullWeatherImage(String location, String locale) {
-        var response = wttrClient.getFullWeatherAscii(location, locale);
-        if (response.isEmpty())
+        Optional<String> response;
+        try {
+            response = wttrClient.getFullWeatherAscii(location, locale);
+            if (response.isEmpty())
+                return null;
+        } catch (Throwable t) { // ignore exception, just do not return the picture
             return null;
+        }
 
         var strings = response.get().split("\n");
         int start = findFirstWeatherTableIndex(strings);
