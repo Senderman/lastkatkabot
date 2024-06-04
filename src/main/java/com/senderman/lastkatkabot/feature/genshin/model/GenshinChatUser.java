@@ -7,7 +7,7 @@ import io.micronaut.data.annotation.*;
 import java.sql.Timestamp;
 import java.util.Objects;
 
-@MappedEntity("GENSHIN_CHAT_USER")
+@MappedEntity("genshin_chat_user")
 public class GenshinChatUser {
 
     @EmbeddedId

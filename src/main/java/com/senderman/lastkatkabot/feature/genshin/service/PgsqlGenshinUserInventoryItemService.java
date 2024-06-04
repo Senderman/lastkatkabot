@@ -7,11 +7,11 @@ import jakarta.inject.Singleton;
 import java.util.List;
 
 @Singleton
-public class H2GenshinUserInventoryItemService implements GenshinUserInventoryItemService {
+public class PgsqlGenshinUserInventoryItemService implements GenshinUserInventoryItemService {
 
     private final GenshinUserInventoryItemRepository repo;
 
-    public H2GenshinUserInventoryItemService(GenshinUserInventoryItemRepository repo) {
+    public PgsqlGenshinUserInventoryItemService(GenshinUserInventoryItemRepository repo) {
         this.repo = repo;
     }
 

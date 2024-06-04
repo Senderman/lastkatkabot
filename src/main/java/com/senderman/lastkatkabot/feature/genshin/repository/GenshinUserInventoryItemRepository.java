@@ -9,7 +9,7 @@ import io.micronaut.data.repository.CrudRepository;
 import java.util.List;
 import java.util.Optional;
 
-@JdbcRepository(dialect = Dialect.H2)
+@JdbcRepository(dialect = Dialect.POSTGRES)
 public interface GenshinUserInventoryItemRepository extends CrudRepository<GenshinUserInventoryItem, GenshinUserInventoryItem.PrimaryKey> {
 
     List<GenshinUserInventoryItem> findByChatIdAndUserId(long chatId, long userId);
@@ -17,11 +17,11 @@ public interface GenshinUserInventoryItemRepository extends CrudRepository<Gensh
     Optional<GenshinUserInventoryItem> findByChatIdAndUserIdAndItemId(long chatId, long userId, String itemId);
 
     @Query("""
-            DELETE FROM GENSHIN_USER_INVENTORY_ITEM
+            DELETE FROM genshin_user_inventory_item
             WHERE
-            USER_ID NOT IN (SELECT DISTINCT USER_ID FROM GENSHIN_CHAT_USER)
+            user_id NOT IN (SELECT DISTINCT user_id FROM genshin_chat_user)
             AND
-            CHAT_ID NOT IN (SELECT DISTINCT CHAT_ID FROM GENSHIN_CHAT_USER);
+            chat_id NOT IN (SELECT DISTINCT chat_id FROM genshin_chat_user);
             """)
     void deleteInactiveInventories();
 

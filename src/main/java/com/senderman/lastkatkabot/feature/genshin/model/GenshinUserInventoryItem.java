@@ -4,7 +4,7 @@ package com.senderman.lastkatkabot.feature.genshin.model;
 import io.micronaut.core.annotation.Creator;
 import io.micronaut.data.annotation.*;
 
-@MappedEntity("GENSHIN_USER_INVENTORY_ITEM")
+@MappedEntity("genshin_user_inventory_item")
 public class GenshinUserInventoryItem {
 
     @EmbeddedId

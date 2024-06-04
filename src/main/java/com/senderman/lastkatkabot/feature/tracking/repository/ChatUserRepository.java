@@ -8,7 +8,7 @@ import io.micronaut.data.repository.CrudRepository;
 import java.util.List;
 import java.util.Optional;
 
-@JdbcRepository(dialect = Dialect.H2)
+@JdbcRepository(dialect = Dialect.POSTGRES)
 public interface ChatUserRepository extends CrudRepository<ChatUser, ChatUser.PrimaryKey> {
 
     List<ChatUser> findByUserId(long userId);

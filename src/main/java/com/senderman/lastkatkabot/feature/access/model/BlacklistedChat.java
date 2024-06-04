@@ -6,7 +6,7 @@ import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.MappedEntity;
 import io.micronaut.data.annotation.MappedProperty;
 
-@MappedEntity("BLACKLISTED_CHAT")
+@MappedEntity("blacklisted_chat")
 public class BlacklistedChat {
 
     @Id

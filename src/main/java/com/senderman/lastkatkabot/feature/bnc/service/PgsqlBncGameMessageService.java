@@ -8,11 +8,11 @@ import java.util.Collection;
 import java.util.List;
 
 @Singleton
-public class H2BncGameMessageService implements BncGameMessageService {
+public class PgsqlBncGameMessageService implements BncGameMessageService {
 
     private final BncGameMessageRepository repo;
 
-    public H2BncGameMessageService(BncGameMessageRepository repo) {
+    public PgsqlBncGameMessageService(BncGameMessageRepository repo) {
         this.repo = repo;
     }
 

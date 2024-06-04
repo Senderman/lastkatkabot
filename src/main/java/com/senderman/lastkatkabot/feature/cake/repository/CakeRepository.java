@@ -9,12 +9,12 @@ import io.micronaut.data.repository.CrudRepository;
 import java.sql.Timestamp;
 import java.util.Optional;
 
-@JdbcRepository(dialect = Dialect.H2)
+@JdbcRepository(dialect = Dialect.POSTGRES)
 public interface CakeRepository extends CrudRepository<Cake, Integer> {
 
     void deleteByCreatedAtLessThan(Timestamp createdAt);
 
-    @Query("SELECT MAX(ID) +1 FROM CAKE;")
+    @Query("SELECT MAX(id) +1 FROM cake;")
     Optional<Integer> getLowestAvailableId();
 
 }

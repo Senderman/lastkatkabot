@@ -9,14 +9,14 @@ import io.micronaut.data.repository.CrudRepository;
 import java.sql.Timestamp;
 import java.util.Optional;
 
-@JdbcRepository(dialect = Dialect.H2)
+@JdbcRepository(dialect = Dialect.POSTGRES)
 public interface MarriageRequestRepository extends CrudRepository<MarriageRequest, Integer> {
 
     void deleteByCreatedAtLessThan(Timestamp createdAt);
 
     void deleteByProposerIdOrProposeeId(long proposerId, long proposeeId);
 
-    @Query("SELECT MAX(ID) +1 FROM MARRIAGE_REQUEST;")
+    @Query("SELECT MAX(id) +1 FROM marriage_request;")
     Optional<Integer> getLowestAvailableId();
 
 }

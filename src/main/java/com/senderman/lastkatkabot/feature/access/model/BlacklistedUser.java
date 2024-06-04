@@ -8,7 +8,7 @@ import io.micronaut.data.annotation.MappedProperty;
 
 import java.util.Objects;
 
-@MappedEntity("BLACKLISTED_USER")
+@MappedEntity("blacklisted_user")
 public class BlacklistedUser implements UserIdAndName<Long> {
 
     @Id

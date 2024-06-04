@@ -7,11 +7,11 @@ import jakarta.inject.Singleton;
 import java.util.Optional;
 
 @Singleton
-public class H2FeedbackService implements FeedbackService {
+public class PgsqlFeedbackService implements FeedbackService {
 
     private final FeedbackRepository repository;
 
-    public H2FeedbackService(FeedbackRepository repository) {
+    public PgsqlFeedbackService(FeedbackRepository repository) {
         this.repository = repository;
     }
 

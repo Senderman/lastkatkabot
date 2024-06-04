@@ -8,7 +8,7 @@ import io.micronaut.data.repository.CrudRepository;
 import java.util.Collection;
 import java.util.List;
 
-@JdbcRepository(dialect = Dialect.H2)
+@JdbcRepository(dialect = Dialect.POSTGRES)
 public interface BlacklistedChatRepository extends CrudRepository<BlacklistedChat, Long> {
 
     List<BlacklistedChat> findByChatIdIn(Collection<Long> ids);

@@ -9,7 +9,7 @@ import io.micronaut.data.repository.CrudRepository;
 import java.util.Collection;
 import java.util.List;
 
-@JdbcRepository(dialect = Dialect.H2)
+@JdbcRepository(dialect = Dialect.POSTGRES)
 public interface BncGameMessageRepository extends CrudRepository<BncGameMessage, BncGameMessage.PrimaryKey> {
 
     void deleteByGameId(long gameId);
@@ -18,7 +18,7 @@ public interface BncGameMessageRepository extends CrudRepository<BncGameMessage,
 
     List<BncGameMessage> findByGameId(long gameId);
 
-    @Query("DELETE FROM BNC_GAME_MESSAGE WHERE game_id NOT IN (SELECT id FROM BNC_GAME_SAVE)")
+    @Query("DELETE FROM bnc_game_message WHERE game_id NOT IN (SELECT id FROM bnc_game_save)")
     void deleteOrphanMessages();
 
 }

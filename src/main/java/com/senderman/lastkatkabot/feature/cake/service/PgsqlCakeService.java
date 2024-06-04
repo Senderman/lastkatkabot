@@ -7,11 +7,11 @@ import jakarta.inject.Singleton;
 import java.util.Optional;
 
 @Singleton
-public class H2CakeService implements CakeService {
+public class PgsqlCakeService implements CakeService {
 
     private final CakeRepository repo;
 
-    public H2CakeService(CakeRepository repo) {
+    public PgsqlCakeService(CakeRepository repo) {
         this.repo = repo;
     }
 

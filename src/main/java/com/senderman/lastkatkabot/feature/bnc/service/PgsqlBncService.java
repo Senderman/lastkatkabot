@@ -7,11 +7,11 @@ import jakarta.inject.Singleton;
 import java.util.Optional;
 
 @Singleton
-public class H2BncService implements BncService {
+public class PgsqlBncService implements BncService {
 
     private final BncRepository repo;
 
-    public H2BncService(BncRepository repo) {
+    public PgsqlBncService(BncRepository repo) {
         this.repo = repo;
     }
 

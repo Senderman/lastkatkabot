@@ -8,11 +8,11 @@ import java.util.Collection;
 import java.util.List;
 
 @Singleton
-public class H2BlacklistedChatService implements BlacklistedChatService {
+public class PgsqlBlacklistedChatService implements BlacklistedChatService {
 
     private final BlacklistedChatRepository repo;
 
-    public H2BlacklistedChatService(BlacklistedChatRepository repo) {
+    public PgsqlBlacklistedChatService(BlacklistedChatRepository repo) {
         this.repo = repo;
     }
 

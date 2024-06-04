@@ -36,7 +36,7 @@ CREATE TABLE cake (
 );
 
 CREATE TABLE feedback (
-    id IDENTITY PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     message VARCHAR(1000) NOT NULL,
     user_id BIGINT NOT NULL,
     user_name VARCHAR(255) NOT NULL,
