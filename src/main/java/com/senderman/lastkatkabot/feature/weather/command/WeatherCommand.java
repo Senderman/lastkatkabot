@@ -63,7 +63,7 @@ public class WeatherCommand implements CommandExecutor {
                 if (forecast.image() == null) {// if there's no weather image, reply with text
                     ctx.replyToMessage(text).callAsync(ctx.sender);
                 } else { // else reply with photo
-                    ctx.replyWithPhoto()
+                    ctx.replyToMessageWithPhoto()
                             .setFile("forecast.png", forecast.image())
                             .setCaption(text)
                             .enableHtml()
