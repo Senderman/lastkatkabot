@@ -102,11 +102,11 @@ CREATE TABLE chat_info (
 );
 
 CREATE TABLE bnc_record (
-    `length` INT CHECK (`LENGTH` BETWEEN 4 AND 16),
+    length INT CHECK (length BETWEEN 4 AND 16),
     hexadecimal BOOLEAN,
     user_id BIGINT NOT NULL,
     name VARCHAR(64) NOT NULL,
     time_spent BIGINT NOT NULL,
 
-    PRIMARY KEY (`LENGTH`, HEXADECIMAL)
+    PRIMARY KEY (length, hexadecimal)
 );

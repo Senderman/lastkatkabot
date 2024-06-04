@@ -107,6 +107,7 @@ public class PgsqlCleanupService extends DatabaseCleanupService {
     public void defragmentFeedbackIds() {
         var feedbacks = feedbackRepo.findAll();
         var sql = "ALTER SEQUENCE feedback_id_seq RESTART WITH 1";
+        feedbackRepo.deleteAll();
         try (var conn = dataSource.getConnection()) {
             conn.prepareStatement(sql).execute();
             feedbackRepo.saveAll(feedbacks);
