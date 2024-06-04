@@ -87,7 +87,11 @@ public class WttrWeatherService implements WeatherService {
 
         var strings = response.get().split("\n");
         int start = findFirstWeatherTableIndex(strings);
+        if (start == -1)
+            return null;
         int end = findLastWeatherTableIndex(strings, start);
+        if (end == -1)
+            return null;
         String[] table = Arrays.copyOfRange(strings, start, end);
         try {
             return mediaGenerationService.generateWeatherImage(table);
