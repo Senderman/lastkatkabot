@@ -4,8 +4,8 @@ import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.senderman.lastkatkabot.feature.access.service.BlacklistedChatService;
 import com.senderman.lastkatkabot.feature.chatsettings.service.ChatInfoService;
 import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
-import com.senderman.lastkatkabot.feature.media.GreetingStickerGenerator;
 import com.senderman.lastkatkabot.feature.media.Media;
+import com.senderman.lastkatkabot.feature.media.MediaGenerationService;
 import com.senderman.lastkatkabot.feature.media.MediaIdService;
 import com.senderman.lastkatkabot.feature.members.command.GreetingCallback;
 import com.senderman.lastkatkabot.feature.members.exception.TooWideNicknameException;
@@ -21,13 +21,13 @@ public class NewMemberHandler implements Consumer<L10nMessageContext> {
 
     private final BlacklistedChatService blacklistedChatService;
     private final ChatInfoService chatInfoService;
-    private final GreetingStickerGenerator imageService;
+    private final MediaGenerationService imageService;
     private final MediaIdService mediaIdService;
 
     public NewMemberHandler(
             BlacklistedChatService blacklistedChatService,
             ChatInfoService chatInfoService,
-            GreetingStickerGenerator imageService,
+            MediaGenerationService imageService,
             MediaIdService mediaIdService
     ) {
         this.blacklistedChatService = blacklistedChatService;

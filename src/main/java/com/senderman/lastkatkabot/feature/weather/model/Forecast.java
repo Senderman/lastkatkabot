@@ -1,5 +1,7 @@
 package com.senderman.lastkatkabot.feature.weather.model;
 
+import java.io.InputStream;
+
 public record Forecast(
         String title,
         String temperature,
@@ -9,6 +11,6 @@ public record Forecast(
         String humidity,
         String pressure,
         String moonPhase,
-        String imageLink
+        InputStream image
 ) {
 }
