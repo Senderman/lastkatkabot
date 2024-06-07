@@ -65,10 +65,10 @@ public class BncRecord {
     @Embeddable
     public static class PrimaryKey {
 
-        @MappedProperty("LENGTH")
+        @MappedProperty("length")
         private final int length;
 
-        @MappedProperty("HEXADECIMAL")
+        @MappedProperty("hexadecimal")
         private final boolean hexadecimal;
 
         public PrimaryKey(int length, boolean hexadecimal) {
