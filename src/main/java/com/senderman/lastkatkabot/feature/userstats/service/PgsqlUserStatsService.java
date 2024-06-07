@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Singleton
-public class H2UserStatsService implements UserStatsService {
+public class PgsqlUserStatsService implements UserStatsService {
 
     private final UserStatsRepository repo;
 
-    public H2UserStatsService(UserStatsRepository repo) {
+    public PgsqlUserStatsService(UserStatsRepository repo) {
         this.repo = repo;
     }
 

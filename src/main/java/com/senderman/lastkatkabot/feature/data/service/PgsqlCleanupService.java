@@ -18,7 +18,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 
 @Singleton
-public class H2CleanupService extends DatabaseCleanupService {
+public class PgsqlCleanupService extends DatabaseCleanupService {
 
     private final ChatUserRepository chatUserRepo;
     private final ChatInfoRepository chatInfoRepo;
@@ -33,7 +33,7 @@ public class H2CleanupService extends DatabaseCleanupService {
     private final DataSource dataSource;
 
 
-    public H2CleanupService(
+    public PgsqlCleanupService(
             ChatUserRepository chatUserRepo,
             ChatInfoRepository chatInfoRepo,
             BncRepository bncRepo,
@@ -106,7 +106,8 @@ public class H2CleanupService extends DatabaseCleanupService {
     @Connectable
     public void defragmentFeedbackIds() {
         var feedbacks = feedbackRepo.findAll();
-        var sql = "TRUNCATE TABLE FEEDBACK RESTART IDENTITY";
+        var sql = "ALTER SEQUENCE feedback_id_seq RESTART WITH 1";
+        feedbackRepo.deleteAll();
         try (var conn = dataSource.getConnection()) {
             conn.prepareStatement(sql).execute();
             feedbackRepo.saveAll(feedbacks);

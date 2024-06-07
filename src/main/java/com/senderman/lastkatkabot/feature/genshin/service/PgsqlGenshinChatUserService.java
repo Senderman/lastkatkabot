@@ -6,11 +6,11 @@ import jakarta.inject.Singleton;
 
 
 @Singleton
-public class H2GenshinChatUserService implements GenshinChatUserService {
+public class PgsqlGenshinChatUserService implements GenshinChatUserService {
 
     private final GenshinChatUserRepository repo;
 
-    public H2GenshinChatUserService(GenshinChatUserRepository repo) {
+    public PgsqlGenshinChatUserService(GenshinChatUserRepository repo) {
         this.repo = repo;
     }
 

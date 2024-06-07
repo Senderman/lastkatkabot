@@ -5,7 +5,7 @@ import io.micronaut.data.annotation.*;
 
 import java.util.Objects;
 
-@MappedEntity("BNC_RECORD")
+@MappedEntity("bnc_record")
 public class BncRecord {
 
     @EmbeddedId

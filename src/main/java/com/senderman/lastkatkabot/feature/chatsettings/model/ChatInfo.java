@@ -11,7 +11,7 @@ import io.micronaut.data.annotation.MappedProperty;
 import java.util.List;
 import java.util.Set;
 
-@MappedEntity("CHAT_INFO")
+@MappedEntity("chat_info")
 public class ChatInfo {
 
     @Id

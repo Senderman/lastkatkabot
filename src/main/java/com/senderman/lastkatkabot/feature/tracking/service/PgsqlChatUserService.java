@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Singleton
-public class H2ChatUserService implements ChatUserService {
+public class PgsqlChatUserService implements ChatUserService {
 
     private final ChatUserRepository repo;
 
-    public H2ChatUserService(ChatUserRepository repo) {
+    public PgsqlChatUserService(ChatUserRepository repo) {
         this.repo = repo;
     }
 

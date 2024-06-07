@@ -10,7 +10,7 @@ import io.micronaut.data.annotation.MappedProperty;
 
 import java.util.Objects;
 
-@MappedEntity("FEEDBACK")
+@MappedEntity("feedback")
 public class Feedback {
 
     @MappedProperty("message")

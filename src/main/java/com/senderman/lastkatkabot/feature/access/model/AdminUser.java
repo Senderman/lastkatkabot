@@ -8,7 +8,7 @@ import io.micronaut.data.annotation.MappedProperty;
 
 import java.util.Objects;
 
-@MappedEntity("ADMIN_USER")
+@MappedEntity("admin_user")
 public class AdminUser implements UserIdAndName<Long> {
 
     @Id

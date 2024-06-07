@@ -7,11 +7,11 @@ import jakarta.inject.Singleton;
 import java.util.Optional;
 
 @Singleton
-public class H2SettingsService implements SettingsService {
+public class PgsqlSettingsService implements SettingsService {
 
     private final SettingsRepository repo;
 
-    public H2SettingsService(SettingsRepository repo) {
+    public PgsqlSettingsService(SettingsRepository repo) {
         this.repo = repo;
     }
 

@@ -10,7 +10,7 @@ import io.micronaut.data.annotation.MappedProperty;
 import java.sql.Timestamp;
 import java.util.Objects;
 
-@MappedEntity("CAKE")
+@MappedEntity("cake")
 public class Cake {
 
     @Nullable

@@ -7,11 +7,11 @@ import jakarta.inject.Singleton;
 import java.util.Optional;
 
 @Singleton
-public class H2MarriageRequestService implements MarriageRequestService {
+public class PgsqlMarriageRequestService implements MarriageRequestService {
 
     private final MarriageRequestRepository repository;
 
-    public H2MarriageRequestService(MarriageRequestRepository repository) {
+    public PgsqlMarriageRequestService(MarriageRequestRepository repository) {
         this.repository = repository;
     }
 

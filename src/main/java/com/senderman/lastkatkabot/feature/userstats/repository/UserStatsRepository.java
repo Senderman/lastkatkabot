@@ -12,61 +12,61 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-@JdbcRepository(dialect = Dialect.H2)
+@JdbcRepository(dialect = Dialect.POSTGRES)
 public interface UserStatsRepository extends CrudRepository<UserStats, Long> {
 
-    @Query("SELECT * FROM USER_STATS WHERE bnc_score != 0 ORDER BY bnc_score DESC LIMIT 10")
+    @Query("SELECT * FROM user_stats WHERE bnc_score != 0 ORDER BY bnc_score DESC LIMIT 10")
     List<UserStats> findTop10OrderByBncScoreDesc();
 
     @Query("""
-            SELECT s.* FROM USER_STATS s
-            JOIN CHAT_USER u ON s.USER_ID = u.USER_ID
-            WHERE u.CHAT_ID = :chatId
-            AND s.BNC_SCORE != 0
-            ORDER BY s.BNC_SCORE DESC
+            SELECT s.* FROM user_stats s
+            JOIN chat_user u ON s.user_id = u.user_id
+            WHERE u.chat_id = :chatId
+            AND s.bnc_score != 0
+            ORDER BY s.bnc_score DESC
             LIMIT 10;
             """)
     List<UserStats> findTop10ByChatIdOrderByBncScoreDesc(long chatId);
 
-    @Query("SELECT * FROM USER_STATS WHERE user_id IN (:ids) AND lover_id IN (:ids)")
+    @Query("SELECT * FROM user_stats WHERE user_id IN (:ids) AND lover_id IN (:ids)")
     List<UserStats> findByIdAndLoverIdIn(Collection<Long> ids);
 
     @Query("""
-            SELECT s.* FROM USER_STATS s
-            JOIN CHAT_USER u ON s.USER_ID = u.USER_ID
-            WHERE u.CHAT_ID = :chatId;
+            SELECT s.* FROM user_stats s
+            JOIN chat_user u ON s.user_id = u.user_id
+            WHERE u.chat_id = :chatId;
             """)
     List<UserStats> findByChatId(long chatId);
 
     @Query("""
-            SELECT s.* FROM USER_STATS s
-            JOIN CHAT_USER u ON s.USER_ID = u.USER_ID
-            WHERE u.CHAT_ID = :chatId
-            ORDER BY RAND()
+            SELECT s.* FROM user_stats s
+            JOIN chat_user u ON s.user_id = u.user_id
+            WHERE u.chat_id = :chatId
+            ORDER BY RANDOM()
             LIMIT :amount
             """)
     List<UserStats> findRandomUsersOfChat(long chatId, int amount);
 
     @Query("""
-            SELECT s.* FROM USER_STATS s
-            JOIN CHAT_USER u ON s.USER_ID = u.USER_ID
-            WHERE u.CHAT_ID = :chatId
-            AND s.USER_ID = :userId;
+            SELECT s.* FROM user_stats s
+            JOIN chat_user u ON s.user_id = u.user_id
+            WHERE u.chat_id = :chatId
+            AND s.user_id = :userId;
             """)
     Optional<UserStats> findByChatIdAndUserId(long chatId, long userId);
 
     @Query("""
-            UPDATE USER_STATS SET name = :name WHERE user_id = :userId;
-            UPDATE USER_STATS SET locale = :locale WHERE user_id = :userId AND locale IS NULL;
+            UPDATE user_stats SET name = :name WHERE user_id = :userId;
+            UPDATE user_stats SET locale = :locale WHERE user_id = :userId AND locale IS NULL;
             """)
     void updateByUserId(long userId, String name, @Nullable String locale);
 
     void deleteByUpdatedAtLessThan(Timestamp updatedAt);
 
     @Query("""
-            UPDATE USER_STATS
-            SET LOVER_ID = NULL
-            WHERE LOVER_ID NOT IN (SELECT USER_ID FROM USER_STATS)
+            UPDATE user_stats
+            SET lover_id = NULL
+            WHERE lover_id NOT IN (SELECT user_id FROM user_stats)
             """)
     void updateNonExistentLovers();
 

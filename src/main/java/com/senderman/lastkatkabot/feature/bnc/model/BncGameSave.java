@@ -12,7 +12,7 @@ import io.micronaut.data.annotation.MappedProperty;
 import java.sql.Timestamp;
 import java.util.Objects;
 
-@MappedEntity("BNC_GAME_SAVE")
+@MappedEntity("bnc_game_save")
 public class BncGameSave {
 
     @Id

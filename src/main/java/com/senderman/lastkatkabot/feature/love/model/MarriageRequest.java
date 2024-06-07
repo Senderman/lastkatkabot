@@ -10,7 +10,7 @@ import io.micronaut.data.annotation.MappedProperty;
 import java.sql.Timestamp;
 import java.util.Objects;
 
-@MappedEntity("MARRIAGE_REQUEST")
+@MappedEntity("marriage_request")
 public class MarriageRequest {
 
     @MappedProperty("proposer_id")

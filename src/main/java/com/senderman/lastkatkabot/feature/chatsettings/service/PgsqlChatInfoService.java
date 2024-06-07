@@ -5,11 +5,11 @@ import com.senderman.lastkatkabot.feature.chatsettings.repository.ChatInfoReposi
 import jakarta.inject.Singleton;
 
 @Singleton
-public class H2ChatInfoService implements ChatInfoService {
+public class PgsqlChatInfoService implements ChatInfoService {
 
     private final ChatInfoRepository repo;
 
-    public H2ChatInfoService(ChatInfoRepository repo) {
+    public PgsqlChatInfoService(ChatInfoRepository repo) {
         this.repo = repo;
     }
 

@@ -6,7 +6,7 @@ import io.micronaut.data.annotation.*;
 
 import java.util.Objects;
 
-@MappedEntity("BNC_GAME_MESSAGE")
+@MappedEntity("bnc_game_message")
 public class BncGameMessage {
 
     @EmbeddedId

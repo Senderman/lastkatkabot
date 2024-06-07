@@ -6,7 +6,7 @@ import io.micronaut.data.annotation.*;
 
 import java.util.Objects;
 
-@MappedEntity("CHAT_USER")
+@MappedEntity("chat_user")
 public class ChatUser {
 
     @EmbeddedId

@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Singleton
-public class H2BncRecordService implements BncRecordService {
+public class PgsqlBncRecordService implements BncRecordService {
 
     private final BncRecordRepository repo;
 
-    public H2BncRecordService(BncRecordRepository repo) {
+    public PgsqlBncRecordService(BncRecordRepository repo) {
         this.repo = repo;
     }
 

@@ -7,7 +7,7 @@ import io.micronaut.data.repository.CrudRepository;
 
 import java.sql.Timestamp;
 
-@JdbcRepository(dialect = Dialect.H2)
+@JdbcRepository(dialect = Dialect.POSTGRES)
 public interface BncRepository extends CrudRepository<BncGameSave, Long> {
 
     void deleteByEditDateLessThan(Timestamp editDate);
