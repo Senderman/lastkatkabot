@@ -27,14 +27,13 @@ public class LastkatkaBot implements BotModule {
                         "MICRONAUT_SERVER_HOST",
                         "MICRONAUT_SERVER_PORT",
                         "MICRONAUT_METRICS_ENABLED",
-                        "DB",
+                        "DBHOST",
                         "DBUSER",
                         "DBPASS",
                         "BOT_USERNAME",
                         "BOT_TOKEN",
-                        "main-admin-id",
-                        "feedback-channel-id",
-                        "notification-channel-id"
+                        "MAIN_ADMIN_ID",
+                        "NOTIFICATION_CHANNEL_ID"
                 )
                 .classes(LastkatkaBot.class)
                 .start();

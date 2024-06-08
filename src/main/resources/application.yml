@@ -27,7 +27,7 @@ jackson:
 
 datasources:
   default:
-    url: jdbc:postgresql://${DB}:${DBPORT:5432}/${DBNAME:lastkatkabot}
+    url: jdbc:postgresql://${DBHOST:localhost}:${DBPORT:5432}/${DBNAME:lastkatkabot}
     username: ${DBUSER:lastkatkabot}
     password: ${DBPASS:sa}
     driver-class-name: org.postgresql.Driver
@@ -46,8 +46,8 @@ bot:
 
   timezone: "Europe/Kiev" # timezone for /pair, /wish and other time-based features
 
-  mainAdminId: ${main-admin-id} # id of main admin
-  notificationChannelId: ${notification-channel-id} # id of channel/group where feedbacks and error logs will be sent
+  mainAdminId: ${MAIN_ADMIN_ID} # id of main admin
+  notificationChannelId: ${NOTIFICATION_CHANNEL_ID} # id of channel/group where feedbacks and error logs will be sent
 
   locale:
     adminLocale: ru
