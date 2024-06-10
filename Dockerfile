@@ -2,7 +2,9 @@ FROM gradle:8.5-jdk21-alpine as builder
 
 RUN mkdir /app
 WORKDIR /app
-COPY . ./
+COPY build.gradle gradle.properties settings.gradle ./
+RUN gradle shadowJar -x test --no-daemon
+COPY src ./
 RUN gradle shadowJar --no-daemon
 
 FROM eclipse-temurin:21-jdk-alpine
