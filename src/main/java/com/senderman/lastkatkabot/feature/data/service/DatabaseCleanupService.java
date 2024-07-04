@@ -10,9 +10,9 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class DatabaseCleanupService {
 
-    public static final int INACTIVE_PERIOD_CAKE_SECS = (int) TimeUnit.MINUTES.toSeconds(40);
+    public static final long INACTIVE_PERIOD_CAKE_SECS = TimeUnit.MINUTES.toSeconds(40);
     // chatuser, marriages, bnc games
-    private final int INACTIVE_PERIOD_GENERAL_SECS = (int) TimeUnit.DAYS.toSeconds(14);
+    private final long INACTIVE_PERIOD_GENERAL_SECS = TimeUnit.DAYS.toSeconds(14);
     // userstats and genshin
     private final long INACTIVE_PERIOD_USER_STATS = TimeUnit.DAYS.toSeconds(365);
 
