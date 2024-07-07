@@ -19,7 +19,7 @@ public class SetLocaleCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "localization.setlocale.description";
     }
 

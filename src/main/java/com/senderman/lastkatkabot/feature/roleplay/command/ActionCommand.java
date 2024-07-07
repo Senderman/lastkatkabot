@@ -15,7 +15,7 @@ public class ActionCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "roleplay.action.description";
     }
 

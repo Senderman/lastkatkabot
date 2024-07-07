@@ -21,7 +21,7 @@ public class LastPairsCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "love.lastpairs.description";
     }
 

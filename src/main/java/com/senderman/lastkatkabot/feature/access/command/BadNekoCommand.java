@@ -27,7 +27,7 @@ public class BadNekoCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "access.badneko.description";
     }
 

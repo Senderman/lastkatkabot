@@ -29,7 +29,7 @@ public class MarryMeCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "love.marryme.description";
     }
 

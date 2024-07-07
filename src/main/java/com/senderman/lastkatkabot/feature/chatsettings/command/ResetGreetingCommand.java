@@ -24,7 +24,7 @@ public class ResetGreetingCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "chatsettings.resetgreeting.description";
     }
 

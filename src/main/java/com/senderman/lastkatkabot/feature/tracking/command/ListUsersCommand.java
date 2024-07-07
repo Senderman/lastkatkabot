@@ -31,7 +31,7 @@ public class ListUsersCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "tracking.ulist.description";
     }
 

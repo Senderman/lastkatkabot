@@ -32,7 +32,7 @@ public class WhereUserCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "tracking.wru.description";
     }
 

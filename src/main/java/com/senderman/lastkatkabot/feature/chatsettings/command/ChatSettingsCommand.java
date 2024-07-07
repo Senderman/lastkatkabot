@@ -24,7 +24,7 @@ public class ChatSettingsCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "chatsettings.settings.description";
     }
 

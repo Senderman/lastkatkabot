@@ -28,7 +28,7 @@ public class PopularityCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "tracking.popularity.description";
     }
 

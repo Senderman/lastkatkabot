@@ -54,7 +54,7 @@ public class PairCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "love.pair.description";
     }
 

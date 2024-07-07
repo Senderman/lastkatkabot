@@ -32,7 +32,7 @@ public class StatsCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "userstats.description";
     }
 

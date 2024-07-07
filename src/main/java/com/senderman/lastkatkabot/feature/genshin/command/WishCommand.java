@@ -44,7 +44,7 @@ public class WishCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "genshin.wish.description";
     }
 

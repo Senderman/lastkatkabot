@@ -24,7 +24,7 @@ public class SetGreetingCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "chatsettings.greeting.description";
     }
 

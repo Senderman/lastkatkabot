@@ -32,7 +32,7 @@ public class ShowFeedbacksCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "feedback.feedbacks.description";
     }
 

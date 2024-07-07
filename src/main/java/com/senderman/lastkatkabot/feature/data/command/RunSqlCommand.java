@@ -30,7 +30,7 @@ public class RunSqlCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "sql.description";
     }
 

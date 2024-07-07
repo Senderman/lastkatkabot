@@ -17,7 +17,7 @@ public class UptimeCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "tracking.uptime.description";
     }
 

@@ -22,7 +22,7 @@ public class DivorceCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "love.divorce.description";
     }
 

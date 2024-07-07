@@ -15,7 +15,7 @@ public class HttpCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "http.description";
     }
 

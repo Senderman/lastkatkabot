@@ -32,7 +32,7 @@ public class DeleteFeedbackCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "feedback.fdel.description";
     }
 

@@ -39,7 +39,7 @@ public class InvCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "genshin.inv.description";
     }
 

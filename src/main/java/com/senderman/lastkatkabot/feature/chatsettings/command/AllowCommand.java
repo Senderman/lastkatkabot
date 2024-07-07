@@ -25,7 +25,7 @@ public class AllowCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "chatsettings.callow.description";
     }
 

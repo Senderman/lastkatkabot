@@ -51,7 +51,7 @@ public class SendFeedbackCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "feedback.feedback.description";
     }
 

@@ -45,7 +45,7 @@ public class HelpCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "help.description";
     }
 
@@ -114,6 +114,6 @@ public class HelpCommand implements CommandExecutor {
     }
 
     private String formatExecutor(CommandExecutor executor, L10nMessageContext ctx) {
-        return executor.command() + " - " + Html.htmlSafe(ctx.getString(executor.getDescription()));
+        return executor.command() + " - " + Html.htmlSafe(ctx.getString(executor.getDescriptionKey()));
     }
 }

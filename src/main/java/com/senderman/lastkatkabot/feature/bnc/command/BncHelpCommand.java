@@ -22,7 +22,7 @@ public class BncHelpCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "bnc.bnchelp.description";
     }
 

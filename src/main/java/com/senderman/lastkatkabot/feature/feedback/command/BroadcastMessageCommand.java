@@ -34,7 +34,7 @@ public class BroadcastMessageCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "feedback.broadcast.description";
     }
 

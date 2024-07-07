@@ -14,7 +14,7 @@ public class ShortInfoCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "tracking.shortinfo.description";
     }
 

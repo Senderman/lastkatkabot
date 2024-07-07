@@ -62,7 +62,7 @@ public class AnswerFeedbackCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "feedback.fresp.description";
     }
 

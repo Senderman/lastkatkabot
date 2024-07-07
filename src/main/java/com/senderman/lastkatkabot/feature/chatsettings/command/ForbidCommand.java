@@ -25,7 +25,7 @@ public class ForbidCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "chatsettings.cforbid.description";
     }
 

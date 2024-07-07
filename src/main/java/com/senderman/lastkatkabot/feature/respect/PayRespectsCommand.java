@@ -16,7 +16,7 @@ public class PayRespectsCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "respect.description";
     }
 

@@ -32,7 +32,7 @@ public class WhoInChatCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "tracking.wic.description";
     }
 

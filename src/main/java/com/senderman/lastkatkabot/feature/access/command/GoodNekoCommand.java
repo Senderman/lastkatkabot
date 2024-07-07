@@ -27,7 +27,7 @@ public class GoodNekoCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "access.goodneko.description";
     }
 

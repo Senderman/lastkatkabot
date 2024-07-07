@@ -23,7 +23,7 @@ public class BncStartCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "bnc.bncstart.desc";
     }
 

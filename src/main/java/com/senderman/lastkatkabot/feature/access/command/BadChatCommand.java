@@ -26,7 +26,7 @@ public class BadChatCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "access.badchat.description";
     }
 

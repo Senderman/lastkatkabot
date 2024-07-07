@@ -24,7 +24,7 @@ public class GetInfoCommand implements CommandExecutor {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescriptionKey() {
         return "tracking.getinfo.description";
     }
 
