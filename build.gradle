@@ -1,7 +1,7 @@
 plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("io.micronaut.application") version "4.3.5"
-    id("io.micronaut.aot") version "4.3.5"
+    id("io.micronaut.application") version "4.4.0"
+    id("io.micronaut.aot") version "4.4.0"
 }
 
 group 'com.senderman'
@@ -13,9 +13,10 @@ repositories {
 
 dependencies {
     // telegram
-    implementation('com.annimon:tgbots-module:7.1.0') {
+    implementation('com.annimon:tgbots-module:7.7.0') {
         exclude group: 'org.glassfish.grizzly', module: 'grizzly-http-server'
         exclude group: 'org.glassfish.jersey.core', module: 'jersey-server'
+        exclude group: 'org.telegram', module: 'telegrambots-webhook'
     }
 
     implementation("jakarta.annotation:jakarta.annotation-api")
@@ -74,6 +75,6 @@ micronaut {
         optimizeClassLoading = true
         deduceEnvironment = false
         optimizeNetty = true
-
+        replaceLogbackXml = true
     }
 }

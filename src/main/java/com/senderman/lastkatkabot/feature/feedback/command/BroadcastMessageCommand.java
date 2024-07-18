@@ -10,7 +10,7 @@ import com.senderman.lastkatkabot.feature.tracking.service.ChatUserService;
 import com.senderman.lastkatkabot.util.Threads;
 import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
@@ -67,9 +67,7 @@ public class BroadcastMessageCommand implements CommandExecutor {
         // no need to use thread pool, since the /broadcast command is used rarely
         new Thread(() -> {
             for (int i = 0; i < total; i++) {
-                var m = new SendMessage();
-                m.setChatId(chatIds.get(i));
-                m.setText(messageToBroadcast);
+                var m = new SendMessage(chatIds.get(i).toString(), messageToBroadcast);
                 try {
                     ctx.sender.execute(m);
                     // on success, increase successful counter

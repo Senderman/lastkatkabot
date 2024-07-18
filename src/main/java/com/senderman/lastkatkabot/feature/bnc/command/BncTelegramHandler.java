@@ -23,7 +23,7 @@ import com.senderman.lastkatkabot.util.TimeUtils;
 import io.micronaut.core.annotation.NonNull;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
-import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 
 import java.util.EnumSet;
 import java.util.List;

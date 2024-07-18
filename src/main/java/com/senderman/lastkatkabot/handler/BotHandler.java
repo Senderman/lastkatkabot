@@ -1,5 +1,6 @@
 package com.senderman.lastkatkabot.handler;
 
+import com.annimon.tgbotsmodule.BotModuleOptions;
 import com.annimon.tgbotsmodule.analytics.UpdateHandler;
 import com.annimon.tgbotsmodule.api.methods.Methods;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,12 +21,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.telegram.telegrambots.bots.DefaultBotOptions;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.ByteArrayInputStream;
@@ -58,7 +58,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     private final MediaIdService mediaIdService;
 
     public BotHandler(
-            DefaultBotOptions botOptions,
+            BotModuleOptions botOptions,
             BotConfig config,
             L10nService l10n,
             UpdateHandler commandRegistry,
@@ -72,7 +72,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
             @Named("messageToJsonMapper") ObjectMapper messageToJsonMapper,
             MediaIdService mediaIdService
     ) {
-        super(botOptions, config.getToken());
+        super(botOptions);
         this.config = config;
         this.l10n = l10n;
         this.commandRegistry = commandRegistry;
@@ -214,11 +214,6 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         var method = Methods.Stickers.sendSticker(message.getChatId()).setReplyToMessageId(message.getMessageId());
         mediaIdService.setMedia(method, Media.LEAVE_STICKER);
         method.callAsync(this, m -> mediaIdService.setFileId(Media.LEAVE_STICKER, m.getSticker().getFileId()));
-    }
-
-    @Override
-    public String getBotUsername() {
-        return config.getUsername();
     }
 
 

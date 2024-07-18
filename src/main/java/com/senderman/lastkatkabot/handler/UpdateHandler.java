@@ -8,8 +8,6 @@ import com.annimon.tgbotsmodule.commands.authority.Authority;
 import com.annimon.tgbotsmodule.commands.context.InlineQueryContext;
 import com.annimon.tgbotsmodule.commands.context.RegexMessageContext;
 import com.annimon.tgbotsmodule.services.CommonAbsSender;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
 import com.senderman.lastkatkabot.Role;
 import com.senderman.lastkatkabot.command.CallbackExecutor;
 import com.senderman.lastkatkabot.command.CommandExecutor;
@@ -32,10 +30,10 @@ public class UpdateHandler implements com.annimon.tgbotsmodule.analytics.UpdateH
     private final static String COMMAND_METER_NAME = "bot.command";
     private final static String CALLBACK_METER_NAME = "bot.callback";
     private final String botUsername;
-    private final ListMultimap<String, TextCommand> textCommands;
+    private final Map<String, List<TextCommand>> textCommands;
     private final List<RegexCommand> regexCommands;
-    private final ListMultimap<String, CallbackQueryCommand> callbackCommands;
-    private final ListMultimap<String, InlineQueryCommand> inlineCommands;
+    private final Map<String, List<CallbackQueryCommand>> callbackCommands;
+    private final Map<String, List<InlineQueryCommand>> inlineCommands;
     private final Authority<Role> authority;
     private final MeterRegistry meterRegistry;
     private final L10nService l10nService;
@@ -53,10 +51,10 @@ public class UpdateHandler implements com.annimon.tgbotsmodule.analytics.UpdateH
         this.meterRegistry = meterRegistry;
         this.botUsername = "@" + config.getUsername().toLowerCase(Locale.ENGLISH);
         this.l10nService = l10nService;
-        textCommands = ArrayListMultimap.create();
+        textCommands = new HashMap<>();
         regexCommands = new ArrayList<>();
-        callbackCommands = ArrayListMultimap.create();
-        inlineCommands = ArrayListMultimap.create();
+        callbackCommands = new HashMap<>();
+        inlineCommands = new HashMap<>();
 
         splitCallbackCommandByWhitespace()
                 .register(bncTelegramHandler);
@@ -65,12 +63,8 @@ public class UpdateHandler implements com.annimon.tgbotsmodule.analytics.UpdateH
         callbacks.forEach(this::register);
     }
 
-    public UpdateHandler register(@NotNull TextCommand command) {
-        Objects.requireNonNull(command);
-        Stream.concat(Stream.of(command.command()), command.aliases().stream())
-                .map(this::stringToCommand)
-                .forEach(key -> textCommands.put(key, command));
-        return this;
+    private static <K, V> void addCommand(Map<K, List<V>> map, K key, V value) {
+        map.computeIfAbsent(key, (k) -> new ArrayList<>()).add(value);
     }
 
     public UpdateHandler register(@NotNull RegexCommand command) {
@@ -79,9 +73,11 @@ public class UpdateHandler implements com.annimon.tgbotsmodule.analytics.UpdateH
         return this;
     }
 
-    public UpdateHandler register(@NotNull CallbackQueryCommand command) {
+    public UpdateHandler register(@NotNull TextCommand command) {
         Objects.requireNonNull(command);
-        callbackCommands.put(command.command(), command);
+        Stream.concat(Stream.of(command.command()), command.aliases().stream())
+                .map(this::stringToCommand)
+                .forEach(key -> addCommand(textCommands, key, command));
         return this;
     }
 
@@ -204,6 +200,12 @@ public class UpdateHandler implements com.annimon.tgbotsmodule.analytics.UpdateH
 
     protected String stringToCommand(String str) {
         return str.toLowerCase(Locale.ENGLISH).replace(botUsername, "");
+    }
+
+    public UpdateHandler register(@NotNull CallbackQueryCommand command) {
+        Objects.requireNonNull(command);
+        addCommand(callbackCommands, command.command(), command);
+        return this;
     }
 
 }
