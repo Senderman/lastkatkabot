@@ -97,7 +97,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
     }
 
     @Override
-    public void onUpdatesReceived(List<Update> updates) {
+    public void consume(List<Update> updates) {
         for (var update : updates) {
             try {
                 onUpdate(update);
