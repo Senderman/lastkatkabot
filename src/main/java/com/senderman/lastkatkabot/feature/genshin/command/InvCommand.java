@@ -76,8 +76,7 @@ public class InvCommand implements CommandExecutor {
 
         ctx.replyToMessage(text.toString())
                 .setSingleRowInlineKeyboard(ButtonBuilder
-                        .callbackButton()
-                        .text(ctx.getString("common.close"))
+                        .callbackButton(ctx.getString("common.close"))
                         .payload(CloseInvCallback.NAME, userId)
                         .create())
                 .callAsync(ctx.sender);

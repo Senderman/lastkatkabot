@@ -43,12 +43,10 @@ public class CakeCommand implements CommandExecutor {
         ctx.reply(text)
                 .inReplyTo(ctx.message().getReplyToMessage())
                 .setSingleRowInlineKeyboard(
-                        ButtonBuilder.callbackButton()
-                                .text(ctx.getString("roleplay.cake.acceptButton"))
+                        ButtonBuilder.callbackButton(ctx.getString("roleplay.cake.acceptButton"))
                                 .payload(CakeCallback.NAME, "accept", target.getId(), cake.getId())
                                 .create(),
-                        ButtonBuilder.callbackButton()
-                                .text(ctx.getString("roleplay.cake.declineButton"))
+                        ButtonBuilder.callbackButton(ctx.getString("roleplay.cake.declineButton"))
                                 .payload(CakeCallback.NAME, "decline", target.getId(), cake.getId())
                                 .create()
                 )

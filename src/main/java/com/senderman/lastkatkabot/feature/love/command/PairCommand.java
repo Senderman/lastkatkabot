@@ -109,9 +109,7 @@ public class PairCommand implements CommandExecutor {
                 floodFuture.get();
 
                 try {
-                    var sm = new SendMessage();
-                    sm.setChatId(ctx.chatId());
-                    sm.setText(text);
+                    var sm = new SendMessage(ctx.chatId().toString(), text);
                     sm.setMessageThreadId(ctx.messageThreadIdForReplies());
                     ctx.sender.execute(sm);
                     // on success (we didn't fall into catch block), save result to db

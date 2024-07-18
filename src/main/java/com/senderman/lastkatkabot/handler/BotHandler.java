@@ -213,7 +213,9 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
         chatUsers.deleteByChatIdAndUserId(message.getChatId(), message.getLeftChatMember().getId());
         var method = Methods.Stickers.sendSticker(message.getChatId()).setReplyToMessageId(message.getMessageId());
         mediaIdService.setMedia(method, Media.LEAVE_STICKER);
-        method.callAsync(this, m -> mediaIdService.setFileId(Media.LEAVE_STICKER, m.getSticker().getFileId()));
+        method
+                .callAsync(this)
+                .thenAccept(m -> mediaIdService.setFileId(Media.LEAVE_STICKER, m.getSticker().getFileId()));
     }
 
 

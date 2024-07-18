@@ -25,8 +25,7 @@ public class StartDuelCommand implements CommandExecutor {
         var user = ctx.user();
         var name = Html.htmlSafe(user.getFirstName());
         ctx.reply(ctx.getString("roleplay.duel.startMessage").formatted(name))
-                .setInlineKeyboard(ButtonBuilder.callbackButton()
-                        .text(ctx.getString("roleplay.duel.joinButton"))
+                .setInlineKeyboard(ButtonBuilder.callbackButton(ctx.getString("roleplay.duel.joinButton"))
                         .payload(JoinDuelCallback.NAME, user.getId())
                         .create())
                 .callAsync(ctx.sender);

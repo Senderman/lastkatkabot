@@ -40,12 +40,10 @@ public class DivorceCommand implements CommandExecutor {
 
         ctx.replyToMessage(ctx.getString("love.divorce.areYouSure"))
                 .setSingleRowInlineKeyboard(
-                        ButtonBuilder.callbackButton()
-                                .text(ctx.getString("love.divorce.divorceButton"))
+                        ButtonBuilder.callbackButton(ctx.getString("love.divorce.divorceButton"))
                                 .payload(DivorceCallback.NAME, "a", userId, loverId)
                                 .create(),
-                        ButtonBuilder.callbackButton()
-                                .text(ctx.getString("love.divorce.cancelButton"))
+                        ButtonBuilder.callbackButton(ctx.getString("love.divorce.cancelButton"))
                                 .payload(DivorceCallback.NAME, "d", userId)
                                 .create()
                 )

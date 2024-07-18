@@ -6,9 +6,9 @@ import com.senderman.lastkatkabot.feature.l10n.Locale;
 import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.util.callback.ButtonBuilder;
 import org.jetbrains.annotations.NotNull;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 
 import java.util.Arrays;
-import java.util.List;
 
 @Command
 public class SetLocaleCommand implements CommandExecutor {
@@ -25,11 +25,13 @@ public class SetLocaleCommand implements CommandExecutor {
 
     @Override
     public void accept(@NotNull L10nMessageContext ctx) {
-        ctx.reply(ctx.getString("localization.setlocale.message"))
-                .setInlineKeyboard(List.of(Arrays.stream(Locale.values()).map(l -> ButtonBuilder.callbackButton()
-                        .text(l.getName())
+        var buttonRows = Arrays.stream(Locale.values())
+                .map(l -> new InlineKeyboardRow(ButtonBuilder.callbackButton(l.getName())
                         .payload(LocaleCallback.NAME, l.getCode())
-                        .create()).toList()))
+                        .create()))
+                .toList();
+        ctx.reply(ctx.getString("localization.setlocale.message"))
+                .setInlineKeyboard(buttonRows)
                 .callAsync(ctx.sender);
     }
 

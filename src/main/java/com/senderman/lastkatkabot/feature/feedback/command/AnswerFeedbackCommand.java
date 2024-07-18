@@ -39,12 +39,10 @@ public class AnswerFeedbackCommand implements CommandExecutor {
     private static void notifyResponseIsSent(L10nMessageContext ctx, int feedbackId) {
         ctx.replyToMessage(ctx.getString("feedback.fresp.success"))
                 .setSingleColumnInlineKeyboard(
-                        ButtonBuilder.callbackButton()
-                                .text(ctx.getString("feedback.fresp.deleteFeedback"))
+                        ButtonBuilder.callbackButton(ctx.getString("feedback.fresp.deleteFeedback"))
                                 .payload(DeleteFeedbackCallback.NAME, feedbackId)
                                 .create(),
-                        ButtonBuilder.callbackButton()
-                                .text(ctx.getString("common.close"))
+                        ButtonBuilder.callbackButton(ctx.getString("common.close"))
                                 .payload(DeleteFeedbackCallback.NAME, "close")
                                 .create()
                 )
