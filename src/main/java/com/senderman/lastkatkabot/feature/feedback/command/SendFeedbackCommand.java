@@ -15,7 +15,7 @@ import com.senderman.lastkatkabot.util.Html;
 import com.senderman.lastkatkabot.util.TelegramUsersHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 
 import java.util.Optional;
 import java.util.stream.Collectors;

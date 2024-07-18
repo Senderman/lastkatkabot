@@ -30,9 +30,8 @@ public class BncHelpCommand implements CommandExecutor {
     public void accept(@NotNull L10nMessageContext ctx) {
         var method = ctx.replyWithPhoto();
         mediaIdService.setMedia(method, Media.BNCHELP);
-        method.callAsync(
-                ctx.sender,
-                m -> mediaIdService.setFileId(Media.BNCHELP, m.getPhoto().getFirst().getFileId())
-        );
+        method
+                .callAsync(ctx.sender)
+                .thenAccept(m -> mediaIdService.setFileId(Media.BNCHELP, m.getPhoto().getFirst().getFileId()));
     }
 }

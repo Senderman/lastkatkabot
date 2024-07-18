@@ -38,8 +38,7 @@ public class PayRespectsCommand implements CommandExecutor {
                 "\n" + Html.htmlSafe(ctx.user().getFirstName()) + " has paid respects";
 
         ctx.reply(text)
-                .setInlineKeyboard(ButtonBuilder.callbackButton()
-                        .text("F")
+                .setInlineKeyboard(ButtonBuilder.callbackButton("F")
                         .payload(PayRespectsCallback.NAME)
                         .create())
                 .callAsync(ctx.sender);

@@ -1,5 +1,6 @@
 package com.senderman.lastkatkabot.config;
 
+import com.annimon.tgbotsmodule.BotModuleOptions;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -10,7 +11,6 @@ import com.senderman.lastkatkabot.feature.love.model.Love;
 import io.micronaut.context.annotation.Factory;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
-import org.telegram.telegrambots.bots.DefaultBotOptions;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -20,10 +20,12 @@ import java.util.List;
 public class Beans {
 
     @Singleton
-    public DefaultBotOptions botOptions() {
-        var options = new DefaultBotOptions();
-        options.setAllowedUpdates(List.of("message", "callback_query"));
-        return options;
+    public BotModuleOptions botOptions(BotConfig config) {
+        return BotModuleOptions.
+                create(config.getToken())
+                .telegramUrlSupplierDefault()
+                .getUpdatesGeneratorDefaultWithAllowedUpdates(List.of("message", "callback_query"))
+                .build();
     }
 
     @Singleton

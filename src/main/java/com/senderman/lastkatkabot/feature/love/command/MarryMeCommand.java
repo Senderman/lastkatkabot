@@ -81,12 +81,10 @@ public class MarryMeCommand implements CommandExecutor {
         ctx.reply(text)
                 .inReplyTo(message.getReplyToMessage())
                 .setSingleRowInlineKeyboard(
-                        ButtonBuilder.callbackButton()
-                                .text(ctx.getString("love.marryme.acceptButton"))
+                        ButtonBuilder.callbackButton(ctx.getString("love.marryme.acceptButton"))
                                 .payload(MarriageCallback.NAME, "accept", request.getId())
                                 .create(),
-                        ButtonBuilder.callbackButton()
-                                .text(ctx.getString("love.marryme.declineButton"))
+                        ButtonBuilder.callbackButton(ctx.getString("love.marryme.declineButton"))
                                 .payload(MarriageCallback.NAME, "decline", request.getId())
                                 .create()
                 )

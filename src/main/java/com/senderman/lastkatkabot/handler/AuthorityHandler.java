@@ -10,9 +10,9 @@ import com.senderman.lastkatkabot.feature.access.service.UserManager;
 import com.senderman.lastkatkabot.feature.chatsettings.service.ChatInfoService;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 
 import java.util.EnumSet;
 import java.util.Locale;

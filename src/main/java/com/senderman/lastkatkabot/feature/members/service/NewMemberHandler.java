@@ -80,8 +80,7 @@ public class NewMemberHandler implements Consumer<L10nMessageContext> {
 
         ctx.replyToMessageWithSticker()
                 .setFile(stickerId)
-                .setInlineKeyboard(ButtonBuilder.callbackButton()
-                        .text(ctx.getString("members.greeting.message").formatted(nickname))
+                .setInlineKeyboard(ButtonBuilder.callbackButton(ctx.getString("members.greeting.message").formatted(nickname))
                         .payload(GreetingCallback.NAME)
                         .create())
                 .callAsync(ctx.sender);
@@ -90,9 +89,8 @@ public class NewMemberHandler implements Consumer<L10nMessageContext> {
     private void fallbackWithGreetingGif(L10nMessageContext ctx) {
         var method = ctx.replyToMessageWithAnimation();
         mediaIdService.setMedia(method, Media.GREETING_GIF);
-        method.callAsync(
-                ctx.sender,
-                m -> mediaIdService.setFileId(Media.GREETING_GIF, m.getDocument().getFileId())
-        );
+        method
+                .callAsync(ctx.sender)
+                .thenAccept(m -> mediaIdService.setFileId(Media.GREETING_GIF, m.getDocument().getFileId()));
     }
 }
