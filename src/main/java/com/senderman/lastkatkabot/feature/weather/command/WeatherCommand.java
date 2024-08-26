@@ -5,6 +5,7 @@ import com.senderman.lastkatkabot.command.Command;
 import com.senderman.lastkatkabot.command.CommandExecutor;
 import com.senderman.lastkatkabot.feature.l10n.context.L10nMessageContext;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
+import com.senderman.lastkatkabot.feature.weather.exception.NoLocationSpecifiedException;
 import com.senderman.lastkatkabot.feature.weather.exception.NoSuchLocationException;
 import com.senderman.lastkatkabot.feature.weather.exception.WeatherParseException;
 import com.senderman.lastkatkabot.feature.weather.model.Forecast;
@@ -13,21 +14,27 @@ import jakarta.inject.Named;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Command
 public class WeatherCommand implements CommandExecutor {
 
+    private final static int MAX_WEATHER_REQUESTS_QUEUE_SIZE = 10;
+
     private final UserStatsService userStats;
     private final WeatherService weatherService;
     private final ExecutorService threadPool;
+    private final AtomicInteger tasksInQueue;
 
     public WeatherCommand(
             UserStatsService userStats,
             WeatherService weatherService,
-            @Named("weatherPool") ExecutorService threadPool) {
+            @Named("weatherPool") ExecutorService threadPool
+    ) {
         this.userStats = userStats;
         this.weatherService = weatherService;
         this.threadPool = threadPool;
+        this.tasksInQueue = new AtomicInteger(0);
     }
 
     @Override
@@ -49,6 +56,12 @@ public class WeatherCommand implements CommandExecutor {
                         messageToDelete.getMessageId())
                 .callAsync(ctx.sender);
 
+        if (tasksInQueue.get() >= MAX_WEATHER_REQUESTS_QUEUE_SIZE) {
+            ctx.replyToMessage(ctx.getString("weather.tooManyRequests")).callAsync(ctx.sender);
+            return;
+        }
+
+        tasksInQueue.incrementAndGet();
         threadPool.execute(() -> {
             try {
                 Methods.editMessageText(
@@ -83,6 +96,7 @@ public class WeatherCommand implements CommandExecutor {
                 throw new RuntimeException(t);
             } finally {
                 deleteMessageConsumer.run();
+                tasksInQueue.decrementAndGet();
             }
         });
     }
@@ -124,10 +138,6 @@ public class WeatherCommand implements CommandExecutor {
                 "💧: " + f.humidity() + "\n" +
                 "🧭: " + f.pressure() + "\n" +
                 "🌚: " + f.moonPhase() + "\n";
-    }
-
-    private static class NoLocationSpecifiedException extends Exception {
-
     }
 
 }
