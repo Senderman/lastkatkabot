@@ -20,7 +20,7 @@ public interface WttrClient {
             @Nullable @QueryValue(value = "format", defaultValue = SHORT_FORMAT) String format
     );
 
-    @Get("{location}?Td&lang={lang}")
+    @Get("{location}?TdM&lang={lang}")
     @Header(name = "User-Agent", value = "curl/7.64.1 (x86_64-pc-linux-gnu) libcurl/7.64.1 OpenSSL/1.1.1b zlib/1.2.11")
     Optional<String> getFullWeatherAscii(
             @PathVariable("location") String location,
