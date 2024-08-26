@@ -54,6 +54,7 @@ public class WeatherCommand implements CommandExecutor {
             ctx.replyToMessage(ctx.getString("weather.tooManyRequests")).callAsync(ctx.sender);
             return;
         }
+        tasksInQueue.incrementAndGet();
 
         final var messageToDelete = ctx.replyToMessage(ctx.getString("weather.connecting")).call(ctx.sender);
 
@@ -62,7 +63,6 @@ public class WeatherCommand implements CommandExecutor {
                         messageToDelete.getMessageId())
                 .callAsync(ctx.sender);
 
-        tasksInQueue.incrementAndGet();
         threadPool.execute(() -> {
             try {
                 Methods.editMessageText(
