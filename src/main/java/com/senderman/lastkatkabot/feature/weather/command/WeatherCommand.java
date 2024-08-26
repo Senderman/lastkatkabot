@@ -49,17 +49,18 @@ public class WeatherCommand implements CommandExecutor {
 
     @Override
     public void accept(@NotNull L10nMessageContext ctx) {
+
+        if (tasksInQueue.get() >= MAX_WEATHER_REQUESTS_QUEUE_SIZE) {
+            ctx.replyToMessage(ctx.getString("weather.tooManyRequests")).callAsync(ctx.sender);
+            return;
+        }
+
         final var messageToDelete = ctx.replyToMessage(ctx.getString("weather.connecting")).call(ctx.sender);
 
         final Runnable deleteMessageConsumer = () -> Methods.deleteMessage(
                         messageToDelete.getChatId(),
                         messageToDelete.getMessageId())
                 .callAsync(ctx.sender);
-
-        if (tasksInQueue.get() >= MAX_WEATHER_REQUESTS_QUEUE_SIZE) {
-            ctx.replyToMessage(ctx.getString("weather.tooManyRequests")).callAsync(ctx.sender);
-            return;
-        }
 
         tasksInQueue.incrementAndGet();
         threadPool.execute(() -> {
