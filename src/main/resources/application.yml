@@ -48,7 +48,6 @@ bot:
 
   mainAdminId: ${MAIN_ADMIN_ID} # id of main admin
   notificationChannelId: ${NOTIFICATION_CHANNEL_ID} # id of channel/group where feedbacks and error logs will be sent
-  privacyPolicyLink: https://telegra.ph/Srobofactory-Privacy-Policy-07-07 # link to bot's privacy policy
 
   locale:
     adminLocale: ru
