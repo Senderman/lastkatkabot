@@ -27,8 +27,15 @@ public class ActionCommand implements CommandExecutor {
 
         var action = "<i>" + Html.htmlSafe(ctx.user().getFirstName()) + " " + ctx.argument(0) + "</i>";
         var sm = ctx.reply(action);
-        if (ctx.message().isReply())
+        if (ctx.message().isReply()) {
+            var reply = ctx.message().getReplyToMessage();
+            if (reply.getFrom().getIsBot()) {
+                // it messes up with topics, so we just disabled this feature
+                ctx.replyToMessage(ctx.getString("roleplay.action.notForBots")).callAsync(ctx.sender);
+                return;
+            }
             sm.inReplyTo(ctx.message().getReplyToMessage());
+        }
         sm.callAsync(ctx.sender);
     }
 }
