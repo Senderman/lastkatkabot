@@ -51,7 +51,7 @@ public class DatabaseMetricsService {
         return feedbackService.count();
     }
 
-    @Scheduled(fixedDelay = SCRAPE_INTERVAL, initialDelay = SCRAPE_INTERVAL)
+    @Scheduled(fixedDelay = SCRAPE_INTERVAL)
     public void update() {
         usersTotal.set(usersTotal());
         chatsTotal.set(chatsTotal());
