@@ -14,10 +14,11 @@ public interface WttrClient {
 
     String SHORT_FORMAT = "%l\n%t\n%f\n%c%C\n%w\n%h\n%P\n%m";
 
-    @Get("{location}?m0AFTq&lang=ru")
+    @Get("{location}?m0AFTMq&lang={lang}")
     Optional<String> getShortWeather(
             @PathVariable("location") String location,
-            @Nullable @QueryValue(value = "format", defaultValue = SHORT_FORMAT) String format
+            @Nullable @QueryValue(value = "format", defaultValue = SHORT_FORMAT) String format,
+            @PathVariable("lang") String lang
     );
 
     @Get("{location}?TdM&lang={lang}")

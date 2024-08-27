@@ -1,5 +1,6 @@
 package com.senderman.lastkatkabot.feature.weather.service;
 
+import com.senderman.lastkatkabot.feature.l10n.service.L10nService;
 import com.senderman.lastkatkabot.feature.media.MediaGenerationService;
 import com.senderman.lastkatkabot.feature.weather.exception.NoSuchLocationException;
 import com.senderman.lastkatkabot.feature.weather.exception.WeatherParseException;
@@ -17,13 +18,15 @@ import java.util.regex.Pattern;
 @Singleton
 public class WttrWeatherService implements WeatherService {
 
-    private static final Pattern windPattern = Pattern.compile("(\\D+)(\\d+)\\D+");
+    private static final Pattern windPattern = Pattern.compile("(\\D+)(.*)");
     private final WttrClient wttrClient;
     private final MediaGenerationService mediaGenerationService;
+    private final L10nService l10n;
 
-    public WttrWeatherService(WttrClient wttrClient, MediaGenerationService mediaGenerationService) {
+    public WttrWeatherService(WttrClient wttrClient, MediaGenerationService mediaGenerationService, L10nService l10n) {
         this.wttrClient = wttrClient;
         this.mediaGenerationService = mediaGenerationService;
+        this.l10n = l10n;
     }
 
     @Override
@@ -31,7 +34,7 @@ public class WttrWeatherService implements WeatherService {
         if (!location.matches("^~?[\\p{L}\\d\\s-,.+]+"))
             throw new NoSuchLocationException(location);
 
-        var response = wttrClient.getShortWeather(location, null);
+        var response = wttrClient.getShortWeather(location, null, locale);
         if (response.isEmpty())
             throw new NoSuchLocationException(location);
 
@@ -48,7 +51,7 @@ public class WttrWeatherService implements WeatherService {
             var feelings = content[3].replaceFirst("\\s+", ": ");
             var wind = formatWind(content[4]);
             var humidity = content[5];
-            var pressure = formatPressure(content[6]);
+            var pressure = formatPressure(content[6], locale);
             var moonPhase = content[7];
             var image = getFullWeatherImage(location, locale);
             return new Forecast(title, temperature, feelsLike, feelings,
@@ -63,8 +66,8 @@ public class WttrWeatherService implements WeatherService {
         if (!m.find()) return normalizeWindArrows(line);
 
         final var windDir = normalizeWindArrows(m.group(1));
-        final var windSpeed = Integer.parseInt(m.group(2));
-        return "%s%d км/ч (%.0f м/с)".formatted(windDir, windSpeed, windSpeed / 3.6);
+        final var windSpeed = m.group(2);
+        return "%s %s".formatted(windDir, windSpeed);
     }
 
     private String normalizeWindArrows(String line) {
@@ -74,10 +77,10 @@ public class WttrWeatherService implements WeatherService {
                 .replace("↓", "⬇️");
     }
 
-    private String formatPressure(String line) {
+    private String formatPressure(String line, String locale) {
         int hPa = Integer.parseInt(line.replaceAll("\\D*(\\d+)\\D+", "$1"));
         int mmHg = (int) (hPa * 0.7500615758456601);
-        return "%d гПа (%d мм.рт.ст.)".formatted(hPa, mmHg);
+        return l10n.getString("weather.pressureFormat", locale).formatted(hPa, mmHg);
     }
 
     @Nullable
