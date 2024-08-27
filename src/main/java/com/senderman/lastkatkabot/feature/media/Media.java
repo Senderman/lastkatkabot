@@ -4,7 +4,7 @@ import java.util.regex.Pattern;
 
 public enum Media {
 
-    BNCHELP("media.bnchelp", "/media/bnchelp.jpg"),
+    BNCHELP("media.bnchelp", "/media/bnchelp.png"),
     GREETING_GIF("media.greeting-gif", "/media/greeting_gif.mp4"),
     LEAVE_STICKER("media.leave-sticker", "/media/leave_sticker.webp");
 
