@@ -50,6 +50,6 @@ bot:
   notificationChannelId: ${NOTIFICATION_CHANNEL_ID} # id of channel/group where feedbacks and error logs will be sent
 
   locale:
-    adminLocale: ru
-    defaultLocale: ru
-    supportedLocales: [ "ru", "uk" ]
+    adminLocale: en
+    defaultLocale: en
+    supportedLocales: [ "en", "ru", "uk" ]
