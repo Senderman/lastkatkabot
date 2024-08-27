@@ -1,5 +1,6 @@
 package com.senderman.lastkatkabot.feature.media;
 
+import com.senderman.lastkatkabot.feature.l10n.service.L10nService;
 import com.senderman.lastkatkabot.feature.members.exception.TooWideNicknameException;
 import jakarta.inject.Singleton;
 
@@ -15,6 +16,12 @@ import java.util.Objects;
 @Singleton
 public class MediaGenerationService {
 
+    private final L10nService l10n;
+
+    public MediaGenerationService(L10nService l10n) {
+        this.l10n = l10n;
+    }
+
     /**
      * Generate sticker with greeting
      *
@@ -23,7 +30,7 @@ public class MediaGenerationService {
      * @throws IOException              if it can't read original template or write a new sticker
      * @throws TooWideNicknameException if the given nickname is too wide to attach to sticker
      */
-    public InputStream generateGreetingSticker(String nickname) throws IOException, TooWideNicknameException {
+    public InputStream generateGreetingSticker(String nickname, String locale) throws IOException, TooWideNicknameException {
         var orig = getClass().getResourceAsStream("/media/greeting.png");
         var img = ImageIO.read(Objects.requireNonNull(orig));
         orig.close();
@@ -31,18 +38,32 @@ public class MediaGenerationService {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         var font = new Font(Font.SANS_SERIF, Font.BOLD, 45);
+        var imageWidth = img.getWidth();
+
+        // create title text
+        var title = font.createGlyphVector(g.getFontRenderContext(), l10n.getString("greeting.title", locale));
+        var titleWidth = title.getOutline().getBounds().width;
+        // align title horizontally to the center
+        var titleOutline = title.getOutline((imageWidth - titleWidth) / 2f, 50f);
+        // border of the text will be black
+        var stroke = new BasicStroke(3.5f);
+        g.setColor(Color.black);
+        g.setStroke(stroke);
+        g.draw(titleOutline);
+        // and the text itself - white
+        g.setColor(Color.white);
+        g.fill(titleOutline);
+
         // create text which will be attached to the bottom of the image
         var text = font.createGlyphVector(g.getFontRenderContext(), nickname + "!");
-        var imageWidth = img.getWidth();
         var textWidth = text.getOutline().getBounds().width;
         // if text is too wide, fail
         if (imageWidth < textWidth) throw new TooWideNicknameException(nickname);
         // align nickname horizontally to the center
-        var x = (imageWidth - textWidth) / 2;
-        var textOutline = text.getOutline(x, 480f);
+        var textOutline = text.getOutline((imageWidth - textWidth) / 2f, 480f);
         // border of the text will be black
         g.setColor(Color.black);
-        g.setStroke(new BasicStroke(3.5f));
+        g.setStroke(stroke);
         g.draw(textOutline);
         // and the text itself - white
         g.setColor(Color.white);

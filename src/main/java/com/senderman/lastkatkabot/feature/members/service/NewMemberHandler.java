@@ -63,7 +63,7 @@ public class NewMemberHandler implements Consumer<L10nMessageContext> {
     }
 
     private void sendDefaultGreetingSticker(L10nMessageContext ctx, String nickname) throws TooWideNicknameException {
-        try (var stickerStream = imageService.generateGreetingSticker(nickname)) {
+        try (var stickerStream = imageService.generateGreetingSticker(nickname, ctx.getLocale())) {
             // if we send a png file with the webp extension, telegram will show it as sticker
             ctx.replyToMessageWithDocument()
                     .setFile("sticker.webp", stickerStream)
