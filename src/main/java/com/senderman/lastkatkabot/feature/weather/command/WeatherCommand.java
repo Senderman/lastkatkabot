@@ -10,6 +10,7 @@ import com.senderman.lastkatkabot.feature.weather.exception.NoSuchLocationExcept
 import com.senderman.lastkatkabot.feature.weather.exception.WeatherParseException;
 import com.senderman.lastkatkabot.feature.weather.model.Forecast;
 import com.senderman.lastkatkabot.feature.weather.service.WeatherService;
+import io.micronaut.http.client.exceptions.ReadTimeoutException;
 import jakarta.inject.Named;
 import org.jetbrains.annotations.NotNull;
 
@@ -58,10 +59,11 @@ public class WeatherCommand implements CommandExecutor {
 
         final var messageToDelete = ctx.replyToMessage(ctx.getString("weather.connecting")).call(ctx.sender);
 
-        final Runnable deleteMessageConsumer = () -> Methods.deleteMessage(
-                        messageToDelete.getChatId(),
-                        messageToDelete.getMessageId())
-                .callAsync(ctx.sender);
+        final Runnable deleteMessageConsumer = () -> {
+            if (messageToDelete == null)
+                return;
+            Methods.deleteMessage(messageToDelete.getChatId(), messageToDelete.getMessageId()).callAsync(ctx.sender);
+        };
 
         threadPool.execute(() -> {
             try {
@@ -89,6 +91,8 @@ public class WeatherCommand implements CommandExecutor {
                 ctx.replyToMessage(ctx.getString("weather.noLocationGiven")).callAsync(ctx.sender);
             } catch (NoSuchLocationException e) {
                 ctx.replyToMessage(ctx.getString("weather.locationNotFound").formatted(e.getLocation())).callAsync(ctx.sender);
+            } catch (ReadTimeoutException e) {
+                ctx.replyToMessage(ctx.getString("weather.connectionTimeout")).callAsync(ctx.sender);
             } catch (WeatherParseException e) {
                 ctx.replyToMessage(ctx.getString("weather.queryError").formatted(e.getMessage())).callAsync(ctx.sender);
                 throw new RuntimeException(e);
