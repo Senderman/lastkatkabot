@@ -36,6 +36,7 @@ public class LastkatkaBot implements BotModule {
                         "NOTIFICATION_CHANNEL_ID"
                 )
                 .classes(LastkatkaBot.class)
+                .banner(!System.getProperties().containsKey("disableBanner"))
                 .start();
     }
 

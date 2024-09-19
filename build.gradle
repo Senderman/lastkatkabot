@@ -41,7 +41,7 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
 
 
-    runtimeOnly("ch.qos.logback:logback-classic")
+    implementation("ch.qos.logback:logback-classic")
 
 }
 
