@@ -43,7 +43,7 @@ public class PopularityCommand implements CommandExecutor {
             var text = ctx.getString("tracking.popularity.title");
             var chatsWithUsers = userStats.getTotalUniqueGroups();
             text += ctx.getString("tracking.popularity.activeChats").formatted(chatsWithUsers);
-            var users = userStats.getTotalUniqueGroups();
+            var users = userStats.getTotalUniqueUsers();
             text += ctx.getString("tracking.popularity.activeUsers").formatted(users);
             ctx.reply(text).callAsync(ctx.sender);
         });
