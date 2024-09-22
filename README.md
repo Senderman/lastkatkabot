@@ -1,10 +1,10 @@
-= Lastkatka Bot
+# Lastkatka Bot
 
-Useful multi-feature bot for telegram
+## Useful multi-feature bot for telegram
 
-== Features
+## Features
 
-=== For users
+### For users
 
 - The "Bulls and Cows" game
 - Pair of the day, marriages
@@ -16,7 +16,7 @@ Useful multi-feature bot for telegram
 - Various group settings such as forbidden commands, custom greeting stickers and more
 - Localization (currently we only support Russian and Ukrainian)
 
-=== For admins
+### For admins
 
 - Simple bootstrap
 - Prometheus metrics (available on `/prometheus` endpoint) and advanced error logging (directly to your telegram group or channel, with logs, caused JSON and everything you need!)
@@ -30,11 +30,11 @@ Useful multi-feature bot for telegram
 - Cross-platform (it's written in java)
 - The `/help` command shows only those commands that the user (standard user/admin/main admin) can run
 
-== Requirements
+## Requirements
 
 Java development kit 21+
 
-== Build
+## Build
 
 First, you need to build the jar entering the following commands:
 
@@ -43,15 +43,21 @@ First, you need to build the jar entering the following commands:
 
 The "fat jar" with all dependencies will be stored in `/build/libs` directory
 
-== Configuration
+## Configuration
 
 Configuration is done by setting environment variables.
 
-Look for `bot` and `datasources.default` section in the link:src/main/resources/application.yml[application.yml] file to get info about environment variables you need
+Look for `bot` and `datasources.default` section in the [application.yml](src/main/resources/application.yml) file to
+get info about environment variables you need
 
-Also look at the permitted variables list in the link:src/main/java/com/senderman/lastkatkabot/LastkatkaBot.java[Main class] and link:https://docs.micronaut.io/latest/guide/configurationreference.html[Micronaut configuration reference]
+Also look at the permitted variables list in
+the [Main Class](src/main/java/com/senderman/lastkatkabot/LastkatkaBot.java)
+and [Micronaut configuration reference](https://docs.micronaut.io/latest/guide/configurationreference.html)
 
-=== Database
+- To disable banner, run with `-DdisableBanner`
+- To print logs in json format (useful for log collecting tools like ELK/Loki), run with `-DjsonLogs`
+
+### Database
 
 By default, bot connects to Postgresql database named `lastkatkabot` running on localhost:5432
 
@@ -60,15 +66,14 @@ You can set the database address by changing `DBHOST`, `DBPORT` and `DBNAME` env
 For database authorization, use `DBUSER` and `DBPASS` environment variables.
 Default login:password is `lastkatkabot:sa`
 
-
-== Run
+## Run
 
 `java -jar build/libs/lastkatkabot-version.jar`
 
 Logs are redirected to stdin and stderr
 
-== We use:
+## We use:
 
-- link:https://github.com/aNNiMON/tgbots-module[aNNiMON's tgbots-module] official telegram library wrapper
-- link:https://micronaut.io[Micronaut framework] for DI, IoC and ORM
-- link:https://logback.qos.ch/[Logback classic] for logging
+- [aNNiMON's tgbots-module](https://github.com/aNNiMON/tgbots-module) official telegram library wrapper
+- [Micronaut framework](https://micronaut.io) for DI, IoC and ORM
+- [Logback classic](https://logback.qos.ch) for logging
