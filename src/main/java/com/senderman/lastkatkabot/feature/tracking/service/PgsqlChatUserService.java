@@ -37,16 +37,6 @@ public class PgsqlChatUserService implements ChatUserService {
     }
 
     @Override
-    public long getTotalUsers() {
-        return repo.countDistinctUserId();
-    }
-
-    @Override
-    public long getTotalChats() {
-        return repo.countDistinctChatId();
-    }
-
-    @Override
     public Iterable<Long> getChatIds() {
         return repo.findDistinctChatId();
     }

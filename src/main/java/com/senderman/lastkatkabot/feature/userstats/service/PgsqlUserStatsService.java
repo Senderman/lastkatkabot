@@ -73,4 +73,14 @@ public class PgsqlUserStatsService implements UserStatsService {
     public Optional<UserStats> findByChatIdAndUserId(long chatId, long userId) {
         return repo.findByChatIdAndUserId(chatId, userId);
     }
+
+    @Override
+    public long getTotalUniqueUsers() {
+        return repo.getTotalUniqueUsers();
+    }
+
+    @Override
+    public long getTotalUniqueGroups() {
+        return repo.getTotalUniqueGroups();
+    }
 }

@@ -36,4 +36,8 @@ public interface UserStatsService {
 
     Optional<UserStats> findByChatIdAndUserId(long chatId, long userId);
 
+    long getTotalUniqueUsers();
+
+    long getTotalUniqueGroups();
+
 }

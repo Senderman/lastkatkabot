@@ -15,10 +15,6 @@ public interface ChatUserService {
 
     ChatUser save(ChatUser user);
 
-    long getTotalUsers();
-
-    long getTotalChats();
-
     Iterable<Long> getChatIds();
 
 }

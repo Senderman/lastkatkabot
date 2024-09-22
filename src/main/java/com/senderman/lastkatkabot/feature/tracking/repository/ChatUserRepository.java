@@ -19,10 +19,6 @@ public interface ChatUserRepository extends CrudRepository<ChatUser, ChatUser.Pr
 
     void deleteByChatIdAndUserId(long chatId, long userId);
 
-    long countDistinctUserId();
-
-    long countDistinctChatId();
-
     List<Long> findDistinctChatId();
 
 }

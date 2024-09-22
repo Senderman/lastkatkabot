@@ -1,7 +1,7 @@
 package com.senderman.lastkatkabot.feature.data.service;
 
 import com.senderman.lastkatkabot.feature.feedback.service.FeedbackService;
-import com.senderman.lastkatkabot.feature.tracking.service.ChatUserService;
+import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.scheduling.annotation.Scheduled;
 import jakarta.inject.Singleton;
@@ -18,15 +18,16 @@ public class DatabaseMetricsService {
     private final AtomicLong feedbacksTotal;
 
     private final FeedbackService feedbackService;
-    private final ChatUserService chatUsers;
+    private final UserStatsService userStatsService;
 
 
     public DatabaseMetricsService(
             MeterRegistry registry,
-            FeedbackService feedbackService, ChatUserService chatUsers
+            FeedbackService feedbackService,
+            UserStatsService userStatsService
     ) {
         this.feedbackService = feedbackService;
-        this.chatUsers = chatUsers;
+        this.userStatsService = userStatsService;
 
         this.usersTotal = new AtomicLong(usersTotal());
         this.chatsTotal = new AtomicLong(chatsTotal());
@@ -40,11 +41,11 @@ public class DatabaseMetricsService {
     }
 
     protected long usersTotal() {
-        return chatUsers.getTotalUsers();
+        return userStatsService.getTotalUniqueUsers();
     }
 
     protected long chatsTotal() {
-        return chatUsers.getTotalChats();
+        return userStatsService.getTotalUniqueGroups();
     }
 
     protected long feedbacksTotal() {

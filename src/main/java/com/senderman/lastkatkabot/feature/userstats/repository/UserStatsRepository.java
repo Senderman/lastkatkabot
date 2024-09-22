@@ -70,4 +70,27 @@ public interface UserStatsRepository extends CrudRepository<UserStats, Long> {
             """)
     void updateNonExistentLovers();
 
+    @Query("""
+            SELECT COUNT(*) FROM
+            (
+                SELECT DISTINCT uid FROM(
+                    (SELECT user_id AS uid FROM user_stats)
+                    UNION (SELECT user_id AS uid FROM genshin_chat_user)
+                    UNION (SELECT user_id AS uid FROM chat_user)
+                )
+            )
+            """)
+    long getTotalUniqueUsers();
+
+    @Query("""
+            SELECT COUNT(*) FROM
+            (
+            SELECT DISTINCT gid FROM (
+            (SELECT chat_id AS gid FROM chat_user)
+            UNION (SELECT chat_id AS gid FROM genshin_chat_user)
+            )
+            )
+            """)
+    long getTotalUniqueGroups();
+
 }
