@@ -28,7 +28,7 @@ public class LastPairsCommand implements CommandExecutor {
     @Override
     public void accept(@NotNull L10nMessageContext ctx) {
         if (ctx.message().isUserMessage()) {
-            ctx.replyToMessage("love.lastpairs.wrongUsage").callAsync(ctx.sender);
+            ctx.replyToMessage(ctx.getString("love.lastpairs.wrongUsage")).callAsync(ctx.sender);
             return;
         }
 
