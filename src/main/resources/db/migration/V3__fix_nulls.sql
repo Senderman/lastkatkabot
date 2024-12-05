@@ -1,3 +1,0 @@
-ALTER TABLE feedback ALTER COLUMN user_locale SET NOT NULL;
-ALTER TABLE user_stats ALTER COLUMN locale SET NOT NULL;
-
