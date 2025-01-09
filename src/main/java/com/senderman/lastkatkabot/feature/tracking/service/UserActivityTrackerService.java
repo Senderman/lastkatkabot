@@ -3,6 +3,7 @@ package com.senderman.lastkatkabot.feature.tracking.service;
 import com.senderman.lastkatkabot.feature.tracking.model.ChatUser;
 import com.senderman.lastkatkabot.feature.userstats.service.UserStatsService;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micronaut.context.annotation.Value;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.scheduling.annotation.Scheduled;
 import jakarta.inject.Singleton;
@@ -14,19 +15,24 @@ import java.util.concurrent.atomic.AtomicLong;
 @Singleton
 public class UserActivityTrackerService {
 
-    public final static String FLUSH_INTERVAL = "30s";
-    public final static int MAX_CACHE_SIZE = 500;
     private final static String METER_NAME = "useractivitytracker.cache";
     private final ChatUserService chatUserService;
     private final UserStatsService userStatsService;
     private final Map<ChatUser.PrimaryKey, TrackData> cache = new HashMap<>();
     private final AtomicLong cacheSize;
+    private final int maxCacheSize;
 
-    public UserActivityTrackerService(ChatUserService chatUserService, UserStatsService userStatsService, MeterRegistry meterRegistry) {
+    public UserActivityTrackerService(
+            ChatUserService chatUserService,
+            UserStatsService userStatsService,
+            MeterRegistry meterRegistry,
+            @Value("${bot.limits.userActivityCache}") int maxCacheSize
+    ) {
         this.chatUserService = chatUserService;
         this.userStatsService = userStatsService;
         this.cacheSize = new AtomicLong(0);
         meterRegistry.gauge(METER_NAME, cacheSize);
+        this.maxCacheSize = maxCacheSize;
     }
 
     public synchronized void updateActualUserData(
@@ -47,11 +53,11 @@ public class UserActivityTrackerService {
             v.lastMessageDate = lastMessageDate;
             return v;
         });
-        if (cache.size() >= MAX_CACHE_SIZE)
+        if (cache.size() >= maxCacheSize)
             flush();
     }
 
-    @Scheduled(fixedDelay = FLUSH_INTERVAL)
+    @Scheduled(fixedDelay = "${bot.intervals.userActivityFlush}")
     protected synchronized void flush() {
         if (cache.isEmpty()) return;
         cache.forEach((k, v) -> {

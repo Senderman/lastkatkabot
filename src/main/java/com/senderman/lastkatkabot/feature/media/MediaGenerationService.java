@@ -2,6 +2,7 @@ package com.senderman.lastkatkabot.feature.media;
 
 import com.senderman.lastkatkabot.feature.l10n.service.L10nService;
 import com.senderman.lastkatkabot.feature.members.exception.TooWideNicknameException;
+import io.micrometer.core.annotation.Counted;
 import jakarta.inject.Singleton;
 
 import javax.imageio.ImageIO;
@@ -30,6 +31,7 @@ public class MediaGenerationService {
      * @throws IOException              if it can't read original template or write a new sticker
      * @throws TooWideNicknameException if the given nickname is too wide to attach to sticker
      */
+    @Counted("greeting_sticker_generation")
     public InputStream generateGreetingSticker(String nickname, String locale) throws IOException, TooWideNicknameException {
         var orig = getClass().getResourceAsStream("/media/greeting.png");
         var img = ImageIO.read(Objects.requireNonNull(orig));

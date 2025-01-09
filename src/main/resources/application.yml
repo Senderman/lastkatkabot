@@ -53,3 +53,18 @@ bot:
     adminLocale: en
     defaultLocale: en
     supportedLocales: [ "en", "ru", "uk" ]
+
+  intervals:
+    # how often to flush user activity tracker cache
+    userActivityFlush: 30s
+    # how often to check and flush chat violation check (to make bot leave blacklisted groups
+    chatPolicyViolationCheck: 30s
+    # how often to run database cleanup from old records
+    databaseCleanup: 2h
+    # how often to update database metrics
+    databaseScrape: 30m
+
+  limits:
+    userActivityCache: 500
+    chatPolicy: 500
+    weatherQueue: 10

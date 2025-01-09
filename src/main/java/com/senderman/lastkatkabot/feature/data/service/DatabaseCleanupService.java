@@ -54,7 +54,7 @@ public abstract class DatabaseCleanupService {
 
     public abstract void defragmentFeedbackIds();
 
-    @Scheduled(fixedDelay = "2h")
+    @Scheduled(fixedDelay = "${bot.intervals.databaseCleanup}")
     public void cleanAll() {
         try {
             cleanInactiveChatUsers();

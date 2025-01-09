@@ -10,6 +10,7 @@ import com.senderman.lastkatkabot.feature.weather.exception.NoSuchLocationExcept
 import com.senderman.lastkatkabot.feature.weather.exception.WeatherParseException;
 import com.senderman.lastkatkabot.feature.weather.model.Forecast;
 import com.senderman.lastkatkabot.feature.weather.service.WeatherService;
+import io.micronaut.context.annotation.Value;
 import io.micronaut.http.client.exceptions.ReadTimeoutException;
 import io.micronaut.http.client.exceptions.ResponseClosedException;
 import jakarta.inject.Named;
@@ -21,21 +22,22 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Command
 public class WeatherCommand implements CommandExecutor {
 
-    private final static int MAX_WEATHER_REQUESTS_QUEUE_SIZE = 10;
-
     private final UserStatsService userStats;
     private final WeatherService weatherService;
     private final ExecutorService threadPool;
     private final AtomicInteger tasksInQueue;
+    private final int maxWeatherRequestsQueueSize;
 
     public WeatherCommand(
             UserStatsService userStats,
             WeatherService weatherService,
-            @Named("weatherPool") ExecutorService threadPool
+            @Named("weatherPool") ExecutorService threadPool,
+            @Value("${bot.limits.weatherQueue}") int maxWeatherRequestsQueueSize
     ) {
         this.userStats = userStats;
         this.weatherService = weatherService;
         this.threadPool = threadPool;
+        this.maxWeatherRequestsQueueSize = maxWeatherRequestsQueueSize;
         this.tasksInQueue = new AtomicInteger(0);
     }
 
@@ -52,7 +54,7 @@ public class WeatherCommand implements CommandExecutor {
     @Override
     public void accept(@NotNull L10nMessageContext ctx) {
 
-        if (tasksInQueue.get() >= MAX_WEATHER_REQUESTS_QUEUE_SIZE) {
+        if (tasksInQueue.get() >= maxWeatherRequestsQueueSize) {
             ctx.replyToMessage(ctx.getString("weather.tooManyRequests")).callAsync(ctx.sender);
             return;
         }
