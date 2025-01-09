@@ -4,7 +4,7 @@
 
 [![Telegram](https://img.shields.io/badge/@lastkatka__bot-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/lastkatka_bot)
 
-[![Telegram](https://img.shields.io/badge/@srobofactory-e69138?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/srobofactory)
+[![Telegram](https://img.shields.io/badge/@srobofactory-b45f06?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/srobofactory)
 
 ## Features
 
