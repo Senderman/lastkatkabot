@@ -92,7 +92,7 @@ public class PgsqlCleanupService extends DatabaseCleanupService {
 
     @Override
     public void cleanInactiveUserStats() {
-        userStatsRepo.deleteByUpdatedAtLessThan(inactivePeriodUserStats());
+        userStatsRepo.deleteOldUsers(inactivePeriodUserStats());
         userStatsRepo.updateNonExistentLovers();
     }
 

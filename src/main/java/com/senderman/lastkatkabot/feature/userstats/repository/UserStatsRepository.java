@@ -61,7 +61,23 @@ public interface UserStatsRepository extends CrudRepository<UserStats, Long> {
             """)
     void updateByUserId(long userId, String name, @Nullable String locale);
 
-    void deleteByUpdatedAtLessThan(Timestamp updatedAt);
+    // Delete users from user_stats where max(user_stats.updated_date, user's last message date) < lessThan
+    @Query("""
+            DELETE FROM user_stats usd WHERE usd.user_id IN (SELECT uid FROM(
+            SELECT
+                us.user_id AS uid,
+                us.updated_at
+            FROM
+                chat_user cu
+            JOIN
+                user_stats us ON us.user_id = cu.user_id
+            GROUP BY
+                uid, us.updated_at
+            HAVING
+                GREATEST(us.updated_at, MAX(to_timestamp(cu.last_message_date))) < :lessThan
+            ))
+            """)
+    void deleteOldUsers(Timestamp lessThan);
 
     @Query("""
             UPDATE user_stats
