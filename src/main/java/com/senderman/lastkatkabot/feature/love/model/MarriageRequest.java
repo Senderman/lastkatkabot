@@ -7,7 +7,7 @@ import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.MappedEntity;
 import io.micronaut.data.annotation.MappedProperty;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @MappedEntity("marriage_request")
@@ -25,7 +25,7 @@ public class MarriageRequest {
     private int id;
     @MappedProperty("created_at")
     @DateCreated
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     @Creator
     public MarriageRequest(int id, long proposerId, String proposerName, long proposeeId, String proposeeName) {
@@ -60,11 +60,11 @@ public class MarriageRequest {
         return proposeeName;
     }
 
-    public Timestamp getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 

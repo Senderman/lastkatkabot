@@ -7,7 +7,7 @@ import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.MappedEntity;
 import io.micronaut.data.annotation.MappedProperty;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @MappedEntity("user_stats")
@@ -44,7 +44,7 @@ public class UserStats {
     @Nullable
     @MappedProperty("updated_at")
     @DateUpdated
-    private Timestamp updatedAt;
+    private LocalDateTime updatedAt;
 
     @Creator
     public UserStats(long userId) {
@@ -120,11 +120,11 @@ public class UserStats {
         this.loverId = loverId;
     }
 
-    public Timestamp getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Timestamp updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 

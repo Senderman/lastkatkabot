@@ -9,7 +9,7 @@ import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.MappedEntity;
 import io.micronaut.data.annotation.MappedProperty;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @MappedEntity("bnc_game_save")
@@ -24,7 +24,7 @@ public class BncGameSave {
 
     @MappedProperty("edit_date")
     @DateUpdated
-    private Timestamp editDate;
+    private LocalDateTime editDate;
 
     @Creator
     public BncGameSave(long id, BncGame game) {
@@ -40,11 +40,11 @@ public class BncGameSave {
         return game;
     }
 
-    public Timestamp getEditDate() {
+    public LocalDateTime getEditDate() {
         return editDate;
     }
 
-    public void setEditDate(Timestamp editDate) {
+    public void setEditDate(LocalDateTime editDate) {
         this.editDate = editDate;
     }
 

@@ -4,7 +4,6 @@ package com.senderman.lastkatkabot.feature.data.service;
 import com.senderman.lastkatkabot.handler.BotHandler;
 import io.micronaut.scheduling.annotation.Scheduled;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
@@ -26,16 +25,16 @@ public abstract class DatabaseCleanupService {
         return (int) (System.currentTimeMillis() / 1000 - INACTIVE_PERIOD_GENERAL_SECS);
     }
 
-    protected Timestamp inactivePeriodGeneralTs() {
-        return Timestamp.valueOf(LocalDateTime.now().minusSeconds(INACTIVE_PERIOD_GENERAL_SECS));
+    protected LocalDateTime inactivePeriodGeneralTs() {
+        return LocalDateTime.now().minusSeconds(INACTIVE_PERIOD_GENERAL_SECS);
     }
 
-    protected Timestamp inactivePeriodCake() {
-        return Timestamp.valueOf(LocalDateTime.now().minusSeconds(INACTIVE_PERIOD_CAKE_SECS));
+    protected LocalDateTime inactivePeriodCake() {
+        return LocalDateTime.now().minusSeconds(INACTIVE_PERIOD_CAKE_SECS);
     }
 
-    protected Timestamp inactivePeriodUserStats() {
-        return Timestamp.valueOf(LocalDateTime.now().minusSeconds(INACTIVE_PERIOD_USER_STATS));
+    protected LocalDateTime inactivePeriodUserStats() {
+        return LocalDateTime.now().minusSeconds(INACTIVE_PERIOD_USER_STATS);
     }
 
     public abstract void cleanInactiveChatUsers();

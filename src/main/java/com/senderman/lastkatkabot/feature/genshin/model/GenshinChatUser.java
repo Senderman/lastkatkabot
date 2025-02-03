@@ -4,7 +4,7 @@ package com.senderman.lastkatkabot.feature.genshin.model;
 import io.micronaut.core.annotation.Creator;
 import io.micronaut.data.annotation.*;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @MappedEntity("genshin_chat_user")
@@ -18,7 +18,7 @@ public class GenshinChatUser {
 
     @MappedProperty("updated_at")
     @DateUpdated
-    private Timestamp updatedAt;
+    private LocalDateTime updatedAt;
 
     public GenshinChatUser(long chatId, long userId) {
         this.primaryKey = new PrimaryKey(chatId, userId);
@@ -58,11 +58,11 @@ public class GenshinChatUser {
         this.fivePity = fivePity;
     }
 
-    public Timestamp getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Timestamp updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 

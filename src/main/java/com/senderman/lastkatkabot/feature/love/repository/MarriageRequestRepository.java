@@ -6,13 +6,13 @@ import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
 public interface MarriageRequestRepository extends CrudRepository<MarriageRequest, Integer> {
 
-    void deleteByCreatedAtLessThan(Timestamp createdAt);
+    void deleteByCreatedAtLessThan(LocalDateTime createdAt);
 
     void deleteByProposerIdOrProposeeId(long proposerId, long proposeeId);
 

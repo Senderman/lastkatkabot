@@ -7,7 +7,7 @@ import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -77,7 +77,7 @@ public interface UserStatsRepository extends CrudRepository<UserStats, Long> {
                 GREATEST(us.updated_at, MAX(to_timestamp(cu.last_message_date))) < :lessThan
             ))
             """)
-    void deleteOldUsers(Timestamp lessThan);
+    void deleteOldUsers(LocalDateTime lessThan);
 
     @Query("""
             UPDATE user_stats
