@@ -42,7 +42,7 @@ dependencies {
 
 
     implementation("ch.qos.logback:logback-classic")
-
+    implementation("io.micronaut:micronaut-retry")
 }
 
 application {
