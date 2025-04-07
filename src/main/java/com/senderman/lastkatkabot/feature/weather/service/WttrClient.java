@@ -15,20 +15,20 @@ public interface WttrClient {
 
     String SHORT_FORMAT = "%l\n%t\n%f\n%c%C\n%w\n%h\n%P\n%m";
 
-    @Get("{location}?m0AFTMq&lang={lang}")
+    @Get("{location}?m0AFTMq")
     @Retryable
     Optional<String> getShortWeather(
             @PathVariable("location") String location,
             @Nullable @QueryValue(value = "format", defaultValue = SHORT_FORMAT) String format,
-            @PathVariable("lang") String lang
+            @QueryValue(value = "lang", defaultValue = "${bot.locale.defaultLocale}") String lang
     );
 
-    @Get("{location}?TdM&lang={lang}")
+    @Get("{location}?TdM")
     @Header(name = "User-Agent", value = "curl/7.64.1 (x86_64-pc-linux-gnu) libcurl/7.64.1 OpenSSL/1.1.1b zlib/1.2.11")
     @Retryable
     Optional<String> getFullWeatherAscii(
             @PathVariable("location") String location,
-            @PathVariable("lang") String lang
+            @QueryValue(value = "lang", defaultValue = "${bot.locale.defaultLocale}") String lang
     );
 
 }
