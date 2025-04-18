@@ -42,7 +42,7 @@ public class TelegramUsersHelper {
      * @return true if it's another bot, false if it's not a bot, or it's my bot
      */
     public boolean isAnotherBot(@NotNull User user) {
-        return user.getIsBot() && !Objects.equals(user.getUserName(), botConfig.getUsername());
+        return user.getIsBot() && !Objects.equals(user.getUserName(), botConfig.username());
     }
 
     /**

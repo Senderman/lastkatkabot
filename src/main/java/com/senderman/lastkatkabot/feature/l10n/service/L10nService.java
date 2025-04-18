@@ -20,7 +20,7 @@ public class L10nService extends ResourceBundleLocalizationService {
     }
 
     public String getLocale(long userId) {
-        return Objects.requireNonNullElse(users.findById(userId).getLocale(), config.getLocale().getDefaultLocale());
+        return Objects.requireNonNullElse(users.findById(userId).getLocale(), config.locale().defaultLocale());
     }
 
     /**
@@ -30,7 +30,7 @@ public class L10nService extends ResourceBundleLocalizationService {
      * @return string for the default locale
      */
     public String getDefaultString(String key) {
-        return getString(key, config.getLocale().getDefaultLocale());
+        return getString(key, config.locale().defaultLocale());
     }
 
     /**
@@ -40,6 +40,6 @@ public class L10nService extends ResourceBundleLocalizationService {
      * @return string for the admin locale
      */
     public String getAdminString(String key) {
-        return getString(key, config.getLocale().getAdminLocale());
+        return getString(key, config.locale().defaultLocale());
     }
 }

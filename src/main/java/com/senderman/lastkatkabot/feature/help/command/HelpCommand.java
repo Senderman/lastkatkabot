@@ -87,7 +87,7 @@ public class HelpCommand implements CommandExecutor {
         var userHelp = new StringBuilder(ctx.getString("help.userCommands"));
         var adminHelp = new StringBuilder(ctx.getString("help.adminCommands"));
         var mainAdminHelp = new StringBuilder(ctx.getString("help.mainAdminCommands"));
-        boolean userIsMainAdmin = userId == config.getMainAdminId();
+        boolean userIsMainAdmin = userId == config.mainAdminId();
         boolean userIsAdmin = userIsMainAdmin || admins.hasUser(userId);
 
         var exeIterator = executors.stream().sorted(Comparator.comparing(CommandExecutor::command)).iterator();

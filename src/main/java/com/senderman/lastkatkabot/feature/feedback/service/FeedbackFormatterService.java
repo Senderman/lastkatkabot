@@ -28,7 +28,7 @@ public class FeedbackFormatterService {
      */
     public String format(Feedback feedback, @Nullable String locale) {
 
-        String formatLocale = locale != null ? locale : config.getLocale().getAdminLocale();
+        String formatLocale = locale != null ? locale : config.locale().adminLocale();
 
 
         return l.getString("feedback.text", formatLocale)

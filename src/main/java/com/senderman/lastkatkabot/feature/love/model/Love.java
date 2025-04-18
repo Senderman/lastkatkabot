@@ -17,7 +17,7 @@ public class Love {
     }
 
     public String[] forLocale(String locale) {
-        var localizedLoveStrings = localizedLove.getOrDefault(locale, localizedLove.get(config.getLocale().getDefaultLocale()));
+        var localizedLoveStrings = localizedLove.getOrDefault(locale, localizedLove.get(config.locale().defaultLocale()));
         var choosenVariant = localizedLoveStrings.get(ThreadLocalRandom.current().nextInt(localizedLoveStrings.size()));
         return choosenVariant.split("\n");
     }

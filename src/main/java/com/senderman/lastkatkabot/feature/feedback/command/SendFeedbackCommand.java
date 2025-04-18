@@ -71,7 +71,7 @@ public class SendFeedbackCommand implements CommandExecutor {
         var user = ctx.user();
         var feedbackLocale = Optional.ofNullable(userStatsRepo.findById(user.getId()).getLocale())
                 .or(() -> Optional.ofNullable(user.getLanguageCode()))
-                .orElseGet(() -> config.getLocale().getDefaultLocale());
+                .orElseGet(() -> config.locale().defaultLocale());
         var feedback = new Feedback(
                 feedbackText,
                 user.getId(),
@@ -88,15 +88,15 @@ public class SendFeedbackCommand implements CommandExecutor {
         Integer contextMessageId = null;
         if (replyMessageId != null) {
             contextMessageId = getMessageId(
-                    Methods.forwardMessage(config.getNotificationChannelId(), ctx.chatId(), replyMessageId)
+                    Methods.forwardMessage(config.notificationChannelId(), ctx.chatId(), replyMessageId)
                             .call(ctx.sender)
             );
         }
 
         // Send feedback to developers
-        var text = l10n.getString("feedback.feedback.message", config.getLocale().getAdminLocale())
+        var text = l10n.getString("feedback.feedback.message", config.locale().adminLocale())
                 .formatted(feedbackFormatter.format(feedback, null), feedback.getId(), listAdmins());
-        Methods.sendMessage(config.getNotificationChannelId(), text)
+        Methods.sendMessage(config.notificationChannelId(), text)
                 .setReplyToMessageId(contextMessageId)
                 .callAsync(ctx.sender);
 

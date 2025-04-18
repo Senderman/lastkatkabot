@@ -85,9 +85,9 @@ public class DeleteFeedbackCallback implements CallbackExecutor {
 
         final var msg = getMessage(ctx);
         if (msg.isEmpty()) return;
-        if (!msg.orElseThrow().getChatId().equals(config.getNotificationChannelId()))
+        if (!msg.orElseThrow().getChatId().equals(config.notificationChannelId()))
             Methods.sendMessage()
-                    .setChatId(config.getNotificationChannelId())
+                    .setChatId(config.notificationChannelId())
                     .setText(ctx.getString("feedback.fdel.notifySuccess")
                             .formatted(text, Html.getUserLink(ctx.user())))
                     .callAsync(ctx.sender);

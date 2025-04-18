@@ -5,29 +5,21 @@ import io.micronaut.context.annotation.ConfigurationProperties;
 import java.util.List;
 
 @ConfigurationProperties("bot")
-public interface BotConfig {
-
-    String getToken();
-
-    String getUsername();
-
-    String getTimezone();
-
-    long getMainAdminId();
-
-    long getNotificationChannelId();
-
-    LocaleConfig getLocale();
+public record BotConfig(
+        String token,
+        String username,
+        String timezone,
+        long mainAdminId,
+        long notificationChannelId,
+        LocaleConfig locale
+) {
 
     @ConfigurationProperties("locale")
-    interface LocaleConfig {
-
-        String getAdminLocale();
-
-        String getDefaultLocale();
-
-        List<String> getSupportedLocales();
-
+    public record LocaleConfig(
+            String adminLocale,
+            String defaultLocale,
+            List<String> supportedLocales
+    ) {
     }
 
 }

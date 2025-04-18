@@ -22,7 +22,7 @@ public class Beans {
     @Singleton
     public BotModuleOptions botOptions(BotConfig config) {
         return BotModuleOptions.
-                create(config.getToken())
+                create(config.token())
                 .telegramUrlSupplierDefault()
                 .getUpdatesGeneratorDefaultWithAllowedUpdates(List.of("message", "callback_query"))
                 .build();
@@ -35,7 +35,7 @@ public class Beans {
         var mapper = new YAMLMapper();
         String basePath = "/love/";
         var result = new HashMap<String, List<String>>();
-        for (var locale : config.getLocale().getSupportedLocales()) {
+        for (var locale : config.locale().supportedLocales()) {
             var value = mapper.readValue(getClass().getResourceAsStream(basePath + locale + ".yml"), typeRef);
             result.put(locale, value);
         }

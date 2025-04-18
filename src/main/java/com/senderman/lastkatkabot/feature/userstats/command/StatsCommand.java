@@ -51,7 +51,7 @@ public class StatsCommand implements CommandExecutor {
         int winRate = stats.getDuelsTotal() == 0 ? 0 : 100 * stats.getDuelWins() / stats.getDuelsTotal();
         var userLocale = Optional.ofNullable(stats.getLocale())
                 .or(() -> Optional.ofNullable(user.getLanguageCode()))
-                .orElseGet(() -> botConfig.getLocale().getDefaultLocale());
+                .orElseGet(() -> botConfig.locale().defaultLocale());
         String text = ctx.getString("userstats.text")
                 .formatted(name,
                         stats.getDuelWins(),

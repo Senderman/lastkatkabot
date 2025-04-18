@@ -93,7 +93,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
         addMethodPreprocessor(EditMessageText.class, m -> m.enableHtml(true));
 
-        Methods.sendMessage(config.getNotificationChannelId(), l10n.getAdminString("common.botStarted")).callAsync(this);
+        Methods.sendMessage(config.notificationChannelId(), l10n.getAdminString("common.botStarted")).callAsync(this);
     }
 
     @Override
@@ -143,10 +143,10 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
                 messageToJsonMapper.writeValue(pw, update);
             pw.close();
             try (var bais = new ByteArrayInputStream(baos.toByteArray())) {
-                var date = ZonedDateTime.now(ZoneId.of(config.getTimezone())).format(DateTimeFormatter.ISO_INSTANT);
+                var date = ZonedDateTime.now(ZoneId.of(config.timezone())).format(DateTimeFormatter.ISO_INSTANT);
                 Methods.sendDocument()
-                        .setChatId(config.getNotificationChannelId())
-                        .setFile(config.getUsername() + "-" + date + ".log", bais)
+                        .setChatId(config.notificationChannelId())
+                        .setFile(config.username() + "-" + date + ".log", bais)
                         .setCaption(l10n.getAdminString("common.updateHandlingError") + e.getMessage())
                         .enableHtml()
                         .call(this);

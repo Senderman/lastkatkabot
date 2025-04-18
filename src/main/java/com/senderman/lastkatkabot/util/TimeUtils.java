@@ -14,7 +14,7 @@ public class TimeUtils {
     private final DateTimeFormatter dayFormat;
 
     public TimeUtils(BotConfig config) {
-        this.timeZone = ZoneId.of(config.getTimezone());
+        this.timeZone = ZoneId.of(config.timezone());
         this.dayFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
     }
 
