@@ -1,4 +1,4 @@
-FROM gradle:8.5-jdk21-alpine as builder
+FROM gradle:8.13-jdk21-alpine as builder
 
 WORKDIR /app
 COPY build.gradle gradle.properties settings.gradle ./
