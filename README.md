@@ -18,7 +18,7 @@
 - Advanced `/weather` using `wttr.in` service
 - Sticker with text generation on new group member
 - Various group settings such as forbidden commands, custom greeting stickers and more
-- Localization (currently we only support Russian and Ukrainian)
+- Localization 
 
 ### For admins
 
