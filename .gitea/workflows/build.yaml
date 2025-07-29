@@ -6,13 +6,13 @@ on:
 jobs:
   build:
     name: Build docker image
-    uses: gts/ci-templates/.gitea/workflows/docker.yaml@v2-rc3
+    uses: gts/ci-templates/.gitea/workflows/docker.yaml@v2-rc4
     secrets:
       registry_access_token: ${{ secrets.REGISTRY_ACCESS_TOKEN }}
 
   deploy:
     name: Deploy application
-    uses: gts/ci-templates/.gitea/workflows/deploy.yaml@v2-rc3
+    uses: gts/ci-templates/.gitea/workflows/deploy.yaml@v2-rc4
     with:
       version: ${{ needs.build.outputs.version }}
       deploy_repo: ${{ vars.DEPLOY_REPO }}
