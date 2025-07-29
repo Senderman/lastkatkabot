@@ -12,7 +12,7 @@ jobs:
 
   deploy:
     name: Deploy application
-    uses: gts/ci-templates/.gitea/workflows/deploy.yaml@v2-rc5
+    uses: gts/ci-templates/.gitea/workflows/deploy.yaml@v2-rc6
     with:
       version: ${{ needs.build.outputs.version }}
       deploy_repo: ${{ vars.DEPLOY_REPO }}
