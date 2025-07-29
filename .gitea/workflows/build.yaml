@@ -1,0 +1,22 @@
+name: Build docker image
+on:
+  - push
+  - workflow_dispatch
+
+jobs:
+  build:
+    name: Build docker image
+    uses: gts/ci-templates/.gitea/workflows/docker.yaml@v2-rc2
+    secrets:
+      registry_access_token: ${{ secrets.REGISTRY_ACCESS_TOKEN }}
+
+  deploy:
+    name: Deploy application
+    uses: gts/ci-templates/.gitea/workflows/deploy.yaml@v2-rc2
+    with:
+      version: ${{ needs.build.outputs.version }}
+      deploy_repo: ${{ vars.DEPLOY_REPO }}
+      values_file_path: ${{ vars.VALUES_FILE_PATH }}
+    secrets:
+      deploy_repo_ssh_key: ${{ secrets.DEPLOY_REPO_SSH_KEY }}
+    needs: build

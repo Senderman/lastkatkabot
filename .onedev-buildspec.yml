@@ -1,4 +1,0 @@
-version: 35
-imports:
-- projectPath: public/ci-templates/docker
-  revision: master
