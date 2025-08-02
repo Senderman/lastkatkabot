@@ -6,17 +6,19 @@ on:
 jobs:
   build:
     name: Build docker image
-    uses: public/ci-templates/.gitea/workflows/docker_build.yaml@v4
+    uses: public/ci-templates/.gitea/workflows/docker_build.yaml@v6
     secrets:
       registry_access_token: ${{ secrets.REGISTRY_ACCESS_TOKEN }}
 
   deploy:
     name: Deploy application
-    uses: public/ci-templates/.gitea/workflows/helm_values_deploy.yaml@v4
+    uses: public/ci-templates/.gitea/workflows/helm_values_deploy.yaml@v6
     with:
       version: ${{ needs.build.outputs.version }}
       deploy_repo: ${{ vars.DEPLOY_REPO }}
       values_file_path: ${{ vars.VALUES_FILE_PATH }}
+      tag_property_path: '.generic.image.tag'
     secrets:
       deploy_repo_ssh_key: ${{ secrets.DEPLOY_REPO_SSH_KEY }}
     needs: build
+
