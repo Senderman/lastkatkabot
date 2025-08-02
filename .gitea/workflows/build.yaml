@@ -17,7 +17,7 @@ jobs:
       version: ${{ needs.build.outputs.version }}
       deploy_repo: ${{ vars.DEPLOY_REPO }}
       values_file_path: ${{ vars.VALUES_FILE_PATH }}
-      tag_property_path: '.generic.image.tag'
+      tag_property_path: ${{ vars.TAG_PROPERTY_PATH }}
     secrets:
       deploy_repo_ssh_key: ${{ secrets.DEPLOY_REPO_SSH_KEY }}
     needs: build
