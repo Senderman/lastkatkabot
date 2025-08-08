@@ -1,7 +1,9 @@
 name: Build and deploy application
 on:
-  - push
-  - workflow_dispatch
+  push:
+    branches:
+      - master
+  workflow_dispatch: { }
 
 jobs:
   build:
