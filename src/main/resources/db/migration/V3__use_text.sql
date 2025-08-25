@@ -15,6 +15,6 @@ ALTER TABLE user_stats ALTER COLUMN location TYPE TEXT;
 ALTER TABLE user_stats ALTER COLUMN name TYPE TEXT;
 ALTER TABLE genshin_user_inventory_item ALTER COLUMN item_id TYPE TEXT;
 ALTER TABLE chat_info ALTER COLUMN last_pairs TYPE TEXT;
-ALTER TABLE forbidden_commands ALTER COLUMN last_pairs TYPE TEXT;
-ALTER TABLE greeting_sticker_id ALTER COLUMN last_pairs TYPE TEXT;
+ALTER TABLE chat_info ALTER COLUMN forbidden_commands TYPE TEXT;
+ALTER TABLE chat_info ALTER COLUMN greeting_sticker_id TYPE TEXT;
 ALTER TABLE bnc_record ALTER COLUMN name TYPE TEXT;
