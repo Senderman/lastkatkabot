@@ -19,7 +19,9 @@ public class LogbackEncoder implements Encoder<ILoggingEvent> {
 
     public LogbackEncoder() {
         if (System.getProperties().containsKey("jsonLogs")) {
-            this.encoder = new JsonEncoder();
+            var jsonEncoder = new JsonEncoder();
+            jsonEncoder.setWithFormattedMessage(true);
+            this.encoder = jsonEncoder;
             // json encoder doesn't have pattern field, so we make these methods do nothing
             this.getPattern = () -> null;
             this.setPattern = s -> {
