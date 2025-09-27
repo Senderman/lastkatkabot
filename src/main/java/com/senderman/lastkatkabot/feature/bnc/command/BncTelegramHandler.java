@@ -136,9 +136,10 @@ public class BncTelegramHandler implements RegexCommand {
 
     public void processWin(BncGameState game, L10nMessageContext ctx, BncResult result) {
         long chatId = ctx.chatId();
-        var userId = ctx.user().getId();
+        long userId = ctx.user().getId();
         var userStats = usersRepo.findById(userId);
-        int score = game.isHexadecimal() ? (int) (game.length() * 1.5) : game.length();
+        double k = game.isHexadecimal() ? 1.5 : 1.0;
+        int score = (int) ((game.length() + game.attemptsLeft()) * k);
         userStats.increaseBncScore(score);
         usersRepo.save(userStats);
 
