@@ -92,7 +92,7 @@ public class DeleteFeedbackCommand implements CommandExecutor {
         if (!ctx.chatId().equals(config.notificationChannelId()))
             Methods.sendMessage()
                     .setChatId(config.notificationChannelId())
-                    .setText("%s\n👤: %s"
+                    .setText(ctx.getString("feedback.fdel.byUser")
                             .formatted(text, Html.getUserLink(ctx.user())))
                     .callAsync(ctx.sender);
     }
