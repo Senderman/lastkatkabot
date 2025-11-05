@@ -20,4 +20,11 @@ public interface WeatherService {
      */
     Forecast getWeatherByLocation(String location, String locale) throws IOException, NoSuchLocationException, WeatherParseException;
 
+    /**
+     * Name or weblink of the weather source, like wttr.in / openweathermap / gismeteo / etc
+     *
+     * @return Name or weblink of the weather source
+     */
+    String sourceName();
+
 }

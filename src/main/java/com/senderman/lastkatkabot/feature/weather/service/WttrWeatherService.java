@@ -41,6 +41,11 @@ public class WttrWeatherService implements WeatherService {
         return parseResponse(response.get(), location, locale);
     }
 
+    @Override
+    public String sourceName() {
+        return "https://wttr.in";
+    }
+
 
     private Forecast parseResponse(String response, String location, String locale) throws WeatherParseException {
         String[] content = response.split("\n");

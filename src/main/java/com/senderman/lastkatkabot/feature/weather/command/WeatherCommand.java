@@ -145,7 +145,8 @@ public class WeatherCommand implements CommandExecutor {
                 "💨: " + f.wind() + "\n" +
                 "💧: " + f.humidity() + "\n" +
                 "🧭: " + f.pressure() + "\n" +
-                "🌚: " + f.moonPhase() + "\n";
+                "🌚: " + f.moonPhase() + "\n\n" +
+                "\uD83D\uDCA1 Powered by: " + weatherService.sourceName();
     }
 
 }
