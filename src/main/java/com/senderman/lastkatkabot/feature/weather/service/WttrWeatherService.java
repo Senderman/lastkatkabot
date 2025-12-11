@@ -43,7 +43,7 @@ public class WttrWeatherService implements WeatherService {
 
     @Override
     public String sourceName() {
-        return "https://wttr.in";
+        return "wttr.in";
     }
 
 
