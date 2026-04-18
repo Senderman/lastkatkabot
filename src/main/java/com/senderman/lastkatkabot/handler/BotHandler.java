@@ -42,7 +42,7 @@ import java.util.concurrent.RejectedExecutionException;
 @Singleton
 public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(BotHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(BotHandler.class);
 
     private final BotConfig config;
     private final L10nService l10n;
@@ -103,7 +103,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
                 onUpdate(update);
             } catch (RejectedExecutionException e) { // may occur on restart
             } catch (Throwable e) {
-                logger.error(e.getMessage(), e);
+                log.error(e.getMessage(), e);
                 notifyUserAboutError(update);
                 sendUpdateErrorAsFile(update, e);
             }
@@ -152,7 +152,7 @@ public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
                         .call(this);
             }
         } catch (IOException ex) {
-            logger.error("Exception during saving exception info to file", ex);
+            log.error("Exception during saving exception info to file", ex);
         }
     }
 

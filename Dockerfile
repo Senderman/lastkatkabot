@@ -1,4 +1,4 @@
-FROM gradle:8.13-jdk21-alpine as builder
+FROM gradle:8.14-jdk21-alpine as builder
 
 WORKDIR /app
 COPY build.gradle gradle.properties settings.gradle ./
@@ -15,4 +15,3 @@ WORKDIR /app
 COPY --from=builder /app/build/libs/*.jar ./app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
-

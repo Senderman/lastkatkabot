@@ -1,11 +1,11 @@
 plugins {
-    id("io.micronaut.application") version "4.5.3"
-    id("com.gradleup.shadow") version "8.3.6"
-    id("io.micronaut.aot") version "4.5.3"
+    id("io.micronaut.application") version "4.6.2"
+    id("com.gradleup.shadow") version "8.3.9"
+    id("io.micronaut.aot") version "4.6.2"
 }
 
-group 'com.senderman'
-version '1.0'
+group = 'com.senderman'
+version = '1.0'
 
 repositories {
     mavenCentral()
@@ -13,9 +13,7 @@ repositories {
 
 dependencies {
     // telegram
-    implementation('com.annimon:tgbots-module:8.0.0') {
-        exclude group: 'org.glassfish.grizzly', module: 'grizzly-http-server'
-        exclude group: 'org.glassfish.jersey.core', module: 'jersey-server'
+    implementation('com.annimon:tgbots-module:9.5.0') {
         exclude group: 'org.telegram', module: 'telegrambots-webhook'
     }
 

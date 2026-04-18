@@ -1,16 +1,16 @@
 package com.senderman.lastkatkabot.config;
 
 import com.annimon.tgbotsmodule.BotModuleOptions;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.senderman.lastkatkabot.feature.genshin.model.Item;
 import com.senderman.lastkatkabot.feature.love.model.Love;
 import io.micronaut.context.annotation.Factory;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.dataformat.yaml.YAMLMapper;
 
 import java.io.IOException;
 import java.util.HashMap;

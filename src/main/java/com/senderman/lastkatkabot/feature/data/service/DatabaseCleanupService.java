@@ -51,8 +51,6 @@ public abstract class DatabaseCleanupService {
 
     public abstract void cleanOldGenshinData();
 
-    public abstract void defragmentFeedbackIds();
-
     @Scheduled(fixedDelay = "${bot.intervals.databaseCleanup}")
     public void cleanAll() {
         try {
@@ -63,7 +61,6 @@ public abstract class DatabaseCleanupService {
             cleanOldCakes();
             cleanInactiveUserStats();
             cleanOldGenshinData();
-            defragmentFeedbackIds();
         } catch (Throwable t) {
             botHandler.sendUpdateErrorAsFile(null, t);
         }

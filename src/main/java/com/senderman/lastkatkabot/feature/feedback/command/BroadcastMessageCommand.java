@@ -45,7 +45,6 @@ public class BroadcastMessageCommand implements CommandExecutor {
 
     @Override
     public void accept(@NotNull L10nMessageContext ctx) {
-        var chatId = ctx.chatId();
         ctx.setArgumentsLimit(1);
         if (ctx.argumentsLength() < 1) {
             ctx.replyToMessage(ctx.getString("common.invalidArgumentsNumber")).callAsync(ctx.sender);
