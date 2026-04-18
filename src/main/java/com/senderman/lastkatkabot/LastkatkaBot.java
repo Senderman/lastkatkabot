@@ -23,18 +23,6 @@ public class LastkatkaBot implements BotModule {
 
     public static void main(String[] args) {
         Micronaut.build(args)
-                .environmentVariableIncludes(
-                        "MICRONAUT_SERVER_HOST",
-                        "MICRONAUT_SERVER_PORT",
-                        "MICRONAUT_METRICS_ENABLED",
-                        "DBHOST",
-                        "DBUSER",
-                        "DBPASS",
-                        "BOT_USERNAME",
-                        "BOT_TOKEN",
-                        "MAIN_ADMIN_ID",
-                        "NOTIFICATION_CHANNEL_ID"
-                )
                 .classes(LastkatkaBot.class)
                 .banner(!System.getProperties().containsKey("disableBanner"))
                 .start();
