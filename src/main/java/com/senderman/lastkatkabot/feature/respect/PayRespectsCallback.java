@@ -8,7 +8,7 @@ import jakarta.inject.Singleton;
 @Singleton
 public class PayRespectsCallback implements CallbackExecutor {
 
-    public final static String NAME = "F";
+    public static final String NAME = "F";
 
     @Override
     public String command() {

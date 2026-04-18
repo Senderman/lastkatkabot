@@ -14,7 +14,7 @@ import java.util.EnumSet;
 @Command
 public class ShowFeedbacksCommand implements CommandExecutor {
 
-    private static final String feedbackSeparator = "\n\n<code>====================================</code>\n\n";
+    private static final String FEEDBACK_SEPARATOR = "\n\n<code>====================================</code>\n\n";
     private final FeedbackService feedbackService;
     private final FeedbackFormatterService feedbackFormatter;
 
@@ -54,11 +54,11 @@ public class ShowFeedbacksCommand implements CommandExecutor {
         for (Feedback feedback : feedbackService.findAll()) {
             String formattedFeedback = feedbackFormatter.format(feedback, ctx.getLocale());
             // if maximum text length reached
-            if (text.length() + feedbackSeparator.length() + formattedFeedback.length() >= 4096) {
+            if (text.length() + FEEDBACK_SEPARATOR.length() + formattedFeedback.length() >= 4096) {
                 ctx.reply(text.toString()).callAsync(ctx.sender);
                 text.setLength(0);
             }
-            text.append(feedbackSeparator).append(formattedFeedback);
+            text.append(FEEDBACK_SEPARATOR).append(formattedFeedback);
         }
         // send remaining feedbacks
         if (!text.isEmpty()) {

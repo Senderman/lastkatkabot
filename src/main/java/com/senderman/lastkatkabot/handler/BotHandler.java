@@ -42,7 +42,7 @@ import java.util.concurrent.RejectedExecutionException;
 @Singleton
 public class BotHandler extends com.annimon.tgbotsmodule.BotHandler {
 
-    private final static Logger logger = LoggerFactory.getLogger(BotHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(BotHandler.class);
 
     private final BotConfig config;
     private final L10nService l10n;

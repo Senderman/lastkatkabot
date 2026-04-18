@@ -17,7 +17,7 @@ import java.util.Optional;
 @Singleton
 public class DeleteFeedbackCallback implements CallbackExecutor {
 
-    public final static String NAME = "FDEL";
+    public static final String NAME = "FDEL";
 
     private final FeedbackService feedbackRepo;
     private final BotConfig config;

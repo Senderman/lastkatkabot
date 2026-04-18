@@ -14,7 +14,7 @@ import java.util.List;
 @Singleton
 public class MarriageCallback implements CallbackExecutor {
 
-    public final static String NAME = "MARRIAGE";
+    public static final String NAME = "MARRIAGE";
 
     private final UserStatsService userStats;
     private final MarriageRequestService marriages;

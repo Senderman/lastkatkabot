@@ -12,7 +12,7 @@ import java.util.List;
 @Singleton
 public class DivorceCallback implements CallbackExecutor {
 
-    public final static String NAME = "DIVORCE";
+    public static final String NAME = "DIVORCE";
 
     private final UserStatsService users;
 

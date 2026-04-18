@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 @Singleton
 public class ChatPolicyEnsuringService {
 
-    private final static String METER_NAME = "chatpolicyensuring.cache";
+    private static final String METER_NAME = "chatpolicyensuring.cache";
     private final BlacklistedChatService database;
     private final Map<Long, Consumer<Long>> cache;
     private final AtomicLong cacheSize;

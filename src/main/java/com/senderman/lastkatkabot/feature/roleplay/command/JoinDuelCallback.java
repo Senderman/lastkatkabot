@@ -15,7 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Singleton
 public class JoinDuelCallback implements CallbackExecutor {
 
-    public final static String NAME = "DUEL";
+    public static final String NAME = "DUEL";
 
     private final UserStatsService users;
 

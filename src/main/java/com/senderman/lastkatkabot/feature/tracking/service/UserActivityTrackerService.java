@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Singleton
 public class UserActivityTrackerService {
 
-    private final static String METER_NAME = "useractivitytracker.cache";
+    private static final String METER_NAME = "useractivitytracker.cache";
     private final ChatUserService chatUserService;
     private final UserStatsService userStatsService;
     private final Map<ChatUser.PrimaryKey, TrackData> cache = new HashMap<>();

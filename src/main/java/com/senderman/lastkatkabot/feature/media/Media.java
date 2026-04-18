@@ -8,7 +8,7 @@ public enum Media {
     GREETING_GIF("media.greeting-gif", "/media/greeting_gif.mp4"),
     LEAVE_STICKER("media.leave-sticker", "/media/leave_sticker.webp");
 
-    private final static Pattern leaveName = Pattern.compile(".*/");
+    private static final Pattern leaveName = Pattern.compile(".*/");
     private final String key;
     private final String path;
 

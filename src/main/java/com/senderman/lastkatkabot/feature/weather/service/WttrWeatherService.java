@@ -18,7 +18,8 @@ import java.util.regex.Pattern;
 @Singleton
 public class WttrWeatherService implements WeatherService {
 
-    private static final Pattern windPattern = Pattern.compile("(\\D+)(.*)");
+    private static final Pattern WIND_PATTERN = Pattern.compile("(\\D+)(.*)");
+    private static final Pattern BASH_COLORS = Pattern.compile("\u001B\\[[;\\d]*m");
     private final WttrClient wttrClient;
     private final MediaGenerationService mediaGenerationService;
     private final L10nService l10n;
@@ -67,7 +68,7 @@ public class WttrWeatherService implements WeatherService {
     }
 
     private String formatWind(String line) {
-        final Matcher m = windPattern.matcher(line);
+        final Matcher m = WIND_PATTERN.matcher(line);
         if (!m.find()) return normalizeWindArrows(line);
 
         final var windDir = normalizeWindArrows(m.group(1));
@@ -98,8 +99,8 @@ public class WttrWeatherService implements WeatherService {
         } catch (Throwable t) { // ignore exception, just do not return the picture
             return null;
         }
-
-        var strings = response.get().split("\n");
+        var cleanResponse = BASH_COLORS.matcher(response.get()).replaceAll("");
+        var strings = cleanResponse.split("\n");
         int start = findFirstWeatherTableIndex(strings);
         if (start == -1)
             return null;

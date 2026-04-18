@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 @Singleton
 public class GreetingCallback implements CallbackExecutor {
 
-    public final static String NAME = "GREETING";
+    public static final String NAME = "GREETING";
 
     @Override
     public String command() {

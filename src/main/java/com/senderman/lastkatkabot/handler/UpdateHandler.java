@@ -27,8 +27,8 @@ import java.util.stream.Stream;
 @Singleton
 public class UpdateHandler implements com.annimon.tgbotsmodule.analytics.UpdateHandler {
 
-    private final static String COMMAND_METER_NAME = "bot.command";
-    private final static String CALLBACK_METER_NAME = "bot.callback";
+    private static final String COMMAND_METER_NAME = "bot.command";
+    private static final String CALLBACK_METER_NAME = "bot.callback";
     private final String botUsername;
     private final Map<String, List<TextCommand>> textCommands;
     private final List<RegexCommand> regexCommands;
