@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 public class WttrWeatherService implements WeatherService {
 
     private static final Pattern WIND_PATTERN = Pattern.compile("(\\D+)(.*)");
-    private static final Pattern BASH_COLORS = Pattern.compile("\u001B\\[[;\\d]*m");
+    // private static final Pattern BASH_COLORS = Pattern.compile("\u001B\\[[;\\d]*m");
     private final WttrClient wttrClient;
     private final MediaGenerationService mediaGenerationService;
     private final L10nService l10n;
@@ -99,8 +99,7 @@ public class WttrWeatherService implements WeatherService {
         } catch (Throwable t) { // ignore exception, just do not return the picture
             return null;
         }
-        var cleanResponse = BASH_COLORS.matcher(response.get()).replaceAll("");
-        var strings = cleanResponse.split("\n");
+        var strings = response.get().split("\n");
         int start = findFirstWeatherTableIndex(strings);
         if (start == -1)
             return null;

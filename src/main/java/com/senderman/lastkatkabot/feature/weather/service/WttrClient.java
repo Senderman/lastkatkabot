@@ -2,7 +2,6 @@ package com.senderman.lastkatkabot.feature.weather.service;
 
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.Header;
 import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.http.client.annotation.Client;
@@ -23,8 +22,7 @@ public interface WttrClient {
             @QueryValue(value = "lang", defaultValue = "${bot.locale.defaultLocale}") String lang
     );
 
-    @Get("{location}?TdM")
-    @Header(name = "User-Agent", value = "curl/7.64.1 (x86_64-pc-linux-gnu) libcurl/7.64.1 OpenSSL/1.1.1b zlib/1.2.11")
+    @Get("{location}?ATdM")
     @Retryable
     Optional<String> getFullWeatherAscii(
             @PathVariable("location") String location,
