@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     name: Build docker image
-    uses: public/ci-templates/.gitea/workflows/docker_build.yaml@v6
+    uses: public/ci-templates/.gitea/workflows/docker_build.yaml@v7
     secrets:
       registry_access_token: ${{ secrets.REGISTRY_ACCESS_TOKEN }}
 
