@@ -8,13 +8,13 @@ on:
 jobs:
   build:
     name: Build docker image
-    uses: public/ci-templates/.gitea/workflows/docker_build.yaml@v8-rc1
+    uses: public/ci-templates/.gitea/workflows/docker_build.yaml@v7
     secrets:
       registry_access_token: ${{ secrets.REGISTRY_ACCESS_TOKEN }}
 
   deploy:
     name: Deploy application
-    uses: public/ci-templates/.gitea/workflows/helm_values_deploy.yaml@v6
+    uses: public/ci-templates/.gitea/workflows/helm_values_deploy.yaml@v8-rc1
     with:
       version: ${{ needs.build.outputs.version }}
       deploy_repo: ${{ vars.DEPLOY_REPO }}
