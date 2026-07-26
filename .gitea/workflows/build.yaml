@@ -14,7 +14,7 @@ jobs:
 
   deploy:
     name: Deploy application
-    uses: public/ci-templates/.gitea/workflows/helm_values_deploy.yaml@v8-rc1
+    uses: public/ci-templates/.gitea/workflows/helm_values_deploy.yaml@v7
     with:
       version: ${{ needs.build.outputs.version }}
       deploy_repo: ${{ vars.DEPLOY_REPO }}
