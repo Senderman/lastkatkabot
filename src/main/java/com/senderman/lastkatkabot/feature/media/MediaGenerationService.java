@@ -60,7 +60,10 @@ public class MediaGenerationService {
         var text = font.createGlyphVector(g.getFontRenderContext(), nickname + "!");
         var textWidth = text.getOutline().getBounds().width;
         // if text is too wide, fail
-        if (imageWidth < textWidth) throw new TooWideNicknameException(nickname);
+        if (imageWidth < textWidth) {
+            g.dispose();
+            throw new TooWideNicknameException(nickname);
+        } 
         // align nickname horizontally to the center
         var textOutline = text.getOutline((imageWidth - textWidth) / 2f, 480f);
         // border of the text will be black
