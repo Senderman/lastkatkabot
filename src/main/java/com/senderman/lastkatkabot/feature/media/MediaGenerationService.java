@@ -63,7 +63,7 @@ public class MediaGenerationService {
         if (imageWidth < textWidth) {
             g.dispose();
             throw new TooWideNicknameException(nickname);
-        } 
+        }
         // align nickname horizontally to the center
         var textOutline = text.getOutline((imageWidth - textWidth) / 2f, 480f);
         // border of the text will be black
