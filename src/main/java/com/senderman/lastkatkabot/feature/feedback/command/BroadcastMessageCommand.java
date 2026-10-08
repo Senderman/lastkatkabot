@@ -76,7 +76,7 @@ public class BroadcastMessageCommand implements CommandExecutor {
                     if (is429TooManyRequests(e)) {
                         i--;
                         Threads.sleep(SECONDS.toMillis(30));
-                    } else // failed to send message my some other reason, do not retry
+                    } else // failed to send message for some other reason, do not retry
                         counter.incDone();
                 }
 
